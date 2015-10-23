@@ -1,0 +1,30 @@
+# Java Files
+*.class
+*.jar
+
+# Java VM crash logs
+hs_err_pid*
+
+# Git
+*~
+
+# InteliJ
+*.iml
+.idea*
+
+# Eclipse
+.settings
+.project
+.classpath
+
+## Maven build paths
+dist/
+target/
+
+# OSX
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows shortcuts
+*.lnk
