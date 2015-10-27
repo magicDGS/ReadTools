@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import static org.vetmeduni.utils.fastq.QualityUtils.getEncoding;
+import static org.vetmeduni.utils.fastq.QualityUtils.getFastqQualityFormat;
 
 /**
  * Class that implements the trimming algorithm from Kofler et al. 2011
@@ -101,8 +102,8 @@ public class TrimFastq extends AbstractTool {
 			// if input 2 process Pair end
 			if (input2 != null) {
 				logger.info("Found an existing file for the second read; Switching to paired-read mode");
-				FastqQualityFormat encoding1 = getEncoding(input1);
-				FastqQualityFormat encoding2 = getEncoding(input2);
+				FastqQualityFormat encoding1 = getFastqQualityFormat(input1);
+				FastqQualityFormat encoding2 = getFastqQualityFormat(input2);
 				if (!encoding1.equals(encoding2)) {
 					throw new SAMException("Pair-end encoding is different for both read pairs");
 				} else {
@@ -112,7 +113,7 @@ public class TrimFastq extends AbstractTool {
 				// if not, single end mode
 			} else {
 				logger.info("Did not find an existing file for the second read; Switching to single-read mode");
-				FastqQualityFormat encoding = getEncoding(input1);
+				FastqQualityFormat encoding = getFastqQualityFormat(input1);
 				logger.info("Detected FASTQ format: ", (encoding.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
 				trimming.processSE(input1, output_prefix, encoding, multi, verbose, logger, gzip);
 			}
