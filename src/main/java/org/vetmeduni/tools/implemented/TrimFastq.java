@@ -23,9 +23,7 @@
 package org.vetmeduni.tools.implemented;
 
 import htsjdk.samtools.SAMException;
-import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
-import htsjdk.samtools.util.QualityEncodingDetector;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -38,7 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.vetmeduni.fastq.QualityUtils.getEncoding;
+import static org.vetmeduni.utils.fastq.QualityUtils.getEncoding;
 
 /**
  * Class that implements the trimming algorithm from Kofler et al. 2011
