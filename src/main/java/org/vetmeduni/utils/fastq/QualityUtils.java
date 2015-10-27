@@ -20,13 +20,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.fastq;
+package org.vetmeduni.utils.fastq;
 
+import htsjdk.samtools.BamFileIoUtils;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.QualityEncodingDetector;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Class with utils for work with quality
@@ -36,6 +42,15 @@ import java.io.File;
  * @author Daniel Gómez Sánchez
  */
 public class QualityUtils {
+
+	/**
+	 * Supported quality formats for this program
+	 */
+	public static final Set<FastqQualityFormat> SUPPORTED_FORMATS = Collections
+		.unmodifiableSet(new HashSet<FastqQualityFormat>() {{
+			add(FastqQualityFormat.Illumina);
+			add(FastqQualityFormat.Standard);
+		}});
 
 	/**
 	 * QualityException for errors in Quality Encoding
@@ -84,7 +99,9 @@ public class QualityUtils {
 	 * @param file the filte to get the encoding
 	 *
 	 * @return the format
+	 * @deprecated this is only for FASTQ files; use the more general {@link #getFastqQualityFormat}
 	 */
+	@Deprecated
 	public static FastqQualityFormat getEncoding(File file) {
 		FastqReader reader = new FastqReader(file);
 		FastqQualityFormat format = QualityEncodingDetector.detect(reader);
@@ -95,4 +112,65 @@ public class QualityUtils {
 		return format;
 	}
 
+	/**
+	 * Get the quality encoding for a FASTQ or BAN file
+	 *
+	 * @param input the file to check
+	 *
+	 * @return the quality encoding
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not one of the supported
+	 */
+	public static FastqQualityFormat getFastqQualityFormat(File input) {
+		return getFastqQualityFormat(input, QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE);
+	}
+
+	/**
+	 * Get the quality encoding for a FASTQ or BAM file
+	 *
+	 * @param input    the file to check
+	 * @param maxReads the maximum number of reads to iterate
+	 *
+	 * @return the quality encoding
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not one of the supported
+	 */
+	public static FastqQualityFormat getFastqQualityFormat(File input, long maxReads) {
+		FastqQualityFormat encoding;
+		if (BamFileIoUtils.isBamFile(input)) {
+			SAMRecordIterator reader = SamReaderFactory.makeDefault().open(input).iterator();
+			encoding = getFastqQualityFormat(reader, maxReads);
+			reader.close();
+		} else {
+			FastqReader reader = new FastqReader(input);
+			encoding = getFastqQualityFormat(reader, maxReads);
+			reader.close();
+		}
+		if (!SUPPORTED_FORMATS.contains(encoding)) {
+			throw new QualityException(encoding + " format not supported");
+		}
+		return encoding;
+	}
+
+	/**
+	 * Get quality format from BAM reader
+	 *
+	 * @param bamReader the reader for the BAM file
+	 * @param maxReads  the maximum number of reads to iterate
+	 *
+	 * @return the quality encoding
+	 */
+	private static FastqQualityFormat getFastqQualityFormat(SAMRecordIterator bamReader, long maxReads) {
+		return QualityEncodingDetector.detect(maxReads - 1, bamReader);
+	}
+
+	/**
+	 * Get quality format from FASTQ reader
+	 *
+	 * @param fastqReader the reader for the FASTQ file
+	 * @param maxReads    the maximum number of reads to iterate
+	 *
+	 * @return the quality encoding
+	 */
+	private static FastqQualityFormat getFastqQualityFormat(FastqReader fastqReader, long maxReads) {
+		return QualityEncodingDetector.detect(maxReads, fastqReader);
+	}
 }

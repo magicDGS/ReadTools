@@ -31,7 +31,7 @@ import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.FastqPairReaderImpl;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.PairFastqWriters;
-import org.vetmeduni.utils.FastqLogger;
+import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,8 +43,8 @@ import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.vetmeduni.fastq.FastqUtils.cutRecord;
-import static org.vetmeduni.fastq.QualityUtils.getQuality;
+import static org.vetmeduni.utils.fastq.FastqUtils.cutRecord;
+import static org.vetmeduni.utils.fastq.QualityUtils.getQuality;
 
 /**
  * Trimming algorithm implemented in Kofler et al 2011
