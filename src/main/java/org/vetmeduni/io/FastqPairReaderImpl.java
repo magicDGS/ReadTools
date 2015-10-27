@@ -1,0 +1,116 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Daniel Gómez-Sánchez
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ */
+package org.vetmeduni.io;
+
+import htsjdk.samtools.SAMException;
+import htsjdk.samtools.fastq.FastqReader;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+/**
+ * Implementation for pair-end reader with two files
+ *
+ * @author Daniel Gómez-Sánchez
+ */
+public class FastqPairReaderImpl extends FastqPairReader {
+
+	private final FastqReader reader1;
+
+	private final FastqReader reader2;
+
+	/**
+	 * Default constructor with two readers
+	 *
+	 * @param reader1 the first pair reader
+	 * @param reader2 the second pair reader
+	 */
+	public FastqPairReaderImpl(FastqReader reader1, FastqReader reader2) {
+		this.reader1 = reader1;
+		this.reader2 = reader2;
+	}
+
+	/**
+	 * Constructor for two files
+	 *
+	 * @param reader1 the first pair file
+	 * @param reader2 the second pair file
+	 */
+	public FastqPairReaderImpl(File reader1, File reader2) {
+		this(new FastqReader(reader1), new FastqReader(reader2));
+	}
+
+	/**
+	 * Close the two readers
+	 *
+	 * @throws IOException if some error occurs when closing
+	 */
+	@Override
+	public void close() throws IOException {
+		reader1.close();
+		reader2.close();
+	}
+
+	/**
+	 * Return this object (it is not returning a real new iterator)
+	 *
+	 * @return this object
+	 */
+	@Override
+	public Iterator<FastqPairedRecord> iterator() {
+		return this;
+	}
+
+	/**
+	 * Check if there are more records
+	 *
+	 * @return <code>true</code> if there are more records; <code>false</code> otherwise
+	 * @throws htsjdk.samtools.SAMException if only one of the pairs have another record
+	 */
+	@Override
+	public boolean hasNext() {
+		if (reader1.hasNext() && reader2.hasNext()) {
+			return true;
+		}
+		if (reader1.hasNext() || reader2.hasNext()) {
+			throw new SAMException("Paired end files do not have equal length");
+		}
+		return false;
+	}
+
+	/**
+	 * Get the next record
+	 *
+	 * @return the next record
+	 * @throws java.util.NoSuchElementException if there are no next record
+	 */
+	@Override
+	public FastqPairedRecord next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException("next() called when !hasNext()");
+		}
+		return new FastqPairedRecord(reader1.next(), reader2.next());
+	}
+}
