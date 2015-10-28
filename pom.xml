@@ -35,6 +35,8 @@
 
     <!-- PROJECT PROPERTIES AND REPOSITORIES -->
     <properties>
+        <!-- this is for allow skip buildnumber from the command line when developing -->
+        <skip.buildnumber>false</skip.buildnumber>
         <!-- java versions and encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.java.version>1.8</project.java.version>
@@ -135,6 +137,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <skip>${skip.buildnumber}</skip>
                     <shortRevisionLength>8</shortRevisionLength>
                     <!-- This ensures that even if we are not connected to scm than also take the version from local .svn file -->
                     <revisionOnScmFailure></revisionOnScmFailure>
