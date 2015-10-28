@@ -162,7 +162,7 @@ public class ProjectProperties {
 	 * @return the full contact
 	 */
 	public static String getContact() {
-		if(contactPerson == null || contactEmail == null) {
+		if (contactPerson == null || contactEmail == null) {
 			getAllPropertiesForProgramHeader();
 		}
 		return String.format("%s (%s)", contactPerson, contactEmail);
@@ -206,12 +206,26 @@ public class ProjectProperties {
 			stream.close();
 			for (String tag : DEFAULT_VERSION_VALUES.keySet()) {
 				String prop = (String) props.get(tag);
-				String val = (prop == null) ? DEFAULT_VERSION_VALUES.get(tag) : prop;
+				String val = (isAbsent(prop)) ? DEFAULT_VERSION_VALUES.get(tag) : prop;
 				setValue(tag, val);
 			}
 		} catch (IOException e) {
 			setDefaults();
 		}
+	}
+
+	/**
+	 * Check if the propertie value is absent (null or start with $)
+	 *
+	 * @param value the value to test
+	 *
+	 * @return <code>true</code> if it is absent; <code>false</code> otherwise
+	 */
+	private static boolean isAbsent(String value) {
+		if (value == null || value.contains("$")) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -221,8 +235,7 @@ public class ProjectProperties {
 	 */
 	private static void setValue(String tag) {
 		String val = getFromProperties(tag);
-		String notInConfig = String.join("", "${", val, "}");
-		if (val.equals(notInConfig)) {
+		if (isAbsent(val)) {
 			setDefault(tag);
 		} else {
 			setValue(tag, val);
