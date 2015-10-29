@@ -34,6 +34,7 @@ import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
+import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
@@ -143,9 +144,9 @@ public class BarcodedBamToFastq extends AbstractTool {
 	private void runSingle(SamReader reader, String outputPrefix, boolean gzip, BarcodeMethods methods, int[] max,
 		String[] tags) {
 		FastqWriterFactory factory = new FastqWriterFactory();
-		FastqWriter writer = factory.newWriter(new File(String.format("%s.fq%s", outputPrefix, (gzip) ? ".gz" : "")));
+		FastqWriter writer = factory.newWriter(new File(IOUtils.makeInputFastqWithDefaults(outputPrefix, gzip)));
 		FastqWriter discarded = factory
-			.newWriter(new File(String.format("%s_discarded.fq%s", outputPrefix, (gzip) ? ".gz" : "")));
+			.newWriter(new File(IOUtils.makeInputFastqWithDefaults(outputPrefix + "_discarded", gzip)));
 		ProgressLogger progress = new ProgressLogger(logger);
 		int unknown = 0;
 		for (SAMRecord record : reader) {
