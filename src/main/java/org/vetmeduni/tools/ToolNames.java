@@ -22,6 +22,7 @@
  */
 package org.vetmeduni.tools;
 
+import org.vetmeduni.tools.implemented.BarcodedBamToFastq;
 import org.vetmeduni.tools.implemented.TrimFastq;
 
 /**
@@ -32,11 +33,19 @@ import org.vetmeduni.tools.implemented.TrimFastq;
 public enum ToolNames {
 	TrimFastq("Implementation of the trimming algorithm from Kofler et al. (2011)",
 		"The script removes 'N' - characters at the beginning and the end of the provided reads. If any remaining 'N' "
-			+ "characters are found the read is discarded. Quality removal is done using a modified Mott-algorithm: " +
-			"for each base a score is calculated (score_base = quality_base - threshold). While scanning along the read "
+			+ "characters are found the read is discarded. Quality removal is done using a modified Mott-algorithm: for "
+			+ "each base a score is calculated (score_base = quality_base - threshold). While scanning along the read "
 			+ "a running sum of this score is calculated; If the score drops below zero the score is set to zero; The "
-			+ "highest scoring region of the read is finally reported.\n\nCitation of the method: Kofler et al. (2011), " +
-			"PLoS ONE 6(1), e15925, doi:10.1371/journal.pone.0015925");
+			+ "highest scoring region of the read is finally reported.\n\nCitation of the method: Kofler et al. (2011), "
+			+ "PLoS ONE 6(1), e15925, doi:10.1371/journal.pone.0015925"),
+	BarcodedBamToFastq("Convert an BAM file with BC tags into a FASTQ file", "Because some services provide a barcoded"
+		+ " BAM file instead of a FASTQ this tool convert them into the later to be allow to use it. It works with one "
+		+ "or two barcodes, pair-end (interleaved BAM file) and single-end sequencing. In addition, it match the barcodes "
+		+ "with the used ones to discard some reads that could not be assign, and add the exact detected barcode "
+		+ "to the read name. The method to assing barcodes is the following: if there is an exact match for an unique "
+		+ "barcode, it is directly assign; if there are more than 1 barcode, it assign it to the sample where most barcodes "
+		+ "match; otherwise, it is discarded. Barcodes in the input file that are larger than the used ones are cut in "
+		+ "the last bases.");
 
 	/**
 	 * The short description for the tool
@@ -70,6 +79,8 @@ public enum ToolNames {
 		switch (ToolNames.valueOf(tool)) {
 			case TrimFastq:
 				return new TrimFastq();
+			case BarcodedBamToFastq:
+				return new BarcodedBamToFastq();
 		}
 		throw new RuntimeException("Unreachable code");
 	}
