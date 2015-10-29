@@ -28,9 +28,9 @@ import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.Log;
-import org.vetmeduni.io.FastqPairReaderImpl;
+import org.vetmeduni.io.readers.FastqPairReaderImpl;
 import org.vetmeduni.io.FastqPairedRecord;
-import org.vetmeduni.io.PairFastqWriters;
+import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
