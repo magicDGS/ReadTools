@@ -77,7 +77,7 @@ public class TrimFastq extends AbstractTool {
 			try {
 				qualThreshold = (cmd.hasOption("quality-threshold")) ?
 					Integer.parseInt(cmd.getOptionValue("quality-threshold")) :
-					20;
+					DEFAULT_QUALTITY_SCORE;
 				if(qualThreshold < 0) {
 					throw new NumberFormatException();
 				}
@@ -87,7 +87,7 @@ public class TrimFastq extends AbstractTool {
 			// minimum length
 			int minLength;
 			try {
-				minLength = (cmd.hasOption("min-length")) ? Integer.parseInt(cmd.getOptionValue("min-length")) : 40;
+				minLength = (cmd.hasOption("min-length")) ? Integer.parseInt(cmd.getOptionValue("min-length")) : DEFAULT_MINIMUM_LENGTH;
 				if (minLength < 1) {
 					throw new NumberFormatException();
 				}
@@ -228,11 +228,11 @@ public class TrimFastq extends AbstractTool {
 											 .desc("Dissable zipped output").hasArg(false).optionalArg(true).build();
 		Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
 							 .build();
-		Option parallel = Option.builder("nt").longOpt("number-of-thread")
-								.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
-								.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
+//		Option parallel = Option.builder("nt").longOpt("number-of-thread")
+//								.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
+//								.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
 		Options options = new Options();
-		options.addOption(parallel);
+//		options.addOption(parallel);
 		options.addOption(quiet);
 		options.addOption(disable_zipped_output);
 		options.addOption(no_5p_trim);

@@ -35,6 +35,7 @@ import org.vetmeduni.methods.barcodes.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.utils.IOUtils;
+import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
@@ -108,7 +109,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 		PairFastqWriters writers = new PairFastqWriters(outputPrefix, gzip);
 		PairFastqWriters discarded = new PairFastqWriters(String.format("%s_discarded", outputPrefix), gzip);
 		SAMRecordIterator it = reader.iterator();
-		ProgressLogger progress = new ProgressLogger(logger, 1000000, "Processed", "pairs");
+		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger, 1000000, "Processed", "pairs");
 		int unknown = 0;
 		while (it.hasNext()) {
 			SAMRecord record1 = it.next();
@@ -131,6 +132,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			}
 			progress.record(record1);
 		}
+		logger.info(progress.numberOfVariantsProcessed());
 		BarcodeDictionary dict = methods.getDictionary();
 		logger.info("Found ", unknown, " pairs with unknown barcodes");
 		for (int i = 0; i < dict.numberOfSamples(); i++) {

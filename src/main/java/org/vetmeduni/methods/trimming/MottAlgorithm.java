@@ -32,6 +32,7 @@ import org.vetmeduni.io.readers.FastqPairReaderImpl;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.utils.IOUtils;
+import org.vetmeduni.utils.concurrent.Defaults;
 import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
@@ -44,6 +45,7 @@ import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.vetmeduni.utils.concurrent.Defaults.BUFFER_SIZE_FACTOR;
 import static org.vetmeduni.utils.record.FastqRecordUtils.cutRecord;
 import static org.vetmeduni.utils.fastq.QualityUtils.getQuality;
 
@@ -52,12 +54,11 @@ import static org.vetmeduni.utils.fastq.QualityUtils.getQuality;
  *
  * TODO: unit tests
  *
+ * TODO: better implementation of parallelization (now it doesn't scale properly)
+ *
  * @author Daniel Gómez-Sánchez
  */
 public class MottAlgorithm {
-
-	// for the multi-thread
-	private static final int BUFFER_SIZE_FACTOR = 2;
 
 	// for pattern matching
 	private static final Pattern startN = Pattern.compile("^N+", Pattern.CASE_INSENSITIVE);
