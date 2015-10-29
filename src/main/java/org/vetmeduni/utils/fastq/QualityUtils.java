@@ -135,7 +135,7 @@ public class QualityUtils {
 	 */
 	public static FastqQualityFormat getFastqQualityFormat(File input, long maxReads) {
 		FastqQualityFormat encoding;
-		if (BamFileIoUtils.isBamFile(input)) {
+		if (BamFileIoUtils.isBamFile(input) || input.getName().endsWith(".sam")) {
 			SAMRecordIterator reader = SamReaderFactory.makeDefault().open(input).iterator();
 			encoding = getFastqQualityFormat(reader, maxReads);
 			reader.close();
