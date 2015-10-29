@@ -73,17 +73,28 @@ public class TrimFastq extends AbstractTool {
 			// The output prefix
 			String output_prefix = cmd.getOptionValue("output");
 			// qualityThreshold
-			int qualThreshold = (cmd.hasOption("quality-threshold")) ?
-				Integer.parseInt(cmd.getOptionValue("quality-threshold")) :
-				20;
-			if (qualThreshold < 0) {
-				throw new ParseException("Quality must be larger than 0");
+			int qualThreshold;
+			try {
+				qualThreshold = (cmd.hasOption("quality-threshold")) ?
+					Integer.parseInt(cmd.getOptionValue("quality-threshold")) :
+					20;
+				if(qualThreshold < 0) {
+					throw new NumberFormatException();
+				}
+			} catch(NumberFormatException e) {
+				throw new ParseException("Quality threshold should be a positive integer");
 			}
 			// minimum length
-			int minLength = (cmd.hasOption("min-length")) ? Integer.parseInt(cmd.getOptionValue("min-length")) : 40;
-			if (minLength < 1) {
-				throw new ParseException("Minimum length must be larger than 0");
+			int minLength;
+			try {
+				minLength = (cmd.hasOption("min-length")) ? Integer.parseInt(cmd.getOptionValue("min-length")) : 40;
+				if (minLength < 1) {
+					throw new NumberFormatException();
+				}
+			} catch(NumberFormatException e) {
+				throw new ParseException("Minimum length should be a positive integer");
 			}
+
 			boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
 			boolean trimQuality = !cmd.hasOption("no-trim-quality");
 			boolean no5ptrim = cmd.hasOption("no-5p-trim");
@@ -117,8 +128,8 @@ public class TrimFastq extends AbstractTool {
 				logger.info("Detected FASTQ format: ", (encoding.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
 				trimming.processSE(input1, output_prefix, encoding, multi, verbose, logger, gzip);
 			}
-		} catch (ParseException | NumberFormatException e) {
-			// This exceptions comes from the command line parsing (I think so)
+		} catch (ParseException e) {
+			// This exceptions comes from the command line parsing
 			printUsage(e.getMessage());
 			return 1;
 		} catch (IOException | SAMException e) {
