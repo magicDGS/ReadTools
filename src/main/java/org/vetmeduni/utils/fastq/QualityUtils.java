@@ -22,12 +22,12 @@
  */
 package org.vetmeduni.utils.fastq;
 
-import htsjdk.samtools.BamFileIoUtils;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.QualityEncodingDetector;
+import org.vetmeduni.utils.IOUtils;
 
 import java.io.File;
 import java.util.Collections;
@@ -138,7 +138,7 @@ public class QualityUtils {
 	 */
 	public static FastqQualityFormat getFastqQualityFormat(File input, long maxReads) {
 		FastqQualityFormat encoding;
-		if (BamFileIoUtils.isBamFile(input) || input.getName().endsWith(".sam")) {
+		if (IOUtils.isBamOrSam(input)) {
 			SAMRecordIterator reader = SamReaderFactory.makeDefault().open(input).iterator();
 			encoding = getFastqQualityFormat(reader, maxReads);
 			reader.close();

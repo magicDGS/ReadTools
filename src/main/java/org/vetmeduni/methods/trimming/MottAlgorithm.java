@@ -31,6 +31,7 @@ import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.readers.FastqPairReaderImpl;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.writers.PairFastqWriters;
+import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
@@ -239,8 +240,7 @@ public class MottAlgorithm {
 	private void processSEsingleThread(File input, String output_prefix, FastqQualityFormat format, boolean verbose,
 		Log logger, boolean gzip) {
 		// Obtain output name
-		String output = output_prefix;
-		output += (gzip) ? ".fq.gz" : ".fq";
+		String output = IOUtils.makeInputFastqWithDefaults(output_prefix, gzip);
 		FastqReader reader = new FastqReader(input);
 		FastqWriter writer = new FastqWriterFactory().newWriter(new File(output));
 		FastqLogger progress = null;
@@ -622,8 +622,7 @@ public class MottAlgorithm {
 	private void processSEmulti(File input, String output_prefix, FastqQualityFormat format, int nThreads,
 		boolean verbose, Log logger, boolean gzip) {
 		// Obtain output name
-		String output = output_prefix;
-		output += (gzip) ? ".fq.gz" : ".fq";
+		String output = IOUtils.makeInputFastqWithDefaults(output_prefix, gzip);
 		FastqReader reader = new FastqReader(input);
 		// Open writer
 		FastqWriterFactory factory = new FastqWriterFactory();

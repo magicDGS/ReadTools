@@ -22,13 +22,13 @@
  */
 package org.vetmeduni.io.writers;
 
-import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.utils.Formats;
+import org.vetmeduni.utils.IOUtils;
 
 import java.io.File;
 
@@ -109,9 +109,9 @@ public class PairFastqWriters implements FastqWriter {
 	private String buildExtension(String prefix, String suffix, boolean gzip) {
 		StringBuilder builder = new StringBuilder(prefix);
 		builder.append(suffix);
-		builder.append(".fq");
+		builder.append(IOUtils.DEFAULT_FQ_EXTENSION);
 		if (gzip) {
-			builder.append(".gz");
+			builder.append(IOUtils.DEFAULT_GZIP_EXTENSION);
 		}
 		return builder.toString();
 	}
