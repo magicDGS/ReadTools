@@ -20,26 +20,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io;
+package org.vetmeduni.io.writers;
 
-import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
-import htsjdk.samtools.util.SequenceUtil;
-import htsjdk.samtools.util.StringUtil;
+import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.utils.Formats;
 
 import java.io.File;
 
 /**
- * Simple class to have two writers in pairs
+ * Simple class to have two writers in pairs. It also could be use to write in single-end mode
  *
  * @author Daniel Gómez-Sánchez
  */
-public class PairFastqWriters {
+public class PairFastqWriters implements FastqWriter {
 
 	private final static FastqWriterFactory DEFAULT_FACTORY = new FastqWriterFactory();
 
@@ -141,9 +139,9 @@ public class PairFastqWriters {
 	 *
 	 * @param record
 	 */
-	public void writeSingle(FastqRecord record) {
-		countSingle++;
-		single.get().write(record);
+	@Override
+	public void write(FastqRecord record) {
+		writeSingle(record);
 	}
 
 	/**
@@ -151,8 +149,9 @@ public class PairFastqWriters {
 	 *
 	 * @param record
 	 */
-	public void writeSingle(SAMRecord record) {
-		writeSingle(toFastqRecord(record, null));
+	public void writeSingle(FastqRecord record) {
+		countSingle++;
+		single.get().write(record);
 	}
 
 	/**
@@ -167,51 +166,10 @@ public class PairFastqWriters {
 		writeSecond(secondRecord);
 	}
 
-	/**
-	 * Check if the BAM/SAM records are correct pairs and write them as a Fastq The first is the
-	 *
-	 * @param record1
-	 * @param record2
-	 */
-	public void writePairs(SAMRecord record1, SAMRecord record2) {
-		assertPairedMates(record1, record2);
-		FastqRecord pair1 = (record1.getFirstOfPairFlag()) ? toFastqRecord(record1, 1) : toFastqRecord(record2, 1);
-		FastqRecord pair2 = (record1.getFirstOfPairFlag()) ? toFastqRecord(record2, 2) : toFastqRecord(record1, 2);
-		writePairs(pair1, pair2);
-	}
-
-	/**
-	 * Convert a SAMRecord to a FastqRecord (reverse complement if this flag is set)
-	 *
-	 * @param record
-	 * @param mateNumber
-	 *
-	 * @return
-	 */
-	private static FastqRecord toFastqRecord(SAMRecord record, Integer mateNumber) {
-		String seqName = (mateNumber == null) ?
-			record.getReadName() :
-			String.format("%s/%d", record.getReadName(), mateNumber);
-		String readString = record.getReadString();
-		String qualityString = record.getBaseQualityString();
-		if (record.getReadNegativeStrandFlag()) {
-			readString = SequenceUtil.reverseComplement(readString);
-			qualityString = StringUtil.reverseString(qualityString);
-		}
-		return new FastqRecord(seqName, readString, "", qualityString);
-	}
-
-	/**
-	 * Assert that both pairs are mates
-	 *
-	 * @param record1
-	 * @param record2
-	 */
-	private static void assertPairedMates(final SAMRecord record1, final SAMRecord record2) {
-		if (!(record1.getFirstOfPairFlag() && record2.getSecondOfPairFlag() || record2.getFirstOfPairFlag() && record1
-			.getSecondOfPairFlag())) {
-			throw new SAMException("Illegal mate state: " + record1.getReadName());
-		}
+	public void writePairs(FastqPairedRecord record) {
+		countPairs++;
+		writeFirst(record.getRecord1());
+		writeSecond(record.getRecord2());
 	}
 
 	public String toString() {
