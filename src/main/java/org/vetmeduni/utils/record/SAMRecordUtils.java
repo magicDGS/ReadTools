@@ -28,13 +28,12 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.SequenceUtil;
 import htsjdk.samtools.util.StringUtil;
+import org.vetmeduni.utils.fastq.QualityUtils;
 
 /**
  * @author Daniel Gómez-Sánchez
  */
 public class SAMRecordUtils {
-
-
 
 	/**
 	 * Convert a SAMRecord to a FastqRecord (reverse complement if this flag is set)
@@ -81,4 +80,37 @@ public class SAMRecordUtils {
 		record.setReadName(recordName);
 	}
 
+	/**
+	 * Update the quality encoding for a record
+	 *
+	 * @param record the record to update
+	 */
+	public static void toSanger(SAMRecord record) {
+		byte[] qualities = record.getBaseQualities();
+		byte[] newQualities = new byte[qualities.length];
+		for(int i = 0; i < qualities.length; i++) {
+			newQualities[i] = QualityUtils.toSanger(qualities[i]);
+		}
+		record.setBaseQualities(newQualities);
+	}
+
+	/**
+	 * Return a new SAMRecord with a new quality encoding
+	 *
+	 * WARNING: the quality encoding is not checked
+	 *
+	 * @param record the record to update
+	 *
+	 * @return a new record with the sanger encoding
+	 */
+	public static SAMRecord copyToSanger(SAMRecord record) {
+		try {
+			SAMRecord newRecord = (SAMRecord) record.clone();
+			toSanger(newRecord);
+			return newRecord;
+		} catch (CloneNotSupportedException e) {
+			// This should not happen, because it is suppose to be implemented
+			throw new RuntimeException(e);
+		}
+	}
 }

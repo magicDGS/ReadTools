@@ -43,6 +43,9 @@ import java.util.Set;
  */
 public class QualityUtils {
 
+
+	private static final byte illuminaToSangerOffset = (byte)-31;
+
 	/**
 	 * Supported quality formats for this program
 	 */
@@ -172,5 +175,16 @@ public class QualityUtils {
 	 */
 	private static FastqQualityFormat getFastqQualityFormat(FastqReader fastqReader, long maxReads) {
 		return QualityEncodingDetector.detect(maxReads, fastqReader);
+	}
+
+	/**
+	 * Convert a byte illumina quality to a sanger quality
+	 *
+	 * @param illuminaQual the quality in illumina encoding
+	 *
+	 * @return the byte representing the illumina quality
+	 */
+	public static byte toSanger(byte illuminaQual) {
+		return (byte) (illuminaQual + illuminaToSangerOffset);
 	}
 }

@@ -20,16 +20,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.utils.fastq;
+package org.vetmeduni.utils.record;
 
 import htsjdk.samtools.fastq.FastqRecord;
+import org.vetmeduni.utils.fastq.QualityUtils;
+
+import static htsjdk.samtools.SAMUtils.phredToFastq;
 
 /**
  * Utils for FASTQ records
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqUtils {
+public class FastqRecordUtils {
 
 	/**
 	 * Cut a record and return it; if length equals 0 or start >= end, return null
@@ -50,5 +53,26 @@ public class FastqUtils {
 		}
 		String quality = record.getBaseQualityString().substring(start, end);
 		return new FastqRecord(record.getReadHeader(), nucleotide, record.getBaseQualityHeader(), quality);
+	}
+
+	/**
+	 * Return a new FastqRecord with a new quality encoding
+	 *
+	 * WARNING: the quality encoding is not checked
+	 *
+	 * @param record the record to update
+	 *
+	 * @return a new record with the sanger encoding
+	 */
+	public static FastqRecord copytoSanger(FastqRecord record) {
+		// TODO: check if this is correct
+		byte[] qualities = record.getBaseQualityString().getBytes();
+		byte[] newQualities = new byte[qualities.length];
+		for (int i = 0; i < qualities.length; i++) {
+			newQualities[i] = QualityUtils.toSanger(qualities[i]);
+		}
+		// TODO: check if the phreadToFastq method is working properly
+		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
+			phredToFastq(newQualities));
 	}
 }

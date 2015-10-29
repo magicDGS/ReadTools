@@ -43,7 +43,7 @@ import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.vetmeduni.utils.fastq.FastqUtils.cutRecord;
+import static org.vetmeduni.utils.record.FastqRecordUtils.cutRecord;
 import static org.vetmeduni.utils.fastq.QualityUtils.getQuality;
 
 /**
