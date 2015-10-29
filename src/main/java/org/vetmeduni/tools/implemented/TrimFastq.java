@@ -217,7 +217,6 @@ public class TrimFastq extends AbstractTool {
 											 .desc("Dissable zipped output").hasArg(false).optionalArg(true).build();
 		Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
 							 .build();
-		// TODO: make real parallelization
 		Option parallel = Option.builder("nt").longOpt("number-of-thread")
 								.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
 								.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
