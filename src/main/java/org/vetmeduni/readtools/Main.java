@@ -78,6 +78,8 @@ public class Main {
 			}
 			System.exit(exitStatus);
 		} catch (IllegalArgumentException e) {
+			logger.debug(e.getMessage());
+			logger.debug(e);
 			generalHelp("Tool '" + args[0] + "' does not exists");
 		}
 	}
