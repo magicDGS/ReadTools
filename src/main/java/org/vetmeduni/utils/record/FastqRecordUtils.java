@@ -64,7 +64,7 @@ public class FastqRecordUtils {
 	 *
 	 * @return a new record with the sanger encoding
 	 */
-	public static FastqRecord copytoSanger(FastqRecord record) {
+	public static FastqRecord copyToSanger(FastqRecord record) {
 		// TODO: check if this is correct
 		byte[] qualities = record.getBaseQualityString().getBytes();
 		byte[] newQualities = new byte[qualities.length];
