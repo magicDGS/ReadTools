@@ -53,8 +53,6 @@ public class BarcodedBamToFastq extends AbstractTool {
 
 	private static final int DEFAULT_MISMATCHES = 0;
 
-	private static final String DEFAULT_BC = "BC";
-
 	@Override
 	public int run(String[] args) {
 		try {
@@ -64,7 +62,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			String outputPrefix = cmd.getOptionValue("o");
 			String barcodes = cmd.getOptionValue("bc");
 			int[] max = getMaxMismatchesFromOption(cmd.getOptionValues("m"));
-			String[] tags = cmd.hasOption("t") ? cmd.getOptionValues("t") : new String[] {DEFAULT_BC};
+			String[] tags = cmd.getOptionValues("t");
 			logger.debug("Maximum mistmaches (", max.length, "): ", max);
 			logger.debug("Tags (", tags.length, "): ", tags);
 			if (max.length != 1 && max.length != tags.length) {
@@ -96,6 +94,10 @@ public class BarcodedBamToFastq extends AbstractTool {
 			logger.error(e.getMessage());
 			logger.debug(e);
 			return 1;
+		} catch (Exception e) {
+			// unknow exception
+			logger.debug(e);
+			return 2;
 		}
 		return 0;
 	}
@@ -130,8 +132,9 @@ public class BarcodedBamToFastq extends AbstractTool {
 		}
 		BarcodeDictionary dict = methods.getDictionary();
 		logger.info("Found ", unknown, " pairs with unknown barcodes");
-		for(int i = 0; i < dict.numberOfSamples(); i++) {
-			logger.info("Found ", dict.getValueFor(i), " pairs for ", dict.getSampleNames().get(i), " (", dict.getCombinedBarcodesFor(i), ")");
+		for (int i = 0; i < dict.numberOfSamples(); i++) {
+			logger.info("Found ", dict.getValueFor(i), " pairs for ", dict.getSampleNames().get(i), " (",
+				dict.getCombinedBarcodesFor(i), ")");
 		}
 		writers.close();
 		discarded.close();
@@ -160,8 +163,9 @@ public class BarcodedBamToFastq extends AbstractTool {
 		}
 		BarcodeDictionary dict = methods.getDictionary();
 		logger.info("Found ", unknown, " records with unknown barcodes");
-		for(int i = 0; i < dict.numberOfSamples(); i++) {
-			logger.info("Found ", dict.getValueFor(i), " records for ", dict.getSampleNames().get(i), " (", dict.getCombinedBarcodesFor(i), ")");
+		for (int i = 0; i < dict.numberOfSamples(); i++) {
+			logger.info("Found ", dict.getValueFor(i), " records for ", dict.getSampleNames().get(i), " (",
+				dict.getCombinedBarcodesFor(i), ")");
 		}
 		writer.close();
 		discarded.close();
@@ -177,8 +181,8 @@ public class BarcodedBamToFastq extends AbstractTool {
 
 	private static String getBarcodeFromTag(SAMRecord record, String tag) {
 		String barcode = record.getStringAttribute(tag);
-		if(barcode == null) {
-			throw new SAMException(tag+" not found in record "+record);
+		if (barcode == null) {
+			throw new SAMException(tag + " not found in record " + record);
 		}
 		return barcode;
 	}
@@ -210,8 +214,8 @@ public class BarcodedBamToFastq extends AbstractTool {
 		Option output = Option.builder("o").longOpt("output").desc("FASTQ output prefix").hasArg()
 							  .argName("OUTPUT_PREFIX").numberOfArgs(1).required().build();
 		Option tag = Option.builder("t").longOpt("tag").desc(
-			"Tag in the BAM file for the stored barcodes. It should be provided the same number of times as barcodes provided in the file. [Default="
-				+ DEFAULT_BC + "]").hasArg().numberOfArgs(1).argName("TAG").required().build();
+			"Tag in the BAM file for the stored barcodes. It should be provided the same number of times as barcodes provided in the file.")
+						   .hasArg().numberOfArgs(1).argName("TAG").required().build();
 		Option barcodes = Option.builder("bc").longOpt("barcodes").desc(
 			"Tab-delimited file with the first column with the sample name and the following containing the barcodes (1 or 2 depending on the barcoding method)")
 								.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
