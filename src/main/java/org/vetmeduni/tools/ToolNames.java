@@ -23,6 +23,7 @@
 package org.vetmeduni.tools;
 
 import org.vetmeduni.tools.implemented.BarcodedBamToFastq;
+import org.vetmeduni.tools.implemented.QualityChecker;
 import org.vetmeduni.tools.implemented.TrimFastq;
 
 /**
@@ -45,7 +46,9 @@ public enum ToolNames {
 		+ "to the read name. The method to assing barcodes is the following: if there is an exact match for an unique "
 		+ "barcode, it is directly assign; if there are more than 1 barcode, it assign it to the sample where most barcodes "
 		+ "match; otherwise, it is discarded. Barcodes in the input file that are larger than the used ones are cut in "
-		+ "the last bases.");
+		+ "the last bases."),
+	QualityChecker("Get the quality encoding for a BAM/FASTQ file",
+		"Check the quality encoding for a BAM/FASTQ file and output in the STDOUT the encoding");
 
 	/**
 	 * The short description for the tool
@@ -81,6 +84,8 @@ public enum ToolNames {
 				return new TrimFastq();
 			case BarcodedBamToFastq:
 				return new BarcodedBamToFastq();
+			case QualityChecker:
+				return new QualityChecker();
 		}
 		throw new RuntimeException("Unreachable code");
 	}
