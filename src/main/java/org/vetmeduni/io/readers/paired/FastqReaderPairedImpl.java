@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers.fastq;
+package org.vetmeduni.io.readers.paired;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqReader;
@@ -44,7 +44,7 @@ public class FastqReaderPairedImpl implements FastqReaderPairedInterface {
 
 	private final FastqReader reader2;
 
-	private final FastqQualityFormat encoding;
+	protected final FastqQualityFormat encoding;
 
 	/**
 	 * Default constructor with two readers

@@ -20,10 +20,10 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
+package org.vetmeduni.io.readers.paired;
 
-package org.vetmeduni.io.readers.fastq;
-
-import htsjdk.samtools.fastq.FastqRecord;
+import org.vetmeduni.io.FastqPairedRecord;
+import org.vetmeduni.io.readers.FastqReaderInterface;
 
 import java.util.Iterator;
 
@@ -35,7 +35,7 @@ import java.util.Iterator;
  *
  * @author Daniel Gómez-Sánchez
  */
-public interface FastqReaderSingleInterface
-	extends Iterator<FastqRecord>, Iterable<FastqRecord>, FastqReaderInterface {
+public interface FastqReaderPairedInterface
+	extends Iterator<FastqPairedRecord>, Iterable<FastqPairedRecord>, FastqReaderInterface {
 
 }

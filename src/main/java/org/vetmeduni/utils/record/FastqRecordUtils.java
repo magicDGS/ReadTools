@@ -23,6 +23,7 @@
 package org.vetmeduni.utils.record;
 
 import htsjdk.samtools.fastq.FastqRecord;
+import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
 import static htsjdk.samtools.SAMUtils.phredToFastq;
@@ -74,5 +75,21 @@ public class FastqRecordUtils {
 		// TODO: check if the phreadToFastq method is working properly
 		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
 			phredToFastq(newQualities));
+	}
+
+	/**
+	 * Return a new FastqRecord with a new quality encoding
+	 *
+	 * WARNING: the quality encoding is not checked
+	 *
+	 * @param record the record to update
+	 *
+	 * @return a new record with the sanger encoding
+	 */
+	public static FastqPairedRecord copyToSanger(FastqPairedRecord record) {
+		// transform the first record
+		FastqRecord record1 = copyToSanger(record.getRecord1());
+		FastqRecord record2 = copyToSanger(record.getRecord2());
+		return new FastqPairedRecord(record1, record2);
 	}
 }

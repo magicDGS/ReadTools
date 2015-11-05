@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers.fastq;
+package org.vetmeduni.io.readers.single;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -34,25 +34,25 @@ import java.io.File;
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderSanger extends FastqReaderWrapper implements FastqReaderSingleInterface {
+public class FastqReaderSingleSanger extends FastqReaderWrapper implements FastqReaderSingleInterface {
 
-	public FastqReaderSanger(File file) {
+	public FastqReaderSingleSanger(File file) {
 		super(file);
 	}
 
-	public FastqReaderSanger(File file, boolean skipBlankLines) {
+	public FastqReaderSingleSanger(File file, boolean skipBlankLines) {
 		super(file, skipBlankLines);
 	}
 
-	public FastqReaderSanger(BufferedReader reader) {
+	public FastqReaderSingleSanger(BufferedReader reader) {
 		super(reader);
 	}
 
-	public FastqReaderSanger(File file, BufferedReader reader, boolean skipBlankLines) {
+	public FastqReaderSingleSanger(File file, BufferedReader reader, boolean skipBlankLines) {
 		super(file, reader, skipBlankLines);
 	}
 
-	public FastqReaderSanger(File file, BufferedReader reader) {
+	public FastqReaderSingleSanger(File file, BufferedReader reader) {
 		super(file, reader);
 	}
 
@@ -63,7 +63,7 @@ public class FastqReaderSanger extends FastqReaderWrapper implements FastqReader
 	 */
 	@Override
 	public FastqRecord next() {
-		if(encoding == FastqQualityFormat.Standard) {
+		if(encoding.equals(FastqQualityFormat.Standard)) {
 			return super.next();
 		}
 		return FastqRecordUtils.copyToSanger(super.next());
