@@ -20,21 +20,56 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers.fastq;
 
-import org.vetmeduni.io.FastqPairedRecord;
+package org.vetmeduni.io.readers.single;
 
-import java.util.Iterator;
+import htsjdk.samtools.fastq.FastqReader;
+import htsjdk.samtools.util.FastqQualityFormat;
+import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
+import org.vetmeduni.utils.fastq.QualityUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
 
 /**
- * Abstract class for pair-end fastq reader. The aim of this class is allow to implement pair-end readers for two files
- * and for one interleaved file
- *
- * TODO: implement a method to get the pair reader for the different implementations
+ * Wrapper for the {@link htsjdk.samtools.fastq.FastqReader}
  *
  * @author Daniel Gómez-Sánchez
  */
-public interface FastqReaderPairedInterface
-	extends Iterator<FastqPairedRecord>, Iterable<FastqPairedRecord>, FastqReaderInterface {
+public class FastqReaderWrapper extends FastqReader implements FastqReaderSingleInterface {
+
+	protected FastqQualityFormat encoding;
+
+	public FastqReaderWrapper(File file) {
+		this(file,false);
+	}
+
+	public FastqReaderWrapper(File file, boolean skipBlankLines) {
+		super(file, skipBlankLines);
+		init();
+	}
+
+	public FastqReaderWrapper(BufferedReader reader) {
+		this(null, reader);
+	}
+
+	public FastqReaderWrapper(File file, BufferedReader reader, boolean skipBlankLines) {
+		super(file, reader, skipBlankLines);
+		init();
+	}
+
+	public FastqReaderWrapper(File file, BufferedReader reader) {
+		this(file,reader,false);
+	}
+
+	protected void init() {
+		encoding = QualityUtils.getFastqQualityFormat(this.getFile());
+	}
+
+
+	@Override
+	public FastqQualityFormat getFastqQuality() {
+		return encoding;
+	}
 
 }

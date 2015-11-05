@@ -23,20 +23,30 @@
 package org.vetmeduni.tools.implemented;
 
 import htsjdk.samtools.SAMException;
+import htsjdk.samtools.fastq.FastqRecord;
+import htsjdk.samtools.fastq.FastqWriter;
+import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.vetmeduni.io.FastqPairedRecord;
+import org.vetmeduni.io.readers.paired.FastqReaderPairedImpl;
+import org.vetmeduni.io.readers.paired.FastqReaderPairedInterface;
+import org.vetmeduni.io.readers.paired.FastqReaderPairedSanger;
+import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
+import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
+import org.vetmeduni.io.readers.single.FastqReaderWrapper;
+import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.methods.trimming.MottAlgorithm;
+import org.vetmeduni.methods.trimming.TrimmingStats;
 import org.vetmeduni.tools.AbstractTool;
+import org.vetmeduni.utils.IOUtils;
+import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-
-import static org.vetmeduni.utils.fastq.QualityUtils.getFastqQualityFormat;
 
 /**
  * Class that implements the trimming algorithm from Kofler et al. 2011
@@ -59,6 +69,11 @@ public class TrimFastq extends AbstractTool {
 	 * The default number of threads
 	 */
 	private static int DEFAULT_THREADS = 1;
+
+	/**
+	 * The factory for writers
+	 */
+	private static final FastqWriterFactory WRITER_FACTORY = new FastqWriterFactory();
 
 	@Override
 	public int run(String[] args) {
@@ -102,6 +117,10 @@ public class TrimFastq extends AbstractTool {
 			boolean gzip = !cmd.hasOption("disable-zipped-output");
 			// multi-thread
 			int multi = (cmd.hasOption("nt")) ? Integer.parseInt(cmd.getOptionValue("nt")) : DEFAULT_THREADS;
+			if (multi != 1) {
+				WRITER_FACTORY.setUseAsyncIo(true);
+				logger.warn("Multi-threads is only in the output<");
+			}
 			// FINISH PARSING: log the command line (not longer in the param file)
 			logCmdLine(args);
 			// writing param file
@@ -113,22 +132,41 @@ public class TrimFastq extends AbstractTool {
 			// if input 2 process Pair end
 			if (input2 != null) {
 				logger.info("Found an existing file for the second read; Switching to paired-read mode");
-				FastqQualityFormat encoding1 = getFastqQualityFormat(input1);
-				FastqQualityFormat encoding2 = getFastqQualityFormat(input2);
-				if (!encoding1.equals(encoding2)) {
-					throw new SAMException("Pair-end encoding is different for both read pairs");
+				// open the reader
+				FastqReaderPairedInterface reader;
+				if (cmd.hasOption("nstd")) {
+					reader = new FastqReaderPairedImpl(input1, input2);
+					logger.warn(
+						"Output will not be standardize. Does not provide the option -nstd to avoid this behaviour");
+					logger.info("Output will be in ",
+						(reader.getFastqQuality().equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
 				} else {
-					logger.info("Detected FASTQ format: ",
-						(encoding1.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
+					logger.info("Output will be in Sanger format independently of the input format");
+					reader = new FastqReaderPairedSanger(input1, input2);
 				}
-				trimming.processPE(input1, input2, output_prefix, encoding1, multi, verbose, logger, gzip);
+				// open the writer
+				PairFastqWriters writer = new PairFastqWriters(output_prefix, gzip, WRITER_FACTORY);
+				processPE(trimming, reader, writer, verbose);
 				// if not, single end mode
 			} else {
 				logger.info("Did not find an existing file for the second read; Switching to single-read mode");
-				FastqQualityFormat encoding = getFastqQualityFormat(input1);
-				logger.info("Detected FASTQ format: ",
-					(encoding.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
-				trimming.processSE(input1, output_prefix, encoding, multi, verbose, logger, gzip);
+				// open the reader
+				FastqReaderSingleInterface reader;
+				if (cmd.hasOption("nstd")) {
+					reader = new FastqReaderWrapper(input1);
+					logger.warn(
+						"Output will not be standardize. Does not provide the option -nstd to avoid this behaviour");
+					logger.info("Output will be in ",
+						(reader.getFastqQuality().equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
+				} else {
+					logger.info("Output will be in Sanger format independently of the input format");
+					reader = new FastqReaderSingleSanger(input1);
+				}
+				// Obtain output name
+				String output = IOUtils.makeInputFastqWithDefaults(output_prefix, gzip);
+				// open the writer
+				FastqWriter writer = WRITER_FACTORY.newWriter(new File(output));
+				processSE(trimming, reader, writer, verbose);
 			}
 		} catch (ParseException e) {
 			// This exceptions comes from the command line parsing
@@ -149,51 +187,99 @@ public class TrimFastq extends AbstractTool {
 	}
 
 	/**
-	 * Write a param file with the inputs
+	 * Process the files in pair-end mode
 	 *
-	 * @param input1             the first input
-	 * @param input2             the second input
-	 * @param output_prefix      the output prefix
-	 * @param qualThreshold      the quality threshold
-	 * @param minLength          the minimum length
-	 * @param discardRemainingNs discarting remaining Ns?
-	 * @param trimQuality        trimming quality?
-	 * @param no5ptrim           no trim 5 prime?
-	 * @param verbose            should we be verbose?
-	 * @param gzip               disable gzip output?
-	 * @param parallel           number of threads?
+	 * @param trimming the algorithm with the provided settings
+	 * @param reader   the reader for the pairs
+	 * @param writer   the writer for the pairs
+	 * @param verbose  should we be verbose?
 	 *
-	 * @throws IOException if there are some problems with the param file
+	 * @throws IOException if there are problems with the files
 	 */
-	@Deprecated
-	public static void paramFile(File input1, File input2, String output_prefix, int qualThreshold, int minLength,
-		boolean discardRemainingNs, boolean trimQuality, boolean no5ptrim, boolean verbose, boolean gzip, int parallel)
-		throws IOException {
-		String param_file = output_prefix + ".params";
-		PrintWriter param = new PrintWriter(new FileWriter(param_file), true);
-		param.print("Using input1\t");
-		param.println(input1);
-		param.print("Using input2\t");
-		param.println(input2);
-		param.print("Using output\t");
-		param.println(output_prefix);
-		param.print("Using quality-threshold\t");
-		param.println(qualThreshold);
-		param.print("Using min-length\t");
-		param.println(minLength);
-		param.print("Using discard-internal-N\t");
-		param.println(discardRemainingNs);
-		param.print("Using trim-quality (no-trim-quality)\t");
-		param.println(trimQuality);
-		param.print("Using 5p-trim (no-5p-trim)\t");
-		param.println(trimQuality);
-		param.print("Using verbose (quiet)\t");
-		param.println(verbose);
-		param.print("Disable zipped output\t");
-		param.println(!gzip);
-		param.print("Number of threads\t");
-		param.println(parallel);
-		param.close();
+	private static void processPE(MottAlgorithm trimming, FastqReaderPairedInterface reader, PairFastqWriters writer,
+		boolean verbose) throws IOException {
+		// creating progress
+		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
+		TrimmingStats stats1 = null;
+		TrimmingStats stats2 = null;
+		int paired = 0;
+		int single = 0;
+		if (verbose) {
+			stats1 = new TrimmingStats();
+			stats2 = new TrimmingStats();
+		}
+		while (reader.hasNext()) {
+			FastqPairedRecord record = reader.next();
+			FastqRecord newRecord1 = trimming.trimFastqRecord(record.getRecord1(), reader.getFastqQuality(), stats1);
+			FastqRecord newRecord2 = trimming.trimFastqRecord(record.getRecord2(), reader.getFastqQuality(), stats2);
+			if (newRecord1 != null && newRecord2 != null) {
+				writer.writePairs(newRecord1, newRecord2);
+				paired++;
+			} else if (newRecord1 != null) {
+				writer.writeSingle(newRecord1);
+				single++;
+			} else if (newRecord2 != null) {
+				writer.writeSingle(newRecord2);
+				single++;
+			}
+			progress.add();
+		}
+		logger.info(progress.numberOfVariantsProcessed());
+		if (verbose) {
+			System.out.print("Read-pairs processed: ");
+			System.out.println(progress.getCount());
+			System.out.print("Read-pairs trimmed in pairs: ");
+			System.out.println(paired);
+			System.out.print("Read-pairs trimmed as singles: ");
+			System.out.println(single);
+			System.out.println("\n");
+			System.out.println("FIRST READ STATISTICS");
+			stats1.report(System.out);
+			System.out.println("\n");
+			System.out.println("SECOND READ STATISTICS");
+			stats2.report(System.out);
+		}
+		reader.close();
+		writer.close();
+	}
+
+	/**
+	 * Process the files in single-end mode
+	 *
+	 * @param trimming the algorithm with the provided settings
+	 * @param reader   the reader for the single end file
+	 * @param writer   the writer for the single end file
+	 * @param verbose  should we be verbose?
+	 *
+	 * @throws IOException if there are problems with the files
+	 */
+	private void processSE(MottAlgorithm trimming, FastqReaderSingleInterface reader, FastqWriter writer,
+		boolean verbose) throws IOException {
+		FastqLogger progress = null;
+		TrimmingStats stats = null;
+		progress = new FastqLogger(logger);
+		if (verbose) {
+			stats = new TrimmingStats();
+		}
+		while (reader.hasNext()) {
+			FastqRecord record = reader.next();
+			FastqRecord newRecord = trimming.trimFastqRecord(record, reader.getFastqQuality(), stats);
+			if (newRecord != null) {
+				writer.write(newRecord);
+			}
+			progress.add();
+			writer.write(newRecord);
+		}
+		logger.info(progress.numberOfVariantsProcessed());
+		if (verbose) {
+			System.out.print("Read processed: ");
+			System.out.println(progress.getCount());
+			System.out.println("\n");
+			System.out.println("READ STATISTICS");
+			stats.report(System.out);
+		}
+		reader.close();
+		writer.close();
 	}
 
 	@Override
@@ -211,10 +297,6 @@ public class TrimFastq extends AbstractTool {
 		Option quality_threshold = Option.builder("q").longOpt("quality-threshold").desc(
 			"Minimum average quality. A modified Mott algorithm is used for trimming, and the threshold is used for calculating a score: quality_at_base - threshold. [Default="
 				+ DEFAULT_QUALTITY_SCORE + "]").hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
-		// TODO: remove this option and add one to switch off the quality conversion (by default it should be on)
-		// Option fastq_type = Option.builder("fq").longOpt("fastq-type").desc(
-		//	"The encoding of the quality characters; Must either be 'sanger' or 'illumina'. default=auto-detect")
-		// 						  .hasArg().numberOfArgs(1).argName("illumina").optionalArg(true).build();
 		Option discard_internal_N = Option.builder("N").longOpt("discard-internal-N")
 										  .desc("If set reads having internal Ns will be discarded").hasArg(false)
 										  .optionalArg(true).build();
@@ -230,10 +312,9 @@ public class TrimFastq extends AbstractTool {
 											 .desc("Dissable zipped output").hasArg(false).optionalArg(true).build();
 		Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
 							 .build();
-		// TODO: implement maintain format
-//		Option maintain_format = Option.builder("nstd").longOpt("no-standardize-output").desc(
-//			"By default, the output of this program is encoding in Sanger. If you disable this behaviour, the format of the output will be the same as the input (not recommended)")
-//									  .hasArg(false).optionalArg(true).build();
+		Option maintain_format = Option.builder("nstd").longOpt("no-standardize-output").desc(
+			"By default, the output of this program is encoding in Sanger. If you disable this behaviour, the format of the output will be the same as the input (not recommended)")
+									   .hasArg(false).optionalArg(true).build();
 		//		Option parallel = Option.builder("nt").longOpt("number-of-thread")
 		//								.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
 		//								.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
@@ -246,6 +327,7 @@ public class TrimFastq extends AbstractTool {
 		options.addOption(min_length);
 		options.addOption(discard_internal_N);
 		// options.addOption(fastq_type);
+		options.addOption(maintain_format);
 		options.addOption(quality_threshold);
 		options.addOption(output);
 		options.addOption(input2);

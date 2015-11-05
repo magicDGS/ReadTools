@@ -20,24 +20,42 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers.fastq;
 
+package org.vetmeduni.io.readers.paired;
+
+import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.vetmeduni.io.FastqPairedRecord;
+import org.vetmeduni.utils.fastq.QualityUtils;
+import org.vetmeduni.utils.record.FastqRecordUtils;
 
-import java.io.Closeable;
+import java.io.File;
 
 /**
- * Interface for implement different FastqReaders pair-end or single-end. It also contains information about the
- * encoding
+ * Implementation for pair-end reader with two files that always returns a Sanger encoded record
  *
  * @author Daniel Gómez-Sánchez
  */
-public interface FastqReaderInterface extends Closeable {
+public class FastqReaderPairedSanger extends FastqReaderPairedImpl implements FastqReaderPairedInterface {
+
+	public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
+		super(reader1, reader2);
+	}
+
+	public FastqReaderPairedSanger(File reader1, File reader2) throws QualityUtils.QualityException {
+		super(reader1, reader2);
+	}
 
 	/**
-	 * Get the FASTQ quality for the reads. All the records returned should be in this format
+	 * Next always return a Sanger formatted record
 	 *
-	 * @return the FastqQuality for this reader
+	 * @return the next record
 	 */
-	public FastqQualityFormat getFastqQuality();
+	@Override
+	public FastqPairedRecord next() {
+		if(encoding.equals(FastqQualityFormat.Standard)) {
+			return super.next();
+		}
+		return FastqRecordUtils.copyToSanger(super.next());
+	}
 }

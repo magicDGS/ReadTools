@@ -29,8 +29,8 @@ import htsjdk.samtools.fastq.FastqWriterFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.vetmeduni.io.readers.fastq.FastqReaderSanger;
-import org.vetmeduni.io.readers.fastq.FastqReaderSingleInterface;
+import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
+import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.FastqLogger;
@@ -128,7 +128,7 @@ public class StandardizeQuality extends AbstractTool {
 	 */
 	private static void runFastq(File input, File output, int nThreads) throws Exception {
 		// open reader and factory
-		FastqReaderSingleInterface reader = new FastqReaderSanger(input);
+		FastqReaderSingleInterface reader = new FastqReaderSingleSanger(input);
 		FastqWriterFactory factory = new FastqWriterFactory();
 
 		// run

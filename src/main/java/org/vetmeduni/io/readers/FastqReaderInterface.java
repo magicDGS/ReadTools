@@ -20,55 +20,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
+package org.vetmeduni.io.readers;
 
-package org.vetmeduni.io.readers.fastq;
-
-import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.vetmeduni.utils.fastq.QualityUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
+import java.io.Closeable;
 
 /**
- * Wrapper for the {@link htsjdk.samtools.fastq.FastqReader}
+ * Interface for implement different FastqReaders pair-end or single-end. It also contains information about the
+ * encoding
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderWrapper extends FastqReader implements FastqReaderSingleInterface {
+public interface FastqReaderInterface extends Closeable {
 
-	protected FastqQualityFormat encoding;
-
-	public FastqReaderWrapper(File file) {
-		this(file,false);
-	}
-
-	public FastqReaderWrapper(File file, boolean skipBlankLines) {
-		super(file, skipBlankLines);
-		init();
-	}
-
-	public FastqReaderWrapper(BufferedReader reader) {
-		this(null, reader);
-	}
-
-	public FastqReaderWrapper(File file, BufferedReader reader, boolean skipBlankLines) {
-		super(file, reader, skipBlankLines);
-		init();
-	}
-
-	public FastqReaderWrapper(File file, BufferedReader reader) {
-		this(file,reader,false);
-	}
-
-	protected void init() {
-		encoding = QualityUtils.getFastqQualityFormat(this.getFile());
-	}
-
-
-	@Override
-	public FastqQualityFormat getFastqQuality() {
-		return encoding;
-	}
-
+	/**
+	 * Get the FASTQ quality for the reads. All the records returned should be in this format
+	 *
+	 * @return the FastqQuality for this reader
+	 */
+	public FastqQualityFormat getFastqQuality();
 }
