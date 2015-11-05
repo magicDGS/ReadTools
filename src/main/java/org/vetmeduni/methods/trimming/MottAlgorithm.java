@@ -28,11 +28,10 @@ import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.Log;
-import org.vetmeduni.io.readers.FastqPairReaderImpl;
+import org.vetmeduni.io.readers.fastq.FastqReaderPairedImpl;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.utils.IOUtils;
-import org.vetmeduni.utils.concurrent.Defaults;
 import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
@@ -284,7 +283,7 @@ public class MottAlgorithm {
 	private void processPEsingleThread(File input1, File input2, String output_prefix, FastqQualityFormat format,
 		boolean verbose, Log logger, boolean gzip) throws IOException {
 		// Open readers
-		FastqPairReaderImpl reader = new FastqPairReaderImpl(input1, input2);
+		FastqReaderPairedImpl reader = new FastqReaderPairedImpl(input1, input2);
 		// creating progress
 		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
 		TrimmingStats stats1 = null;
@@ -516,7 +515,7 @@ public class MottAlgorithm {
 	private void processPEmulti(File input1, File input2, String output_prefix, FastqQualityFormat format, int nThreads,
 		boolean verbose, Log logger, boolean gzip) throws IOException {
 		// Open readers
-		FastqPairReaderImpl reader = new FastqPairReaderImpl(input1, input2);
+		FastqReaderPairedImpl reader = new FastqReaderPairedImpl(input1, input2);
 		// creating progress
 		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
 		TrimmingStats stats1 = null;
