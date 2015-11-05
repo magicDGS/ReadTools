@@ -20,11 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers;
+package org.vetmeduni.io.readers.fastq;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqReader;
+import htsjdk.samtools.util.FastqQualityFormat;
 import org.vetmeduni.io.FastqPairedRecord;
+import org.vetmeduni.utils.fastq.QualityUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,21 +38,29 @@ import java.util.NoSuchElementException;
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqPairReaderImpl extends FastqPairReader {
+public class FastqReaderPairedImpl implements FastqReaderPairedInterface {
 
 	private final FastqReader reader1;
 
 	private final FastqReader reader2;
+
+	private final FastqQualityFormat encoding;
 
 	/**
 	 * Default constructor with two readers
 	 *
 	 * @param reader1 the first pair reader
 	 * @param reader2 the second pair reader
+	 *
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if both files are encoding differently
 	 */
-	public FastqPairReaderImpl(FastqReader reader1, FastqReader reader2) {
+	public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
 		this.reader1 = reader1;
 		this.reader2 = reader2;
+		this.encoding = QualityUtils.getFastqQualityFormat(reader1.getFile());
+		if (encoding != QualityUtils.getFastqQualityFormat(reader2.getFile())) {
+			throw new QualityUtils.QualityException("Pair-end encoding is different for both read pairs");
+		}
 	}
 
 	/**
@@ -58,8 +68,10 @@ public class FastqPairReaderImpl extends FastqPairReader {
 	 *
 	 * @param reader1 the first pair file
 	 * @param reader2 the second pair file
+	 *
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if both files are encoding differently
 	 */
-	public FastqPairReaderImpl(File reader1, File reader2) {
+	public FastqReaderPairedImpl(File reader1, File reader2) throws QualityUtils.QualityException {
 		this(new FastqReader(reader1), new FastqReader(reader2));
 	}
 
@@ -113,5 +125,10 @@ public class FastqPairReaderImpl extends FastqPairReader {
 			throw new NoSuchElementException("next() called when !hasNext()");
 		}
 		return new FastqPairedRecord(reader1.next(), reader2.next());
+	}
+
+	@Override
+	public FastqQualityFormat getFastqQuality() {
+		return encoding;
 	}
 }

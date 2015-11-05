@@ -36,7 +36,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.vetmeduni.utils.fastq.QualityUtils.getEncoding;
 import static org.vetmeduni.utils.fastq.QualityUtils.getFastqQualityFormat;
 
 /**
@@ -78,23 +77,24 @@ public class TrimFastq extends AbstractTool {
 				qualThreshold = (cmd.hasOption("quality-threshold")) ?
 					Integer.parseInt(cmd.getOptionValue("quality-threshold")) :
 					DEFAULT_QUALTITY_SCORE;
-				if(qualThreshold < 0) {
+				if (qualThreshold < 0) {
 					throw new NumberFormatException();
 				}
-			} catch(NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				throw new ParseException("Quality threshold should be a positive integer");
 			}
 			// minimum length
 			int minLength;
 			try {
-				minLength = (cmd.hasOption("min-length")) ? Integer.parseInt(cmd.getOptionValue("min-length")) : DEFAULT_MINIMUM_LENGTH;
+				minLength = (cmd.hasOption("min-length")) ?
+					Integer.parseInt(cmd.getOptionValue("min-length")) :
+					DEFAULT_MINIMUM_LENGTH;
 				if (minLength < 1) {
 					throw new NumberFormatException();
 				}
-			} catch(NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				throw new ParseException("Minimum length should be a positive integer");
 			}
-
 			boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
 			boolean trimQuality = !cmd.hasOption("no-trim-quality");
 			boolean no5ptrim = cmd.hasOption("no-5p-trim");
@@ -118,14 +118,16 @@ public class TrimFastq extends AbstractTool {
 				if (!encoding1.equals(encoding2)) {
 					throw new SAMException("Pair-end encoding is different for both read pairs");
 				} else {
-					logger.info("Detected FASTQ format: ", (encoding1.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
+					logger.info("Detected FASTQ format: ",
+						(encoding1.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
 				}
 				trimming.processPE(input1, input2, output_prefix, encoding1, multi, verbose, logger, gzip);
 				// if not, single end mode
 			} else {
 				logger.info("Did not find an existing file for the second read; Switching to single-read mode");
 				FastqQualityFormat encoding = getFastqQualityFormat(input1);
-				logger.info("Detected FASTQ format: ", (encoding.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
+				logger.info("Detected FASTQ format: ",
+					(encoding.equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
 				trimming.processSE(input1, output_prefix, encoding, multi, verbose, logger, gzip);
 			}
 		} catch (ParseException e) {
@@ -228,11 +230,15 @@ public class TrimFastq extends AbstractTool {
 											 .desc("Dissable zipped output").hasArg(false).optionalArg(true).build();
 		Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
 							 .build();
-//		Option parallel = Option.builder("nt").longOpt("number-of-thread")
-//								.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
-//								.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
+		// TODO: implement maintain format
+//		Option maintain_format = Option.builder("nstd").longOpt("no-standardize-output").desc(
+//			"By default, the output of this program is encoding in Sanger. If you disable this behaviour, the format of the output will be the same as the input (not recommended)")
+//									  .hasArg(false).optionalArg(true).build();
+		//		Option parallel = Option.builder("nt").longOpt("number-of-thread")
+		//								.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
+		//								.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
 		Options options = new Options();
-//		options.addOption(parallel);
+		//		options.addOption(parallel);
 		options.addOption(quiet);
 		options.addOption(disable_zipped_output);
 		options.addOption(no_5p_trim);

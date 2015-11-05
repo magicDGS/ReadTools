@@ -23,19 +23,19 @@
 package org.vetmeduni.tools.implemented;
 
 import htsjdk.samtools.*;
-import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.vetmeduni.io.readers.fastq.FastqReaderSanger;
+import org.vetmeduni.io.readers.fastq.FastqReaderSingleInterface;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.FastqLogger;
 import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
 import org.vetmeduni.utils.fastq.QualityUtils;
-import org.vetmeduni.utils.record.FastqRecordUtils;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
@@ -128,18 +128,16 @@ public class StandardizeQuality extends AbstractTool {
 	 */
 	private static void runFastq(File input, File output, int nThreads) throws Exception {
 		// open reader and factory
-		FastqReader reader = new FastqReader(input);
+		FastqReaderSingleInterface reader = new FastqReaderSanger(input);
 		FastqWriterFactory factory = new FastqWriterFactory();
-		FastqWriter writer;
+
 		// run
-		if (nThreads == 1) {
-			writer = factory.newWriter(output);
-			runFastq(reader, writer);
-		} else {
+		if (nThreads != 1) {
+			logger.warn("Multi-thread output does not mean multi-thread processing");
 			factory.setUseAsyncIo(true);
-			writer = factory.newWriter(output);
-			runFastqMulti(reader, writer, nThreads);
 		}
+		FastqWriter writer = factory.newWriter(output);
+		runFastq(reader, writer);
 		// close the readers and writers
 		reader.close();
 		writer.close();
@@ -153,56 +151,12 @@ public class StandardizeQuality extends AbstractTool {
 	 *
 	 * @throws Exception
 	 */
-	private static void runFastq(FastqReader reader, FastqWriter writer) throws Exception {
+	private static void runFastq(FastqReaderSingleInterface reader, FastqWriter writer) throws Exception {
 		// start iterations
 		FastqLogger progress = new FastqLogger(logger);
 		for (FastqRecord record : reader) {
-			FASTQtoSanger job = new FASTQtoSanger(record, progress);
-			writer.write(job.call());
+			writer.write(record);
 			progress.add();
-		}
-		logger.info(progress.numberOfVariantsProcessed());
-	}
-
-	private static void runFastqMulti(FastqReader reader, FastqWriter writer, int nThreads) {
-		// open the executor
-		final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
-		// the buffer size for the executor is set to twice the number of threads
-		final int bufferSize = nThreads * BUFFER_SIZE_FACTOR;
-		Collection<Callable<FastqRecord>> jobs = new ArrayList<>();
-		// start iterations
-		FastqLogger progress = new FastqLogger(logger);
-		for (FastqRecord record : reader) {
-			jobs.add(new FASTQtoSanger(record, progress));
-			if (jobs.size() >= bufferSize) {
-				// run all and empty the list
-				try {
-					List<Future<FastqRecord>> result = executor.invokeAll(jobs);
-					for (Future<FastqRecord> future : result) {
-						FastqRecord newRecord = future.get();
-						writer.write(newRecord);
-					}
-				} catch (InterruptedException | ExecutionException e) {
-					throw new RuntimeException(e.getMessage());
-				}
-				jobs.clear();
-			}
-		}
-		logger.debug("Jobs: " + jobs.size(), ". Terminated: ", executor.isTerminated());
-		// run the remaining jobs if they are not added
-		if (jobs.size() != 0) {
-			if (jobs.size() >= bufferSize) {
-				// run all and empty the list
-				try {
-					List<Future<FastqRecord>> result = executor.invokeAll(jobs);
-					for (Future<FastqRecord> future : result) {
-						FastqRecord newRecord = future.get();
-						writer.write(newRecord);
-					}
-				} catch (InterruptedException | ExecutionException e) {
-					throw new RuntimeException(e.getMessage());
-				}
-			}
 		}
 		logger.info(progress.numberOfVariantsProcessed());
 	}
@@ -293,28 +247,6 @@ public class StandardizeQuality extends AbstractTool {
 		public SAMRecord call() throws Exception {
 			SAMRecord toReturn = SAMRecordUtils.copyToSanger(record);
 			progress.record(toReturn);
-			return toReturn;
-		}
-	}
-
-	/**
-	 * TODO: document
-	 */
-	private static class FASTQtoSanger implements Callable<FastqRecord> {
-
-		private final FastqRecord record;
-
-		private final FastqLogger progress;
-
-		public FASTQtoSanger(FastqRecord record, FastqLogger progress) {
-			this.record = record;
-			this.progress = progress;
-		}
-
-		@Override
-		public FastqRecord call() throws Exception {
-			FastqRecord toReturn = FastqRecordUtils.copyToSanger(record);
-			progress.add();
 			return toReturn;
 		}
 	}
