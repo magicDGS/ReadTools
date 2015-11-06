@@ -42,7 +42,7 @@ public class ProjectProperties {
 	private static Hashtable<String, String> DEFAULT_VERSION_VALUES = new Hashtable<String, String>() {{
 		put("version", "UNKNOWN");
 		put("name", "Program");
-		put("build", "unknown");
+		put("build", "develop"); // the build will be computed except it is in develop
 		put("timestamp", "unknown");
 		put("contact_person", "DGS");
 		put("contact_email", "");
