@@ -52,7 +52,7 @@ public abstract class AbstractTool implements Tool {
 	/**
 	 * The logger to use in the tools
 	 */
-	protected static Log logger;
+	protected final Log logger;
 
 	/**
 	 * Constructor for the abstract tool that start the logger
