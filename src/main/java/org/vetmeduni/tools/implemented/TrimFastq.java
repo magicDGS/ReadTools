@@ -196,7 +196,7 @@ public class TrimFastq extends AbstractTool {
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private static void processPE(MottAlgorithm trimming, FastqReaderPairedInterface reader, PairFastqWriters writer,
+	private void processPE(MottAlgorithm trimming, FastqReaderPairedInterface reader, PairFastqWriters writer,
 		boolean verbose) throws IOException {
 		// creating progress
 		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");

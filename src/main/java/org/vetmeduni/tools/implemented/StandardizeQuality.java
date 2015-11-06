@@ -99,7 +99,7 @@ public class StandardizeQuality extends AbstractTool {
 		return 0;
 	}
 
-	private static void runBam(File input, File output, boolean index, int nThreads) throws Exception {
+	private void runBam(File input, File output, boolean index, int nThreads) throws Exception {
 		// Open readers and writers
 		SamReader reader = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT).open(input);
 		SAMFileWriter writer = new SAMFileWriterFactory().setCreateIndex(index)
@@ -126,7 +126,7 @@ public class StandardizeQuality extends AbstractTool {
 	 *
 	 * @throws Exception
 	 */
-	private static void runFastq(File input, File output, int nThreads) throws Exception {
+	private void runFastq(File input, File output, int nThreads) throws Exception {
 		// open reader and factory
 		FastqReaderSingleInterface reader = new FastqReaderSingleSanger(input);
 		FastqWriterFactory factory = new FastqWriterFactory();
@@ -151,7 +151,7 @@ public class StandardizeQuality extends AbstractTool {
 	 *
 	 * @throws Exception
 	 */
-	private static void runFastq(FastqReaderSingleInterface reader, FastqWriter writer) throws Exception {
+	private void runFastq(FastqReaderSingleInterface reader, FastqWriter writer) throws Exception {
 		// start iterations
 		FastqLogger progress = new FastqLogger(logger);
 		for (FastqRecord record : reader) {
@@ -169,7 +169,7 @@ public class StandardizeQuality extends AbstractTool {
 	 *
 	 * @throws IOException
 	 */
-	private static void runBam(SamReader reader, SAMFileWriter writer) throws Exception {
+	private void runBam(SamReader reader, SAMFileWriter writer) throws Exception {
 		// start iterations
 		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
 		for (SAMRecord record : reader) {
@@ -186,7 +186,7 @@ public class StandardizeQuality extends AbstractTool {
 	 * @param writer
 	 * @param nThreads
 	 */
-	private static void runBamMulti(SamReader reader, SAMFileWriter writer, int nThreads) {
+	private void runBamMulti(SamReader reader, SAMFileWriter writer, int nThreads) {
 		// open the executor
 		final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
 		// the buffer size for the executor is set to twice the number of threads
