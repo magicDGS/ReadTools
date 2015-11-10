@@ -53,7 +53,7 @@ public class FastqReaderPairedSanger extends FastqReaderPairedImpl implements Fa
 	 */
 	@Override
 	public FastqPairedRecord next() {
-		if(encoding.equals(FastqQualityFormat.Standard)) {
+		if(QualityUtils.isStandard(encoding)) {
 			return super.next();
 		}
 		return FastqRecordUtils.copyToSanger(super.next());
