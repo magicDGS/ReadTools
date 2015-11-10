@@ -23,6 +23,8 @@
 package org.vetmeduni.io.readers;
 
 import htsjdk.samtools.*;
+import htsjdk.samtools.util.FastqQualityFormat;
+import org.vetmeduni.utils.fastq.QualityUtils;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
@@ -38,13 +40,15 @@ public class SamReaderSanger implements SamReader {
 
 	private final SamReader reader;
 
+	private final FastqQualityFormat encoding;
+
 	/**
 	 * Creates a SamReaderSanger from a file, with default SamReaderFactory
 	 *
 	 * @param file the file
 	 */
 	public SamReaderSanger(File file) {
-		this.reader = SamReaderFactory.makeDefault().open(file);
+		this(file, SamReaderFactory.makeDefault());
 	}
 
 	/**
@@ -54,7 +58,7 @@ public class SamReaderSanger implements SamReader {
 	 * @param stringency the validation stringency
 	 */
 	public SamReaderSanger(File file, ValidationStringency stringency) {
-		this.reader = SamReaderFactory.makeDefault().validationStringency(stringency).open(file);
+		this(file, SamReaderFactory.makeDefault().validationStringency(stringency));
 	}
 
 	/**
@@ -65,6 +69,7 @@ public class SamReaderSanger implements SamReader {
 	 */
 	public SamReaderSanger(File file, SamReaderFactory factory) {
 		this.reader = factory.open(file);
+		this.encoding = QualityUtils.getFastqQualityFormat(file);
 	}
 
 	@Override
@@ -94,57 +99,70 @@ public class SamReaderSanger implements SamReader {
 
 	@Override
 	public SAMRecordIterator iterator() {
-		return SAMRecordSangerIterator.of(reader.iterator());
+		return toReturnIterator(reader.iterator());
 	}
 
 	@Override
 	public SAMRecordIterator query(String sequence, int start, int end, boolean contained) {
-		return SAMRecordSangerIterator.of(reader.query(sequence, start, end, contained));
+		return toReturnIterator(reader.query(sequence, start, end, contained));
 	}
 
 	@Override
 	public SAMRecordIterator queryOverlapping(String sequence, int start, int end) {
-		return SAMRecordSangerIterator.of(reader.queryOverlapping(sequence, start, end));
+		return toReturnIterator(reader.queryOverlapping(sequence, start, end));
 	}
 
 	@Override
 	public SAMRecordIterator queryContained(String sequence, int start, int end) {
-		return SAMRecordSangerIterator.of(reader.queryContained(sequence, start, end));
+		return toReturnIterator(reader.queryContained(sequence, start, end));
 	}
 
 	@Override
 	public SAMRecordIterator query(QueryInterval[] intervals, boolean contained) {
-		return SAMRecordSangerIterator.of(reader.query(intervals, contained));
+		return toReturnIterator(reader.query(intervals, contained));
 	}
 
 	@Override
 	public SAMRecordIterator queryOverlapping(QueryInterval[] intervals) {
-		return SAMRecordSangerIterator.of(reader.queryOverlapping(intervals));
+		return toReturnIterator(reader.queryOverlapping(intervals));
 	}
 
 	@Override
 	public SAMRecordIterator queryContained(QueryInterval[] intervals) {
-		return SAMRecordSangerIterator.of(reader.queryContained(intervals));
+		return toReturnIterator(reader.queryContained(intervals));
 	}
 
 	@Override
 	public SAMRecordIterator queryUnmapped() {
-		return SAMRecordSangerIterator.of(reader.queryUnmapped());
+		return toReturnIterator(reader.queryUnmapped());
 	}
 
 	@Override
 	public SAMRecordIterator queryAlignmentStart(String sequence, int start) {
-		return SAMRecordSangerIterator.of(reader.queryAlignmentStart(sequence, start));
+		return toReturnIterator(reader.queryAlignmentStart(sequence, start));
 	}
 
 	@Override
 	public SAMRecord queryMate(SAMRecord rec) {
-		return SAMRecordUtils.copyToSanger(reader.queryMate(rec));
+		return (QualityUtils.isStandard(encoding)) ?
+			reader.queryMate(rec) :
+			SAMRecordUtils.copyToSanger(reader.queryMate(rec));
 	}
 
 	@Override
 	public void close() throws IOException {
 		reader.close();
+	}
+
+	/**
+	 * Get the iterator that should be returned depending on the encoding in the original file
+	 *
+	 * @param iterator the iterator in the original file
+	 *
+	 * @return the iterator, either wrapped or not
+	 */
+	private SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator) {
+		return (QualityUtils.isStandard(encoding)) ? iterator : SAMRecordSangerIterator.of(iterator);
 	}
 
 	/**

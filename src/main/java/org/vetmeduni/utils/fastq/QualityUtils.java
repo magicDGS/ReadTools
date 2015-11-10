@@ -43,8 +43,7 @@ import java.util.Set;
  */
 public class QualityUtils {
 
-
-	private static final byte illuminaToSangerOffset = (byte)-31;
+	private static final byte illuminaToSangerOffset = (byte) -31;
 
 	/**
 	 * Supported quality formats for this program
@@ -186,5 +185,16 @@ public class QualityUtils {
 	 */
 	public static byte toSanger(byte illuminaQual) {
 		return (byte) (illuminaQual + illuminaToSangerOffset);
+	}
+
+	/**
+	 * Check if the provided encoding is Standard
+	 *
+	 * @param encoding the encoding
+	 *
+	 * @return <code>true</code> if is standard; <code>false</code> otherwise
+	 */
+	public static boolean isStandard(FastqQualityFormat encoding) {
+		return encoding.equals(FastqQualityFormat.Standard);
 	}
 }

@@ -24,6 +24,7 @@ package org.vetmeduni.io.readers.single;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.vetmeduni.utils.fastq.QualityUtils;
 import org.vetmeduni.utils.record.FastqRecordUtils;
 
 import java.io.BufferedReader;
@@ -63,7 +64,7 @@ public class FastqReaderSingleSanger extends FastqReaderWrapper implements Fastq
 	 */
 	@Override
 	public FastqRecord next() {
-		if(encoding.equals(FastqQualityFormat.Standard)) {
+		if(QualityUtils.isStandard(encoding)) {
 			return super.next();
 		}
 		return FastqRecordUtils.copyToSanger(super.next());
