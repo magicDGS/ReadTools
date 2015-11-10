@@ -30,10 +30,12 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.vetmeduni.io.readers.SamReaderSanger;
 import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
+import org.vetmeduni.tools.CommonOptions;
 import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
 import org.vetmeduni.utils.record.SAMRecordUtils;
@@ -77,13 +79,21 @@ public class BarcodedBamToFastq extends AbstractTool {
 			// and create the methods
 			BarcodeMethods methods = new BarcodeMethods(barcodeDict);
 			// open the bam file
-			SamReader input = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT)
-											  .open(new File(inputString));
+			SamReader input;
+			// if the format is maintained
+			if (CommonOptions.isMaintained(logger, cmd)) {
+				// if the format is maintained, create a default sam reader
+				input = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT)
+										.open(new File(inputString));
+			} else {
+				// if not, standardize
+				input = new SamReaderSanger(new File(inputString), ValidationStringency.SILENT);
+			}
 			// single end processing
 			if (cmd.hasOption("s")) {
-				runSingle(input, outputPrefix, !(cmd.hasOption("dgz")), methods, max, tags);
+				runSingle(input, outputPrefix, !(cmd.hasOption(CommonOptions.disableZippedOutput.getOpt())), methods, max, tags);
 			} else {
-				runPaired(input, outputPrefix, !(cmd.hasOption("dgz")), methods, max, tags);
+				runPaired(input, outputPrefix, !(cmd.hasOption(CommonOptions.disableZippedOutput.getOpt())), methods, max, tags);
 			}
 			// close the readers and writers
 			input.close();
@@ -225,22 +235,19 @@ public class BarcodedBamToFastq extends AbstractTool {
 		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
 			"Maximum number of mismatches alowwed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
 				+ DEFAULT_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT").required(false).build();
-		Option dgz = Option.builder("dgz").longOpt("disable-zipped-output").desc("Dissable zipped output").hasArg(false)
-						   .optionalArg(true).build();
-		// TODO: make real parallelization
-		// Option parallel = Option.builder("nt").longOpt("number-of-thread")
-		//						.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
-		//						.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
 		Option single = Option.builder("s").longOpt("single").desc("Switch to single-end parsing").hasArg(false)
 							  .required(false).build();
 		Options options = new Options();
 		options.addOption(single);
 		options.addOption(tag);
-		options.addOption(dgz);
 		options.addOption(barcodes);
 		options.addOption(max);
 		options.addOption(output);
 		options.addOption(input);
+		// add common options
+		options.addOption(CommonOptions.maintainFormat); // mantain the format
+		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
+		// options.addOption(CommonOptions.parallel); // parallelization allowed
 		return options;
 	}
 }

@@ -42,6 +42,7 @@ import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.methods.trimming.MottAlgorithm;
 import org.vetmeduni.methods.trimming.TrimmingStats;
 import org.vetmeduni.tools.AbstractTool;
+import org.vetmeduni.tools.CommonOptions;
 import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.FastqLogger;
 
@@ -114,18 +115,15 @@ public class TrimFastq extends AbstractTool {
 			boolean trimQuality = !cmd.hasOption("no-trim-quality");
 			boolean no5ptrim = cmd.hasOption("no-5p-trim");
 			boolean verbose = !cmd.hasOption("quiet");
-			boolean gzip = !cmd.hasOption("disable-zipped-output");
+			boolean gzip = !cmd.hasOption(CommonOptions.disableZippedOutput.getOpt());
 			// multi-thread
-			int multi = (cmd.hasOption("nt")) ? Integer.parseInt(cmd.getOptionValue("nt")) : DEFAULT_THREADS;
+			int multi = CommonOptions.numberOfThreads(cmd);
 			if (multi != 1) {
 				WRITER_FACTORY.setUseAsyncIo(true);
-				logger.warn("Multi-threads is only in the output<");
+				logger.warn("Multi-threads is only in the output. Not real parallelization implemented yet.");
 			}
 			// FINISH PARSING: log the command line (not longer in the param file)
 			logCmdLine(args);
-			// writing param file
-			//			paramFile(input1, input2, output_prefix, qualThreshold, minLength, discardRemainingNs, trimQuality,
-			//				no5ptrim, verbose, gzip, multi);
 			// create the MottAlgorithm
 			MottAlgorithm trimming = new MottAlgorithm(trimQuality, qualThreshold, minLength, discardRemainingNs,
 				no5ptrim);
@@ -134,14 +132,11 @@ public class TrimFastq extends AbstractTool {
 				logger.info("Found an existing file for the second read; Switching to paired-read mode");
 				// open the reader
 				FastqReaderPairedInterface reader;
-				if (cmd.hasOption("nstd")) {
+				if (CommonOptions.isMaintained(logger, cmd)) {
 					reader = new FastqReaderPairedImpl(input1, input2);
-					logger.warn(
-						"Output will not be standardize. Does not provide the option -nstd to avoid this behaviour");
 					logger.info("Output will be in ",
 						(reader.getFastqQuality().equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
 				} else {
-					logger.info("Output will be in Sanger format independently of the input format");
 					reader = new FastqReaderPairedSanger(input1, input2);
 				}
 				// open the writer
@@ -308,30 +303,22 @@ public class TrimFastq extends AbstractTool {
 		Option no_5p_trim = Option.builder("n5p").longOpt("no-5p-trim").desc(
 			"Disable 5'-trimming (quality and 'N'); May be useful for the identification of duplicates when using trimming of reads. Duplicates are usually identified by the 5' mapping position which should thus not be modified by trimming")
 								  .hasArg(false).optionalArg(true).build();
-		Option disable_zipped_output = Option.builder("dgz").longOpt("disable-zipped-output")
-											 .desc("Dissable zipped output").hasArg(false).optionalArg(true).build();
 		Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
 							 .build();
-		Option maintain_format = Option.builder("nstd").longOpt("no-standardize-output").desc(
-			"By default, the output of this program is encoding in Sanger. If you disable this behaviour, the format of the output will be the same as the input (not recommended)")
-									   .hasArg(false).optionalArg(true).build();
-		//		Option parallel = Option.builder("nt").longOpt("number-of-thread")
-		//								.desc("Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]")
-		//								.hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
 		Options options = new Options();
-		//		options.addOption(parallel);
 		options.addOption(quiet);
-		options.addOption(disable_zipped_output);
 		options.addOption(no_5p_trim);
 		options.addOption(no_trim_qual);
 		options.addOption(min_length);
 		options.addOption(discard_internal_N);
-		// options.addOption(fastq_type);
-		options.addOption(maintain_format);
 		options.addOption(quality_threshold);
 		options.addOption(output);
 		options.addOption(input2);
 		options.addOption(input1);
+		// adding common options
+		options.addOption(CommonOptions.maintainFormat); // maintain the format
+		options.addOption(CommonOptions.disableZippedOutput); // disable the zipped output
+		options.addOption(CommonOptions.parallel); // parallelization allowed
 		return options;
 	}
 }
