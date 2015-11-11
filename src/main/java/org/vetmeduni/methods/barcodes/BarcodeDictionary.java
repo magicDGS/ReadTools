@@ -22,15 +22,12 @@
  */
 package org.vetmeduni.methods.barcodes;
 
-import com.opencsv.CSVReader;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 /**
  * Classs for store a barcode dictionary
+ *
+ * TODO: samples that are name equaly could be a problem in this implementation (deprecated methods)
  *
  * TODO: multi-thread
  *
@@ -58,49 +55,8 @@ public class BarcodeDictionary {
 	 */
 	protected BarcodeDictionary(ArrayList<String> samples, ArrayList<ArrayList<String>> barcodes) {
 		this.samples = samples;
+		this.samplesValue = new int[samples.size()];
 		this.barcodes = barcodes;
-	}
-
-	/**
-	 * Initialize a barcode file, that is tab-delimited
-	 *
-	 * @param barcodeFile      the file
-	 * @param numberOfBarcodes the expected number of barcodes; if < 0, it is computed for the first line in the file
-	 *
-	 * @throws java.io.IOException if the file have some problem
-	 */
-	public BarcodeDictionary(File barcodeFile, int numberOfBarcodes) throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(barcodeFile), '\t');
-		// read the first line
-		String[] nextLine = reader.readNext();
-		if (nextLine == null) {
-			throw new IOException("No data in the barcode file");
-		}
-		// check the number of barcodes
-		if (numberOfBarcodes < 1) {
-			numberOfBarcodes = nextLine.length - 1;
-		}
-		if (numberOfBarcodes < 1) {
-			throw new IOException("Barcode file wrongly formatted");
-		}
-		// at this point, we know the number of barcodes
-		initBarcodes(numberOfBarcodes);
-		this.samples = new ArrayList<>();
-		// reading the rest of the lines
-		while (nextLine != null) {
-			if (numberOfBarcodes != nextLine.length - 1) {
-				throw new IOException("Each sample should have the same number of barcodes in the file");
-			}
-			// the first item is the sample name
-			samples.add(nextLine[0]);
-			// get the barcodes
-			for (int i = 1; i <= numberOfBarcodes; i++) {
-				this.barcodes.get(i - 1).add(nextLine[i]);
-			}
-			nextLine = reader.readNext();
-		}
-		reader.close();
-		samplesValue = new int[samples.size()];
 	}
 
 	/**
@@ -134,7 +90,7 @@ public class BarcodeDictionary {
 	}
 
 	/**
-	 * Get the number of samples in this dictionary
+	 * Get the number of samples in this dictionary associated with a different barcode
 	 *
 	 * @return the number of samples
 	 */
@@ -143,12 +99,24 @@ public class BarcodeDictionary {
 	}
 
 	/**
+	 * Get the number of unique samples in this dictionary
+	 *
+	 * @return the effective number of samples
+	 */
+	public int numberOfUniqueSamples() {
+		// will it be better to store this value??
+		return new HashSet<>(samples).size();
+	}
+
+	/**
 	 * Get the barcodes associated with certain sample
 	 *
 	 * @param sample the sample name
 	 *
 	 * @return the barcodes for the sample
+	 * @deprecated This could give errors for repeated sample names; use {@link #getBarcodesFor(int)} instead
 	 */
+	@Deprecated
 	public String[] getBarcodesFor(String sample) {
 		int index = samples.indexOf(sample);
 		return getBarcodesFor(index);
@@ -193,7 +161,9 @@ public class BarcodeDictionary {
 	 * @param sample the sample name
 	 *
 	 * @return the combined barcodes for the sample
+	 * @deprecated This could give errors for repeated sample names; use {@link #getCombinedBarcodesFor(int)} instead
 	 */
+	@Deprecated
 	public String getCombinedBarcodesFor(String sample) {
 		return String.join("", getBarcodesFor(sample));
 	}
