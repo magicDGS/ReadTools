@@ -33,6 +33,7 @@ import org.apache.commons.cli.ParseException;
 import org.vetmeduni.io.readers.SamReaderSanger;
 import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
+import org.vetmeduni.methods.barcodes.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.CommonOptions;
@@ -42,8 +43,6 @@ import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
 
 /**
  * Class for converting from a Barcoded BAM to a FASTQ
@@ -56,8 +55,6 @@ import java.util.NoSuchElementException;
  */
 public class BarcodedBamToFastq extends AbstractTool {
 
-	private static final int DEFAULT_MISMATCHES = 0;
-
 	@Override
 	public int run(String[] args) {
 		try {
@@ -66,7 +63,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			String inputString = cmd.getOptionValue("i");
 			String outputPrefix = cmd.getOptionValue("o");
 			String barcodes = cmd.getOptionValue("bc");
-			int[] max = getMaxMismatchesFromOption(cmd.getOptionValues("m"));
+			int[] max = getIntArrayOptions(cmd.getArgs(), BarcodeMethods.DEFAULT_MISMATCHES);
 			String[] tags = cmd.getOptionValues("t");
 			logger.debug("Maximum mistmaches (", max.length, "): ", max);
 			logger.debug("Tags (", tags.length, "): ", tags);
@@ -76,8 +73,10 @@ public class BarcodedBamToFastq extends AbstractTool {
 			// FINISH PARSING: log the command line (not longer in the param file)
 			logCmdLine(args);
 			// open the barcode dictionary
-			BarcodeDictionary barcodeDict = new BarcodeDictionary(new File(barcodes), tags.length);
-			// and create the methods
+			BarcodeDictionary barcodeDict = BarcodeDictionaryFactory
+				.createDefaultDictionary(new File(barcodes), tags.length);
+			logger.info("Loaded barcode file for ", barcodeDict.numberOfUniqueSamples(), " samples with ",
+				barcodeDict.numberOfSamples(), " different barcode sets");
 			BarcodeMethods methods = new BarcodeMethods(barcodeDict);
 			// open the bam file
 			SamReader input;
@@ -92,9 +91,11 @@ public class BarcodedBamToFastq extends AbstractTool {
 			}
 			// single end processing
 			if (cmd.hasOption("s")) {
-				runSingle(input, outputPrefix, !(cmd.hasOption(CommonOptions.disableZippedOutput.getOpt())), methods, max, tags);
+				runSingle(input, outputPrefix, !(cmd.hasOption(CommonOptions.disableZippedOutput.getOpt())), methods,
+					max, tags);
 			} else {
-				runPaired(input, outputPrefix, !(cmd.hasOption(CommonOptions.disableZippedOutput.getOpt())), methods, max, tags);
+				runPaired(input, outputPrefix, !(cmd.hasOption(CommonOptions.disableZippedOutput.getOpt())), methods,
+					max, tags);
 			}
 			// close the readers and writers
 			input.close();
@@ -147,8 +148,8 @@ public class BarcodedBamToFastq extends AbstractTool {
 		BarcodeDictionary dict = methods.getDictionary();
 		logger.info("Found ", unknown, " pairs with unknown barcodes");
 		for (int i = 0; i < dict.numberOfSamples(); i++) {
-			logger.info("Found ", dict.getValueFor(i), " pairs for ", dict.getSampleNames().get(i), " (",
-				dict.getCombinedBarcodesFor(i), ")");
+			logger.info("Found ", dict.getValueFor(i), " pairs for ", dict.getCombinedBarcodesFor(i), " (",
+				dict.getSampleNames().get(i), ")");
 		}
 		writers.close();
 		discarded.close();
@@ -201,25 +202,6 @@ public class BarcodedBamToFastq extends AbstractTool {
 		return barcode;
 	}
 
-	/**
-	 * Get the maximum number of mismatches from the options
-	 *
-	 * @param options the options as a string
-	 *
-	 * @return the options converted in int
-	 * @throws ParseException if the string does not contain ints
-	 */
-	private int[] getMaxMismatchesFromOption(String[] options) throws ParseException {
-		if (options == null) {
-			return new int[] {DEFAULT_MISMATCHES};
-		}
-		try {
-			return Arrays.stream(options).mapToInt(Integer::parseInt).toArray();
-		} catch (IllegalArgumentException e) {
-			throw new ParseException("Maximum number of mismatches should be integer(s)");
-		}
-	}
-
 	@Override
 	protected Options programOptions() {
 		Option input = Option.builder("i").longOpt("input")
@@ -235,7 +217,8 @@ public class BarcodedBamToFastq extends AbstractTool {
 								.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
 		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
 			"Maximum number of mismatches alowwed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
-				+ DEFAULT_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT").required(false).build();
+				+ BarcodeMethods.DEFAULT_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT").required(false)
+						   .build();
 		Option single = Option.builder("s").longOpt("single").desc("Switch to single-end parsing").hasArg(false)
 							  .required(false).build();
 		Options options = new Options();
@@ -248,7 +231,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // mantain the format
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
-		// options.addOption(CommonOptions.parallel); // parallelization allowed
+		// options.addOption(CommonOptions.parallel); // TODO: parallelization allowed
 		return options;
 	}
 }

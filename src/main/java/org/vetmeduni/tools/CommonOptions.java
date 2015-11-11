@@ -33,6 +33,9 @@ import org.apache.commons.cli.Option;
  */
 public class CommonOptions {
 
+	/**
+	 * Default number of threads for multi-threaded input
+	 */
 	public static final int DEFAULT_THREADS = 1;
 
 	/**

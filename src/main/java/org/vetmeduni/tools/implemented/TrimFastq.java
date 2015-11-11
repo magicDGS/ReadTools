@@ -78,9 +78,9 @@ public class TrimFastq extends AbstractTool {
 
 	@Override
 	public int run(String[] args) {
-		CommandLine cmd = programParser(args);
 		try {
 			// PARSING THE COMMAND LINE
+			CommandLine cmd = programParser(args);
 			// The input file
 			File input1 = new File(cmd.getOptionValue("input1"));
 			// input file 2
@@ -281,10 +281,10 @@ public class TrimFastq extends AbstractTool {
 	protected Options programOptions() {
 		// Creating each options
 		Option input1 = Option.builder("i1").longOpt("input1")
-							  .desc("The input file, or the input file of the first read, in fastq format").hasArg()
+							  .desc("The FASTQ input file, or the input file of the first read").hasArg()
 							  .numberOfArgs(1).argName("input_1.fq").required(true).build();
 		Option input2 = Option.builder("i2").longOpt("input2").desc(
-			"The input file of the second read, in fastq format. In case this file is provided the software will switch to paired read mode instead of single read mode")
+			"The FASTQ input file of the second read. In case this file is provided the software will switch to paired read mode instead of single read mode")
 							  .hasArg().numberOfArgs(1).argName("input_2.fq").optionalArg(true).build();
 		Option output = Option.builder("o").longOpt("output")
 							  .desc("The output file prefix. Will be in fastq. Mandatory parameter").hasArg()
