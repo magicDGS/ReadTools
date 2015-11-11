@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.utils.record;
 
 import htsjdk.samtools.SAMException;
@@ -28,7 +27,10 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.SequenceUtil;
 import htsjdk.samtools.util.StringUtil;
+import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
+
+import java.util.regex.Matcher;
 
 /**
  * @author Daniel Gómez-Sánchez
@@ -72,7 +74,7 @@ public class SAMRecordUtils {
 	/**
 	 * Add a barcode to a SAMRecord in the format recordName#barcode
 	 *
-	 * @param record the record to update
+	 * @param record  the record to update
 	 * @param barcode the barcode
 	 */
 	public static void addBarcodeToName(SAMRecord record, String barcode) {
@@ -88,7 +90,7 @@ public class SAMRecordUtils {
 	public static void toSanger(SAMRecord record) {
 		byte[] qualities = record.getBaseQualities();
 		byte[] newQualities = new byte[qualities.length];
-		for(int i = 0; i < qualities.length; i++) {
+		for (int i = 0; i < qualities.length; i++) {
 			newQualities[i] = QualityUtils.toSanger(qualities[i]);
 		}
 		record.setBaseQualities(newQualities);
@@ -112,5 +114,16 @@ public class SAMRecordUtils {
 			// This should not happen, because it is suppose to be implemented
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Get the barcode in the name from a SAMRecord
+	 *
+	 * @param record the record to extract the barcode from
+	 *
+	 * @return the barcode without read information; <code>null</code> if no barcode is found
+	 */
+	public static String getBarcodeInName(SAMRecord record) {
+		return BarcodeMethods.getOnlyBarcodeFromName(record.getReadName());
 	}
 }
