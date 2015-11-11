@@ -28,3 +28,6 @@ target/
 
 # Windows shortcuts
 *.lnk
+
+# Files to test the tools
+testfiles/
