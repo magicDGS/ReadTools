@@ -22,8 +22,10 @@
  */
 package org.vetmeduni.utils.record;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
 import org.vetmeduni.io.FastqPairedRecord;
+import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
 import static htsjdk.samtools.SAMUtils.phredToFastq;
@@ -91,5 +93,37 @@ public class FastqRecordUtils {
 		FastqRecord record1 = copyToSanger(record.getRecord1());
 		FastqRecord record2 = copyToSanger(record.getRecord2());
 		return new FastqPairedRecord(record1, record2);
+	}
+
+	/**
+	 * Get the barcode in the name from a FastqRecord
+	 *
+	 * @param record the record to extract the barcode from
+	 *
+	 * @return the barcode without read information; <code>null</code> if no barcode is found
+	 */
+	public static String getBarcodeInName(FastqRecord record) {
+		return BarcodeMethods.getOnlyBarcodeFromName(record.getReadHeader());
+	}
+
+	/**
+	 * Get the barcode in the name from a FastqPairedRecord. If only one is present or both match, return the first one;
+	 * if they do not match, thrown an error
+	 *
+	 * @param record the record to extract the barcode from
+	 *
+	 * @return the barcode without read information; <code>null</code> if not barcode is found in either record
+	 * @throws htsjdk.samtools.SAMException if both records have a barcode that do not match
+	 */
+	public static String getBarcodeInName(FastqPairedRecord record) throws SAMException {
+		String barcode1 = getBarcodeInName(record.getRecord1());
+		String barcode2 = getBarcodeInName(record.getRecord2());
+		if(barcode1 == null && barcode2 == null) {
+			return null;
+		}
+		if(barcode1.equals(barcode2)) {
+			return barcode1;
+		}
+		throw new SAMException("Barcodes from FastqPairedRecord do not match: "+barcode1+"-"+barcode2);
 	}
 }
