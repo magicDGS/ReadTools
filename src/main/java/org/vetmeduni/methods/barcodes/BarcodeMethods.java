@@ -25,6 +25,8 @@ package org.vetmeduni.methods.barcodes;
 import htsjdk.samtools.util.Log;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class for testing barcodes against a dictionary
@@ -37,14 +39,31 @@ public class BarcodeMethods {
 
 	private static final Log logger = Log.getInstance(BarcodeMethods.class);
 
-	// the unknown tag for sample and barcode
+	/**
+	 * the unknown tag for sample and barcode
+	 */
 	public static final String UNKNOWN_STRING = "unkown";
+
+	/**
+	 * The pattern to match a barcode in a read name including everything after the '#'
+	 */
+	public static final Pattern BARCODE_COMPLETE_PATTERN = Pattern.compile("#(.+)");
+
+	/**
+	 * The pattern to match a barcode in a read name removing the read pair info (/1, /2 or /0)
+	 */
+	public static final Pattern BARCODE_WITH_READPAIR_SLASH_PATTERN = Pattern.compile("#(.+)/");
 
 	// the barcode dictionary
 	private BarcodeDictionary dictionary;
 
 	// maps barcode (combined) with sample name; if one barcode returned for some of the methods is not in this map, it is unknown
 	private Hashtable<String, String> barcodeSample = null;
+
+	/**
+	 * Default number of mismatches for BarcodeMethods. Actually it is not used inside the class.
+	 */
+	public static final int DEFAULT_MISMATCHES = 0;
 
 	/**
 	 * Initialize the object with a dictionary
@@ -62,9 +81,9 @@ public class BarcodeMethods {
 	private void initBarcodeMap() {
 		if (barcodeSample == null) {
 			barcodeSample = new Hashtable<>();
-			for (int i = 0; i < dictionary.getNumberOfBarcodes(); i++) {
+			for (int i = 0; i < dictionary.numberOfSamples(); i++) {
 				String sampleName = dictionary.getSampleNames().get(i);
-				barcodeSample.put(dictionary.getCombinedBarcodesFor(sampleName), sampleName);
+				barcodeSample.put(dictionary.getCombinedBarcodesFor(i), sampleName);
 			}
 		}
 	}
@@ -224,5 +243,25 @@ public class BarcodeMethods {
 			}
 		}
 		return mmCnt;
+	}
+
+	/**
+	 * Get the barcode from a read name
+	 *
+	 * @param readName the readName to extract the name from
+	 *
+	 * @return the barcode without pair information if found; <code>null</code> otherwise
+	 */
+	public static String getOnlyBarcodeFromName(String readName) {
+		Matcher matcher;
+		if(readName.contains("/")) {
+			matcher = BARCODE_WITH_READPAIR_SLASH_PATTERN.matcher(readName);
+		} else {
+			matcher = BARCODE_COMPLETE_PATTERN.matcher(readName);
+		}
+		if (matcher.find()) {
+			return matcher.group(1);
+		}
+		return null;
 	}
 }
