@@ -24,10 +24,7 @@ package org.vetmeduni.methods.barcodes;
 
 import htsjdk.samtools.util.Log;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.*;
 
 /**
  * Class for testing barcodes against a dictionary
@@ -39,7 +36,6 @@ import java.util.Hashtable;
 public class BarcodeMethods {
 
 	private static final Log logger = Log.getInstance(BarcodeMethods.class);
-
 
 	// the unknown tag for sample and barcode
 	public static final String UNKNOWN_STRING = "unkown";
@@ -97,97 +93,35 @@ public class BarcodeMethods {
 	 * Get the barcode that better match with the dictionary of barcodes. The name of the sample could be retrieved with
 	 * {@link #getSampleFromBarcode(String)}
 	 *
-	 * @param mismatches the number of mismatches allowed
-	 * @param barcode    the array of barcodes to match
-	 *
-	 * @return the best real barcode in the dictionary (pasted in order if there are more than one)
-	 * @throws IllegalArgumentException if the length of the array does not match the number of barcodes in the
-	 *                                  dictionary
-	 */
-	public String getBestBarcode(int mismatches, String... barcode) {
-		if (barcode.length != dictionary.getNumberOfBarcodes()) {
-			throw new IllegalArgumentException(
-				"Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
-		}
-		if (barcode.length == 1) {
-			// returns the unique one
-			String best = getBestBarcode(mismatches, barcode[0], 0);
-			if(!best.equals(UNKNOWN_STRING)) {
-				int index = dictionary.getBarcodesFromIndex(0).indexOf(best);
-				dictionary.addOneTo(index);
-			}
-			return best;
-		}
-		// more than one barcode
-		// map sample indexes and number of times that it occurs
-		HashMap<Integer, Integer> samples = new HashMap<Integer, Integer>();
-		// we need check in order
-		for (int i = 0; i < dictionary.getNumberOfBarcodes(); i++) {
-			String current = getBestBarcode(mismatches, barcode[i], i);
-			// if it is not unknown
-			if (!current.equals(UNKNOWN_STRING)) {
-				// barcodes for this index
-				ArrayList<String> allBarcodes = dictionary.getBarcodesFromIndex(i);
-				// we need the index of the sample
-				int sampleIndex = allBarcodes.indexOf(current);
-				// check if it is unique for this set
-				if (dictionary.isBarcodeUniqueInAt(current, i)) {
-					dictionary.addOneTo(sampleIndex);
-					// return directly the barcode
-					return dictionary.getCombinedBarcodesFor(sampleIndex);
-				} else {
-					for (; sampleIndex < allBarcodes.size(); sampleIndex++) {
-						if (allBarcodes.get(sampleIndex).equals(current)) {
-							Integer count = samples.get(sampleIndex);
-							samples.put(sampleIndex, (count == null) ? 1 : count + 1);
-						}
-					}
-				}
-			}
-		}
-		if(samples.size() == 0) {
-			return UNKNOWN_STRING;
-		}
-		// if we reach this point, there are non unique barcode that identifies the sample
-		// obtain the maximum count
-		int maxCount = Collections.max(samples.values());
-		// if there are more than one sample that could be associated with the barcode
-		if (Collections.frequency(samples.values(), maxCount) != 1) {
-			// it is not determined
-			return UNKNOWN_STRING;
-		} else {
-			for (Integer sampleIndex : samples.keySet()) {
-				if (samples.get(sampleIndex) == maxCount) {
-					dictionary.addOneTo(sampleIndex);
-					return dictionary.getCombinedBarcodesFor(sampleIndex);
-				}
-			}
-		}
-		// in principle, this cannot be reached
-		throw new IllegalStateException("Unreachable code");
-	}
-
-	/**
-	 * Get the barcode that better match with the dictionary of barcodes. The name of the sample could be retrieved with
-	 * {@link #getSampleFromBarcode(String)}
-	 *
-	 * @param mismatches the number of mismatches allowed (if the length is 1, call {@link #getBestBarcode(int, String, int)})
+	 * @param mismatches the number of mismatches allowed (if the length is 1, it use the same number of mismatches)
 	 * @param barcode    the array of barcodes to match
 	 *
 	 * @return the best real barcode in the dictionary (pasted in order if there are more than one)
 	 * @throws IllegalArgumentException if the length of the arrays does not match the number of barcodes in the
 	 *                                  dictionary
 	 */
-	public String getBestBarcode(int[] mismatches, String[] barcode) {
+	public String getBestBarcode(int[] mismatches, String... barcode) {
 		if (barcode.length != dictionary.getNumberOfBarcodes()) {
 			throw new IllegalArgumentException(
 				"Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
 		}
-		if(mismatches.length == 1) {
-			return getBestBarcode(mismatches[0], barcode);
-		}
-		if (barcode.length != mismatches.length) {
+		// if the length of mismatches is one, create an array from scratch
+		if (mismatches.length == 1) {
+			int m = mismatches[0];
+			mismatches = new int[barcode.length];
+			Arrays.fill(mismatches, m);
+		} else if (barcode.length != mismatches.length) {
 			throw new IllegalArgumentException("Mismatch thresholds and barcodes should have the same length");
+		}
+		// only one barcode
+		if (barcode.length == 1) {
+			// returns the unique one
+			String best = getBestBarcode(mismatches[0], barcode[0], 0);
+			if (!best.equals(UNKNOWN_STRING)) {
+				int index = dictionary.getBarcodesFromIndex(0).indexOf(best);
+				dictionary.addOneTo(index);
+			}
+			return best;
 		}
 		// more than one barcode
 		// map sample indexes and number of times that it occurs
@@ -203,6 +137,7 @@ public class BarcodeMethods {
 				int sampleIndex = allBarcodes.indexOf(current);
 				// check if it is unique for this set
 				if (dictionary.isBarcodeUniqueInAt(current, i)) {
+					dictionary.addOneTo(sampleIndex);
 					// return directly the barcode
 					return dictionary.getCombinedBarcodesFor(sampleIndex);
 				} else {
@@ -215,6 +150,9 @@ public class BarcodeMethods {
 				}
 			}
 		}
+		if (samples.size() == 0) {
+			return UNKNOWN_STRING;
+		}
 		// if we reach this point, there are non unique barcode that identifies the sample
 		// obtain the maximum count
 		int maxCount = Collections.max(samples.values());
@@ -225,6 +163,7 @@ public class BarcodeMethods {
 		} else {
 			for (Integer sampleIndex : samples.keySet()) {
 				if (samples.get(sampleIndex) == maxCount) {
+					dictionary.addOneTo(sampleIndex);
 					return dictionary.getCombinedBarcodesFor(sampleIndex);
 				}
 			}

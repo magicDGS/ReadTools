@@ -43,6 +43,7 @@ import org.vetmeduni.utils.record.SAMRecordUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 /**
  * Class for converting from a Barcoded BAM to a FASTQ
