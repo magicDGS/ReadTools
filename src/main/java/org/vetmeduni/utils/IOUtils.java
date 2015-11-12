@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.utils;
 
 import htsjdk.samtools.BamFileIoUtils;
@@ -40,13 +39,28 @@ public class IOUtils {
 
 	public static final String DEFAULT_GZIP_EXTENSION = ".gz";
 
-
+	/**
+	 * Check if the file is BAM or SAM formatted
+	 *
+	 * @param input the input file
+	 *
+	 * @return <code>true</code> if it is a BAM/SAM; <code>false</code> otherwise
+	 */
 	public static boolean isBamOrSam(File input) {
 		return BamFileIoUtils.isBamFile(input) || input.getName().endsWith(DEFAULT_SAM_EXTENSION);
 	}
 
-	public static String makeInputFastqWithDefaults(String prefix, boolean gzip) {
-		return String.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
+	/**
+	 * Make an output FASTQ with the default extensions {@link #DEFAULT_FQ_EXTENSION} and {@link
+	 * #DEFAULT_GZIP_EXTENSION} if gzip is requested
+	 *
+	 * @param prefix the prefix for the file
+	 * @param gzip   <code>true</code> indicates that the output will be gzipped
+	 *
+	 * @return the formatted output name
+	 */
+	public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
+		return String
+			.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
 	}
-
 }
