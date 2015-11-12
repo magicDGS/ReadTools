@@ -25,7 +25,6 @@ package org.vetmeduni.tools.implemented;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
-import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -39,11 +38,11 @@ import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
 import org.vetmeduni.io.readers.single.FastqReaderWrapper;
 import org.vetmeduni.io.writers.PairFastqWriters;
+import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
 import org.vetmeduni.methods.trimming.MottAlgorithm;
 import org.vetmeduni.methods.trimming.TrimmingStats;
 import org.vetmeduni.tools.AbstractTool;
-import org.vetmeduni.tools.CommonOptions;
-import org.vetmeduni.utils.IOUtils;
+import org.vetmeduni.tools.defaults.CommonOptions;
 import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
@@ -65,16 +64,6 @@ public class TrimFastq extends AbstractTool {
 	 * The default minimum length
 	 */
 	private static int DEFAULT_MINIMUM_LENGTH = 40;
-
-	/**
-	 * The default number of threads
-	 */
-	private static int DEFAULT_THREADS = 1;
-
-	/**
-	 * The factory for writers
-	 */
-	private static final FastqWriterFactory WRITER_FACTORY = new FastqWriterFactory();
 
 	@Override
 	public int run(String[] args) {
@@ -115,11 +104,14 @@ public class TrimFastq extends AbstractTool {
 			boolean trimQuality = !cmd.hasOption("no-trim-quality");
 			boolean no5ptrim = cmd.hasOption("no-5p-trim");
 			boolean verbose = !cmd.hasOption("quiet");
-			boolean gzip = !cmd.hasOption(CommonOptions.disableZippedOutput.getOpt());
-			// multi-thread
+			// start the new factory
+			ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
+			// set the gzipped option in the factory
+			factory.setGzipOutput(!cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()));
+			// multi-thread?
 			int multi = CommonOptions.numberOfThreads(cmd);
 			if (multi != 1) {
-				WRITER_FACTORY.setUseAsyncIo(true);
+				factory.setUseAsyncIo(true);
 				logger.warn("Multi-threads is only in the output. Not real parallelization implemented yet.");
 			}
 			// FINISH PARSING: log the command line (not longer in the param file)
@@ -140,7 +132,7 @@ public class TrimFastq extends AbstractTool {
 					reader = new FastqReaderPairedSanger(input1, input2);
 				}
 				// open the writer
-				PairFastqWriters writer = new PairFastqWriters(output_prefix, gzip, WRITER_FACTORY);
+				PairFastqWriters writer = factory.newPairWriter(output_prefix);
 				processPE(trimming, reader, writer, verbose);
 				// if not, single end mode
 			} else {
@@ -157,10 +149,8 @@ public class TrimFastq extends AbstractTool {
 					logger.info("Output will be in Sanger format independently of the input format");
 					reader = new FastqReaderSingleSanger(input1);
 				}
-				// Obtain output name
-				String output = IOUtils.makeInputFastqWithDefaults(output_prefix, gzip);
-				// open the writer
-				FastqWriter writer = WRITER_FACTORY.newWriter(new File(output));
+				// open the writer for single end
+				FastqWriter writer = factory.newWriter(output_prefix);
 				processSE(trimming, reader, writer, verbose);
 			}
 		} catch (ParseException e) {
@@ -208,13 +198,13 @@ public class TrimFastq extends AbstractTool {
 			FastqRecord newRecord1 = trimming.trimFastqRecord(record.getRecord1(), reader.getFastqQuality(), stats1);
 			FastqRecord newRecord2 = trimming.trimFastqRecord(record.getRecord2(), reader.getFastqQuality(), stats2);
 			if (newRecord1 != null && newRecord2 != null) {
-				writer.writePairs(newRecord1, newRecord2);
+				writer.write(new FastqPairedRecord(newRecord1, newRecord2));
 				paired++;
 			} else if (newRecord1 != null) {
-				writer.writeSingle(newRecord1);
+				writer.write(newRecord1);
 				single++;
 			} else if (newRecord2 != null) {
-				writer.writeSingle(newRecord2);
+				writer.write(newRecord2);
 				single++;
 			}
 			progress.add();

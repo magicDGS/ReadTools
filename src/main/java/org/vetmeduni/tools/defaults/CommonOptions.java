@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.tools;
+package org.vetmeduni.tools.defaults;
 
 import htsjdk.samtools.util.Log;
 import org.apache.commons.cli.CommandLine;
