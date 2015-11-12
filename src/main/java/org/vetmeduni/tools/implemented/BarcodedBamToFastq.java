@@ -71,12 +71,8 @@ public class BarcodedBamToFastq extends AbstractTool {
 				throw new ParseException("Number of maximum mismatches provided and number of tags does not match");
 			}
 			// TODO: real multi-thread
-			int nThreads = CommonOptions.numberOfThreads(cmd);
-			boolean multi = false;
-			if (nThreads != 1) {
-				multi = true;
-				logger.warn("Multi-threads is only in the output. Not real parallelization implemented yet.");
-			}
+			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+			boolean multi = nThreads != 1;
 			// FINISH PARSING: log the command line (not longer in the param file)
 			logCmdLine(args);
 			// open the barcode dictionary
@@ -210,7 +206,6 @@ public class BarcodedBamToFastq extends AbstractTool {
 	 */
 	private void runSingle(SamReader reader, SplitFastqWriter writer, BarcodeMethods methods, int[] max,
 		String[] tags) {
-		FastqWriterFactory factory = new FastqWriterFactory();
 		ProgressLogger progress = new ProgressLogger(logger);
 		int unknown = 0;
 		for (SAMRecord record : reader) {

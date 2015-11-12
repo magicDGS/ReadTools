@@ -45,14 +45,26 @@ public class BarcodeMethods {
 	public static final String UNKNOWN_STRING = "unkown";
 
 	/**
-	 * The pattern to match a barcode in a read name including everything after the '#'
+	 * The separator between the read name and the barcode
 	 */
-	public static final Pattern BARCODE_COMPLETE_PATTERN = Pattern.compile("#(.+)");
+	public static final String BARCODE_SEPARATOR = "#";
 
 	/**
-	 * The pattern to match a barcode in a read name removing the read pair info (/1, /2 or /0)
+	 * The separator between the read name (and barcode, if present) and the read pair information (0, 1, 2)
 	 */
-	public static final Pattern BARCODE_WITH_READPAIR_SLASH_PATTERN = Pattern.compile("#(.+)/");
+	public static final String READ_PAIR_SEPARATOR = "#";
+
+	/**
+	 * The pattern to match a barcode in a read name including everything after the {@link #BARCODE_SEPARATOR}
+	 */
+	public static final Pattern BARCODE_COMPLETE_PATTERN = Pattern.compile(BARCODE_SEPARATOR + "(.+)");
+
+	/**
+	 * The pattern to match a barcode in a read name removing also the read pair info (after {@link
+	 * #READ_PAIR_SEPARATOR})
+	 */
+	public static final Pattern BARCODE_WITH_READPAIR_SLASH_PATTERN = Pattern
+		.compile(BARCODE_SEPARATOR + "(.+)" + READ_PAIR_SEPARATOR);
 
 	// the barcode dictionary
 	private BarcodeDictionary dictionary;
@@ -254,7 +266,7 @@ public class BarcodeMethods {
 	 */
 	public static String getOnlyBarcodeFromName(String readName) {
 		Matcher matcher;
-		if(readName.contains("/")) {
+		if (readName.contains(BARCODE_SEPARATOR)) {
 			matcher = BARCODE_WITH_READPAIR_SLASH_PATTERN.matcher(readName);
 		} else {
 			matcher = BARCODE_COMPLETE_PATTERN.matcher(readName);
@@ -263,5 +275,20 @@ public class BarcodeMethods {
 			return matcher.group(1);
 		}
 		return null;
+	}
+
+	/**
+	 * Get the readName removing everything from the '#' to the end
+	 *
+	 * @param readName the readName to extract the name from
+	 *
+	 * @return the readName without the barcode information (if present)
+	 */
+	public static String getNameWithoutBarcode(String readName) {
+		int index = readName.indexOf(BARCODE_SEPARATOR);
+		if(index != -1) {
+			return readName.substring(0, index);
+		}
+		return readName;
 	}
 }

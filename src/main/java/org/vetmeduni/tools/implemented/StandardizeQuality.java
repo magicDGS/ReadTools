@@ -38,7 +38,6 @@ import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.FastqLogger;
 import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
 import org.vetmeduni.utils.fastq.QualityUtils;
-import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,12 +67,8 @@ public class StandardizeQuality extends AbstractTool {
 				default:
 					break;
 			}
-			int nThreads = CommonOptions.numberOfThreads(cmd);
-			boolean multi = false;
-			if (nThreads != 1) {
-				multi = true;
-				logger.warn("Multi-threads is only in the output. Not real parallelization implemented yet.");
-			}
+			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+			boolean multi = nThreads != 1;
 			if (IOUtils.isBamOrSam(input)) {
 				runBam(input, output, index, multi);
 			} else {
