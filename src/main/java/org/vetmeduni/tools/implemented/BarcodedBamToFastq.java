@@ -63,7 +63,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			String inputString = cmd.getOptionValue("i");
 			String outputPrefix = cmd.getOptionValue("o");
 			String barcodes = cmd.getOptionValue("bc");
-			int[] max = getIntArrayOptions(cmd.getArgs(), BarcodeMethods.DEFAULT_MISMATCHES);
+			int[] max = getIntArrayOptions(cmd.getOptionValues("m"), BarcodeMethods.DEFAULT_MISMATCHES);
 			String[] tags = cmd.getOptionValues("t");
 			logger.debug("Maximum mistmaches (", max.length, "): ", max);
 			logger.debug("Tags (", tags.length, "): ", tags);
