@@ -23,7 +23,6 @@
 package org.vetmeduni.tools.implemented;
 
 import htsjdk.samtools.*;
-import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.ProgressLogger;
 import org.apache.commons.cli.CommandLine;
@@ -32,7 +31,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.readers.SamReaderSanger;
-import org.vetmeduni.io.writers.PairFastqWriters;
 import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
 import org.vetmeduni.io.writers.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
@@ -40,7 +38,6 @@ import org.vetmeduni.methods.barcodes.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.defaults.CommonOptions;
-import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
@@ -236,106 +233,6 @@ public class BarcodedBamToFastq extends AbstractTool {
 				dict.getCombinedBarcodesFor(i), ")");
 		}
 		writer.close();
-	}
-
-	/**
-	 * Deprecated. Use {@link #runPaired(htsjdk.samtools.SamReader, org.vetmeduni.io.writers.SplitFastqWriter,
-	 * org.vetmeduni.methods.barcodes.BarcodeMethods, int[], String[])} instead
-	 *
-	 * @param reader
-	 * @param outputPrefix
-	 * @param gzip
-	 * @param methods
-	 * @param max
-	 * @param tags
-	 */
-	@Deprecated
-	private void runPaired(SamReader reader, String outputPrefix, boolean gzip, BarcodeMethods methods, int[] max,
-		String[] tags) {
-		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
-		factory.setGzipOutput(gzip);
-		PairFastqWriters writers = factory.newPairWriter(outputPrefix);
-		PairFastqWriters discarded = factory.newPairWriter(outputPrefix + "_discarded");
-		SAMRecordIterator it = reader.iterator();
-		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger, 1000000, "Processed", "pairs");
-		int unknown = 0;
-		while (it.hasNext()) {
-			SAMRecord record1 = it.next();
-			if (!it.hasNext()) {
-				throw new SAMException("Truncated interleaved BAM file");
-			}
-			SAMRecord record2 = it.next();
-			String[] barcodes = getBarcodeFromTags(record1, tags);
-			String best = methods.getBestBarcode(max, barcodes);
-			FastqPairedRecord outputRecord;
-			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
-				SAMRecordUtils.addBarcodeToName(record1, String.join("", barcodes));
-				SAMRecordUtils.addBarcodeToName(record2, String.join("", barcodes));
-				outputRecord = new FastqPairedRecord(SAMRecordUtils.toFastqRecord(record1, 1),
-					SAMRecordUtils.toFastqRecord(record2, 2));
-				discarded.write(outputRecord);
-				unknown++;
-			} else {
-				SAMRecordUtils.addBarcodeToName(record1, best);
-				SAMRecordUtils.addBarcodeToName(record2, best);
-				outputRecord = new FastqPairedRecord(SAMRecordUtils.toFastqRecord(record1, 1),
-					SAMRecordUtils.toFastqRecord(record2, 2));
-				writers.write(outputRecord);
-			}
-			progress.record(record1);
-		}
-		logger.info(progress.numberOfVariantsProcessed());
-		BarcodeDictionary dict = methods.getDictionary();
-		logger.info("Found ", unknown, " pairs with unknown barcodes");
-		for (int i = 0; i < dict.numberOfSamples(); i++) {
-			logger.info("Found ", dict.getValueFor(i), " pairs for ", dict.getCombinedBarcodesFor(i), " (",
-				dict.getSampleNames().get(i), ")");
-		}
-		writers.close();
-		discarded.close();
-	}
-
-	/**
-	 * Deprecated. Use {@link #runSingle(htsjdk.samtools.SamReader, org.vetmeduni.io.writers.SplitFastqWriter,
-	 * org.vetmeduni.methods.barcodes.BarcodeMethods, int[], String[])}  instead
-	 *
-	 * @param reader
-	 * @param outputPrefix
-	 * @param gzip
-	 * @param methods
-	 * @param max
-	 * @param tags
-	 */
-	@Deprecated
-	private void runSingle(SamReader reader, String outputPrefix, boolean gzip, BarcodeMethods methods, int[] max,
-		String[] tags) {
-		FastqWriterFactory factory = new FastqWriterFactory();
-		FastqWriter writer = factory.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(outputPrefix, gzip)));
-		FastqWriter discarded = factory
-			.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(outputPrefix + "_discarded", gzip)));
-		ProgressLogger progress = new ProgressLogger(logger);
-		int unknown = 0;
-		for (SAMRecord record : reader) {
-			String[] barcodes = getBarcodeFromTags(record, tags);
-			String best = methods.getBestBarcode(max, barcodes);
-			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
-				SAMRecordUtils.addBarcodeToName(record, String.join("", barcodes));
-				discarded.write(SAMRecordUtils.toFastqRecord(record, null));
-				unknown++;
-			} else {
-				SAMRecordUtils.addBarcodeToName(record, best);
-				writer.write(SAMRecordUtils.toFastqRecord(record, null));
-			}
-			progress.record(record);
-		}
-		BarcodeDictionary dict = methods.getDictionary();
-		logger.info("Found ", unknown, " records with unknown barcodes");
-		for (int i = 0; i < dict.numberOfSamples(); i++) {
-			logger.info("Found ", dict.getValueFor(i), " records for ", dict.getSampleNames().get(i), " (",
-				dict.getCombinedBarcodesFor(i), ")");
-		}
-		writer.close();
-		discarded.close();
 	}
 
 	/**
