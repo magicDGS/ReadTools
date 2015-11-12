@@ -109,10 +109,9 @@ public class TrimFastq extends AbstractTool {
 			// set the gzipped option in the factory
 			factory.setGzipOutput(!cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()));
 			// multi-thread?
-			int multi = CommonOptions.numberOfThreads(cmd);
+			int multi = CommonOptions.numberOfThreads(logger, cmd);
 			if (multi != 1) {
 				factory.setUseAsyncIo(true);
-				logger.warn("Multi-threads is only in the output. Not real parallelization implemented yet.");
 			}
 			// FINISH PARSING: log the command line (not longer in the param file)
 			logCmdLine(args);

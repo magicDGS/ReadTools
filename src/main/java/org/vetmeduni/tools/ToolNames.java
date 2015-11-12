@@ -22,10 +22,8 @@
  */
 package org.vetmeduni.tools;
 
-import org.vetmeduni.tools.implemented.BarcodedBamToFastq;
-import org.vetmeduni.tools.implemented.QualityChecker;
-import org.vetmeduni.tools.implemented.StandardizeQuality;
-import org.vetmeduni.tools.implemented.TrimFastq;
+import org.vetmeduni.methods.barcodes.BarcodeMethods;
+import org.vetmeduni.tools.implemented.*;
 
 /**
  * Enum with all the tools already developed
@@ -40,19 +38,24 @@ public enum ToolNames {
 			+ "a running sum of this score is calculated; If the score drops below zero the score is set to zero; The "
 			+ "highest scoring region of the read is finally reported.\n\nCitation of the method: Kofler et al. (2011), "
 			+ "PLoS ONE 6(1), e15925, doi:10.1371/journal.pone.0015925", new TrimFastq()),
-	BarcodedBamToFastq("Convert an BAM file with BC tags into a FASTQ file", "Because some services provide a barcoded"
-		+ " BAM file instead of a FASTQ this tool convert them into the later to be allow to use it. It works with one "
-		+ "or two barcodes, pair-end (interleaved BAM file) and single-end sequencing. In addition, it match the barcodes "
-		+ "with the used ones to discard some reads that could not be assign, and add the exact detected barcode "
-		+ "to the read name. The method to assing barcodes is the following: if there is an exact match for an unique "
-		+ "barcode, it is directly assign; if there are more than 1 barcode, it assign it to the sample where most barcodes "
-		+ "match; otherwise, it is discarded. Barcodes in the input file that are larger than the used ones are cut in "
-		+ "the last bases.", new BarcodedBamToFastq()),
+	BarcodedBamToFastq("Convert an BAM file with BC tags into a FASTQ file",
+		"Because some services provide a barcoded BAM file instead of a FASTQ this tool convert them into the later to be "
+			+ "allow to use it. It works with one or two barcodes, pair-end (interleaved BAM file) and single-end sequencing."
+			+ " In addition, it match the barcodes with the used ones to discard some reads that could not be assign, and"
+			+ " add the exact detected barcode to the read name. The method to assing barcodes is the following: if there "
+			+ "is an exact match for an unique barcode, it is directly assign; if there are more than 1 barcode, it assign "
+			+ "it to the sample where most barcodes match; otherwise, it is discarded. Barcodes in the input file that are "
+			+ "larger than the used ones are cut in the last bases.", new BarcodedBamToFastq()),
 	QualityChecker("Get the quality encoding for a BAM/FASTQ file",
 		"Check the quality encoding for a BAM/FASTQ file and output in the STDOUT the encoding", new QualityChecker()),
 	StandardizeQuality("Convert an Illumina BAM/FASTQ file into a Sanger",
 		"The standard encoding for a BAM file is Sanger and this tool is provided to standardize both BAM/FASTQ files "
-			+ "for latter analysis. It does not support mixed qualities", new StandardizeQuality());
+			+ "for latter analysis. It does not support mixed qualities", new StandardizeQuality()),
+	FastqBarcodeDetector(
+		"Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library",
+		"Detect barcodes in the header of the read name (based on the marker " + BarcodeMethods.BARCODE_SEPARATOR
+			+ ") of a FASTQ file and assign to a sample based on a provided dictionary. Barcodes in the input file that "
+			+ "are larger than the used ones are cut in the last bases.", new FastqBarcodeDetector());
 
 	/**
 	 * The short description for the tool
@@ -68,9 +71,10 @@ public enum ToolNames {
 
 	/**
 	 * Constructor
-	 *  @param shortDescription the short description
+	 *
+	 * @param shortDescription the short description
 	 * @param fullDescription  the full description
-	 * @param associatedTool
+	 * @param associatedTool   the tool to run
 	 */
 	ToolNames(String shortDescription, String fullDescription, Tool associatedTool) {
 		this.shortDescription = shortDescription;

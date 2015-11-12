@@ -118,12 +118,84 @@ public class FastqRecordUtils {
 	public static String getBarcodeInName(FastqPairedRecord record) throws SAMException {
 		String barcode1 = getBarcodeInName(record.getRecord1());
 		String barcode2 = getBarcodeInName(record.getRecord2());
-		if(barcode1 == null && barcode2 == null) {
+		if (barcode1 == null && barcode2 == null) {
 			return null;
 		}
-		if(barcode1.equals(barcode2)) {
+		if (barcode1.equals(barcode2)) {
 			return barcode1;
 		}
-		throw new SAMException("Barcodes from FastqPairedRecord do not match: "+barcode1+"-"+barcode2);
+		throw new SAMException("Barcodes from FastqPairedRecord do not match: " + barcode1 + "-" + barcode2);
+	}
+
+	/**
+	 * Get the read name for a record without the record
+	 *
+	 * @param record the record to extract the name from
+	 *
+	 * @return the read name without the barcode information
+	 */
+	public static String getReadNameWithoutBarcode(FastqRecord record) {
+		return BarcodeMethods.getNameWithoutBarcode(record.getReadHeader());
+	}
+
+	/**
+	 * Get the read name for a record without the record
+	 *
+	 * @param record the record to extract the name from
+	 *
+	 * @return the read name without the barcode information
+	 * @throws htsjdk.samtools.SAMException if both record names do not match
+	 */
+	public static String getReadNameWithoutBarcode(FastqPairedRecord record) {
+		String name1 = getReadNameWithoutBarcode(record.getRecord1());
+		String name2 = getReadNameWithoutBarcode(record.getRecord2());
+		if (name1 == null && name2 == null) {
+			return null;
+		}
+		if (name1.equals(name2)) {
+			return name1;
+		}
+		throw new SAMException("Names from FastqPairedRecord do not match: " + name1 + "-" + name2);
+	}
+
+	/**
+	 * Change the barcode name in a FASTQ record, adding the number of pair provided
+	 *
+	 * @param record       the record to update
+	 * @param newBarcode   the new barcode to add
+	 * @param numberOfPair the number of read for this record
+	 *
+	 * @return the updated record
+	 */
+	public static FastqRecord changeBarcode(FastqRecord record, String newBarcode, int numberOfPair) {
+		return new FastqRecord(String
+			.format("%s%s%s%s%s", getReadNameWithoutBarcode(record), BarcodeMethods.BARCODE_SEPARATOR, newBarcode,
+				BarcodeMethods.READ_PAIR_SEPARATOR, numberOfPair), record.getReadString(),
+			record.getBaseQualityHeader(), record.getBaseQualityString());
+	}
+
+	/**
+	 * Change the barcode name in a FASTQ record, adding the \0 indicating that is a single read
+	 *
+	 * @param record     the record to update
+	 * @param newBarcode the new barcode to add
+	 *
+	 * @return the updated record
+	 */
+	public static FastqRecord changeBarcodeInSingle(FastqRecord record, String newBarcode) {
+		return changeBarcode(record, newBarcode, 0);
+	}
+
+	/**
+	 * Change the barcode name in a pair record, adding the \1 and \2 indicating that they are paired
+	 *
+	 * @param record     the record to update
+	 * @param newBarcode the new barcode to add
+	 *
+	 * @return the updated record
+	 */
+	public static FastqPairedRecord changeBarcodeInPaired(FastqPairedRecord record, String newBarcode) {
+		return new FastqPairedRecord(changeBarcode(record.getRecord1(), newBarcode, 1),
+			changeBarcode(record.getRecord2(), newBarcode, 2));
 	}
 }

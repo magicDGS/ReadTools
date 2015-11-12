@@ -86,9 +86,14 @@ public class CommonOptions {
 	 *
 	 * @return the number of threads to use
 	 */
-	public static int numberOfThreads(CommandLine cmd) {
-		return (cmd.hasOption(parallel.getOpt())) ?
+	public static int numberOfThreads(Log logger, CommandLine cmd) {
+		int nThreads = (cmd.hasOption(parallel.getOpt())) ?
 			Integer.parseInt(cmd.getOptionValue(parallel.getOpt())) :
 			DEFAULT_THREADS;
+		if(nThreads != 1) {
+			logger.warn(
+				"Currently multi-threads does not control the number of threads in use, depends on the number of outputs");
+		}
+		return nThreads;
 	}
 }

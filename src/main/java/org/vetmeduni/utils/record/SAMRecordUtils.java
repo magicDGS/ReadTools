@@ -78,7 +78,7 @@ public class SAMRecordUtils {
 	 * @param barcode the barcode
 	 */
 	public static void addBarcodeToName(SAMRecord record, String barcode) {
-		String recordName = String.format("%s#%s", record.getReadName(), barcode);
+		String recordName = String.format("%s%s%s", record.getReadName(), BarcodeMethods.BARCODE_SEPARATOR, barcode);
 		record.setReadName(recordName);
 	}
 
@@ -125,5 +125,16 @@ public class SAMRecordUtils {
 	 */
 	public static String getBarcodeInName(SAMRecord record) {
 		return BarcodeMethods.getOnlyBarcodeFromName(record.getReadName());
+	}
+
+	/**
+	 * Get the read name for a record without the record
+	 *
+	 * @param record the record to extract the name from
+	 *
+	 * @return the read name without the barcode information
+	 */
+	public static String getReadNameWithoutBarcode(SAMRecord record) {
+		return BarcodeMethods.getNameWithoutBarcode(record.getReadName());
 	}
 }
