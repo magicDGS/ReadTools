@@ -29,6 +29,7 @@ import htsjdk.samtools.fastq.FastqWriterFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.vetmeduni.io.readers.SamReaderSanger;
 import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
 import org.vetmeduni.tools.AbstractTool;
@@ -131,7 +132,7 @@ public class StandardizeQuality extends AbstractTool {
 	 * @throws IOException if there is some problem with the files
 	 */
 	private void runBam(File input, File output, boolean index, boolean multi) throws IOException {
-		SamReader reader = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT).open(input);
+		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT);
 		SAMFileWriter writer = new SAMFileWriterFactory().setCreateIndex(index).setUseAsyncIo(multi)
 														 .makeSAMOrBAMWriter(reader.getFileHeader(),
 															 SAMFileHeader.SortOrder.coordinate
@@ -140,7 +141,7 @@ public class StandardizeQuality extends AbstractTool {
 		// start iterations
 		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
 		for (SAMRecord record : reader) {
-			writer.addAlignment(SAMRecordUtils.copyToSanger(record));
+			writer.addAlignment(record);
 			progress.record(record);
 		}
 		logger.info(progress.numberOfVariantsProcessed());
