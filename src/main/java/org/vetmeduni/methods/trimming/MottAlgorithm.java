@@ -89,6 +89,9 @@ public class MottAlgorithm {
 	 * @return the trimmed record, <code>null</code> if the read is completely trim
 	 */
 	public FastqRecord trimQualityMott(FastqRecord record, FastqQualityFormat encoding, TrimmingStats stats) {
+		if(record == null) {
+			return null;
+		}
 		char[] quals = record.getBaseQualityString().toCharArray();
 		TreeMap<Integer, StartEndTupple> hsps = new TreeMap<Integer, StartEndTupple>();
 		int highScore = 0, activeScore = 0, highScoreStart = -1, highScoreEnd = 0;
@@ -140,6 +143,9 @@ public class MottAlgorithm {
 	 * @return the trimmed record, <code>null</code> if the read is completely trim
 	 */
 	public FastqRecord trimNo5pTrim(FastqRecord record, FastqQualityFormat encoding, TrimmingStats stats) {
+		if(record == null) {
+			return null;
+		}
 		char[] quals = record.getBaseQualityString().toCharArray();
 		int highScore = 0, activeScore = 0, highScoreEnd = -1;
 		for (int i = 0; i < quals.length; i++) {
@@ -185,7 +191,7 @@ public class MottAlgorithm {
 				newRecord = trimQualityMott(newRecord, format, stats);
 			}
 		}
-		if (record == null || newRecord.length() < minLength) {
+		if (newRecord == null || newRecord.length() < minLength) {
 			stats.addCountLengthDiscard();
 			return null;
 		}
@@ -212,14 +218,17 @@ public class MottAlgorithm {
 	}
 
 	/**
-	 * Trimming of Ns in the beggining and end of the record and returns a new FastqRecord
+	 * Trimming of Ns in the begining and end of the record and returns a new FastqRecord
 	 *
 	 * @param record the record to trim
 	 * @param stats  accumulator for trimming statistics; if null, it is ignored
 	 *
-	 * @return the trimmed record
+	 * @return the trimmed record; <code>null</code> if the record is completely trimmed
 	 */
 	public FastqRecord trimNs(FastqRecord record, TrimmingStats stats) {
+		if(record == null) {
+			return null;
+		}
 		String nucleotide = record.getReadString();
 		int start = 0;
 		int end = nucleotide.length();
