@@ -73,7 +73,7 @@ public class FastqRecordUtils {
 		byte[] qualities = fastqToPhred(record.getBaseQualityString());
 		byte[] newQualities = new byte[qualities.length];
 		for (int i = 0; i < qualities.length; i++) {
-			newQualities[i] = QualityUtils.toSanger(qualities[i]);
+			newQualities[i] = QualityUtils.phredToSanger(qualities[i]);
 		}
 		// TODO: check if the phreadToFastq method is working properly
 		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),

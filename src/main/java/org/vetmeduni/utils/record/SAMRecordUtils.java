@@ -30,8 +30,6 @@ import htsjdk.samtools.util.StringUtil;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
-import java.util.regex.Matcher;
-
 /**
  * @author Daniel Gómez-Sánchez
  */
@@ -91,7 +89,7 @@ public class SAMRecordUtils {
 		byte[] qualities = record.getBaseQualities();
 		byte[] newQualities = new byte[qualities.length];
 		for (int i = 0; i < qualities.length; i++) {
-			newQualities[i] = QualityUtils.toSanger(qualities[i]);
+			newQualities[i] = QualityUtils.phredToSanger(qualities[i]);
 		}
 		record.setBaseQualities(newQualities);
 	}
