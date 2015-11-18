@@ -30,6 +30,8 @@ import org.vetmeduni.readtools.ProjectProperties;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+import static org.vetmeduni.tools.ToolNames.ToolException;
+
 /**
  * Abstract tool that provides default help and parsing functions
  *
@@ -136,17 +138,18 @@ public abstract class AbstractTool implements Tool {
 	 *
 	 * @return the default values if the options retrieved are <code>null</code>; the formatted int array from the
 	 * string one
-	 * @throws ParseException if some of the options cannot be parsed to an int
+	 * @throws ToolException if some of the options cannot be parsed to an int
 	 */
-	public int[] getIntArrayOptions(String[] options, int... defaultValue) throws ParseException {
+	public int[] getIntArrayOptions(String[] options, int... defaultValue) throws ToolException {
 		if (options == null) {
 			return defaultValue;
 		}
 		try {
 			return Arrays.stream(options).mapToInt(Integer::parseInt).toArray();
 		} catch (IllegalArgumentException e) {
-			logger.debug("Trying to obtain integer(s) from the following parameters provided ", Arrays.toString(options));
-			throw new ParseException("This option should be an integer");
+			logger
+				.debug("Trying to obtain integer(s) from the following parameters provided ", Arrays.toString(options));
+			throw new ToolException("This option should be an integer");
 		}
 	}
 

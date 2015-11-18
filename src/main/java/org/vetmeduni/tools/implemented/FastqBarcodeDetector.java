@@ -26,7 +26,6 @@ import htsjdk.samtools.fastq.FastqRecord;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.readers.FastqReaderInterface;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedImpl;
@@ -48,6 +47,8 @@ import org.vetmeduni.utils.record.FastqRecordUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+
+import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
  * Tool for split by barcode (in the read name) both BAM and FASTQ files
@@ -73,7 +74,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 					Integer.parseInt(cmd.getOptionValue("m")) :
 					BarcodeMethods.DEFAULT_MISMATCHES;
 			} catch (IllegalArgumentException e) {
-				throw new ParseException("Maximum mismatches should be an integer");
+				throw new ToolException("Maximum mismatches should be an integer");
 			}
 			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
 			boolean multi = nThreads != 1;
@@ -91,8 +92,8 @@ public class FastqBarcodeDetector extends AbstractTool {
 				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null, split);
 			// run the method
 			run(reader, writer, methods, max);
-		} catch (ParseException e) {
-			// This exceptions comes from the command line parsing (I think so)
+		} catch (ToolException e) {
+			// This exceptions comes from the command line parsing
 			printUsage(e.getMessage());
 			return 1;
 		} catch (IOException e) {

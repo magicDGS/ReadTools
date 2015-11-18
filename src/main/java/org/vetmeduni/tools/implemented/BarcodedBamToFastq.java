@@ -23,12 +23,10 @@
 package org.vetmeduni.tools.implemented;
 
 import htsjdk.samtools.*;
-import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.ProgressLogger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.readers.SamReaderSanger;
 import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
@@ -43,6 +41,8 @@ import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
  * Class for converting from a Barcoded BAM to a FASTQ
@@ -68,7 +68,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			logger.debug("Maximum mistmaches (", max.length, "): ", max);
 			logger.debug("Tags (", tags.length, "): ", tags);
 			if (max.length != 1 && max.length != tags.length) {
-				throw new ParseException("Number of maximum mismatches provided and number of tags does not match");
+				throw new ToolException("Number of maximum mismatches provided and number of tags does not match");
 			}
 			// TODO: real multi-thread
 			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
@@ -106,8 +106,8 @@ public class BarcodedBamToFastq extends AbstractTool {
 			}
 			// close the readers and writers
 			input.close();
-		} catch (ParseException e) {
-			// This exceptions comes from the command line parsing (I think so)
+		} catch (ToolException e) {
+			// This exceptions comes from the command line parsing
 			printUsage(e.getMessage());
 			return 1;
 		} catch (IOException | SAMException e) {
