@@ -43,7 +43,9 @@ import java.util.Set;
  */
 public class QualityUtils {
 
-	private static final byte illuminaToSangerOffset = (byte) 31;
+	private static final byte phredToSangerOffset = (byte) 31;
+
+	private static final byte asciiToSangerOffset = (byte) 64;
 
 	/**
 	 * Supported quality formats for this program
@@ -183,19 +185,19 @@ public class QualityUtils {
 	 *
 	 * @return the byte representing the illumina quality (ASCII code)
 	 */
-	public static byte asciiToSanger(byte illuminaQual) {
-		return (byte) (illuminaQual - illuminaToSangerOffset);
+	public static byte asciiToSangerPhred(byte illuminaQual) {
+		return (byte) (illuminaQual - phredToSangerOffset);
 	}
 
 	/**
-	 * Convert a byte (ASCII code) illumina quality to a sanger quality
+	 * Convert a byte (PHRED score) illumina quality to a sanger quality
 	 *
 	 * @param illuminaQual the quality in illumina encoding (phred encoded)
 	 *
 	 * @return the byte representing the illumina quality (phred encoded)
 	 */
 	public static byte phredToSanger(byte illuminaQual) {
-		return (byte) (illuminaQual + illuminaToSangerOffset);
+		return (byte) (illuminaQual + phredToSangerOffset);
 	}
 
 	/**

@@ -31,9 +31,9 @@ import org.junit.*;
  */
 public class FastqRecordUtilsTest extends TestCase {
 
-	static String illuminaQuality = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI";
+	static String sangerQuality = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI";
 
-	static String sangerQuality = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefgh";
+	static String illuminaQuality = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefgh";
 
 	FastqRecord illumina1;
 

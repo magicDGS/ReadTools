@@ -28,11 +28,6 @@ import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
-import java.util.Arrays;
-
-import static htsjdk.samtools.SAMUtils.fastqToPhred;
-import static htsjdk.samtools.SAMUtils.phredToFastq;
-
 /**
  * Utils for FASTQ records
  *
@@ -71,19 +66,14 @@ public class FastqRecordUtils {
 	 * @return a new record with the sanger encoding
 	 */
 	public static FastqRecord copyToSanger(FastqRecord record) {
-		// TODO: check if this is correct
-		byte[] asciiQualities = fastqToPhred(record.getBaseQualityString());
+		byte[] asciiQualities = record.getBaseQualityString().getBytes();
 		byte[] newQualities = new byte[asciiQualities.length];
 		for (int i = 0; i < asciiQualities.length; i++) {
-			newQualities[i] = QualityUtils.phredToSanger(asciiQualities[i]);
+			// TODO: needs testing in real data
+			newQualities[i] = QualityUtils.asciiToSangerPhred(asciiQualities[i]);
 		}
-		// TODO: check if the phreadToFastq method is working properly
-		try {
-			return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
-				phredToFastq(newQualities));
-		} catch(IllegalArgumentException e) {
-			throw new IllegalArgumentException("Cannot convert qualities for "+record.getReadHeader()+". Error: "+e.getMessage());
-		}
+		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
+			new String(newQualities));
 	}
 
 	/**
