@@ -66,7 +66,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 			File input1 = new File(cmd.getOptionValue("input1"));
 			File input2 = (cmd.hasOption("input2")) ? new File(cmd.getOptionValue("input2")) : null;
 			String outputPrefix = cmd.getOptionValue("output");
-			String barcodes = cmd.getOptionValue("bc");
+			File barcodes = new File(cmd.getOptionValue("bc"));
 			int max;
 			try {
 				max = (cmd.hasOption("m")) ?
@@ -81,7 +81,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 			// logging command line
 			logCmdLine(args);
 			// create the combined dictionary and the barcode method associated
-			BarcodeDictionary dictionary = BarcodeDictionaryFactory.createCombinedDictionary(input1);
+			BarcodeDictionary dictionary = BarcodeDictionaryFactory.createCombinedDictionary(barcodes);
 			BarcodeMethods methods = new BarcodeMethods(dictionary);
 			// create the reader and the writer
 			FastqReaderInterface reader = getReaderForTool(input1, input2, CommonOptions.isMaintained(logger, cmd));

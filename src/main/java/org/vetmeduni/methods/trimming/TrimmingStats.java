@@ -32,7 +32,7 @@ import java.util.TreeMap;
  * @author Daniel Gómez-Sánchez
  */
 public class TrimmingStats {
-
+	// TODO: change this class for htsjdk.samtools.metrics.MetricsFile
 	// number of 5' Ns trim
 	private int count5ptr;
 
