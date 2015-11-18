@@ -82,6 +82,8 @@ public class FastqBarcodeDetector extends AbstractTool {
 			logCmdLine(args);
 			// create the combined dictionary and the barcode method associated
 			BarcodeDictionary dictionary = BarcodeDictionaryFactory.createCombinedDictionary(barcodes);
+			logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
+				dictionary.numberOfSamples(), " different barcode sets");
 			BarcodeMethods methods = new BarcodeMethods(dictionary);
 			// create the reader and the writer
 			FastqReaderInterface reader = getReaderForTool(input1, input2, CommonOptions.isMaintained(logger, cmd));

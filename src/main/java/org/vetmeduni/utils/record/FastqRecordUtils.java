@@ -118,8 +118,8 @@ public class FastqRecordUtils {
 	public static String getBarcodeInName(FastqPairedRecord record) throws SAMException {
 		String barcode1 = getBarcodeInName(record.getRecord1());
 		String barcode2 = getBarcodeInName(record.getRecord2());
-		if (barcode1 == null && barcode2 == null) {
-			return null;
+		if (barcode1 == null) {
+			return barcode2;
 		}
 		if (barcode1.equals(barcode2)) {
 			return barcode1;
@@ -139,18 +139,19 @@ public class FastqRecordUtils {
 	}
 
 	/**
-	 * Get the read name for a record without the record
+	 * Get the read name for a record without the barcode
 	 *
 	 * @param record the record to extract the name from
 	 *
 	 * @return the read name without the barcode information
 	 * @throws htsjdk.samtools.SAMException if both record names do not match
+	 * @throws java.lang.NullPointerException if one of the names is null
 	 */
 	public static String getReadNameWithoutBarcode(FastqPairedRecord record) {
 		String name1 = getReadNameWithoutBarcode(record.getRecord1());
 		String name2 = getReadNameWithoutBarcode(record.getRecord2());
-		if (name1 == null && name2 == null) {
-			return null;
+		if (name1 == null || name2 == null) {
+			throw new NullPointerException("Names from FastqPaired record could not be null");
 		}
 		if (name1.equals(name2)) {
 			return name1;
