@@ -25,6 +25,7 @@ package org.vetmeduni.io.readers.paired;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
+import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
@@ -46,6 +47,8 @@ public class FastqReaderPairedImpl implements FastqReaderPairedInterface {
 
 	protected final FastqQualityFormat encoding;
 
+	protected Log logger;
+
 	/**
 	 * Default constructor with two readers
 	 *
@@ -55,12 +58,14 @@ public class FastqReaderPairedImpl implements FastqReaderPairedInterface {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if both files are encoding differently
 	 */
 	public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
+		logger = Log.getInstance(this.getClass());
 		this.reader1 = reader1;
 		this.reader2 = reader2;
 		this.encoding = QualityUtils.getFastqQualityFormat(reader1.getFile());
 		if (encoding != QualityUtils.getFastqQualityFormat(reader2.getFile())) {
 			throw new QualityUtils.QualityException("Pair-end encoding is different for both read pairs");
 		}
+		logger.debug("Encoding for the original FASTQ reader: ", encoding);
 	}
 
 	/**
