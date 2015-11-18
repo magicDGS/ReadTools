@@ -70,10 +70,10 @@ public class FastqRecordUtils {
 	 */
 	public static FastqRecord copyToSanger(FastqRecord record) {
 		// TODO: check if this is correct
-		byte[] qualities = fastqToPhred(record.getBaseQualityString());
-		byte[] newQualities = new byte[qualities.length];
-		for (int i = 0; i < qualities.length; i++) {
-			newQualities[i] = QualityUtils.phredToSanger(qualities[i]);
+		byte[] asciiQualities = fastqToPhred(record.getBaseQualityString());
+		byte[] newQualities = new byte[asciiQualities.length];
+		for (int i = 0; i < asciiQualities.length; i++) {
+			newQualities[i] = QualityUtils.phredToSanger(asciiQualities[i]);
 		}
 		// TODO: check if the phreadToFastq method is working properly
 		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
@@ -145,7 +145,7 @@ public class FastqRecordUtils {
 	 * @param record the record to extract the name from
 	 *
 	 * @return the read name without the barcode information
-	 * @throws htsjdk.samtools.SAMException if both record names do not match
+	 * @throws htsjdk.samtools.SAMException   if both record names do not match
 	 * @throws java.lang.NullPointerException if one of the names is null
 	 */
 	public static String getReadNameWithoutBarcode(FastqPairedRecord record) {
