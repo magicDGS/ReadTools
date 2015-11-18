@@ -164,9 +164,11 @@ public class FastqBarcodeDetector extends AbstractTool {
 		if (reader instanceof FastqReaderSingleInterface) {
 			logger.debug("Running single end");
 			runSingle((FastqReaderSingleInterface) reader, writer, methods, mismatches);
+			return;
 		} else if (reader instanceof FastqReaderPairedInterface) {
 			logger.debug("Running paired end");
 			runPaired((FastqReaderPairedInterface) reader, writer, methods, mismatches);
+			return;
 		}
 		logger.debug("ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
 		throw new IllegalArgumentException("Unreachable code");
