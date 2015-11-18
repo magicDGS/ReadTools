@@ -89,6 +89,7 @@ public class SAMRecordUtils {
 		byte[] qualities = record.getBaseQualities();
 		byte[] newQualities = new byte[qualities.length];
 		for (int i = 0; i < qualities.length; i++) {
+			// TODO: this needs more testing in real data
 			newQualities[i] = QualityUtils.phredToSanger(qualities[i]);
 		}
 		record.setBaseQualities(newQualities);
