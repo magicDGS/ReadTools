@@ -32,6 +32,8 @@ import org.vetmeduni.utils.TimeWatch;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+import static org.vetmeduni.tools.ToolNames.ToolException;
+
 /**
  * Class that contain the caller for the main functions
  *
@@ -77,7 +79,7 @@ public class Main {
 					logger.error("Unexpected error. Please contact with ", ProjectProperties.getContact());
 			}
 			System.exit(exitStatus);
-		} catch (IllegalArgumentException e) {
+		} catch (ToolException e) {
 			logger.debug(e.getMessage());
 			logger.debug(e);
 			generalHelp("Tool '" + args[0] + "' does not exists");

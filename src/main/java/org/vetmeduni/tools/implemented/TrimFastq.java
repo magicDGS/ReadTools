@@ -29,7 +29,6 @@ import htsjdk.samtools.util.FastqQualityFormat;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedImpl;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedInterface;
@@ -47,6 +46,8 @@ import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
  * Class that implements the trimming algorithm from Kofler et al. 2011
@@ -86,7 +87,7 @@ public class TrimFastq extends AbstractTool {
 					throw new NumberFormatException();
 				}
 			} catch (NumberFormatException e) {
-				throw new ParseException("Quality threshold should be a positive integer");
+				throw new ToolException("Quality threshold should be a positive integer");
 			}
 			// minimum length
 			int minLength;
@@ -98,7 +99,7 @@ public class TrimFastq extends AbstractTool {
 					throw new NumberFormatException();
 				}
 			} catch (NumberFormatException e) {
-				throw new ParseException("Minimum length should be a positive integer");
+				throw new ToolException("Minimum length should be a positive integer");
 			}
 			boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
 			boolean trimQuality = !cmd.hasOption("no-trim-quality");
@@ -152,7 +153,7 @@ public class TrimFastq extends AbstractTool {
 				FastqWriter writer = factory.newWriter(output_prefix);
 				processSE(trimming, reader, writer, verbose);
 			}
-		} catch (ParseException e) {
+		} catch (ToolException e) {
 			// This exceptions comes from the command line parsing
 			printUsage(e.getMessage());
 			return 1;

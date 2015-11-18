@@ -27,11 +27,12 @@ import htsjdk.samtools.util.QualityEncodingDetector;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
 import java.io.File;
+
+import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
  * Class for QualityChecking
@@ -54,14 +55,16 @@ public class QualityChecker extends AbstractTool {
 					throw new NumberFormatException();
 				}
 			} catch (NumberFormatException e) {
-				throw new ParseException("Number of reads should be a positive long");
+				throw new ToolException("Number of reads should be a positive long");
 			}
 			logCmdLine(args);
 			FastqQualityFormat format = QualityUtils.getFastqQualityFormat(input, recordsToIterate);
 			String toConsole = (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
 			System.out.println(toConsole);
-		} catch (ParseException e) {
+		} catch (ToolException e) {
+			// This exceptions comes from the command line parsing
 			printUsage(e.getMessage());
+			return 1;
 		} catch (Exception e) {
 			logger.debug(e);
 			return 2;

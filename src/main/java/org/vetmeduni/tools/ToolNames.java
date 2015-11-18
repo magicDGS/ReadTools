@@ -89,8 +89,12 @@ public enum ToolNames {
 	 *
 	 * @return a new instance of a tool
 	 */
-	public static Tool getTool(String tool) throws IllegalArgumentException {
-		return ToolNames.valueOf(tool).getTool();
+	public static Tool getTool(String tool) throws ToolException {
+		try {
+			return ToolNames.valueOf(tool).getTool();
+		} catch(IllegalArgumentException e) {
+			throw new ToolException("Tool not found: "+tool);
+		}
 	}
 
 	/**
@@ -101,4 +105,27 @@ public enum ToolNames {
 	public Tool getTool() {
 		return associatedTool;
 	}
+
+	/**
+	 * Exceptions for the tools
+	 */
+	public static class ToolException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public ToolException() {
+		}
+
+		public ToolException(final String s) {
+			super(s);
+		}
+
+		public ToolException(final String s, final Throwable throwable) {
+			super(s, throwable);
+		}
+
+		public ToolException(final Throwable throwable) {
+			super(throwable);
+		}
+	}
+
 }

@@ -42,6 +42,8 @@ import org.vetmeduni.utils.fastq.QualityUtils;
 import java.io.File;
 import java.io.IOException;
 
+import static org.vetmeduni.tools.ToolNames.ToolException;
+
 /**
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
  *
@@ -77,6 +79,10 @@ public class StandardizeQuality extends AbstractTool {
 				}
 				runFastq(input, output, multi);
 			}
+		} catch (ToolException e) {
+			// This exceptions comes from the command line parsing
+			printUsage(e.getMessage());
+			return 1;
 		} catch (IOException e) {
 			logger.info(e.getMessage());
 			logger.debug(e);
