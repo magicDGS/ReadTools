@@ -100,6 +100,11 @@ public class FastqBarcodeDetector extends AbstractTool {
 			logger.debug(e);
 			logger.error(e.getMessage());
 			return 1;
+		} catch (Exception e) {
+			// unexpected exceptions return a different error code
+			logger.debug(e);
+			logger.error(e.getMessage());
+			return 2;
 		}
 		return 0;
 	}

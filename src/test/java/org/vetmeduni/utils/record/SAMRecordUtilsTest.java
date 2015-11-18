@@ -57,14 +57,17 @@ public class SAMRecordUtilsTest extends TestCase {
 	public void tearDown() throws Exception {
 	}
 
+	@Ignore("not implemented")
 	public void testToFastqRecord() throws Exception {
 		// TODO
 	}
 
+	@Ignore("not implemented")
 	public void testAssertPairedMates() throws Exception {
 		// TODO
 	}
 
+	@Ignore("not implemented")
 	public void testAddBarcodeToName() throws Exception {
 		// TODO
 	}
@@ -77,14 +80,17 @@ public class SAMRecordUtilsTest extends TestCase {
 			SAMRecordUtils.copyToSanger(illuminaRecord).getBaseQualities());
 	}
 
+	@Ignore("not implemented")
 	public void testToSanger() throws Exception {
 		// TODO
 	}
 
+	@Ignore("not implemented")
 	public void testGetBarcodeInName() throws Exception {
 		// TODO
 	}
 
+	@Ignore("not implemented")
 	public void testGetReadNameWithoutBarcode() throws Exception {
 		// TODO
 	}
