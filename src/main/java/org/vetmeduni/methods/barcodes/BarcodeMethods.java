@@ -52,7 +52,7 @@ public class BarcodeMethods {
 	/**
 	 * The separator between the read name (and barcode, if present) and the read pair information (0, 1, 2)
 	 */
-	public static final String READ_PAIR_SEPARATOR = "#";
+	public static final String READ_PAIR_SEPARATOR = "/";
 
 	/**
 	 * The pattern to match a barcode in a read name including everything after the {@link #BARCODE_SEPARATOR}
@@ -63,7 +63,7 @@ public class BarcodeMethods {
 	 * The pattern to match a barcode in a read name removing also the read pair info (after {@link
 	 * #READ_PAIR_SEPARATOR})
 	 */
-	public static final Pattern BARCODE_WITH_READPAIR_SLASH_PATTERN = Pattern
+	public static final Pattern BARCODE_WITH_READPAIR_PATTERN = Pattern
 		.compile(BARCODE_SEPARATOR + "(.+)" + READ_PAIR_SEPARATOR);
 
 	// the barcode dictionary
@@ -266,8 +266,8 @@ public class BarcodeMethods {
 	 */
 	public static String getOnlyBarcodeFromName(String readName) {
 		Matcher matcher;
-		if (readName.contains(BARCODE_SEPARATOR)) {
-			matcher = BARCODE_WITH_READPAIR_SLASH_PATTERN.matcher(readName);
+		if (readName.contains(READ_PAIR_SEPARATOR)) {
+			matcher = BARCODE_WITH_READPAIR_PATTERN.matcher(readName);
 		} else {
 			matcher = BARCODE_COMPLETE_PATTERN.matcher(readName);
 		}
