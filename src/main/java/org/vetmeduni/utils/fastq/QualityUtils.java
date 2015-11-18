@@ -43,7 +43,7 @@ import java.util.Set;
  */
 public class QualityUtils {
 
-	private static final byte illuminaToSangerOffset = (byte) -31;
+	private static final byte illuminaToSangerOffset = (byte) 31;
 
 	/**
 	 * Supported quality formats for this program

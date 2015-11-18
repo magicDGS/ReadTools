@@ -28,6 +28,7 @@ import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
+import static htsjdk.samtools.SAMUtils.fastqToPhred;
 import static htsjdk.samtools.SAMUtils.phredToFastq;
 
 /**
@@ -69,7 +70,7 @@ public class FastqRecordUtils {
 	 */
 	public static FastqRecord copyToSanger(FastqRecord record) {
 		// TODO: check if this is correct
-		byte[] qualities = record.getBaseQualityString().getBytes();
+		byte[] qualities = fastqToPhred(record.getBaseQualityString());
 		byte[] newQualities = new byte[qualities.length];
 		for (int i = 0; i < qualities.length; i++) {
 			newQualities[i] = QualityUtils.toSanger(qualities[i]);
