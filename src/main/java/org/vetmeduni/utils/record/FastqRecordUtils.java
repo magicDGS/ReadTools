@@ -28,6 +28,8 @@ import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
+import java.util.Arrays;
+
 import static htsjdk.samtools.SAMUtils.fastqToPhred;
 import static htsjdk.samtools.SAMUtils.phredToFastq;
 
@@ -76,8 +78,12 @@ public class FastqRecordUtils {
 			newQualities[i] = QualityUtils.phredToSanger(asciiQualities[i]);
 		}
 		// TODO: check if the phreadToFastq method is working properly
-		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
-			phredToFastq(newQualities));
+		try {
+			return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
+				phredToFastq(newQualities));
+		} catch(IllegalArgumentException e) {
+			throw new IllegalArgumentException("Cannot convert qualities ("+ Arrays.toString(asciiQualities)+") to Sanger. Error"+e.getMessage());
+		}
 	}
 
 	/**
