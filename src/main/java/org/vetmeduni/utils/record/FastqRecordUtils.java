@@ -70,7 +70,7 @@ public class FastqRecordUtils {
 		byte[] newQualities = new byte[asciiQualities.length];
 		for (int i = 0; i < asciiQualities.length; i++) {
 			// TODO: needs testing in real data
-			newQualities[i] = QualityUtils.asciiToSangerPhred(asciiQualities[i]);
+			newQualities[i] = QualityUtils.byteToSanger(asciiQualities[i]);
 		}
 		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
 			new String(newQualities));

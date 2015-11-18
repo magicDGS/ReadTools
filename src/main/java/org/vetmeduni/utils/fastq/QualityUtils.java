@@ -179,25 +179,14 @@ public class QualityUtils {
 	}
 
 	/**
-	 * Convert a byte (ASCII code) illumina quality to a sanger quality
+	 * Convert a byte illumina quality to a sanger quality
 	 *
-	 * @param illuminaQual the quality in illumina encoding (ASCII code)
+	 * @param illuminaQual the quality in illumina encoding
 	 *
-	 * @return the byte representing the illumina quality (ASCII code)
+	 * @return the byte representing the illumina quality
 	 */
-	public static byte asciiToSangerPhred(byte illuminaQual) {
+	public static byte byteToSanger(byte illuminaQual) {
 		return (byte) (illuminaQual - phredToSangerOffset);
-	}
-
-	/**
-	 * Convert a byte (PHRED score) illumina quality to a sanger quality
-	 *
-	 * @param illuminaQual the quality in illumina encoding (phred encoded)
-	 *
-	 * @return the byte representing the illumina quality (phred encoded)
-	 */
-	public static byte phredToSanger(byte illuminaQual) {
-		return (byte) (illuminaQual + phredToSangerOffset);
 	}
 
 	/**
