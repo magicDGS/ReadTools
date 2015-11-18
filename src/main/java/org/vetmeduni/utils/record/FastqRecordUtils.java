@@ -82,7 +82,7 @@ public class FastqRecordUtils {
 			return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
 				phredToFastq(newQualities));
 		} catch(IllegalArgumentException e) {
-			throw new IllegalArgumentException("Cannot convert qualities ("+ Arrays.toString(asciiQualities)+") to Sanger. Error"+e.getMessage());
+			throw new IllegalArgumentException("Cannot convert qualities for "+record.getReadHeader()+". Error: "+e.getMessage());
 		}
 	}
 
