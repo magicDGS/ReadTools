@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.tools.defaults;
+package org.vetmeduni.tools.cmd;
 
 import htsjdk.samtools.util.Log;
 import org.apache.commons.cli.CommandLine;
@@ -53,17 +53,18 @@ public class CommonOptions {
 													 .build();
 
 	/**
-	 * Option for parallelization
+	 * Option for parallelization. Currently is not really multi-thread
 	 */
+	// TODO: change the description when real multi-thread
 	public static Option parallel = Option.builder("nt").longOpt("number-of-thread").desc(
-		"Specified the number of threads to use. [Default=" + DEFAULT_THREADS + "]").hasArg().numberOfArgs(1)
-										  .argName("INT").optionalArg(true).build();
+		"Specified the number of threads to use. Warning: real multi-thread is not implemented; if using more than one thread the option is a switch and the number of threads depends on the number of outputs. [Default="
+			+ DEFAULT_THREADS + "]").hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
 
 	/**
 	 * Check if the command line provides the maintain format option and log into the logger
 	 *
 	 * @param logger the logger where ouptut the information
-	 * @param cmd    the command line where check if it the option is set
+	 * @param cmd    the command line where check if the option is set
 	 *
 	 * @return <code>true</code> if the format is maintained; <code>false</code> if it should be standardize
 	 */
@@ -79,10 +80,21 @@ public class CommonOptions {
 	}
 
 	/**
+	 * Check if the command line provides an option for disable zipping
+	 *
+	 * @param cmd the command line where check if the option is set
+	 *
+	 * @return <code>true</code> if gzip is disable; <code>false</code> otherwise
+	 */
+	public static boolean isZipDisable(CommandLine cmd) {
+		return cmd.hasOption(disableZippedOutput.getOpt());
+	}
+
+	/**
 	 * Get the default number of threads if the command line does not contain the parallel option; if it is contain,
 	 * parse the command line and return the number of threads asked for
 	 *
-	 * @param cmd the command line where check if it the option is set
+	 * @param cmd the command line where check if the option is set
 	 *
 	 * @return the number of threads to use
 	 */
@@ -90,7 +102,8 @@ public class CommonOptions {
 		int nThreads = (cmd.hasOption(parallel.getOpt())) ?
 			Integer.parseInt(cmd.getOptionValue(parallel.getOpt())) :
 			DEFAULT_THREADS;
-		if(nThreads != 1) {
+		if (nThreads != 1) {
+			// TODO: change when real multi-thread is implemented
 			logger.warn(
 				"Currently multi-threads does not control the number of threads in use, depends on the number of outputs");
 		}

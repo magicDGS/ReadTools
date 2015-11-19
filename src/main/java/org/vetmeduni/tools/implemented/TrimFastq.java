@@ -25,23 +25,20 @@ package org.vetmeduni.tools.implemented;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
-import htsjdk.samtools.util.FastqQualityFormat;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.vetmeduni.io.FastqPairedRecord;
-import org.vetmeduni.io.readers.paired.FastqReaderPairedImpl;
+import org.vetmeduni.io.readers.FastqReaderInterface;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedInterface;
-import org.vetmeduni.io.readers.paired.FastqReaderPairedSanger;
 import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
-import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
-import org.vetmeduni.io.readers.single.FastqReaderWrapper;
 import org.vetmeduni.io.writers.PairFastqWriters;
-import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
 import org.vetmeduni.methods.trimming.MottAlgorithm;
 import org.vetmeduni.methods.trimming.TrimmingStats;
 import org.vetmeduni.tools.AbstractTool;
-import org.vetmeduni.tools.defaults.CommonOptions;
+import org.vetmeduni.tools.cmd.CommonOptions;
+import org.vetmeduni.tools.cmd.ToolWritersFactory;
+import org.vetmeduni.tools.cmd.ToolsReadersFactory;
 import org.vetmeduni.utils.fastq.FastqLogger;
 
 import java.io.File;
@@ -105,54 +102,26 @@ public class TrimFastq extends AbstractTool {
 			boolean trimQuality = !cmd.hasOption("no-trim-quality");
 			boolean no5ptrim = cmd.hasOption("no-5p-trim");
 			boolean verbose = !cmd.hasOption("quiet");
-			// start the new factory
-			ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
-			// set the gzipped option in the factory
-			factory.setGzipOutput(!cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()));
-			// multi-thread?
-			int multi = CommonOptions.numberOfThreads(logger, cmd);
-			if (multi != 1) {
-				factory.setUseAsyncIo(true);
-			}
 			// FINISH PARSING: log the command line (not longer in the param file)
 			logCmdLine(args);
+			// save the gzip option
+			boolean dgzip = CommonOptions.isZipDisable(cmd);
+			// start the new factory
+			// multi-thread?
+			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+			boolean multi = (nThreads != 1);
+			// save the maintained format option
+			boolean isMaintained = CommonOptions.isMaintained(logger, cmd);
 			// create the MottAlgorithm
 			MottAlgorithm trimming = new MottAlgorithm(trimQuality, qualThreshold, minLength, discardRemainingNs,
 				no5ptrim);
-			// if input 2 process Pair end
-			if (input2 != null) {
-				logger.info("Found an existing file for the second read; Switching to paired-read mode");
-				// open the reader
-				FastqReaderPairedInterface reader;
-				if (CommonOptions.isMaintained(logger, cmd)) {
-					reader = new FastqReaderPairedImpl(input1, input2);
-					logger.info("Output will be in ",
-						(reader.getFastqQuality().equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
-				} else {
-					reader = new FastqReaderPairedSanger(input1, input2);
-				}
-				// open the writer
-				PairFastqWriters writer = factory.newPairWriter(output_prefix);
-				processPE(trimming, reader, writer, verbose);
-				// if not, single end mode
-			} else {
-				logger.info("Did not find an existing file for the second read; Switching to single-read mode");
-				// open the reader
-				FastqReaderSingleInterface reader;
-				if (cmd.hasOption("nstd")) {
-					reader = new FastqReaderWrapper(input1);
-					logger.warn(
-						"Output will not be standardize. Does not provide the option -nstd to avoid this behaviour");
-					logger.info("Output will be in ",
-						(reader.getFastqQuality().equals(FastqQualityFormat.Standard)) ? "'sanger'" : "'illumina'");
-				} else {
-					logger.info("Output will be in Sanger format independently of the input format");
-					reader = new FastqReaderSingleSanger(input1);
-				}
-				// open the writer for single end
-				FastqWriter writer = factory.newWriter(output_prefix);
-				processSE(trimming, reader, writer, verbose);
-			}
+			// open the reader
+			FastqReaderInterface reader = ToolsReadersFactory.getFastqReaderFromInputs(input1, input2, isMaintained);
+			boolean single = !(reader instanceof FastqReaderPairedInterface);
+			// open the writer
+			FastqWriter writer = ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
+			// run it!
+			process(trimming, reader, writer, verbose);
 		} catch (ToolException e) {
 			// This exceptions comes from the command line parsing
 			printUsage(e.getMessage());
@@ -172,17 +141,43 @@ public class TrimFastq extends AbstractTool {
 	}
 
 	/**
-	 * Process the files in pair-end mode
+	 * Process the data depending on the reader status (if it is for single or pair-end
 	 *
 	 * @param trimming the algorithm with the provided settings
-	 * @param reader   the reader for the pairs
-	 * @param writer   the writer for the pairs
+	 * @param reader   the reader, either for pairs or single end
+	 * @param writer   the writer for the pairs (should be a PairFastqWriters if the reader is for pairs)
 	 * @param verbose  should we be verbose?
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void processPE(MottAlgorithm trimming, FastqReaderPairedInterface reader, PairFastqWriters writer,
+	private void process(MottAlgorithm trimming, FastqReaderInterface reader, FastqWriter writer, boolean verbose)
+		throws IOException {
+		if (reader instanceof FastqReaderSingleInterface) {
+			logger.debug("Running single end");
+			processSE(trimming, (FastqReaderSingleInterface) reader, writer, verbose);
+			return;
+		} else if (reader instanceof FastqReaderPairedInterface) {
+			logger.debug("Running paired end");
+			processPE(trimming, (FastqReaderPairedInterface) reader, writer, verbose);
+			return;
+		}
+		logger.debug("ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
+		throw new IllegalArgumentException("Unreachable code");
+	}
+
+	/**
+	 * Process the files in pair-end mode
+	 *
+	 * @param trimming  the algorithm with the provided settings
+	 * @param reader    the reader for the pairs
+	 * @param writerObj the writer for the pairs (instance of PairFastqWriters
+	 * @param verbose   should we be verbose?
+	 *
+	 * @throws IOException if there are problems with the files
+	 */
+	private void processPE(MottAlgorithm trimming, FastqReaderPairedInterface reader, FastqWriter writerObj,
 		boolean verbose) throws IOException {
+		PairFastqWriters writer = (PairFastqWriters) writerObj;
 		// creating progress
 		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
 		TrimmingStats stats1 = null;

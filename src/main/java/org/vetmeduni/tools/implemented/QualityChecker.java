@@ -35,7 +35,7 @@ import java.io.File;
 import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
- * Class for QualityChecking
+ * Tool for check the quality in both FASTQ and BAM files
  *
  * @author Daniel Gómez-Sánchez
  */

@@ -29,13 +29,13 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.readers.SamReaderSanger;
-import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
 import org.vetmeduni.io.writers.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
-import org.vetmeduni.tools.defaults.CommonOptions;
+import org.vetmeduni.tools.cmd.CommonOptions;
+import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
@@ -46,10 +46,6 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
  * Class for converting from a Barcoded BAM to a FASTQ
- *
- * TODO: documentation
- *
- * TODO: implemented splitting should be tested
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -70,7 +66,6 @@ public class BarcodedBamToFastq extends AbstractTool {
 			if (max.length != 1 && max.length != tags.length) {
 				throw new ToolException("Number of maximum mismatches provided and number of tags does not match");
 			}
-			// TODO: real multi-thread
 			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
 			boolean multi = nThreads != 1;
 			// FINISH PARSING: log the command line (not longer in the param file)
@@ -93,7 +88,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 				input = new SamReaderSanger(new File(inputString), ValidationStringency.SILENT);
 			}
 			// Create the writer factory
-			SplitFastqWriter writer = getWriterForTool(outputPrefix, barcodeDict,
+			SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix, barcodeDict,
 				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), cmd.hasOption("s"), cmd.hasOption("x"),
 				multi);
 			// single end processing
@@ -121,32 +116,6 @@ public class BarcodedBamToFastq extends AbstractTool {
 			return 2;
 		}
 		return 0;
-	}
-
-	/**
-	 * Get the split writer for this tool depending on the options
-	 *
-	 * @param prefix     the file prefix for the writer
-	 * @param dictionary the barcode dictionary to use for spliting if requested
-	 * @param dgzip      should the gzip be disable?
-	 * @param single     single-end output?
-	 * @param split      should we split by barcodes?
-	 * @param multi      multi-thread outputs
-	 *
-	 * @return the writer that will use the tool
-	 */
-	private static SplitFastqWriter getWriterForTool(String prefix, BarcodeDictionary dictionary, boolean dgzip,
-		boolean single, boolean split, boolean multi) {
-		// Create the writer factory
-		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
-		factory.setGzipOutput(!dgzip);
-		factory.setUseAsyncIo(multi);
-		// create split output
-		if (split) {
-			return factory.newSplitByBarcodeWriter(prefix, dictionary, !single);
-		} else {
-			return factory.newSplitAssingUnknownBarcodeWriter(prefix, !single);
-		}
 	}
 
 	/**
