@@ -88,8 +88,8 @@ public class TrimFastq extends AbstractTool {
 			// minimum length
 			int minLength;
 			try {
-				minLength = (cmd.hasOption("min-length")) ?
-					Integer.parseInt(cmd.getOptionValue("min-length")) :
+				minLength = (cmd.hasOption("m")) ?
+					Integer.parseInt(cmd.getOptionValue("m")) :
 					DEFAULT_MINIMUM_LENGTH;
 				if (minLength < 1) {
 					throw new NumberFormatException();
