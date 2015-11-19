@@ -20,42 +20,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.utils;
+package org.vetmeduni.utils.misc;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Collections;
+import htsjdk.samtools.BamFileIoUtils;
+
+import java.io.File;
 
 /**
- * Static formats for output times and numbers
+ * Utils for the inputs FASTQ and BAM/SAM files
  *
  * @author Daniel Gómez-Sánchez
  */
-public class Formats {
+public class IOUtils {
+
+	public static final String DEFAULT_SAM_EXTENSION = ".sam";
+
+	public static final String DEFAULT_FQ_EXTENSION = ".fq";
+
+	public static final String DEFAULT_GZIP_EXTENSION = ".gz";
 
 	/**
-	 * Format for times
-	 */
-	public final static DecimalFormat timeFmt = new DecimalFormat("00");
-
-	/**
-	 * Format for big numbers with commas each 3 numbers
-	 */
-	public final static NumberFormat commaFmt = new DecimalFormat("#,###");
-
-	/**
-	 * Format for decimal numbers rounded to 7
-	 */
-	public final static DecimalFormat roundToSevenFmt = new DecimalFormat("#.#######");
-
-	/**
-	 * Get a rounded format with certain number of significant digits
+	 * Check if the file is BAM or SAM formatted
 	 *
-	 * @param digits the numer of digits
+	 * @param input the input file
 	 *
-	 * @return the number formatted as a String
+	 * @return <code>true</code> if it is a BAM/SAM; <code>false</code> otherwise
 	 */
-	public static DecimalFormat getRoundFormat(int digits) {
-		return new DecimalFormat(String.format("#.%s", String.join("", Collections.nCopies(digits, "#"))));
+	public static boolean isBamOrSam(File input) {
+		return BamFileIoUtils.isBamFile(input) || input.getName().endsWith(DEFAULT_SAM_EXTENSION);
+	}
+
+	/**
+	 * Make an output FASTQ with the default extensions {@link #DEFAULT_FQ_EXTENSION} and {@link
+	 * #DEFAULT_GZIP_EXTENSION} if gzip is requested
+	 *
+	 * @param prefix the prefix for the file
+	 * @param gzip   <code>true</code> indicates that the output will be gzipped
+	 *
+	 * @return the formatted output name
+	 */
+	public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
+		return String
+			.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
 	}
 }

@@ -20,13 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.utils;
+package org.vetmeduni.utils.loggers;
 
 import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.ProgressLogger;
-import org.vetmeduni.utils.Formats;
+import org.vetmeduni.utils.misc.Formats;
 
-import static org.vetmeduni.utils.Formats.timeFmt;
+import static org.vetmeduni.utils.misc.Formats.timeFmt;
 
 /**
  * Extension of {@link htsjdk.samtools.util.ProgressLogger}

@@ -27,7 +27,7 @@ import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
 import org.vetmeduni.io.FastqPairedRecord;
-import org.vetmeduni.utils.Formats;
+import org.vetmeduni.utils.misc.Formats;
 
 /**
  * Simple class to have two writers in pairs. It also could be use to write in single-end mode

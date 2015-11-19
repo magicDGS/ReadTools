@@ -20,12 +20,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.utils.fastq;
+package org.vetmeduni.utils.loggers;
 
 import htsjdk.samtools.util.Log;
 
-import static org.vetmeduni.utils.Formats.commaFmt;
-import static org.vetmeduni.utils.Formats.timeFmt;
+import static org.vetmeduni.utils.misc.Formats.commaFmt;
+import static org.vetmeduni.utils.misc.Formats.timeFmt;
 
 /**
  * Logger for Fastq files, similar to {@link htsjdk.samtools.util.ProgressLogger} but without the need of input a read

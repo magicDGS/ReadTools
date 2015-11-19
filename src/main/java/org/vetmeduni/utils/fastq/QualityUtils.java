@@ -27,7 +27,7 @@ import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.QualityEncodingDetector;
-import org.vetmeduni.utils.IOUtils;
+import org.vetmeduni.utils.misc.IOUtils;
 
 import java.io.File;
 import java.util.Collections;
