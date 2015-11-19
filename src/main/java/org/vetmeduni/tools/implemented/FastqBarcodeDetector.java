@@ -38,7 +38,7 @@ import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.tools.cmd.ToolsReadersFactory;
-import org.vetmeduni.utils.fastq.FastqLogger;
+import org.vetmeduni.utils.loggers.FastqLogger;
 import org.vetmeduni.utils.record.FastqRecordUtils;
 
 import java.io.File;

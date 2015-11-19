@@ -20,47 +20,42 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.utils;
+package org.vetmeduni.utils.misc;
 
-import htsjdk.samtools.BamFileIoUtils;
-
-import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Collections;
 
 /**
- * Utils for the inputs FASTQ and BAM/SAM files
+ * Static formats for output times and numbers
  *
  * @author Daniel Gómez-Sánchez
  */
-public class IOUtils {
-
-	public static final String DEFAULT_SAM_EXTENSION = ".sam";
-
-	public static final String DEFAULT_FQ_EXTENSION = ".fq";
-
-	public static final String DEFAULT_GZIP_EXTENSION = ".gz";
+public class Formats {
 
 	/**
-	 * Check if the file is BAM or SAM formatted
-	 *
-	 * @param input the input file
-	 *
-	 * @return <code>true</code> if it is a BAM/SAM; <code>false</code> otherwise
+	 * Format for times
 	 */
-	public static boolean isBamOrSam(File input) {
-		return BamFileIoUtils.isBamFile(input) || input.getName().endsWith(DEFAULT_SAM_EXTENSION);
-	}
+	public final static DecimalFormat timeFmt = new DecimalFormat("00");
 
 	/**
-	 * Make an output FASTQ with the default extensions {@link #DEFAULT_FQ_EXTENSION} and {@link
-	 * #DEFAULT_GZIP_EXTENSION} if gzip is requested
-	 *
-	 * @param prefix the prefix for the file
-	 * @param gzip   <code>true</code> indicates that the output will be gzipped
-	 *
-	 * @return the formatted output name
+	 * Format for big numbers with commas each 3 numbers
 	 */
-	public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
-		return String
-			.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
+	public final static NumberFormat commaFmt = new DecimalFormat("#,###");
+
+	/**
+	 * Format for decimal numbers rounded to 7
+	 */
+	public final static DecimalFormat roundToSevenFmt = new DecimalFormat("#.#######");
+
+	/**
+	 * Get a rounded format with certain number of significant digits
+	 *
+	 * @param digits the numer of digits
+	 *
+	 * @return the number formatted as a String
+	 */
+	public static DecimalFormat getRoundFormat(int digits) {
+		return new DecimalFormat(String.format("#.%s", String.join("", Collections.nCopies(digits, "#"))));
 	}
 }

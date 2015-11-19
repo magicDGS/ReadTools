@@ -20,9 +20,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.utils;
+package org.vetmeduni.utils.misc;
 
-import static org.vetmeduni.utils.Formats.timeFmt;
+import static org.vetmeduni.utils.misc.Formats.timeFmt;
 
 /**
  * Simple time watch to get the elapsed times

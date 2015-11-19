@@ -32,7 +32,7 @@ import org.vetmeduni.io.writers.SplitFastqWriter;
 import org.vetmeduni.io.writers.SplitFastqWriterAbstract;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
-import org.vetmeduni.utils.IOUtils;
+import org.vetmeduni.utils.misc.IOUtils;
 import org.vetmeduni.utils.record.FastqRecordUtils;
 
 import java.io.File;

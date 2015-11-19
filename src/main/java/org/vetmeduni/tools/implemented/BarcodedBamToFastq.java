@@ -38,7 +38,7 @@ import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.tools.cmd.ToolsReadersFactory;
-import org.vetmeduni.utils.ProgressLoggerExtension;
+import org.vetmeduni.utils.loggers.ProgressLoggerExtension;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;

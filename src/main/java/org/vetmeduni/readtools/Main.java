@@ -26,7 +26,7 @@ import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.StringUtil;
 import org.vetmeduni.tools.Tool;
 import org.vetmeduni.tools.ToolNames;
-import org.vetmeduni.utils.TimeWatch;
+import org.vetmeduni.utils.misc.TimeWatch;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
