@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.utils.fastq;
+package org.vetmeduni.utils;
 
 import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.ProgressLogger;
@@ -74,5 +74,12 @@ public class ProgressLoggerExtension extends ProgressLogger {
 		final String elapsed = formatElapseTime(seconds);
 		return String
 			.format("%s %s %s. Elapsed time: %s", this.verb, Formats.commaFmt.format(getCount()), this.noun, elapsed);
+	}
+
+	/**
+	 * Log the number of variants processed in this logger
+	 */
+	public synchronized void logNumberOfVariantsProcessed() {
+		log(numberOfVariantsProcessed());
 	}
 }

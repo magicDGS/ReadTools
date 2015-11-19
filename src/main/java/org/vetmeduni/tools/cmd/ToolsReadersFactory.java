@@ -22,7 +22,11 @@
  */
 package org.vetmeduni.tools.cmd;
 
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
 import org.vetmeduni.io.readers.FastqReaderInterface;
+import org.vetmeduni.io.readers.SamReaderSanger;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedImpl;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedSanger;
 import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
@@ -58,5 +62,23 @@ public class ToolsReadersFactory {
 				new FastqReaderPairedSanger(input1, input2);
 		}
 		return toReturn;
+	}
+
+	/**
+	 * Get the SamReader for the input, maintaining or not the format
+	 *
+	 * @param input        the input BAM/SAM file
+	 * @param isMaintained should be the format maintained or standardize?
+	 *
+	 * @return the reader for the file
+	 */
+	public static SamReader getSamReaderFromInput(File input, boolean isMaintained) {
+		if (isMaintained) {
+			// if the format is maintained, create a default sam reader
+			return SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT).open(input);
+		} else {
+			// if not, standardize
+			return new SamReaderSanger(input, ValidationStringency.SILENT);
+		}
 	}
 }
