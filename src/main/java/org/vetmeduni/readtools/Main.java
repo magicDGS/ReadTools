@@ -26,7 +26,6 @@ import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.StringUtil;
 import org.vetmeduni.tools.Tool;
 import org.vetmeduni.tools.ToolNames;
-import org.vetmeduni.tools.implemented.TrimFastq;
 import org.vetmeduni.utils.TimeWatch;
 
 import java.io.PrintWriter;
