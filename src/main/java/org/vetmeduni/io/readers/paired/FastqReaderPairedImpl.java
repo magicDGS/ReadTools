@@ -136,4 +136,9 @@ public class FastqReaderPairedImpl implements FastqReaderPairedInterface {
 	public FastqQualityFormat getFastqQuality() {
 		return encoding;
 	}
+
+	@Override
+	public FastqQualityFormat getOriginalEncoding() {
+		return encoding;
+	}
 }

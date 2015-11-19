@@ -48,6 +48,11 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
 	 */
 	protected final Hashtable<String, Integer> counts;
 
+	/**
+	 * All instances for the class will be performed by {@link org.vetmeduni.io.ReadToolsFastqWriterFactory}
+	 *
+	 * @param mapping the mapping between the identifier and the FastqWriter
+	 */
 	protected SplitFastqWriterAbstract(Hashtable<String, ? extends FastqWriter> mapping) {
 		this.mapping = mapping;
 		this.counts = new Hashtable<>(mapping.size());

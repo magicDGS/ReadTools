@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.io.readers.single;
 
 import htsjdk.samtools.fastq.FastqRecord;
@@ -32,11 +31,8 @@ import java.util.Iterator;
  * Abstract class for pair-end fastq reader. The aim of this class is allow to implement pair-end readers for two files
  * and for one interleaved file
  *
- * TODO: implement a method to get the pair reader for the different implementations
- *
  * @author Daniel Gómez-Sánchez
  */
-public interface FastqReaderSingleInterface
-	extends Iterator<FastqRecord>, Iterable<FastqRecord>, FastqReaderInterface {
+public interface FastqReaderSingleInterface extends Iterator<FastqRecord>, Iterable<FastqRecord>, FastqReaderInterface {
 
 }

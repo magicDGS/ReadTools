@@ -64,12 +64,17 @@ public class FastqReaderSingleSanger extends FastqReaderWrapper implements Fastq
 	 */
 	@Override
 	public FastqRecord next() {
-		if(QualityUtils.isStandard(encoding)) {
+		if (QualityUtils.isStandard(encoding)) {
 			return super.next();
 		}
 		return FastqRecordUtils.copyToSanger(super.next());
 	}
 
+	/**
+	 * The returning format is always Sanger
+	 *
+	 * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+	 */
 	@Override
 	public FastqQualityFormat getFastqQuality() {
 		return FastqQualityFormat.Standard;

@@ -27,8 +27,7 @@ import htsjdk.samtools.util.FastqQualityFormat;
 import java.io.Closeable;
 
 /**
- * Interface for implement different FastqReaders pair-end or single-end. It also contains information about the
- * encoding
+ * Interface for implement different FastqReaders pair-end or single-end and contains information about the encoding
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -40,4 +39,11 @@ public interface FastqReaderInterface extends Closeable {
 	 * @return the FastqQuality for this reader
 	 */
 	public FastqQualityFormat getFastqQuality();
+
+	/**
+	 * Get the original encoding for the file
+	 *
+	 * @return the original FastqQuality (in the file)
+	 */
+	public FastqQualityFormat getOriginalEncoding();
 }

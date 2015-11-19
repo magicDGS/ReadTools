@@ -31,8 +31,6 @@ import java.util.Iterator;
  * Abstract class for pair-end fastq reader. The aim of this class is allow to implement pair-end readers for two files
  * and for one interleaved file
  *
- * TODO: implement a method to get the pair reader for the different implementations
- *
  * @author Daniel Gómez-Sánchez
  */
 public interface FastqReaderPairedInterface

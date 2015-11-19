@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.io.readers.paired;
 
 import htsjdk.samtools.fastq.FastqReader;
@@ -53,9 +52,19 @@ public class FastqReaderPairedSanger extends FastqReaderPairedImpl implements Fa
 	 */
 	@Override
 	public FastqPairedRecord next() {
-		if(QualityUtils.isStandard(encoding)) {
+		if (QualityUtils.isStandard(encoding)) {
 			return super.next();
 		}
 		return FastqRecordUtils.copyToSanger(super.next());
+	}
+
+	/**
+	 * The returning format is always Sanger
+	 *
+	 * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+	 */
+	@Override
+	public FastqQualityFormat getFastqQuality() {
+		return FastqQualityFormat.Standard;
 	}
 }
