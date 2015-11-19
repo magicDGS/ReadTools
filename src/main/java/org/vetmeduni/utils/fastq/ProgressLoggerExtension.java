@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.utils.fastq;
 
 import htsjdk.samtools.util.Log;
@@ -54,6 +53,8 @@ public class ProgressLoggerExtension extends ProgressLogger {
 
 	/**
 	 * Formats a number of seconds into hours:minutes:seconds.
+	 *
+	 * @param seconds seconds to format
 	 */
 	private String formatElapseTime(final long seconds) {
 		final long s = seconds % 60;
@@ -63,6 +64,11 @@ public class ProgressLoggerExtension extends ProgressLogger {
 		return timeFmt.format(h) + ":" + timeFmt.format(m) + ":" + timeFmt.format(s);
 	}
 
+	/**
+	 * Get the total number of variants processed now and the elapsed time
+	 *
+	 * @return formatted String with the number of variants processed and the elapsed time for this logger
+	 */
 	public synchronized String numberOfVariantsProcessed() {
 		final long seconds = getElapsedSeconds();
 		final String elapsed = formatElapseTime(seconds);

@@ -149,6 +149,11 @@ public class FastqLogger {
 		return timeFmt.format(h) + ":" + timeFmt.format(m) + ":" + timeFmt.format(s);
 	}
 
+	/**
+	 * Get the total number of variants processed now and the elapsed time
+	 *
+	 * @return formatted String with the number of variants processed and the elapsed time for this logger
+	 */
 	public synchronized String numberOfVariantsProcessed() {
 		final long seconds = (System.currentTimeMillis() - startTime) / 1000;
 		final String elapsed = formatElapseTime(seconds);
