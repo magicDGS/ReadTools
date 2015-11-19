@@ -20,14 +20,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.writers;
+package org.vetmeduni.io;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
 import htsjdk.samtools.util.Log;
-import org.vetmeduni.io.FastqPairedRecord;
+import org.vetmeduni.io.writers.PairFastqWriters;
+import org.vetmeduni.io.writers.SplitFastqWriter;
+import org.vetmeduni.io.writers.SplitFastqWriterAbstract;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.IOUtils;

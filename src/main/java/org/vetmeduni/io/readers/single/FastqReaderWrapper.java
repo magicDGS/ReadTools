@@ -20,28 +20,29 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.io.readers.single;
 
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 
 /**
- * Wrapper for the {@link htsjdk.samtools.fastq.FastqReader}
+ * Wrapper for the {@link htsjdk.samtools.fastq.FastqReader} to include it in the ReadTools interface
  *
  * @author Daniel Gómez-Sánchez
  */
 public class FastqReaderWrapper extends FastqReader implements FastqReaderSingleInterface {
 
+	/**
+	 * The encoding for the file
+	 */
 	protected FastqQualityFormat encoding;
 
 	public FastqReaderWrapper(File file) {
-		this(file,false);
+		this(file, false);
 	}
 
 	public FastqReaderWrapper(File file, boolean skipBlankLines) {
@@ -59,17 +60,23 @@ public class FastqReaderWrapper extends FastqReader implements FastqReaderSingle
 	}
 
 	public FastqReaderWrapper(File file, BufferedReader reader) {
-		this(file,reader,false);
+		this(file, reader, false);
 	}
 
+	/**
+	 * Get the encoding for the file
+	 */
 	protected void init() {
 		encoding = QualityUtils.getFastqQualityFormat(this.getFile());
 	}
-
 
 	@Override
 	public FastqQualityFormat getFastqQuality() {
 		return encoding;
 	}
 
+	@Override
+	public FastqQualityFormat getOriginalEncoding() {
+		return encoding;
+	}
 }
