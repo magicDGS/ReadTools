@@ -33,7 +33,7 @@ import org.vetmeduni.io.readers.SamReaderSanger;
 import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
 import org.vetmeduni.tools.AbstractTool;
-import org.vetmeduni.tools.defaults.CommonOptions;
+import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.FastqLogger;
 import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
@@ -46,8 +46,6 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
- *
- * TODO: document
  *
  * @author Daniel Gómez-Sánchez
  */

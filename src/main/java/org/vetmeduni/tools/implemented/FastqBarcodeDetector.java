@@ -28,19 +28,16 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.readers.FastqReaderInterface;
-import org.vetmeduni.io.readers.paired.FastqReaderPairedImpl;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedInterface;
-import org.vetmeduni.io.readers.paired.FastqReaderPairedSanger;
 import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
-import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
-import org.vetmeduni.io.readers.single.FastqReaderWrapper;
-import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
 import org.vetmeduni.io.writers.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
-import org.vetmeduni.tools.defaults.CommonOptions;
+import org.vetmeduni.tools.cmd.CommonOptions;
+import org.vetmeduni.tools.cmd.ToolsReadersFactory;
+import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.utils.fastq.FastqLogger;
 import org.vetmeduni.utils.record.FastqRecordUtils;
 
@@ -51,9 +48,7 @@ import java.util.Iterator;
 import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
- * Tool for split by barcode (in the read name) both BAM and FASTQ files
- *
- * TODO: tests!!
+ * Tool for split by barcode (in the read name) for FASTQ files
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -87,8 +82,9 @@ public class FastqBarcodeDetector extends AbstractTool {
 				dictionary.numberOfSamples(), " different barcode sets");
 			BarcodeMethods methods = new BarcodeMethods(dictionary);
 			// create the reader and the writer
-			FastqReaderInterface reader = getReaderForTool(input1, input2, CommonOptions.isMaintained(logger, cmd));
-			SplitFastqWriter writer = getWriterForTools(outputPrefix, dictionary,
+			FastqReaderInterface reader = ToolsReadersFactory
+				.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
+			SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix, dictionary,
 				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null, split);
 			// run the method
 			run(reader, writer, methods, max);
@@ -107,51 +103,6 @@ public class FastqBarcodeDetector extends AbstractTool {
 			return 2;
 		}
 		return 0;
-	}
-
-	/**
-	 * Get the reader for the tool based on the parameters
-	 *
-	 * @param input1       the input for the first pair
-	 * @param input2       the input for the second pair; <code>null</code>
-	 * @param isMaintained should be the format maintained or standardize?
-	 *
-	 * @return the reader for the file(s)
-	 */
-	private static FastqReaderInterface getReaderForTool(File input1, File input2, boolean isMaintained) {
-		FastqReaderInterface toReturn;
-		if (input2 == null) {
-			toReturn = (isMaintained) ? new FastqReaderWrapper(input1) : new FastqReaderSingleSanger(input1);
-		} else {
-			toReturn = (isMaintained) ?
-				new FastqReaderPairedImpl(input1, input2) :
-				new FastqReaderPairedSanger(input1, input2);
-		}
-		return toReturn;
-	}
-
-	/**
-	 * Get the writer for the tool based on the parameters
-	 *
-	 * @param prefix     the output prefix
-	 * @param dictionary the barcode dictionary
-	 * @param dgzip      disable gzip?
-	 * @param multi      multi-thread output?
-	 * @param single     single end?
-	 * @param split      should we split by barcode?
-	 *
-	 * @return the writer for splitting
-	 */
-	private static SplitFastqWriter getWriterForTools(String prefix, BarcodeDictionary dictionary, boolean dgzip,
-		boolean multi, boolean single, boolean split) {
-		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
-		factory.setGzipOutput(!dgzip);
-		factory.setUseAsyncIo(multi);
-		if (split) {
-			return factory.newSplitByBarcodeWriter(prefix, dictionary, !single);
-		} else {
-			return factory.newSplitAssingUnknownBarcodeWriter(prefix, !single);
-		}
 	}
 
 	/**
@@ -259,7 +210,6 @@ public class FastqBarcodeDetector extends AbstractTool {
 
 	@Override
 	protected Options programOptions() {
-		// TODO
 		Option input1 = Option.builder("i1").longOpt("input1")
 							  .desc("The input file, or the input file of the first read, in FASTQ format").hasArg()
 							  .numberOfArgs(1).argName("input_1.fq").required(true).build();

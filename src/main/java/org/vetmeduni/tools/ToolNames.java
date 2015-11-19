@@ -70,7 +70,7 @@ public enum ToolNames {
 	private final Tool associatedTool;
 
 	/**
-	 * Constructor
+	 * Constructor for the tool
 	 *
 	 * @param shortDescription the short description
 	 * @param fullDescription  the full description
@@ -92,8 +92,8 @@ public enum ToolNames {
 	public static Tool getTool(String tool) throws ToolException {
 		try {
 			return ToolNames.valueOf(tool).getTool();
-		} catch(IllegalArgumentException e) {
-			throw new ToolException("Tool not found: "+tool);
+		} catch (IllegalArgumentException e) {
+			throw new ToolException("Tool not found: " + tool);
 		}
 	}
 
@@ -110,6 +110,7 @@ public enum ToolNames {
 	 * Exceptions for the tools
 	 */
 	public static class ToolException extends RuntimeException {
+
 		private static final long serialVersionUID = 1L;
 
 		public ToolException() {
@@ -127,5 +128,4 @@ public enum ToolNames {
 			super(throwable);
 		}
 	}
-
 }

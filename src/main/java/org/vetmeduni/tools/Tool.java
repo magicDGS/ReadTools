@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.tools;
 
 /**
@@ -33,9 +32,9 @@ public interface Tool {
 	/**
 	 * Run this tool with the arguments provided (the tool name should be removed before)
 	 *
-	 * @param args	arguments that comes directly from the command line and need to be parsed
+	 * @param args arguments that comes directly from the command line and need to be parsed
+	 *
 	 * @return the exit status for the tool
 	 */
 	public int run(String[] args);
-	
 }
