@@ -63,4 +63,31 @@ public class FastqPairedRecord {
 	public FastqRecord getRecord2() {
 		return record2;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%s\n%s", record1.toString(), record2.toString());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		FastqPairedRecord other = (FastqPairedRecord) obj;
+		return record1.equals(other.record1) && record2.equals(other.record2);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = record1 != null ? record1.hashCode() : 0;
+		result = 31 * result + (record2 != null ? record2.hashCode() : 0);
+		return result;
+	}
 }
