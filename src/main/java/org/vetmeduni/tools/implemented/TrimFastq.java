@@ -33,8 +33,7 @@ import org.vetmeduni.io.readers.FastqReaderInterface;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedInterface;
 import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.writers.PairFastqWriters;
-import org.vetmeduni.methods.trimming.MottAlgorithm;
-import org.vetmeduni.methods.trimming.TrimmingStats;
+import org.vetmeduni.methods.trimming.trimmers.Trimmer;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
@@ -101,7 +100,8 @@ public class TrimFastq extends AbstractTool {
 			boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
 			boolean trimQuality = !cmd.hasOption("no-trim-quality");
 			boolean no5ptrim = cmd.hasOption("no-5p-trim");
-			boolean verbose = !cmd.hasOption("quiet");
+			// TODO: add again verbose for something?
+			// boolean verbose = !cmd.hasOption("quiet");
 			// FINISH PARSING: log the command line (not longer in the param file)
 			logCmdLine(args);
 			// save the gzip option
@@ -112,16 +112,17 @@ public class TrimFastq extends AbstractTool {
 			boolean multi = (nThreads != 1);
 			// save the maintained format option
 			boolean isMaintained = CommonOptions.isMaintained(logger, cmd);
-			// create the MottAlgorithm
-			MottAlgorithm trimming = new MottAlgorithm(trimQuality, qualThreshold, minLength, discardRemainingNs,
-				no5ptrim);
 			// open the reader
 			FastqReaderInterface reader = ToolsReadersFactory.getFastqReaderFromInputs(input1, input2, isMaintained);
 			boolean single = !(reader instanceof FastqReaderPairedInterface);
 			// open the writer
 			FastqWriter writer = ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
+			// create the trimmer
+			// create the MottAlgorithm
+			Trimmer trimmer = Trimmer
+				.getTrimmer(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim, single);
 			// run it!
-			process(trimming, reader, writer, verbose);
+			process(trimmer, reader, writer, new File(output_prefix + ".metrics"));
 		} catch (ToolException e) {
 			// This exceptions comes from the command line parsing
 			printUsage(e.getMessage());
@@ -143,127 +144,96 @@ public class TrimFastq extends AbstractTool {
 	/**
 	 * Process the data depending on the reader status (if it is for single or pair-end
 	 *
-	 * @param trimming the algorithm with the provided settings
-	 * @param reader   the reader, either for pairs or single end
-	 * @param writer   the writer for the pairs (should be a PairFastqWriters if the reader is for pairs)
-	 * @param verbose  should we be verbose?
+	 * @param trimmer     the algorithm with the provided settings
+	 * @param reader      the reader, either for pairs or single end
+	 * @param writer      the writer for the pairs (should be a PairFastqWriters if the reader is for pairs)
+	 * @param metricsFile the file to output the metrics for the trimming
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void process(MottAlgorithm trimming, FastqReaderInterface reader, FastqWriter writer, boolean verbose)
+	private void process(Trimmer trimmer, FastqReaderInterface reader, FastqWriter writer, File metricsFile)
 		throws IOException {
+		FastqLogger progress;
 		if (reader instanceof FastqReaderSingleInterface) {
 			logger.debug("Running single end");
-			processSE(trimming, (FastqReaderSingleInterface) reader, writer, verbose);
-			return;
+			progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
+			processSE(trimmer, (FastqReaderSingleInterface) reader, writer);
 		} else if (reader instanceof FastqReaderPairedInterface) {
 			logger.debug("Running paired end");
-			processPE(trimming, (FastqReaderPairedInterface) reader, writer, verbose);
-			return;
+			progress = new FastqLogger(logger);
+			processPE(trimmer, (FastqReaderPairedInterface) reader, writer);
+		} else {
+			logger.debug("ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
+			throw new IllegalArgumentException("Unreachable code");
 		}
-		logger.debug("ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
-		throw new IllegalArgumentException("Unreachable code");
+		// final line of progress
+		progress.logNumberOfVariantsProcessed();
+		// print the metrics file
+		trimmer.printTrimmerMetrics(metricsFile);
+		// close the readers
+		reader.close();
+		writer.close();
 	}
 
 	/**
 	 * Process the files in pair-end mode
 	 *
-	 * @param trimming  the algorithm with the provided settings
+	 * @param trimmer   the algorithm with the provided settings
 	 * @param reader    the reader for the pairs
-	 * @param writerObj the writer for the pairs (instance of PairFastqWriters
-	 * @param verbose   should we be verbose?
+	 * @param writerObj the writer for the pairs (instance of PairFastqWriters * @param metricsFile
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void processPE(MottAlgorithm trimming, FastqReaderPairedInterface reader, FastqWriter writerObj,
-		boolean verbose) throws IOException {
+	private void processPE(Trimmer trimmer, FastqReaderPairedInterface reader, FastqWriter writerObj)
+		throws IOException {
 		PairFastqWriters writer = (PairFastqWriters) writerObj;
 		// creating progress
 		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
-		TrimmingStats stats1 = null;
-		TrimmingStats stats2 = null;
-		int paired = 0;
-		int single = 0;
-		if (verbose) {
-			stats1 = new TrimmingStats();
-			stats2 = new TrimmingStats();
-		}
 		while (reader.hasNext()) {
 			FastqPairedRecord record = reader.next();
-			FastqRecord newRecord1 = trimming.trimFastqRecord(record.getRecord1(), reader.getFastqQuality(), stats1);
-			FastqRecord newRecord2 = trimming.trimFastqRecord(record.getRecord2(), reader.getFastqQuality(), stats2);
-			if (newRecord1 != null && newRecord2 != null) {
-				writer.write(new FastqPairedRecord(newRecord1, newRecord2));
-				paired++;
-			} else if (newRecord1 != null) {
-				writer.write(newRecord1);
-				single++;
-			} else if (newRecord2 != null) {
-				writer.write(newRecord2);
-				single++;
+			FastqPairedRecord newRecord = trimmer.trimFastqPairedRecord(record, reader.getFastqQuality());
+			if (newRecord.isComplete()) {
+				writer.write(newRecord);
+			} else if (newRecord.containRecords()) {
+				if (newRecord.getRecord1() == null) {
+					writer.write(newRecord.getRecord2());
+				} else {
+					writer.write(newRecord.getRecord1());
+				}
+			} else {
+				// TODO: add option to output discarded
 			}
 			progress.add();
 		}
-		progress.logNumberOfVariantsProcessed();
-		if (verbose) {
-			System.out.print("Read-pairs processed: ");
-			System.out.println(progress.getCount());
-			System.out.print("Read-pairs trimmed in pairs: ");
-			System.out.println(paired);
-			System.out.print("Read-pairs trimmed as singles: ");
-			System.out.println(single);
-			System.out.println("\n");
-			System.out.println("FIRST READ STATISTICS");
-			stats1.report(System.out);
-			System.out.println("\n");
-			System.out.println("SECOND READ STATISTICS");
-			stats2.report(System.out);
-		}
-		reader.close();
-		writer.close();
 	}
 
 	/**
 	 * Process the files in single-end mode
 	 *
-	 * @param trimming the algorithm with the provided settings
-	 * @param reader   the reader for the single end file
-	 * @param writer   the writer for the single end file
-	 * @param verbose  should we be verbose?
+	 * @param trimmer the algorithm with the provided settings
+	 * @param reader  the reader for the single end file
+	 * @param writer  the writer for the single end file * @param metricsFile
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void processSE(MottAlgorithm trimming, FastqReaderSingleInterface reader, FastqWriter writer,
-		boolean verbose) throws IOException {
-		FastqLogger progress = null;
-		TrimmingStats stats = null;
-		progress = new FastqLogger(logger);
-		if (verbose) {
-			stats = new TrimmingStats();
-		}
+	private void processSE(Trimmer trimmer, FastqReaderSingleInterface reader, FastqWriter writer) throws IOException {
+		FastqLogger progress = new FastqLogger(logger);
 		while (reader.hasNext()) {
 			FastqRecord record = reader.next();
-			FastqRecord newRecord = trimming.trimFastqRecord(record, reader.getFastqQuality(), stats);
+			FastqRecord newRecord = trimmer.trimFastqRecord(record, reader.getFastqQuality());
 			if (newRecord != null) {
 				writer.write(newRecord);
+			} else {
+				// TODO: output discarded if requested
 			}
 			progress.add();
 			writer.write(newRecord);
 		}
-		logger.info(progress.numberOfVariantsProcessed());
-		if (verbose) {
-			System.out.print("Read processed: ");
-			System.out.println(progress.getCount());
-			System.out.println("\n");
-			System.out.println("READ STATISTICS");
-			stats.report(System.out);
-		}
-		reader.close();
-		writer.close();
 	}
 
 	@Override
 	protected Options programOptions() {
+		// TODO: add option for store discarded
 		// Creating each options
 		Option input1 = Option.builder("i1").longOpt("input1")
 							  .desc("The FASTQ input file, or the input file of the first read").hasArg()
@@ -288,10 +258,11 @@ public class TrimFastq extends AbstractTool {
 		Option no_5p_trim = Option.builder("n5p").longOpt("no-5p-trim").desc(
 			"Disable 5'-trimming (quality and 'N'); May be useful for the identification of duplicates when using trimming of reads. Duplicates are usually identified by the 5' mapping position which should thus not be modified by trimming")
 								  .hasArg(false).optionalArg(true).build();
-		Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
-							 .build();
+		// REMOVED THE QUIET OPTION
+		// Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
+		//					 .build();
 		Options options = new Options();
-		options.addOption(quiet);
+		// options.addOption(quiet);
 		options.addOption(no_5p_trim);
 		options.addOption(no_trim_qual);
 		options.addOption(min_length);

@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.methods.trimming;
+package org.vetmeduni.methods.trimming.trimmers.stats;
 
 import java.io.PrintStream;
 import java.util.SortedMap;
@@ -31,13 +31,19 @@ import java.util.TreeMap;
  *
  * @author Daniel Gómez-Sánchez
  */
-public class TrimmingStats {
-	// TODO: change this class for htsjdk.samtools.metrics.MetricsFile
+@Deprecated
+public class TrimmingStatsDeprecated {
+
 	// number of 5' Ns trim
+	@Deprecated
 	private int count5ptr;
 
 	// number of 3' Ns trim
+	@Deprecated
 	private int count3ptr;
+
+	// number of reads with Ns in the edges
+	private int trimmedNs;
 
 	// number of reads discarted because of internal Ns
 	private int countRemainingNdiscards;
@@ -54,7 +60,7 @@ public class TrimmingStats {
 	// the read length distribution
 	private SortedMap<Integer, Integer> rld;
 
-	public TrimmingStats() {
+	public TrimmingStatsDeprecated() {
 		count5ptr = 0;
 		count3ptr = 0;
 		countRemainingNdiscards = 0;
@@ -76,6 +82,10 @@ public class TrimmingStats {
 	 */
 	public synchronized void addCount3ptr() {
 		count3ptr++;
+	}
+
+	public synchronized void addTrimmedNs() {
+		trimmedNs++;
 	}
 
 	/**
@@ -127,10 +137,15 @@ public class TrimmingStats {
 	public void report(PrintStream out) {
 		out.print("Reads passed filtering: ");
 		out.println(readPassing);
-		out.print("5p poly-N sequences trimmed: ");
-		out.println(count5ptr);
-		out.print("3p poly-N sequences trimmed: ");
-		out.println(count3ptr);
+		out.print("Reads passed filtering: ");
+		out.println(readPassing);
+		// number of reads with Ns in the edges
+		out.print("Sequences trimmed with Ns in the edge: ");
+		out.println(trimmedNs);
+		// out.print("5p poly-N sequences trimmed: ");
+		// out.println(count5ptr);
+		// out.print("3p poly-N sequences trimmed: ");
+		// out.println(count3ptr);
 		out.print("Reads discarded during 'remaining N filtering': ");
 		out.println(countRemainingNdiscards);
 		out.print("Reads discarded during length filtering: ");

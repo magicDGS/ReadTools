@@ -64,6 +64,24 @@ public class FastqPairedRecord {
 		return record2;
 	}
 
+	/**
+	 * Check if at least one of the records contain information
+	 *
+	 * @return <code>true</code> if at least one the records is not <code>null</code>; <code>false</code> otherwise
+	 */
+	public boolean containRecords() {
+		return !(record1 == null && record2 == null);
+	}
+
+	/**
+	 * Chek if the record contain both record1 and record2
+	 *
+	 * @return <code>true</code> if both records are not <code>null</code>; <code>false</code> otherwise
+	 */
+	public boolean isComplete() {
+		return record1 != null && record2 != null;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("%s\n%s", record1.toString(), record2.toString());
