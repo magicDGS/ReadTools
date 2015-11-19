@@ -36,7 +36,7 @@ import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.utils.IOUtils;
 import org.vetmeduni.utils.fastq.FastqLogger;
-import org.vetmeduni.utils.fastq.ProgressLoggerExtension;
+import org.vetmeduni.utils.ProgressLoggerExtension;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
 import java.io.File;
@@ -115,7 +115,7 @@ public class StandardizeQuality extends AbstractTool {
 			writer.write(record);
 			progress.add();
 		}
-		logger.info(progress.numberOfVariantsProcessed());
+		progress.logNumberOfVariantsProcessed();
 		reader.close();
 		writer.close();
 	}
@@ -143,7 +143,7 @@ public class StandardizeQuality extends AbstractTool {
 			writer.addAlignment(record);
 			progress.record(record);
 		}
-		logger.info(progress.numberOfVariantsProcessed());
+		progress.logNumberOfVariantsProcessed();
 		reader.close();
 		writer.close();
 	}

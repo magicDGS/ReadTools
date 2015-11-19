@@ -204,7 +204,7 @@ public class TrimFastq extends AbstractTool {
 			}
 			progress.add();
 		}
-		logger.info(progress.numberOfVariantsProcessed());
+		progress.logNumberOfVariantsProcessed();
 		if (verbose) {
 			System.out.print("Read-pairs processed: ");
 			System.out.println(progress.getCount());

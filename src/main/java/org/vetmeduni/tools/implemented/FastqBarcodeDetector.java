@@ -36,8 +36,8 @@ import org.vetmeduni.methods.barcodes.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
-import org.vetmeduni.tools.cmd.ToolsReadersFactory;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
+import org.vetmeduni.tools.cmd.ToolsReadersFactory;
 import org.vetmeduni.utils.fastq.FastqLogger;
 import org.vetmeduni.utils.record.FastqRecordUtils;
 
@@ -117,17 +117,27 @@ public class FastqBarcodeDetector extends AbstractTool {
 	 */
 	private void run(FastqReaderInterface reader, SplitFastqWriter writer, BarcodeMethods methods, int mismatches)
 		throws IOException {
+		FastqLogger progress = new FastqLogger(logger);
+		int unknown;
 		if (reader instanceof FastqReaderSingleInterface) {
 			logger.debug("Running single end");
-			runSingle((FastqReaderSingleInterface) reader, writer, methods, mismatches);
-			return;
+			unknown = runSingle((FastqReaderSingleInterface) reader, writer, methods, mismatches, progress);
 		} else if (reader instanceof FastqReaderPairedInterface) {
 			logger.debug("Running paired end");
-			runPaired((FastqReaderPairedInterface) reader, writer, methods, mismatches);
-			return;
+			unknown = runPaired((FastqReaderPairedInterface) reader, writer, methods, mismatches, progress);
+		} else {
+			logger.debug("ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
+			throw new IllegalArgumentException("Unreachable code");
 		}
-		logger.debug("ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
-		throw new IllegalArgumentException("Unreachable code");
+		progress.logNumberOfVariantsProcessed();
+		BarcodeDictionary dict = methods.getDictionary();
+		logger.info("Found ", unknown, " records with unknown barcodes");
+		for (int i = 0; i < dict.numberOfSamples(); i++) {
+			logger.info("Found ", dict.getValueFor(i), " records for ", dict.getSampleNames().get(i), " (",
+				dict.getCombinedBarcodesFor(i), ")");
+		}
+		writer.close();
+		reader.close();
 	}
 
 	/**
@@ -138,11 +148,11 @@ public class FastqBarcodeDetector extends AbstractTool {
 	 * @param methods    the barcode methods instance
 	 * @param mismatches the maximum number of mismatches
 	 *
+	 * @return the number of unknown barcodes
 	 * @throws IOException if there are some problems with the files
 	 */
-	private void runSingle(FastqReaderSingleInterface reader, SplitFastqWriter writer, BarcodeMethods methods,
-		int mismatches) throws IOException {
-		FastqLogger progress = new FastqLogger(logger);
+	private int runSingle(FastqReaderSingleInterface reader, SplitFastqWriter writer, BarcodeMethods methods,
+		int mismatches, FastqLogger progress) throws IOException {
 		int unknown = 0;
 		Iterator<FastqRecord> it = reader.iterator();
 		int[] mismatchesToPass = new int[] {mismatches};
@@ -152,21 +162,13 @@ public class FastqBarcodeDetector extends AbstractTool {
 			String best = methods.getBestBarcode(mismatchesToPass, barcode);
 			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
 				writer.write(best, record);
-				// TODO: probably this could be retrieve from the writer
 				unknown++;
 			} else {
 				writer.write(best, FastqRecordUtils.changeBarcodeInSingle(record, best));
 			}
 			progress.add();
 		}
-		BarcodeDictionary dict = methods.getDictionary();
-		logger.info("Found ", unknown, " records with unknown barcodes");
-		for (int i = 0; i < dict.numberOfSamples(); i++) {
-			logger.info("Found ", dict.getValueFor(i), " records for ", dict.getSampleNames().get(i), " (",
-				dict.getCombinedBarcodesFor(i), ")");
-		}
-		writer.close();
-		reader.close();
+		return unknown;
 	}
 
 	/**
@@ -177,11 +179,11 @@ public class FastqBarcodeDetector extends AbstractTool {
 	 * @param methods    the barcode methods instance
 	 * @param mismatches the maximum number of mismatches
 	 *
+	 * @return the number of unknow barcodes
 	 * @throws IOException if there are some problems with the files
 	 */
-	private void runPaired(FastqReaderPairedInterface reader, SplitFastqWriter writer, BarcodeMethods methods,
-		int mismatches) throws IOException {
-		FastqLogger progress = new FastqLogger(logger);
+	private int runPaired(FastqReaderPairedInterface reader, SplitFastqWriter writer, BarcodeMethods methods,
+		int mismatches, FastqLogger progress) throws IOException {
 		int unknown = 0;
 		Iterator<FastqPairedRecord> it = reader.iterator();
 		int[] mismatchesToPass = new int[] {mismatches};
@@ -191,21 +193,13 @@ public class FastqBarcodeDetector extends AbstractTool {
 			String best = methods.getBestBarcode(mismatchesToPass, barcode);
 			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
 				writer.write(best, record);
-				// TODO: probably this could be retrieve from the writer
 				unknown++;
 			} else {
 				writer.write(best, FastqRecordUtils.changeBarcodeInPaired(record, best));
 			}
 			progress.add();
 		}
-		BarcodeDictionary dict = methods.getDictionary();
-		logger.info("Found ", unknown, " records with unknown barcodes");
-		for (int i = 0; i < dict.numberOfSamples(); i++) {
-			logger.info("Found ", dict.getValueFor(i), " records for ", dict.getSampleNames().get(i), " (",
-				dict.getCombinedBarcodesFor(i), ")");
-		}
-		writer.close();
-		reader.close();
+		return unknown;
 	}
 
 	@Override

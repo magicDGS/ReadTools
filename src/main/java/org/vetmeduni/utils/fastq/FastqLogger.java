@@ -160,5 +160,12 @@ public class FastqLogger {
 		return String
 			.format("%s %s %s. Elapsed time: %s", this.verb, commaFmt.format(this.processed), this.noun, elapsed);
 	}
+
+	/**
+	 * Log the number of variants processed in this logger
+	 */
+	public synchronized void logNumberOfVariantsProcessed() {
+		log.info(numberOfVariantsProcessed());
+	}
 }
 
