@@ -24,19 +24,32 @@ package org.vetmeduni.utils.record;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
-import junit.framework.TestCase;
+import htsjdk.samtools.fastq.FastqRecord;
 import org.junit.*;
+import org.vetmeduni.utils.fastq.QualityUtilsTest;
+
+import java.util.Arrays;
 
 /**
  * @author Daniel Gomez-Sanchez
  */
-public class SAMRecordUtilsTest extends TestCase {
-
-	static String sangerQuality = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI";
-
-	static String illuminaQuality = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefgh";
+public class SAMRecordUtilsTest {
 
 	SAMRecord illuminaRecord;
+
+	SAMRecord sangerRecord;
+
+	static SAMFileHeader emptyHeader = new SAMFileHeader();
+
+	static SAMRecord createSamRecord(String readName, byte base, String quality) {
+		SAMRecord record = new SAMRecord(emptyHeader);
+		record.setReadName(readName);
+		byte[] bases = new byte[quality.length()];
+		Arrays.fill(bases, base);
+		record.setReadBases(bases);
+		record.setBaseQualityString(quality);
+		return record;
+	}
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -48,50 +61,73 @@ public class SAMRecordUtilsTest extends TestCase {
 
 	@Before
 	public void setUp() throws Exception {
-		SAMFileHeader header = new SAMFileHeader();
-		illuminaRecord = new SAMRecord(header);
-		illuminaRecord.setBaseQualityString(illuminaQuality);
+		illuminaRecord = createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality);
+		sangerRecord = createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.sangerQuality);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 
-	@Ignore("not implemented")
+	@Test
 	public void testToFastqRecord() throws Exception {
-		// TODO
+		// create a sequence with the length
+		byte[] bases = new byte[QualityUtilsTest.illuminaQuality.length()];
+		Arrays.fill(bases, (byte) 'A');
+		FastqRecord illuminaFastq = new FastqRecord("Read1#ACTG/1", new String(bases), "",
+			QualityUtilsTest.illuminaQuality);
+		FastqRecord converted = SAMRecordUtils.toFastqRecord(illuminaRecord, null);
+		Assert.assertEquals(illuminaFastq, converted);
 	}
 
-	@Ignore("not implemented")
-	public void testAssertPairedMates() throws Exception {
-		// TODO
+	@Test
+	public void testAddOChangeBarcode() throws Exception {
+		// does not change the barcode name if present
+		Assert.assertFalse(SAMRecordUtils.addBarcodeToNameIfAbsent(illuminaRecord, "TTT"));
+		Assert.assertEquals("Read1#ACTG/1", illuminaRecord.getReadName());
+		// change the barcode
+		SAMRecordUtils.changeBarcodeInName(illuminaRecord, "TTT");
+		Assert.assertEquals("Read1#TTT", illuminaRecord.getReadName());
+		// adding a new name
+		illuminaRecord.setReadName("NewName");
+		SAMRecordUtils.addBarcodeToName(illuminaRecord, "ACTG");
+		Assert.assertEquals("NewName#ACTG", illuminaRecord.getReadName());
+		// removing the name and adding if absent
+		illuminaRecord.setReadName("SecondName");
+		Assert.assertTrue(SAMRecordUtils.addBarcodeToNameIfAbsent(illuminaRecord, "TTT"));
+		Assert.assertEquals("SecondName#TTT", illuminaRecord.getReadName());
 	}
 
-	@Ignore("not implemented")
-	public void testAddBarcodeToName() throws Exception {
-		// TODO
-	}
-
+	@Test
 	public void testCopyToSanger() throws Exception {
-		SAMFileHeader header = new SAMFileHeader();
-		SAMRecord sangerRecord = new SAMRecord(header);
-		sangerRecord.setBaseQualityString(sangerQuality);
-		Assert.assertArrayEquals(sangerRecord.getBaseQualities(),
-			SAMRecordUtils.copyToSanger(illuminaRecord).getBaseQualities());
+		SAMRecord sangerCopy = SAMRecordUtils.copyToSanger(illuminaRecord);
+		Assert.assertEquals(sangerRecord, sangerCopy);
+		// assert that the original is not changed
+		Assert.assertEquals(createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality),
+			illuminaRecord);
 	}
 
-	@Ignore("not implemented")
+	@Test
 	public void testToSanger() throws Exception {
-		// TODO
+		SAMRecordUtils.toSanger(illuminaRecord);
+		Assert.assertEquals(sangerRecord, illuminaRecord);
 	}
 
-	@Ignore("not implemented")
+	@Test
 	public void testGetBarcodeInName() throws Exception {
-		// TODO
+		String barcode = SAMRecordUtils.getBarcodeInName(sangerRecord);
+		Assert.assertEquals("ACTG", barcode);
+		// assert that the original is not changed
+		Assert.assertEquals(createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality),
+			illuminaRecord);
 	}
 
-	@Ignore("not implemented")
+	@Test
 	public void testGetReadNameWithoutBarcode() throws Exception {
-		// TODO
+		String readName = SAMRecordUtils.getReadNameWithoutBarcode(illuminaRecord);
+		Assert.assertEquals("Read1", readName);
+		// assert that the original is not changed
+		Assert.assertEquals(createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality),
+			illuminaRecord);
 	}
 }

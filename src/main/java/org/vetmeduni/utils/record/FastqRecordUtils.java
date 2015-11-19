@@ -29,18 +29,18 @@ import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
 /**
- * Utils for FASTQ records
+ * Utils for FASTQ records (both single and paired)
  *
  * @author Daniel Gómez-Sánchez
  */
 public class FastqRecordUtils {
 
 	/**
-	 * Cut a record and return it; if length equals 0 or start >= end, return null
+	 * Cut a record and return it; if it is completely cut (final lenght = 0 or start >= end), returns null
 	 *
 	 * @param record the record to cut
-	 * @param start  where to start the new record
-	 * @param end    where to end the new record
+	 * @param start  where to start the new record (0-indexed)
+	 * @param end    where to end the new record (0-indexed)
 	 *
 	 * @return the record if it still have bases; <code>null</code> otherwise
 	 */
@@ -69,7 +69,6 @@ public class FastqRecordUtils {
 		byte[] asciiQualities = record.getBaseQualityString().getBytes();
 		byte[] newQualities = new byte[asciiQualities.length];
 		for (int i = 0; i < asciiQualities.length; i++) {
-			// TODO: needs testing in real data
 			newQualities[i] = QualityUtils.byteToSanger(asciiQualities[i]);
 		}
 		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),

@@ -31,6 +31,8 @@ import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.utils.fastq.QualityUtils;
 
 /**
+ * Class with utils for SAM records
+ *
  * @author Daniel Gómez-Sánchez
  */
 public class SAMRecordUtils {
@@ -38,10 +40,10 @@ public class SAMRecordUtils {
 	/**
 	 * Convert a SAMRecord to a FastqRecord (reverse complement if this flag is set)
 	 *
-	 * @param record
-	 * @param mateNumber
+	 * @param record     the record to convert
+	 * @param mateNumber the number of the mate to add to the record; <code>null</code> if not wanted
 	 *
-	 * @return
+	 * @return the record converted into fastq
 	 */
 	public static FastqRecord toFastqRecord(SAMRecord record, Integer mateNumber) {
 		String seqName = (mateNumber == null) ?
@@ -57,10 +59,10 @@ public class SAMRecordUtils {
 	}
 
 	/**
-	 * Assert that both pairs are mates
+	 * Check the flags for two records and assert that one of them have the first of pair and the other the second
 	 *
-	 * @param record1
-	 * @param record2
+	 * @param record1 one of the pairs
+	 * @param record2 second of the pais
 	 */
 	public static void assertPairedMates(final SAMRecord record1, final SAMRecord record2) {
 		if (!(record1.getFirstOfPairFlag() && record2.getSecondOfPairFlag() || record2.getFirstOfPairFlag() && record1
@@ -70,7 +72,9 @@ public class SAMRecordUtils {
 	}
 
 	/**
-	 * Add a barcode to a SAMRecord in the format recordName#barcode
+	 * Add a barcode to a SAMRecord in the format recordName#barcode, but include previous barcodes that are already in
+	 * recordName; use {@link #addBarcodeToNameIfAbsent} to check if it is present and don't override or {@link
+	 * #changeBarcodeInName} for override the barcode
 	 *
 	 * @param record  the record to update
 	 * @param barcode the barcode
@@ -78,6 +82,33 @@ public class SAMRecordUtils {
 	public static void addBarcodeToName(SAMRecord record, String barcode) {
 		String recordName = String.format("%s%s%s", record.getReadName(), BarcodeMethods.BARCODE_SEPARATOR, barcode);
 		record.setReadName(recordName);
+	}
+
+	/**
+	 * Add a barcode in the name if it is not present
+	 *
+	 * @param record  the record to update
+	 * @param barcode the barcode
+	 *
+	 * @return <code>true</code> if the barcode is changed; <code>false</code> otherwise
+	 */
+	public static boolean addBarcodeToNameIfAbsent(SAMRecord record, String barcode) {
+		if (record.getReadName().contains(BarcodeMethods.BARCODE_SEPARATOR)) {
+			return false;
+		}
+		addBarcodeToName(record, barcode);
+		return true;
+	}
+
+	/**
+	 * Change the barcode in the name if it is present or set it if not; the mate number is removed
+	 *
+	 * @param record  the record to update
+	 * @param barcode the barcode
+	 */
+	public static void changeBarcodeInName(SAMRecord record, String barcode) {
+		record.setReadName(getReadNameWithoutBarcode(record));
+		addBarcodeToName(record, barcode);
 	}
 
 	/**
@@ -89,7 +120,6 @@ public class SAMRecordUtils {
 		byte[] qualities = record.getBaseQualities();
 		byte[] newQualities = new byte[qualities.length];
 		for (int i = 0; i < qualities.length; i++) {
-			// TODO: this needs more testing in real data
 			newQualities[i] = QualityUtils.byteToSanger(qualities[i]);
 		}
 		record.setBaseQualities(newQualities);
