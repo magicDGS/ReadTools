@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/magicDGS/ReadTools.svg?branch=master)](https://travis-ci.org/magicDGS/ReadTools)
 # ReadTools
 
 Tools for sequencing data (BAM and FASTQ files)
