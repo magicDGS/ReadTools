@@ -51,7 +51,7 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
  *
  * @author Daniel Gómez-Sánchez
  */
-public class BarcodedBamToFastq extends AbstractTool {
+public class TaggedBamToFastq extends AbstractTool {
 
 	@Override
 	public int run(String[] args) {
