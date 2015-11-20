@@ -35,23 +35,22 @@ import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 public class ToolWritersFactory {
 
 	/**
-	 * Get FASTQ split writers for the input
+	 * Get FASTQ split writers for the input, either spliting by barcodes or not
 	 *
 	 * @param prefix     the output prefix
-	 * @param dictionary the barcode dictionary
+	 * @param dictionary the barcode dictionary; if <code>null</code>, it won't split by barcode
 	 * @param dgzip      disable gzip?
 	 * @param multi      multi-thread output?
 	 * @param single     single end?
-	 * @param split      should we split by barcode?
 	 *
 	 * @return the writer for splitting
 	 */
 	public static SplitFastqWriter getFastqSplitWritersFromInput(String prefix, BarcodeDictionary dictionary,
-		boolean dgzip, boolean multi, boolean single, boolean split) {
+		boolean dgzip, boolean multi, boolean single) {
 		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
 		factory.setGzipOutput(!dgzip);
 		factory.setUseAsyncIo(multi);
-		if (split) {
+		if (dictionary != null) {
 			return factory.newSplitByBarcodeWriter(prefix, dictionary, !single);
 		} else {
 			return factory.newSplitAssingUnknownBarcodeWriter(prefix, !single);

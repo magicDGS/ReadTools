@@ -22,6 +22,8 @@
  */
 package org.vetmeduni.methods.barcodes.dictionary;
 
+import htsjdk.samtools.util.Log;
+
 import java.util.*;
 
 /**
@@ -49,6 +51,11 @@ public class MatcherBarcodeDictionary {
 	private Hashtable<String, String> barcodeSample = null;
 
 	/**
+	 * Track the number of unknown barcodes returned
+	 */
+	private int numberOfUnknowReturned;
+
+	/**
 	 * Default number of mismatches for BarcodeMethods. Actually it is not used inside the class.
 	 */
 	public static final int DEFAULT_MISMATCHES = 0;
@@ -60,6 +67,7 @@ public class MatcherBarcodeDictionary {
 	 */
 	public MatcherBarcodeDictionary(BarcodeDictionary dictionary) {
 		this.dictionary = dictionary;
+		this.numberOfUnknowReturned = 0;
 		initBarcodeMap();
 	}
 
@@ -127,6 +135,8 @@ public class MatcherBarcodeDictionary {
 			if (!best.equals(UNKNOWN_STRING)) {
 				int index = dictionary.getBarcodesFromIndex(0).indexOf(best);
 				dictionary.addOneTo(index);
+			} else {
+				numberOfUnknowReturned++;
 			}
 			return best;
 		}
@@ -158,6 +168,7 @@ public class MatcherBarcodeDictionary {
 			}
 		}
 		if (samples.size() == 0) {
+			numberOfUnknowReturned++;
 			return UNKNOWN_STRING;
 		}
 		// if we reach this point, there are non unique barcode that identifies the sample
@@ -166,6 +177,7 @@ public class MatcherBarcodeDictionary {
 		// if there are more than one sample that could be associated with the barcode
 		if (Collections.frequency(samples.values(), maxCount) != 1) {
 			// it is not determined
+			numberOfUnknowReturned++;
 			return UNKNOWN_STRING;
 		} else {
 			for (Integer sampleIndex : samples.keySet()) {
@@ -231,5 +243,18 @@ public class MatcherBarcodeDictionary {
 			}
 		}
 		return mmCnt;
+	}
+
+	/**
+	 * Log the results for the matcher dictionary
+	 *
+	 * @param log the log to use for logging
+	 */
+	public void logMatcherResult(Log log) {
+		log.info("Found ", numberOfUnknowReturned, " records with unknown barcodes");
+		for (int i = 0; i < dictionary.numberOfSamples(); i++) {
+			log.info("Found ", dictionary.getValueFor(i), " records for ", dictionary.getSampleNames().get(i), " (",
+				dictionary.getCombinedBarcodesFor(i), ")");
+		}
 	}
 }
