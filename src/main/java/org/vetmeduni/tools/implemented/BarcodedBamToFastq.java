@@ -83,8 +83,8 @@ public class BarcodedBamToFastq extends AbstractTool {
 				.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
 			// Create the writer factory
 			SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix, barcodeDict,
-				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), cmd.hasOption("s"), cmd.hasOption("x"),
-				multi);
+				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, cmd.hasOption("s"),
+				cmd.hasOption("x"));
 			// run it!
 			run(input, writer, methods, max, tags, cmd.hasOption("s"));
 			// close the readers and writers
@@ -103,8 +103,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			// unknow exception
 			logger.debug(e);
 			return 2;
-		}
-		return 0;
+		} return 0;
 	}
 
 	/**
