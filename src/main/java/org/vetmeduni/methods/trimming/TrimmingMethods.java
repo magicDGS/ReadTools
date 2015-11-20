@@ -92,13 +92,12 @@ public class TrimmingMethods {
 			return null;
 		}
 		String nucleotide = record.getReadString();
-		int start = 0;
 		int end = nucleotide.length();
 		Matcher matchEnd = endN.matcher(nucleotide);
 		if (matchEnd.find()) {
-			end = matchEnd.end();
+			end = matchEnd.start();
 		}
-		return cutRecord(record, start, end);
+		return cutRecord(record, 0, end);
 	}
 
 	/**
@@ -114,12 +113,11 @@ public class TrimmingMethods {
 		}
 		String nucleotide = record.getReadString();
 		int start = 0;
-		int end = nucleotide.length();
 		Matcher matchStart = startN.matcher(nucleotide);
 		if (matchStart.find()) {
 			start = matchStart.end();
 		}
-		return cutRecord(record, start, end);
+		return cutRecord(record, start, nucleotide.length());
 	}
 
 	/**
