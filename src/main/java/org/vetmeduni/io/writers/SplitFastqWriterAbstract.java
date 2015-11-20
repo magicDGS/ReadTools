@@ -49,7 +49,7 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
 	protected final Hashtable<String, Integer> counts;
 
 	/**
-	 * All instances for the class will be performed by {@link org.vetmeduni.io.ReadToolsFastqWriterFactory}
+	 * All instances for the class will be performed by {@link ReadToolsFastqWriterFactory}
 	 *
 	 * @param mapping the mapping between the identifier and the FastqWriter
 	 */

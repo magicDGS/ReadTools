@@ -34,7 +34,7 @@ import org.vetmeduni.utils.misc.Formats;
  *
  * @author Daniel Gómez-Sánchez
  */
-public class PairFastqWriters implements FastqWriter {
+public class PairFastqWriters implements ReadToolsFastqWriter {
 
 	private final static FastqWriterFactory DEFAULT_FACTORY = new FastqWriterFactory();
 

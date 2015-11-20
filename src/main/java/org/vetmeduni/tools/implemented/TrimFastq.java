@@ -24,7 +24,6 @@ package org.vetmeduni.tools.implemented;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
-import htsjdk.samtools.fastq.FastqWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -32,7 +31,9 @@ import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.readers.FastqReaderInterface;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedInterface;
 import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
-import org.vetmeduni.io.writers.PairFastqWriters;
+import org.vetmeduni.io.writers.ReadToolsFastqWriter;
+import org.vetmeduni.io.writers.SplitFastqWriter;
+import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;
 import org.vetmeduni.methods.trimming.trimmers.Trimmer;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
@@ -88,9 +89,7 @@ public class TrimFastq extends AbstractTool {
 			// minimum length
 			int minLength;
 			try {
-				minLength = (cmd.hasOption("m")) ?
-					Integer.parseInt(cmd.getOptionValue("m")) :
-					DEFAULT_MINIMUM_LENGTH;
+				minLength = (cmd.hasOption("m")) ? Integer.parseInt(cmd.getOptionValue("m")) : DEFAULT_MINIMUM_LENGTH;
 				if (minLength < 1) {
 					throw new NumberFormatException();
 				}
@@ -106,6 +105,8 @@ public class TrimFastq extends AbstractTool {
 			logCmdLine(args);
 			// save the gzip option
 			boolean dgzip = CommonOptions.isZipDisable(cmd);
+			// save the keep_discard option
+			boolean keepDiscard = cmd.hasOption("k");
 			// start the new factory
 			// multi-thread?
 			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
@@ -116,7 +117,9 @@ public class TrimFastq extends AbstractTool {
 			FastqReaderInterface reader = ToolsReadersFactory.getFastqReaderFromInputs(input1, input2, isMaintained);
 			boolean single = !(reader instanceof FastqReaderPairedInterface);
 			// open the writer
-			FastqWriter writer = ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
+			ReadToolsFastqWriter writer = (keepDiscard) ?
+				ToolWritersFactory.getFastqSplitWritersFromInput(output_prefix, null, dgzip, multi, single) :
+				ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
 			// create the trimmer
 			// create the MottAlgorithm
 			Trimmer trimmer = Trimmer
@@ -146,12 +149,12 @@ public class TrimFastq extends AbstractTool {
 	 *
 	 * @param trimmer     the algorithm with the provided settings
 	 * @param reader      the reader, either for pairs or single end
-	 * @param writer      the writer for the pairs (should be a PairFastqWriters if the reader is for pairs)
+	 * @param writer      the writer for the pairs
 	 * @param metricsFile the file to output the metrics for the trimming
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void process(Trimmer trimmer, FastqReaderInterface reader, FastqWriter writer, File metricsFile)
+	private void process(Trimmer trimmer, FastqReaderInterface reader, ReadToolsFastqWriter writer, File metricsFile)
 		throws IOException {
 		FastqLogger progress;
 		if (reader instanceof FastqReaderSingleInterface) {
@@ -178,15 +181,14 @@ public class TrimFastq extends AbstractTool {
 	/**
 	 * Process the files in pair-end mode
 	 *
-	 * @param trimmer   the algorithm with the provided settings
-	 * @param reader    the reader for the pairs
-	 * @param writerObj the writer for the pairs (instance of PairFastqWriters * @param metricsFile
+	 * @param trimmer the algorithm with the provided settings
+	 * @param reader  the reader for the pairs
+	 * @param writer  the writer for the pairs (instance of PairFastqWriters)
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void processPE(Trimmer trimmer, FastqReaderPairedInterface reader, FastqWriter writerObj)
+	private void processPE(Trimmer trimmer, FastqReaderPairedInterface reader, ReadToolsFastqWriter writer)
 		throws IOException {
-		PairFastqWriters writer = (PairFastqWriters) writerObj;
 		// creating progress
 		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
 		while (reader.hasNext()) {
@@ -201,7 +203,9 @@ public class TrimFastq extends AbstractTool {
 					writer.write(newRecord.getRecord1());
 				}
 			} else {
-				// TODO: add option to output discarded
+				if (writer instanceof SplitFastqWriter) {
+					((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record);
+				}
 			}
 			progress.add();
 		}
@@ -216,7 +220,8 @@ public class TrimFastq extends AbstractTool {
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void processSE(Trimmer trimmer, FastqReaderSingleInterface reader, FastqWriter writer) throws IOException {
+	private void processSE(Trimmer trimmer, FastqReaderSingleInterface reader, ReadToolsFastqWriter writer)
+		throws IOException {
 		FastqLogger progress = new FastqLogger(logger);
 		while (reader.hasNext()) {
 			FastqRecord record = reader.next();
@@ -224,7 +229,9 @@ public class TrimFastq extends AbstractTool {
 			if (newRecord != null) {
 				writer.write(newRecord);
 			} else {
-				// TODO: output discarded if requested
+				if (writer instanceof SplitFastqWriter) {
+					((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record);
+				}
 			}
 			progress.add();
 			writer.write(newRecord);
@@ -258,11 +265,15 @@ public class TrimFastq extends AbstractTool {
 		Option no_5p_trim = Option.builder("n5p").longOpt("no-5p-trim").desc(
 			"Disable 5'-trimming (quality and 'N'); May be useful for the identification of duplicates when using trimming of reads. Duplicates are usually identified by the 5' mapping position which should thus not be modified by trimming")
 								  .hasArg(false).optionalArg(true).build();
+		Option keep_discard = Option.builder("k").longOpt("keep-discarded").desc(
+			"NOT IMPLEMENTED YET: Keep the reads completely trimmed or that does not pass the thresholds in a discarded file (original reads stored)")
+									.hasArg(false).optionalArg(true).build();
 		// REMOVED THE QUIET OPTION
 		// Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
 		//					 .build();
 		Options options = new Options();
 		// options.addOption(quiet);
+		options.addOption(keep_discard);
 		options.addOption(no_5p_trim);
 		options.addOption(no_trim_qual);
 		options.addOption(min_length);

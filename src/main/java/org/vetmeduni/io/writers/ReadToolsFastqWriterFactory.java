@@ -20,16 +20,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io;
+package org.vetmeduni.io.writers;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
 import htsjdk.samtools.util.Log;
-import org.vetmeduni.io.writers.PairFastqWriters;
-import org.vetmeduni.io.writers.SplitFastqWriter;
-import org.vetmeduni.io.writers.SplitFastqWriterAbstract;
+import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;
 import org.vetmeduni.utils.misc.IOUtils;
@@ -99,8 +97,8 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public FastqWriter newWriterDefault(final File out) {
-		return FACTORY.newWriter(out);
+	public ReadToolsFastqWriter newWriterDefault(final File out) {
+		return new ReadToolsBasicFastqWriter(FACTORY.newWriter(out));
 	}
 
 	/**
@@ -110,7 +108,7 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public FastqWriter newWriter(String prefix) {
+	public ReadToolsFastqWriter newWriter(String prefix) {
 		return newWriterDefault(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix, GZIP_OUTPUT)));
 	}
 
@@ -121,7 +119,7 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public PairFastqWriters newPairWriter(String prefix) {
+	public ReadToolsFastqWriter newPairWriter(String prefix) {
 		final FastqWriter pair1 = FACTORY
 			.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_1", GZIP_OUTPUT)));
 		final FastqWriter pair2 = FACTORY

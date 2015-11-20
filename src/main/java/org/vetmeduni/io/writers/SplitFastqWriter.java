@@ -34,7 +34,7 @@ import java.util.NoSuchElementException;
  *
  * @author Daniel Gómez-Sánchez
  */
-public interface SplitFastqWriter extends FastqWriter {
+public interface SplitFastqWriter extends ReadToolsFastqWriter {
 
 	/**
 	 * The mapping between the identifier and the corresponding FastqWriter. Several identifiers could be associated
