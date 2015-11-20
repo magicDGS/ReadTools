@@ -23,6 +23,7 @@
 package org.vetmeduni.methods.barcodes.dictionary;
 
 import htsjdk.samtools.util.Log;
+import org.vetmeduni.utils.misc.Formats;
 
 import java.util.*;
 
@@ -253,7 +254,7 @@ public class MatcherBarcodeDictionary {
 	public void logMatcherResult(Log log) {
 		log.info("Found ", numberOfUnknowReturned, " records with unknown barcodes");
 		for (int i = 0; i < dictionary.numberOfSamples(); i++) {
-			log.info("Found ", dictionary.getValueFor(i), " records for ", dictionary.getSampleNames().get(i), " (",
+			log.info("Found ", Formats.commaFmt.format(dictionary.getValueFor(i)), " records for ", dictionary.getSampleNames().get(i), " (",
 				dictionary.getCombinedBarcodesFor(i), ")");
 		}
 	}
