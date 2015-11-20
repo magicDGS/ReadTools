@@ -65,5 +65,4 @@ If you use this software, please add the citation as following (the version is p
 If some of the tools is a (re)implementation of a method described in a different place, the citation for the method is provided under the long description. Please, cite the method in addition to this software to give credit to the original authors.
 
 ---
-
-*Please, if you find any problem add a new [issue](https://github.com/magicDGS/ReadTools/issues) or contact me in the following addres: <daniel.gomez.sanchez@hotmail.es>.Contributions are also welcomed
+*Please, if you find any problem add a new [issue](https://github.com/magicDGS/ReadTools/issues) or contact me: <daniel.gomez.sanchez@hotmail.es>
