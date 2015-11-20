@@ -31,9 +31,9 @@ import org.vetmeduni.io.readers.FastqReaderInterface;
 import org.vetmeduni.io.readers.paired.FastqReaderPairedInterface;
 import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.writers.SplitFastqWriter;
-import org.vetmeduni.methods.barcodes.BarcodeDictionary;
-import org.vetmeduni.methods.barcodes.BarcodeDictionaryFactory;
-import org.vetmeduni.methods.barcodes.BarcodeMethods;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
+import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
@@ -67,7 +67,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 			try {
 				max = (cmd.hasOption("m")) ?
 					Integer.parseInt(cmd.getOptionValue("m")) :
-					BarcodeMethods.DEFAULT_MISMATCHES;
+					MatcherBarcodeDictionary.DEFAULT_MISMATCHES;
 			} catch (IllegalArgumentException e) {
 				throw new ToolException("Maximum mismatches should be an integer");
 			}
@@ -80,7 +80,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 			BarcodeDictionary dictionary = BarcodeDictionaryFactory.createCombinedDictionary(barcodes);
 			logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
 				dictionary.numberOfSamples(), " different barcode sets");
-			BarcodeMethods methods = new BarcodeMethods(dictionary);
+			MatcherBarcodeDictionary methods = new MatcherBarcodeDictionary(dictionary);
 			// create the reader and the writer
 			FastqReaderInterface reader = ToolsReadersFactory
 				.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
@@ -115,7 +115,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 	 *
 	 * @throws IOException if there are some problems with the files
 	 */
-	private void run(FastqReaderInterface reader, SplitFastqWriter writer, BarcodeMethods methods, int mismatches)
+	private void run(FastqReaderInterface reader, SplitFastqWriter writer, MatcherBarcodeDictionary methods, int mismatches)
 		throws IOException {
 		FastqLogger progress = new FastqLogger(logger);
 		int unknown;
@@ -151,7 +151,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 	 * @return the number of unknown barcodes
 	 * @throws IOException if there are some problems with the files
 	 */
-	private int runSingle(FastqReaderSingleInterface reader, SplitFastqWriter writer, BarcodeMethods methods,
+	private int runSingle(FastqReaderSingleInterface reader, SplitFastqWriter writer, MatcherBarcodeDictionary methods,
 		int mismatches, FastqLogger progress) throws IOException {
 		int unknown = 0;
 		Iterator<FastqRecord> it = reader.iterator();
@@ -160,7 +160,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 			FastqRecord record = it.next();
 			String barcode = FastqRecordUtils.getBarcodeInName(record);
 			String best = methods.getBestBarcode(mismatchesToPass, barcode);
-			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
+			if (best.equals(MatcherBarcodeDictionary.UNKNOWN_STRING)) {
 				writer.write(best, record);
 				unknown++;
 			} else {
@@ -182,7 +182,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 	 * @return the number of unknow barcodes
 	 * @throws IOException if there are some problems with the files
 	 */
-	private int runPaired(FastqReaderPairedInterface reader, SplitFastqWriter writer, BarcodeMethods methods,
+	private int runPaired(FastqReaderPairedInterface reader, SplitFastqWriter writer, MatcherBarcodeDictionary methods,
 		int mismatches, FastqLogger progress) throws IOException {
 		int unknown = 0;
 		Iterator<FastqPairedRecord> it = reader.iterator();
@@ -191,7 +191,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 			FastqPairedRecord record = it.next();
 			String barcode = FastqRecordUtils.getBarcodeInName(record);
 			String best = methods.getBestBarcode(mismatchesToPass, barcode);
-			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
+			if (best.equals(MatcherBarcodeDictionary.UNKNOWN_STRING)) {
 				writer.write(best, record);
 				unknown++;
 			} else {
@@ -218,7 +218,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 		// TODO: add to description: "It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file."
 		// TODO: only if it could be implemented
 		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-			"Maximum number of mismatches alowwed for a matched barcode.  [Default=" + BarcodeMethods.DEFAULT_MISMATCHES
+			"Maximum number of mismatches alowwed for a matched barcode.  [Default=" + MatcherBarcodeDictionary.DEFAULT_MISMATCHES
 				+ "]").hasArg().numberOfArgs(1).argName("INT").required(false).build();
 		Option split = Option.builder("x").longOpt("split")
 							 .desc("Split each sample from the barcode dictionary in a different file.").hasArg(false)

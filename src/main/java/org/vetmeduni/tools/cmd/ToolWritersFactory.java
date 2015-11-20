@@ -25,7 +25,7 @@ package org.vetmeduni.tools.cmd;
 import htsjdk.samtools.fastq.FastqWriter;
 import org.vetmeduni.io.ReadToolsFastqWriterFactory;
 import org.vetmeduni.io.writers.SplitFastqWriter;
-import org.vetmeduni.methods.barcodes.BarcodeDictionary;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 
 /**
  * Factory for the writers of the tools

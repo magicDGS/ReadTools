@@ -20,35 +20,41 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.methods.barcodes;
+package org.vetmeduni.methods.barcodes.dictionary;
 
 import java.util.*;
 
 /**
  * Classs for store a barcode dictionary
  *
- * TODO: samples that are name equaly could be a problem in this implementation (deprecated methods)
- *
- * TODO: multi-thread
- *
  * @author Daniel Gómez-Sánchez
  */
 public class BarcodeDictionary {
 
-	// name of the samples
+	/**
+	 * Name of the samples. Samples with the same name are allowed
+	 */
 	private ArrayList<String> samples;
 
-	// number of things for each sample
+	/**
+	 * Value associated for each sample
+	 */
 	private int[] samplesValue;
-
 	// array with one array per barcode, and the size of each array internally is a sample
+
+	/**
+	 * Array which contains the barcodes. The lenght is the number of barcodes used, and the internal array contain the
+	 * associated barcode for each sample
+	 */
 	private ArrayList<ArrayList<String>> barcodes;
 
-	// backup of barcode sets
+	/**
+	 * Cached barcode set(s) for fast access
+	 */
 	private ArrayList<HashSet<String>> barcodesSets = null;
 
 	/**
-	 * Constructor for debugging
+	 * Protected constructor. For construct an instance, use {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory}
 	 *
 	 * @param samples  the sample names
 	 * @param barcodes the barcodes
@@ -81,7 +87,7 @@ public class BarcodeDictionary {
 	}
 
 	/**
-	 * Get the sample names
+	 * Get the sample names in order
 	 *
 	 * @return the sample names
 	 */
@@ -111,20 +117,6 @@ public class BarcodeDictionary {
 	/**
 	 * Get the barcodes associated with certain sample
 	 *
-	 * @param sample the sample name
-	 *
-	 * @return the barcodes for the sample
-	 * @deprecated This could give errors for repeated sample names; use {@link #getBarcodesFor(int)} instead
-	 */
-	@Deprecated
-	public String[] getBarcodesFor(String sample) {
-		int index = samples.indexOf(sample);
-		return getBarcodesFor(index);
-	}
-
-	/**
-	 * Get the barcodes associated with certain sample
-	 *
 	 * @param sampleIndex the sample index
 	 *
 	 * @return the barcodes for the sample
@@ -137,35 +129,35 @@ public class BarcodeDictionary {
 		return toReturn;
 	}
 
-	public void addOneTo(String sample) {
-		int index = samples.indexOf(sample);
-		addOneTo(index);
-	}
-
+	/**
+	 * Add value to a concrete sample (by index)
+	 *
+	 * @param sampleIndex the sample index
+	 */
 	public void addOneTo(int sampleIndex) {
 		samplesValue[sampleIndex]++;
 	}
 
-	public int getValueFor(String sample) {
-		int index = samples.indexOf(sample);
-		return getValueFor(index);
-	}
-
+	/**
+	 * Get the value for a concrete sample (by index)
+	 *
+	 * @param sampleIndex the sample index
+	 *
+	 * @return the value for the sample
+	 */
 	public int getValueFor(int sampleIndex) {
 		return samplesValue[sampleIndex];
 	}
 
 	/**
-	 * Get the barcodes associated with certain sample pasted together
+	 * Get the name for a concrete sample
 	 *
-	 * @param sample the sample name
+	 * @param sampleIndex the sample index
 	 *
-	 * @return the combined barcodes for the sample
-	 * @deprecated This could give errors for repeated sample names; use {@link #getCombinedBarcodesFor(int)} instead
+	 * @return the name of the sample
 	 */
-	@Deprecated
-	public String getCombinedBarcodesFor(String sample) {
-		return String.join("", getBarcodesFor(sample));
+	public String getNameFor(int sampleIndex) {
+		return samples.get(sampleIndex);
 	}
 
 	/**

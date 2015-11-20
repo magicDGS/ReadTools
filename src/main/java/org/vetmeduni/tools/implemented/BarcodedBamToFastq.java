@@ -31,9 +31,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.writers.SplitFastqWriter;
-import org.vetmeduni.methods.barcodes.BarcodeDictionary;
-import org.vetmeduni.methods.barcodes.BarcodeDictionaryFactory;
-import org.vetmeduni.methods.barcodes.BarcodeMethods;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
+import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
@@ -61,7 +61,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			String inputString = cmd.getOptionValue("i");
 			String outputPrefix = cmd.getOptionValue("o");
 			String barcodes = cmd.getOptionValue("bc");
-			int[] max = getIntArrayOptions(cmd.getOptionValues("m"), BarcodeMethods.DEFAULT_MISMATCHES);
+			int[] max = getIntArrayOptions(cmd.getOptionValues("m"), MatcherBarcodeDictionary.DEFAULT_MISMATCHES);
 			String[] tags = cmd.getOptionValues("t");
 			logger.debug("Maximum mistmaches (", max.length, "): ", max);
 			logger.debug("Tags (", tags.length, "): ", tags);
@@ -77,7 +77,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 				.createDefaultDictionary(new File(barcodes), tags.length);
 			logger.info("Loaded barcode file for ", barcodeDict.numberOfUniqueSamples(), " samples with ",
 				barcodeDict.numberOfSamples(), " different barcode sets");
-			BarcodeMethods methods = new BarcodeMethods(barcodeDict);
+			MatcherBarcodeDictionary methods = new MatcherBarcodeDictionary(barcodeDict);
 			// open the bam file
 			SamReader input = ToolsReadersFactory
 				.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
@@ -116,7 +116,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 	 * @param tags    the tags where the barcodes are
 	 * @param single  it is single end?
 	 */
-	private void run(SamReader reader, SplitFastqWriter writer, BarcodeMethods methods, int[] max, String[] tags,
+	private void run(SamReader reader, SplitFastqWriter writer, MatcherBarcodeDictionary methods, int[] max, String[] tags,
 		boolean single) {
 		ProgressLoggerExtension progress;
 		int unknown;
@@ -148,7 +148,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 	 *
 	 * @return the number of unknown barcodes
 	 */
-	private int runPaired(SamReader reader, SplitFastqWriter writer, BarcodeMethods methods, int[] max, String[] tags,
+	private int runPaired(SamReader reader, SplitFastqWriter writer, MatcherBarcodeDictionary methods, int[] max, String[] tags,
 		ProgressLoggerExtension progress) {
 		SAMRecordIterator it = reader.iterator();
 		int unknown = 0;
@@ -160,7 +160,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 			SAMRecord record2 = it.next();
 			String[] barcodes = getBarcodeFromTags(record1, tags);
 			String best = methods.getBestBarcode(max, barcodes);
-			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
+			if (best.equals(MatcherBarcodeDictionary.UNKNOWN_STRING)) {
 				SAMRecordUtils.addBarcodeToName(record1, String.join("", barcodes));
 				SAMRecordUtils.addBarcodeToName(record2, String.join("", barcodes));
 				unknown++;
@@ -187,13 +187,13 @@ public class BarcodedBamToFastq extends AbstractTool {
 	 *
 	 * @return the number of unknown barcodes
 	 */
-	private int runSingle(SamReader reader, SplitFastqWriter writer, BarcodeMethods methods, int[] max, String[] tags,
+	private int runSingle(SamReader reader, SplitFastqWriter writer, MatcherBarcodeDictionary methods, int[] max, String[] tags,
 		ProgressLoggerExtension progress) {
 		int unknown = 0;
 		for (SAMRecord record : reader) {
 			String[] barcodes = getBarcodeFromTags(record, tags);
 			String best = methods.getBestBarcode(max, barcodes);
-			if (best.equals(BarcodeMethods.UNKNOWN_STRING)) {
+			if (best.equals(MatcherBarcodeDictionary.UNKNOWN_STRING)) {
 				SAMRecordUtils.addBarcodeToName(record, String.join("", barcodes));
 				unknown++;
 			} else {
@@ -253,7 +253,7 @@ public class BarcodedBamToFastq extends AbstractTool {
 								.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
 		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
 			"Maximum number of mismatches alowwed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
-				+ BarcodeMethods.DEFAULT_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT").required(false)
+				+ MatcherBarcodeDictionary.DEFAULT_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT").required(false)
 						   .build();
 		Option single = Option.builder("s").longOpt("single").desc("Switch to single-end parsing").hasArg(false)
 							  .required(false).build();
