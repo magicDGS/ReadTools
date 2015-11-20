@@ -9,13 +9,9 @@ The tools contained in this software are develop for working with FASTQ and BAM 
 
 ---
 
-### Installation
+### Download release
 
-To install this software you need [Maven](https://maven.apache.org/) installed in your computer. In the downloaded folder, to install the later release you should run the following command:
-
-`mvn install`
-
-The executable jar file will appear under the dist folder with the name _ReadTools.jar_. It could be copied to a different folder and the rest of the folder could be removed.
+[Releases](https://github.com/magicDGS/ReadTools/releases) for the software could be downloaded as a jar file. You could use that jar file without installing from source, although some changes could be still not included in the jar file.
 
 ---
 
@@ -29,6 +25,33 @@ For a long description of each tool:
 
 `java -jar ReadTools.jar <toolName> --help`
 
+
+The current release includes the following tools:
+
+* __TrimFastq__: Implementation of the trimming algorithm from [Kofler _et al._ (2011)](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015925)
+* __TaggedBamToFastq__: Convert an BAM file with BC tags into a FASTQ file
+* __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
+* __StandardizeQuality__: Convert an Illumina BAM/FASTQ file into a Sanger
+* __FastqBarcodeDetector__: Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library
+
+---
+
+### Installation from source
+
+To install this software you need [Maven](https://maven.apache.org/) installed in your computer. Master branch is guarantee to compile successfully and containing the later changes.
+
+To install the later release with the updated changes, you should run the following commands:
+
+```
+
+git clone https://github.com/magicDGS/ReadTools.git
+cd ReadTools
+mvn install
+
+```
+
+The executable jar file will appear under the dist folder with the name _ReadTools.jar_. It could be copied to a different folder and the rest of the folder could be removed.
+
 ---
 
 ### License and citing
@@ -40,3 +63,7 @@ If you use this software, please add the citation as following (the version is p
 &nbsp;&nbsp;&nbsp;&nbsp;Gómez-Sánchez D (2015): ReadTools ${version}, Institut für Populationsgenetik, Vetmeduni Vienna.
 
 If some of the tools is a (re)implementation of a method described in a different place, the citation for the method is provided under the long description. Please, cite the method in addition to this software to give credit to the original authors.
+
+---
+
+*Please, if you find any problem add a new [issue](https://github.com/magicDGS/ReadTools/issues) or contact me in the following addres: <daniel.gomez.sanchez@hotmail.es>.Contributions are also welcomed
