@@ -189,6 +189,7 @@ public class TrimFastq extends AbstractTool {
 	 */
 	private void processPE(Trimmer trimmer, FastqReaderPairedInterface reader, ReadToolsFastqWriter writer)
 		throws IOException {
+		boolean keep = (writer instanceof SplitFastqWriter);
 		// creating progress
 		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
 		while (reader.hasNext()) {
@@ -199,11 +200,17 @@ public class TrimFastq extends AbstractTool {
 			} else if (newRecord.containRecords()) {
 				if (newRecord.getRecord1() == null) {
 					writer.write(newRecord.getRecord2());
+					if (keep) {
+						((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record.getRecord1());
+					}
 				} else {
 					writer.write(newRecord.getRecord1());
+					if (keep) {
+						((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record.getRecord2());
+					}
 				}
 			} else {
-				if (writer instanceof SplitFastqWriter) {
+				if (keep) {
 					((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record);
 				}
 			}
@@ -222,6 +229,7 @@ public class TrimFastq extends AbstractTool {
 	 */
 	private void processSE(Trimmer trimmer, FastqReaderSingleInterface reader, ReadToolsFastqWriter writer)
 		throws IOException {
+		boolean keep = (writer instanceof SplitFastqWriter);
 		FastqLogger progress = new FastqLogger(logger);
 		while (reader.hasNext()) {
 			FastqRecord record = reader.next();
@@ -229,7 +237,7 @@ public class TrimFastq extends AbstractTool {
 			if (newRecord != null) {
 				writer.write(newRecord);
 			} else {
-				if (writer instanceof SplitFastqWriter) {
+				if (keep) {
 					((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record);
 				}
 			}
