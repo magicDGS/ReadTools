@@ -112,18 +112,18 @@ public abstract class Trimmer {
 		FastqRecord newRecord = TrimmingMethods.trimNs(toTrim, no5ptrim);
 		// if the new record is null return null
 		if (newRecord == null) {
-			metric.TRIMMED_BY_Ns++;
+			metric.POLY_N_TRIMMED++;
 			// stats.addTrimmedNs();
 			return null;
 		} else if (!newRecord.equals(toTrim)) {
 			// if the record is trimmed, add it to the pipeline
-			metric.TRIMMED_BY_Ns++;
+			metric.POLY_N_TRIMMED++;
 			// stats.addTrimmedNs();
 			toTrim = newRecord;
 		}
 		// if discard remaining Ns is set and the record to trim contain its, return null
 		if (discardRemainingNs && SequenceMatchs.sequenceContainNs(toTrim.getReadString())) {
-			metric.DISCARDED_BY_REMAINING_Ns++;
+			metric.INTERNAL_N_DISCARDED++;
 			// stats.addCountRemainingNdiscards();
 			return null;
 		}
@@ -131,18 +131,19 @@ public abstract class Trimmer {
 		if (trimQuality) {
 			newRecord = TrimmingMethods.trimQualityMott(toTrim, format, qualThreshold, no5ptrim);
 			if (newRecord == null) {
-				metric.TRIMMED_BY_QUALITY++;
+				metric.QUALITY_TRIMMED++;
+				metric.LENGTH_DISCARDED++;
 				// stats.addCountsQualityTrims();
 				return null;
 			} else if (!newRecord.equals(toTrim)) {
-				metric.TRIMMED_BY_QUALITY++;
+				metric.QUALITY_TRIMMED++;
 				// stats.addCountsQualityTrims();
 				toTrim = newRecord;
 			}
 		}
 		// filter by length
 		if (toTrim.length() < minLength) {
-			metric.DISCARDED_BY_LENGTH++;
+			metric.LENGTH_DISCARDED++;
 			// stats.addCountLengthDiscard();
 			return null;
 		}

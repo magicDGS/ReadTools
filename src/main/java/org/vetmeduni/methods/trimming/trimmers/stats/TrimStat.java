@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-
 package org.vetmeduni.methods.trimming.trimmers.stats;
 
 import htsjdk.samtools.metrics.MetricBase;
@@ -34,23 +33,23 @@ public class TrimStat extends MetricBase {
 
 	public int TOTAL;
 
-	public int TRIMMED_BY_Ns;
-
-	public int DISCARDED_BY_REMAINING_Ns;
-
-	public int TRIMMED_BY_QUALITY;
-
-	public int DISCARDED_BY_LENGTH;
-
 	public int PASSED;
+
+	public int POLY_N_TRIMMED;
+
+	public int INTERNAL_N_DISCARDED;
+
+	public int LENGTH_DISCARDED;
+
+	public int QUALITY_TRIMMED;
 
 	public TrimStat(String pair) {
 		PAIR = pair;
 		TOTAL = 0;
-		TRIMMED_BY_Ns = 0;
-		DISCARDED_BY_REMAINING_Ns = 0;
-		TRIMMED_BY_QUALITY = 0;
-		DISCARDED_BY_LENGTH = 0;
+		POLY_N_TRIMMED = 0;
+		INTERNAL_N_DISCARDED = 0;
+		QUALITY_TRIMMED = 0;
+		LENGTH_DISCARDED = 0;
 		PASSED = 0;
 	}
 }
