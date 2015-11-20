@@ -34,10 +34,10 @@ import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
-import org.vetmeduni.utils.misc.IOUtils;
+import org.vetmeduni.utils.fastq.QualityUtils;
 import org.vetmeduni.utils.loggers.FastqLogger;
 import org.vetmeduni.utils.loggers.ProgressLoggerExtension;
-import org.vetmeduni.utils.fastq.QualityUtils;
+import org.vetmeduni.utils.misc.IOUtils;
 
 import java.io.File;
 import java.io.IOException;

@@ -41,22 +41,22 @@ public class CommonOptions {
 	/**
 	 * Option for maintain the format instead of standardize
 	 */
-	public static Option maintainFormat = Option.builder("nstd").longOpt("no-standardize-output").desc(
+	public static final Option maintainFormat = Option.builder("nstd").longOpt("no-standardize-output").desc(
 		"By default, the output of this program is encoding in Sanger. If you disable this behaviour, the format of the output will be the same as the input (not recommended)")
-												.hasArg(false).optionalArg(true).build();
+													  .hasArg(false).optionalArg(true).build();
 
 	/**
 	 * Option for disable zipped output for FATSQ outputs
 	 */
-	public static Option disableZippedOutput = Option.builder("dgz").longOpt("disable-zipped-output")
-													 .desc("Dissable zipped output").hasArg(false).optionalArg(true)
-													 .build();
+	public static final Option disableZippedOutput = Option.builder("dgz").longOpt("disable-zipped-output")
+														   .desc("Dissable zipped output").hasArg(false)
+														   .optionalArg(true).build();
 
 	/**
 	 * Option for parallelization. Currently is not really multi-thread
 	 */
 	// TODO: change the description when real multi-thread
-	public static Option parallel = Option.builder("nt").longOpt("number-of-thread").desc(
+	public static final Option parallel = Option.builder("nt").longOpt("number-of-thread").desc(
 		"Specified the number of threads to use. Warning: real multi-thread is not implemented; if using more than one thread the option is a switch and the number of threads depends on the number of outputs. [Default="
 			+ DEFAULT_THREADS + "]").hasArg().numberOfArgs(1).argName("INT").optionalArg(true).build();
 

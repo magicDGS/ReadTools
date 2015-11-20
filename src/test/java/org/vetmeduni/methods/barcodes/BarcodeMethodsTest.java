@@ -30,9 +30,13 @@ import static org.vetmeduni.methods.barcodes.BarcodeMethods.getOnlyBarcodeFromNa
 public class BarcodeMethodsTest {
 
 	static String basename;
+
 	static String barcode;
+
 	String nameWithBarcode;
+
 	String nameWithBarcodeAndSeparator;
+
 	String nameWithoutBarcode;
 
 	@BeforeClass
@@ -47,8 +51,8 @@ public class BarcodeMethodsTest {
 
 	@Before
 	public void setUp() throws Exception {
-		nameWithBarcode = basename+"#"+barcode;
-		nameWithBarcodeAndSeparator = basename+"#"+barcode+"/1";
+		nameWithBarcode = basename + "#" + barcode;
+		nameWithBarcodeAndSeparator = basename + "#" + barcode + "/1";
 		nameWithoutBarcode = basename;
 	}
 

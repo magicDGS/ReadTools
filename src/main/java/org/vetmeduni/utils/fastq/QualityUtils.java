@@ -64,8 +64,6 @@ public class QualityUtils {
 		public QualityException() {
 		}
 
-		;
-
 		public QualityException(final String s) {
 			super(s);
 		}

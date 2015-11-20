@@ -34,12 +34,12 @@ import java.util.Properties;
  */
 public class ProjectProperties {
 
-	private static String PROPERTIES_FILE = "/version.prop";
+	private static final String PROPERTIES_FILE = "/version.prop";
 
 	/**
 	 * The default properties
 	 */
-	private static Hashtable<String, String> DEFAULT_VERSION_VALUES = new Hashtable<String, String>() {{
+	private static final Hashtable<String, String> DEFAULT_VERSION_VALUES = new Hashtable<String, String>() {{
 		put("version", "UNKNOWN");
 		put("name", "Program");
 		put("build", "develop"); // the build will be computed except it is in develop
@@ -222,10 +222,7 @@ public class ProjectProperties {
 	 * @return <code>true</code> if it is absent; <code>false</code> otherwise
 	 */
 	private static boolean isAbsent(String value) {
-		if (value == null || value.contains("$")) {
-			return true;
-		}
-		return false;
+		return value == null || value.contains("$");
 	}
 
 	/**
@@ -287,8 +284,6 @@ public class ProjectProperties {
 	 * Set all values for all the tags
 	 */
 	private static void setDefaults() {
-		for (String tag : DEFAULT_VERSION_VALUES.keySet()) {
-			setDefault(tag);
-		}
+		DEFAULT_VERSION_VALUES.keySet().forEach(org.vetmeduni.readtools.ProjectProperties::setDefault);
 	}
 }

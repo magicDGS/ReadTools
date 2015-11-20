@@ -143,7 +143,7 @@ public class MatcherBarcodeDictionary {
 		}
 		// more than one barcode
 		// map sample indexes and number of times that it occurs
-		HashMap<Integer, Integer> samples = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> samples = new HashMap<>();
 		// we need check in order
 		for (int i = 0; i < dictionary.getNumberOfBarcodes(); i++) {
 			String current = getBestBarcode(mismatches[i], barcode[i], i);
@@ -254,8 +254,8 @@ public class MatcherBarcodeDictionary {
 	public void logMatcherResult(Log log) {
 		log.info("Found ", numberOfUnknowReturned, " records with unknown barcodes");
 		for (int i = 0; i < dictionary.numberOfSamples(); i++) {
-			log.info("Found ", Formats.commaFmt.format(dictionary.getValueFor(i)), " records for ", dictionary.getSampleNames().get(i), " (",
-				dictionary.getCombinedBarcodesFor(i), ")");
+			log.info("Found ", Formats.commaFmt.format(dictionary.getValueFor(i)), " records for ",
+				dictionary.getSampleNames().get(i), " (", dictionary.getCombinedBarcodesFor(i), ")");
 		}
 	}
 }

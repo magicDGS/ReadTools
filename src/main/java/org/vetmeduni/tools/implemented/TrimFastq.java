@@ -56,12 +56,12 @@ public class TrimFastq extends AbstractTool {
 	/**
 	 * The default quality score
 	 */
-	private static int DEFAULT_QUALTITY_SCORE = 20;
+	private static final int DEFAULT_QUALTITY_SCORE = 20;
 
 	/**
 	 * The default minimum length
 	 */
-	private static int DEFAULT_MINIMUM_LENGTH = 40;
+	private static final int DEFAULT_MINIMUM_LENGTH = 40;
 
 	@Override
 	public int run(String[] args) {

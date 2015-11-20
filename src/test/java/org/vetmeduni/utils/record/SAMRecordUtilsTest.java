@@ -39,7 +39,7 @@ public class SAMRecordUtilsTest {
 
 	SAMRecord sangerRecord;
 
-	static SAMFileHeader emptyHeader = new SAMFileHeader();
+	static final SAMFileHeader emptyHeader = new SAMFileHeader();
 
 	static SAMRecord createSamRecord(String readName, byte base, String quality) {
 		SAMRecord record = new SAMRecord(emptyHeader);

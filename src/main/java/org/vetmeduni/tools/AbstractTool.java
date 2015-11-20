@@ -49,7 +49,7 @@ public abstract class AbstractTool implements Tool {
 	/**
 	 * Help option (common for all the tools)
 	 */
-	private static Options helpOption = new Options().addOption(Option.builder("h").
+	private static final Options helpOption = new Options().addOption(Option.builder("h").
 		longOpt("help").desc("Print this message and exit").build());
 
 	/**

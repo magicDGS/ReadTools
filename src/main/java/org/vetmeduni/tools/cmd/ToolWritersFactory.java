@@ -22,7 +22,6 @@
  */
 package org.vetmeduni.tools.cmd;
 
-import htsjdk.samtools.fastq.FastqWriter;
 import org.vetmeduni.io.writers.ReadToolsFastqWriter;
 import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
 import org.vetmeduni.io.writers.SplitFastqWriter;
@@ -67,7 +66,8 @@ public class ToolWritersFactory {
 	 *
 	 * @return FastqWriter for single; PairFastqWriter for paired end
 	 */
-	public static ReadToolsFastqWriter getSingleOrPairWriter(String prefix, boolean dgzip, boolean multi, boolean single) {
+	public static ReadToolsFastqWriter getSingleOrPairWriter(String prefix, boolean dgzip, boolean multi,
+		boolean single) {
 		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
 		factory.setGzipOutput(!dgzip);
 		factory.setUseAsyncIo(multi);

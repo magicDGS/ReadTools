@@ -34,12 +34,12 @@ public class BarcodeDictionary {
 	/**
 	 * Name of the samples. Samples with the same name are allowed
 	 */
-	private ArrayList<String> samples;
+	private final ArrayList<String> samples;
 
 	/**
 	 * Value associated for each sample
 	 */
-	private int[] samplesValue;
+	private final int[] samplesValue;
 	// array with one array per barcode, and the size of each array internally is a sample
 
 	/**

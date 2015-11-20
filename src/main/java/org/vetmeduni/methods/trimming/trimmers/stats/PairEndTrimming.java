@@ -23,7 +23,6 @@
 package org.vetmeduni.methods.trimming.trimmers.stats;
 
 import htsjdk.samtools.metrics.Header;
-import htsjdk.samtools.metrics.StringHeader;
 
 /**
  * Header for pair-end trimming

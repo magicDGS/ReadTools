@@ -85,7 +85,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 			FastqReaderInterface reader = ToolsReadersFactory
 				.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
 			SplitFastqWriter writer = ToolWritersFactory
-				.getFastqSplitWritersFromInput(outputPrefix, cmd.hasOption("x") ? dictionary : null,
+				.getFastqSplitWritersFromInput(outputPrefix, split ? dictionary : null,
 					cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null);
 			// run the method
 			run(reader, writer, methods, max);
@@ -170,7 +170,6 @@ public class FastqBarcodeDetector extends AbstractTool {
 	 * @param methods    the barcode methods instance
 	 * @param mismatches the maximum number of mismatches
 	 *
-	 * @return the number of unknow barcodes
 	 * @throws IOException if there are some problems with the files
 	 */
 	private void runPaired(FastqReaderPairedInterface reader, SplitFastqWriter writer, MatcherBarcodeDictionary methods,

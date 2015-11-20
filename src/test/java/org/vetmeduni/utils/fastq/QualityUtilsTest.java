@@ -30,18 +30,18 @@ public class QualityUtilsTest {
 	/**
 	 * All the Sanger qualities (ASCII)
 	 */
-	public static String sangerQuality = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI";
+	public static final String sangerQuality = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI";
 
 	/**
 	 * All the Illumina qualities (ASCII)
 	 */
-	public static String illuminaQuality = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefgh";
+	public static final String illuminaQuality = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefgh";
 
 	/**
 	 * All the qualities in Phred equivalent to the ASCII code (both Illumina and Sanger)
 	 */
-	public static byte[] quality = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-		21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40};
+	public static final byte[] quality = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+		19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40};
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

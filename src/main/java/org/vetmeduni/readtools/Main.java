@@ -41,7 +41,7 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
 public class Main {
 
 	// the logger for this class
-	public static Log logger = Log.getInstance(Main.class);
+	public static final Log logger = Log.getInstance(Main.class);
 
 	/**
 	 * Main method

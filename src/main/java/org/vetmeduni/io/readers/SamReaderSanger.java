@@ -179,7 +179,7 @@ public class SamReaderSanger implements SamReader {
 		/**
 		 * Construct an iterator with an underlying iterator
 		 *
-		 * @param iterator
+		 * @param iterator the underlying iterator
 		 */
 		private SAMRecordSangerIterator(SAMRecordIterator iterator) {
 			this.iterator = iterator;

@@ -124,7 +124,7 @@ public class ReadToolsFastqWriterFactory {
 			.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_1", GZIP_OUTPUT)));
 		final FastqWriter pair2 = FACTORY
 			.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_2", GZIP_OUTPUT)));
-		Lazy<FastqWriter> single = new Lazy<FastqWriter>(new Lazy.LazyInitializer<FastqWriter>() {
+		Lazy<FastqWriter> single = new Lazy<>(new Lazy.LazyInitializer<FastqWriter>() {
 
 			@Override
 			public FastqWriter make() {
@@ -227,8 +227,8 @@ public class ReadToolsFastqWriterFactory {
 
 	/**
 	 * Writer that split between assign/unknow barcodes; the mapping is "assign" and {@link
-	 * org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary#UNKNOWN_STRING}. By default, any record is correct unless the
-	 * unknow string is provided as identifier
+	 * org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary#UNKNOWN_STRING}. By default, any record is
+	 * correct unless the unknow string is provided as identifier
 	 *
 	 * @param prefix the prefix for the files
 	 * @param paired <code>true</code> indicates that paired writers are used; otherwise a default is used

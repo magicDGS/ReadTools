@@ -53,8 +53,6 @@ public abstract class Trimmer {
 
 	protected final boolean no5ptrim;
 
-
-
 	/**
 	 * Constructor for a new Mott algorithm with several thresholds
 	 *

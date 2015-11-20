@@ -88,7 +88,7 @@ public class TrimmerPaired extends Trimmer {
 	@Override
 	public FastqRecord trimFastqRecord(FastqRecord record, FastqQualityFormat format) {
 		FastqRecord toReturn = trimFastqRecord(record, format, metricPair1, histogramPair2);
-		if(toReturn != null) {
+		if (toReturn != null) {
 			header.AS_SINGLE++;
 		}
 		return toReturn;

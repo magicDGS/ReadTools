@@ -42,7 +42,7 @@ public class TrimmerSingle extends Trimmer {
 	/**
 	 * The metrics for the trimmer
 	 */
-	private TrimStat metric;
+	private final TrimStat metric;
 
 	/**
 	 * The histogram for the trimmer
@@ -52,7 +52,7 @@ public class TrimmerSingle extends Trimmer {
 	/**
 	 * The header for the trimmer (it is always the same)
 	 */
-	private static SingleEndTrimming header = new SingleEndTrimming();
+	private static final SingleEndTrimming header = new SingleEndTrimming();
 
 	protected TrimmerSingle(boolean trimQuality, int qualThreshold, int minLength, boolean discardRemainingNs,
 		boolean no5ptrim) {
