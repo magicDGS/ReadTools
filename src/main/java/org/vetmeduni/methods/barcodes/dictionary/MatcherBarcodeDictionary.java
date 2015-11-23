@@ -252,7 +252,7 @@ public class MatcherBarcodeDictionary {
 	 * @param log the log to use for logging
 	 */
 	public void logMatcherResult(Log log) {
-		log.info("Found ", numberOfUnknowReturned, " records with unknown barcodes");
+		log.info("Found ", Formats.commaFmt.format(numberOfUnknowReturned), " records with unknown barcodes");
 		for (int i = 0; i < dictionary.numberOfSamples(); i++) {
 			log.info("Found ", Formats.commaFmt.format(dictionary.getValueFor(i)), " records for ",
 				dictionary.getSampleNames().get(i), " (", dictionary.getCombinedBarcodesFor(i), ")");
