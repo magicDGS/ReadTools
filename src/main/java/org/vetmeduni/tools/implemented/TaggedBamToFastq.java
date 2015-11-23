@@ -47,7 +47,15 @@ import java.io.IOException;
 import static org.vetmeduni.tools.ToolNames.ToolException;
 
 /**
- * Class for converting from a Barcoded BAM to a FASTQ
+ * Class for converting from a Barcoded BAM to a FASTQ.
+ *
+ * Description: Because some sequencing companies/services provide a barcoded BAM file instead of a FASTQ this tool
+ * converts the BAM file into the latter. It works with one or two barcodes, pair-end (interleaved BAM file) and
+ * single-end sequencing. In addition, it matches the sequenced barcodes with the used ones and discards some reads that
+ * could not be matched, and adds the exact detected barcode to the read name. The method to assign barcodes is the
+ * following: if there is an exact match for a unique barcode, it is directly assigned; if there is more than 1 barcode,
+ * it assigns the read to the sample with which most barcodes match; otherwise, the read is discarded. If the barcode in
+ * the input file is larger than the sequenced barcode the last base from the input barcode is ignored.
  *
  * @author Daniel Gómez-Sánchez
  */

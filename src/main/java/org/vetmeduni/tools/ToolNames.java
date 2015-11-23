@@ -39,13 +39,14 @@ public enum ToolNames {
 			+ "highest scoring region of the read is finally reported.\n\nCitation of the method: Kofler et al. (2011), "
 			+ "PLoS ONE 6(1), e15925, doi:10.1371/journal.pone.0015925", new TrimFastq()),
 	TaggedBamToFastq("Convert an BAM file with BC tags into a FASTQ file",
-		"Because some services provides a barcoded BAM file instead of a FASTQ this tool convert them into the later to be "
-			+ "allow to use it. It works with one or two barcodes, pair-end (interleaved BAM file) and single-end sequencing."
-			+ " In addition, it match the barcodes with the used ones to discard some reads that could not be assign, and"
-			+ " add the exact detected barcode to the read name. The method to assing barcodes is the following: if there "
-			+ "is an exact match for an unique barcode, it is directly assign; if there are more than 1 barcode, it assign "
-			+ "it to the sample where most barcodes match; otherwise, it is discarded. Barcodes in the input file that are "
-			+ "larger than the used ones are cut in the last bases.", new TaggedBamToFastq()),
+		"Description: Because some sequencing companies/services provide a barcoded BAM file instead of a FASTQ this tool"
+			+ "converts the BAM file into the latter. It works with one or two barcodes, pair-end (interleaved BAM file) "
+			+ "and single-end sequencing. In addition, it matches the sequenced barcodes with the used ones and discards some"
+			+ " reads that could not be matched, and adds the exact detected barcode to the read name. The method to assign"
+			+ " barcodes is the following: if there is an exact match for a unique barcode, it is directly assigned; if there"
+			+ " is more than 1 barcode, it assigns the read to the sample with which most barcodes match; otherwise, the read"
+			+ " is discarded. If the barcode in the input file is larger than the sequenced barcode the last base from the "
+			+ "input barcode is ignored.", new TaggedBamToFastq()),
 	QualityChecker("Get the quality encoding for a BAM/FASTQ file",
 		"Check the quality encoding for a BAM/FASTQ file and output in the STDOUT the encoding", new QualityChecker()),
 	StandardizeQuality("Convert an Illumina BAM/FASTQ file into a Sanger",
