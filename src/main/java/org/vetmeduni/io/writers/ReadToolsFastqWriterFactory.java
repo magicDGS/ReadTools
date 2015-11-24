@@ -34,6 +34,7 @@ import org.vetmeduni.utils.misc.IOUtils;
 import org.vetmeduni.utils.record.FastqRecordUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -97,7 +98,8 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public ReadToolsFastqWriter newWriterDefault(final File out) {
+	public ReadToolsFastqWriter newWriterDefault(final File out) throws IOException {
+		IOUtils.exceptionIfExists(out);
 		return new ReadToolsBasicFastqWriter(FACTORY.newWriter(out));
 	}
 
@@ -108,7 +110,7 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public ReadToolsFastqWriter newWriter(String prefix) {
+	public ReadToolsFastqWriter newWriter(String prefix) throws IOException {
 		return newWriterDefault(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix, GZIP_OUTPUT)));
 	}
 
@@ -119,17 +121,16 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public ReadToolsFastqWriter newPairWriter(String prefix) {
-		final FastqWriter pair1 = FACTORY
-			.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_1", GZIP_OUTPUT)));
-		final FastqWriter pair2 = FACTORY
-			.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_2", GZIP_OUTPUT)));
+	public ReadToolsFastqWriter newPairWriter(String prefix) throws IOException {
+		final FastqWriter pair1 = newWriter(prefix + "_1");
+		final FastqWriter pair2 = newWriter(prefix + "_2");
+		final File seOutput = new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT));
+		IOUtils.exceptionIfExists(seOutput);
 		Lazy<FastqWriter> single = new Lazy<>(new Lazy.LazyInitializer<FastqWriter>() {
 
 			@Override
 			public FastqWriter make() {
-				return FACTORY
-					.newWriter(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT)));
+				return FACTORY.newWriter(seOutput);
 			}
 		});
 		return new PairFastqWriters(pair1, pair2, single);
@@ -144,7 +145,8 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitByBarcodeWriter(String prefix, BarcodeDictionary dictionary, final boolean paired) {
+	public SplitFastqWriter newSplitByBarcodeWriter(String prefix, BarcodeDictionary dictionary, final boolean paired)
+		throws IOException {
 		logger.debug("Creating new SplitByBarcode barcode for ", (paired) ? "paired" : "single", "-end");
 		final Hashtable<String, FastqWriter> mapping = new Hashtable<>();
 		HashMap<String, FastqWriter> sampleNames = new HashMap<>();
@@ -209,7 +211,8 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitByBarcodeWriterSingle(String prefix, BarcodeDictionary dictionary) {
+	public SplitFastqWriter newSplitByBarcodeWriterSingle(String prefix, BarcodeDictionary dictionary)
+		throws IOException {
 		return newSplitByBarcodeWriter(prefix, dictionary, false);
 	}
 
@@ -221,7 +224,8 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitByBarcodeWriterPaired(String prefix, BarcodeDictionary dictionary) {
+	public SplitFastqWriter newSplitByBarcodeWriterPaired(String prefix, BarcodeDictionary dictionary)
+		throws IOException {
 		return newSplitByBarcodeWriter(prefix, dictionary, true);
 	}
 
@@ -235,7 +239,7 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitAssingUnknownBarcodeWriter(String prefix, boolean paired) {
+	public SplitFastqWriter newSplitAssingUnknownBarcodeWriter(String prefix, boolean paired) throws IOException {
 		logger.debug("Creating new Assing-Unknown barcode for ", (paired) ? "paired" : "single", "-end");
 		final Hashtable<String, FastqWriter> mapping = new Hashtable<>(2);
 		mapping.put("assign", (paired) ? newPairWriter(prefix) : newWriter(prefix));
@@ -305,7 +309,7 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitAssingUnknownBarcodeWriterSingle(String prefix) {
+	public SplitFastqWriter newSplitAssingUnknownBarcodeWriterSingle(String prefix) throws IOException {
 		return newSplitAssingUnknownBarcodeWriter(prefix, false);
 	}
 
@@ -316,7 +320,7 @@ public class ReadToolsFastqWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitAssingUnknownBarcodeWriterPaired(String prefix) {
+	public SplitFastqWriter newSplitAssingUnknownBarcodeWriterPaired(String prefix) throws IOException {
 		return newSplitAssingUnknownBarcodeWriter(prefix, true);
 	}
 }

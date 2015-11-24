@@ -52,7 +52,7 @@ public class PairFastqWriters implements ReadToolsFastqWriter {
 	 * @param second writer for the second pair
 	 * @param single lazy writer for the single pair
 	 */
-	public PairFastqWriters(FastqWriter first, FastqWriter second, Lazy<FastqWriter> single) {
+	protected PairFastqWriters(FastqWriter first, FastqWriter second, Lazy<FastqWriter> single) {
 		this.first = first;
 		this.second = second;
 		this.single = single;

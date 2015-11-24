@@ -27,6 +27,8 @@ import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
 import org.vetmeduni.io.writers.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 
+import java.io.IOException;
+
 /**
  * Factory for the writers of the tools
  *
@@ -46,7 +48,7 @@ public class ToolWritersFactory {
 	 * @return the writer for splitting
 	 */
 	public static SplitFastqWriter getFastqSplitWritersFromInput(String prefix, BarcodeDictionary dictionary,
-		boolean dgzip, boolean multi, boolean single) {
+		boolean dgzip, boolean multi, boolean single) throws IOException {
 		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
 		factory.setGzipOutput(!dgzip);
 		factory.setUseAsyncIo(multi);
@@ -67,7 +69,7 @@ public class ToolWritersFactory {
 	 * @return FastqWriter for single; PairFastqWriter for paired end
 	 */
 	public static ReadToolsFastqWriter getSingleOrPairWriter(String prefix, boolean dgzip, boolean multi,
-		boolean single) {
+		boolean single) throws IOException {
 		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
 		factory.setGzipOutput(!dgzip);
 		factory.setUseAsyncIo(multi);

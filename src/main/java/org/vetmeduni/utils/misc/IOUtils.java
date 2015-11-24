@@ -25,6 +25,7 @@ package org.vetmeduni.utils.misc;
 import htsjdk.samtools.BamFileIoUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Utils for the inputs FASTQ and BAM/SAM files
@@ -62,5 +63,31 @@ public class IOUtils {
 	public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
 		return String
 			.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
+	}
+
+	/**
+	 * Check if the file exists and throw an exception if so
+	 *
+	 * @param file the file to check
+	 *
+	 * @throws IOException if the file exists
+	 */
+	public static void exceptionIfExists(File file) throws IOException {
+		if (file.isFile()) {
+			throw new IOException("File " + file.getAbsolutePath() + " already exists");
+		}
+	}
+
+	/**
+	 * Check if several files exists and throw an exception if at least one of them do
+	 *
+	 * @param file the file to check
+	 *
+	 * @throws IOException if one of the files already exists
+	 */
+	public static void exceptionIfExists(File... file) throws IOException {
+		for (File f : file) {
+			exceptionIfExists(f);
+		}
 	}
 }
