@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## Added
+- Checking of output file existence
 
 ## [0.1.1] - 2015-11-24
 ### Fixed
