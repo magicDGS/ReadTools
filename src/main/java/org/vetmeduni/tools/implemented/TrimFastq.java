@@ -242,7 +242,6 @@ public class TrimFastq extends AbstractTool {
 				}
 			}
 			progress.add();
-			writer.write(newRecord);
 		}
 	}
 
