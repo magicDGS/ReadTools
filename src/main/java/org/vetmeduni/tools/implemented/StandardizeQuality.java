@@ -51,9 +51,11 @@ public class StandardizeQuality extends AbstractTool {
 
 	@Override
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-		File input = new File(cmd.getOptionValue("i"));
-		File output = new File(cmd.getOptionValue("o"));
+		File input = new File(getUniqueValue(cmd, "i"));
+		File output = new File(getUniqueValue(cmd, "o"));
 		boolean index = cmd.hasOption("ind");
+		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+		boolean multi = nThreads != 1;
 		logCmdLine(cmd);
 		// first check the quality
 		switch (QualityUtils.getFastqQualityFormat(input)) {
@@ -62,8 +64,6 @@ public class StandardizeQuality extends AbstractTool {
 			default:
 				break;
 		}
-		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
-		boolean multi = nThreads != 1;
 		if (IOUtils.isBamOrSam(input)) {
 			runBam(input, output, index, multi);
 		} else {

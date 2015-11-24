@@ -127,11 +127,18 @@ public abstract class AbstractTool implements Tool {
 	protected void logCmdLine(CommandLine cmd) {
 		StringBuilder builder = new StringBuilder("");
 		for (Option opt : cmd.getOptions()) {
-			builder.append("--");
-			builder.append(opt.getLongOpt());
-			builder.append(" ");
-			if(opt.hasArg()) {
-				builder.append((opt.getValues().length == 1) ? opt.getValue() : Arrays.toString(opt.getValues()));
+			if (opt.hasArg()) {
+				for (String val : opt.getValues()) {
+					builder.append("--");
+					builder.append(opt.getLongOpt());
+					builder.append(" ");
+					builder.append(val);
+					builder.append(" ");
+				}
+			} else {
+				builder.append("--");
+				builder.append(opt.getLongOpt());
+				builder.append(" ");
 			}
 		}
 		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", builder.toString());
@@ -163,7 +170,7 @@ public abstract class AbstractTool implements Tool {
 	 * @return the value for that option; <code>null</code> if the option is not provided in the cmd
 	 * @throws ToolException if the argument was passed more than one time
 	 */
-	protected static String getUniqueValue(CommandLine cmd, String option) throws ToolException {
+	public static String getUniqueValue(CommandLine cmd, String option) throws ToolException {
 		String[] toReturn = cmd.getOptionValues(option);
 		if (toReturn == null) {
 			return null;

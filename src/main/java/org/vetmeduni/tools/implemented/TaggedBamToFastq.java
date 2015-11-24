@@ -63,9 +63,9 @@ public class TaggedBamToFastq extends AbstractTool {
 	@Override
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
 		// parsing command line
-		String inputString = cmd.getOptionValue("i");
-		String outputPrefix = cmd.getOptionValue("o");
-		String barcodes = cmd.getOptionValue("bc");
+		String inputString = getUniqueValue(cmd, "i");
+		String outputPrefix = getUniqueValue(cmd, "o");
+		String barcodes = getUniqueValue(cmd, "bc");
 		int[] max = getIntArrayOptions(cmd.getOptionValues("m"), MatcherBarcodeDictionary.DEFAULT_MISMATCHES);
 		String[] tags = cmd.getOptionValues("t");
 		logger.debug("Maximum mistmaches (", max.length, "): ", max);

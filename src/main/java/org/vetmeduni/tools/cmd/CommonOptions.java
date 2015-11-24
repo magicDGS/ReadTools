@@ -25,6 +25,9 @@ package org.vetmeduni.tools.cmd;
 import htsjdk.samtools.util.Log;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.vetmeduni.tools.ToolNames;
+
+import static org.vetmeduni.tools.AbstractTool.getUniqueValue;
 
 /**
  * Class that contains static instances of common options and their checking
@@ -97,16 +100,24 @@ public class CommonOptions {
 	 * @param cmd the command line where check if the option is set
 	 *
 	 * @return the number of threads to use
+	 * @throws org.vetmeduni.tools.ToolNames.ToolException if the option is not numeric
 	 */
 	public static int numberOfThreads(Log logger, CommandLine cmd) {
-		int nThreads = (cmd.hasOption(parallel.getOpt())) ?
-			Integer.parseInt(cmd.getOptionValue(parallel.getOpt())) :
-			DEFAULT_THREADS;
-		if (nThreads != 1) {
-			// TODO: change when real multi-thread is implemented
-			logger.warn(
-				"Currently multi-threads does not control the number of threads in use, depends on the number of outputs");
+		try {
+			int nThreads = DEFAULT_THREADS;
+			if (cmd.hasOption(parallel.getOpt())) {
+				nThreads = Integer.parseInt(getUniqueValue(cmd, parallel.getOpt()));
+				if (nThreads != 1) {
+					// TODO: change when real multi-thread is implemented
+					logger.warn(
+						"Currently multi-threads does not control the number of threads in use, depends on the number of outputs");
+				} else if (nThreads < 0) {
+					throw new NumberFormatException();
+				}
+			}
+			return nThreads;
+		} catch (NumberFormatException e) {
+			throw new ToolNames.ToolException("--" + parallel.getLongOpt() + " should be a positive integer");
 		}
-		return nThreads;
 	}
 }

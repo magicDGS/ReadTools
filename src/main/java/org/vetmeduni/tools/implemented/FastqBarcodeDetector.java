@@ -57,21 +57,22 @@ public class FastqBarcodeDetector extends AbstractTool {
 	@Override
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
 		// PARSING THE COMMAND LINE
-		File input1 = new File(cmd.getOptionValue("input1"));
-		File input2 = (cmd.hasOption("input2")) ? new File(cmd.getOptionValue("input2")) : null;
-		String outputPrefix = cmd.getOptionValue("output");
-		File barcodes = new File(cmd.getOptionValue("bc"));
+		File input1 = new File(getUniqueValue(cmd, "input1"));
+		// input file 2
+		String input2string = getUniqueValue(cmd, "input2");
+		File input2 = (input2string == null) ? null : new File(input2string);
+		String outputPrefix = getUniqueValue(cmd, "output");
+		File barcodes = new File(getUniqueValue(cmd, "bc"));
 		int max;
 		try {
-			max = (cmd.hasOption("m")) ?
-				Integer.parseInt(cmd.getOptionValue("m")) :
-				MatcherBarcodeDictionary.DEFAULT_MISMATCHES;
+			String maxOpt = getUniqueValue(cmd, "m");
+			max = (maxOpt == null) ? MatcherBarcodeDictionary.DEFAULT_MISMATCHES : Integer.parseInt(maxOpt);
 		} catch (IllegalArgumentException e) {
 			throw new ToolException("Maximum mismatches should be an integer");
 		}
+		boolean split = cmd.hasOption("x");
 		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
 		boolean multi = nThreads != 1;
-		boolean split = cmd.hasOption("x");
 		// logging command line
 		logCmdLine(cmd);
 		// create the combined dictionary and the barcode method associated

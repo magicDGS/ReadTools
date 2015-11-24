@@ -65,17 +65,18 @@ public class TrimFastq extends AbstractTool {
 	@Override
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
 		// The input file
-		File input1 = new File(cmd.getOptionValue("input1"));
+		File input1 = new File(getUniqueValue(cmd, "input1"));
+		logger.debug(input1);
 		// input file 2
-		File input2 = (cmd.hasOption("input2")) ? new File(cmd.getOptionValue("input2")) : null;
+		String input2string = getUniqueValue(cmd, "input2");
+		File input2 = (input2string == null) ? null : new File(input2string);
 		// The output prefix
-		String output_prefix = cmd.getOptionValue("output");
+		String output_prefix = getUniqueValue(cmd, "output");
 		// qualityThreshold
 		int qualThreshold;
 		try {
-			qualThreshold = (cmd.hasOption("quality-threshold")) ?
-				Integer.parseInt(cmd.getOptionValue("quality-threshold")) :
-				DEFAULT_QUALTITY_SCORE;
+			String qualOpt = getUniqueValue(cmd, "quality-threshold");
+			qualThreshold = (qualOpt == null) ? DEFAULT_QUALTITY_SCORE : Integer.parseInt(qualOpt);
 			if (qualThreshold < 0) {
 				throw new NumberFormatException();
 			}
@@ -85,28 +86,28 @@ public class TrimFastq extends AbstractTool {
 		// minimum length
 		int minLength;
 		try {
-			minLength = (cmd.hasOption("m")) ? Integer.parseInt(cmd.getOptionValue("m")) : DEFAULT_MINIMUM_LENGTH;
+			String minOpt = getUniqueValue(cmd, "m");
+			minLength = (minOpt == null) ? DEFAULT_MINIMUM_LENGTH : Integer.parseInt(minOpt);
 			if (minLength < 1) {
 				throw new NumberFormatException();
 			}
 		} catch (NumberFormatException e) {
 			throw new ToolException("Minimum length should be a positive integer");
 		}
-		boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
-		boolean trimQuality = !cmd.hasOption("no-trim-quality");
-		boolean no5ptrim = cmd.hasOption("no-5p-trim");
-		// TODO: add again verbose for something?
-		// boolean verbose = !cmd.hasOption("quiet");
+		// multi-thread?
+		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+		boolean multi = (nThreads != 1);
 		// FINISH PARSING: log the command line (not longer in the param file)
 		logCmdLine(cmd);
+		// TODO: add again verbose for something?
+		// boolean verbose = !cmd.hasOption("quiet");
 		// save the gzip option
 		boolean dgzip = CommonOptions.isZipDisable(cmd);
 		// save the keep_discard option
 		boolean keepDiscard = cmd.hasOption("k");
-		// start the new factory
-		// multi-thread?
-		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
-		boolean multi = (nThreads != 1);
+		boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
+		boolean trimQuality = !cmd.hasOption("no-trim-quality");
+		boolean no5ptrim = cmd.hasOption("no-5p-trim");
 		// save the maintained format option
 		boolean isMaintained = CommonOptions.isMaintained(logger, cmd);
 		// open the reader

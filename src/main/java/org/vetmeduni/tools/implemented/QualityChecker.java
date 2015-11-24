@@ -43,12 +43,13 @@ public class QualityChecker extends AbstractTool {
 
 	@Override
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-		File input = new File(cmd.getOptionValue("i"));
+		File input = new File(getUniqueValue(cmd, "i"));
 		long recordsToIterate;
 		try {
-			recordsToIterate = (cmd.hasOption("m")) ?
-				Long.parseLong(cmd.getOptionValue("m")) :
-				QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE;
+			String toIterate = getUniqueValue(cmd, "m");
+			recordsToIterate = (toIterate == null) ?
+				QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE :
+				Long.parseLong(toIterate);
 			if (recordsToIterate < 0) {
 				throw new NumberFormatException();
 			}
