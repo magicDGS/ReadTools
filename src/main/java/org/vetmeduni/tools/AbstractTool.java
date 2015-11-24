@@ -130,7 +130,9 @@ public abstract class AbstractTool implements Tool {
 			builder.append("--");
 			builder.append(opt.getLongOpt());
 			builder.append(" ");
-			builder.append((opt.getValues().length == 1) ? opt.getValue() : Arrays.toString(opt.getValues()));
+			if(opt.hasArg()) {
+				builder.append((opt.getValues().length == 1) ? opt.getValue() : Arrays.toString(opt.getValues()));
+			}
 		}
 		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", builder.toString());
 	}
@@ -142,6 +144,7 @@ public abstract class AbstractTool implements Tool {
 	 *
 	 * @return the formatted string
 	 */
+	@Deprecated
 	protected String getCommandArguments(String[] args) {
 		StringBuilder cmdLine = new StringBuilder();
 		for (String ar : args) {
@@ -149,6 +152,25 @@ public abstract class AbstractTool implements Tool {
 			cmdLine.append(" ");
 		}
 		return cmdLine.toString();
+	}
+
+	/**
+	 * Parse a single option (only one value is allowed)
+	 *
+	 * @param cmd    the already parsed command line with the programParser
+	 * @param option the option to retrieve
+	 *
+	 * @return the value for that option; <code>null</code> if the option is not provided in the cmd
+	 * @throws ToolException if the argument was passed more than one time
+	 */
+	protected static String getUniqueValue(CommandLine cmd, String option) throws ToolException {
+		String[] toReturn = cmd.getOptionValues(option);
+		if (toReturn == null) {
+			return null;
+		} else if (toReturn.length == 1) {
+			return toReturn[0];
+		}
+		throw new ToolException("Option --" + option + " provided more than one time");
 	}
 
 	/**
