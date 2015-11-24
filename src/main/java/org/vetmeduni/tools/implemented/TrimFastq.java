@@ -160,11 +160,11 @@ public class TrimFastq extends AbstractTool {
 		if (reader instanceof FastqReaderSingleInterface) {
 			logger.debug("Running single end");
 			progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
-			processSE(trimmer, (FastqReaderSingleInterface) reader, writer);
+			processSE(trimmer, (FastqReaderSingleInterface) reader, writer, progress);
 		} else if (reader instanceof FastqReaderPairedInterface) {
 			logger.debug("Running paired end");
 			progress = new FastqLogger(logger);
-			processPE(trimmer, (FastqReaderPairedInterface) reader, writer);
+			processPE(trimmer, (FastqReaderPairedInterface) reader, writer, progress);
 		} else {
 			logger.debug("ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
 			throw new IllegalArgumentException("Unreachable code");
@@ -187,11 +187,9 @@ public class TrimFastq extends AbstractTool {
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void processPE(Trimmer trimmer, FastqReaderPairedInterface reader, ReadToolsFastqWriter writer)
-		throws IOException {
+	private static void processPE(Trimmer trimmer, FastqReaderPairedInterface reader, ReadToolsFastqWriter writer,
+		FastqLogger progress) throws IOException {
 		boolean keep = (writer instanceof SplitFastqWriter);
-		// creating progress
-		FastqLogger progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
 		while (reader.hasNext()) {
 			FastqPairedRecord record = reader.next();
 			FastqPairedRecord newRecord = trimmer.trimFastqPairedRecord(record, reader.getFastqQuality());
@@ -227,10 +225,9 @@ public class TrimFastq extends AbstractTool {
 	 *
 	 * @throws IOException if there are problems with the files
 	 */
-	private void processSE(Trimmer trimmer, FastqReaderSingleInterface reader, ReadToolsFastqWriter writer)
-		throws IOException {
+	private static void processSE(Trimmer trimmer, FastqReaderSingleInterface reader, ReadToolsFastqWriter writer,
+		FastqLogger progress) throws IOException {
 		boolean keep = (writer instanceof SplitFastqWriter);
-		FastqLogger progress = new FastqLogger(logger);
 		while (reader.hasNext()) {
 			FastqRecord record = reader.next();
 			FastqRecord newRecord = trimmer.trimFastqRecord(record, reader.getFastqQuality());
