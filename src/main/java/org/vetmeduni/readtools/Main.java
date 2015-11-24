@@ -86,17 +86,9 @@ public class Main {
 	}
 
 	/**
-	 * Print the program header to the standard error
-	 */
-	public static void printProgramHeader() {
-		String header = String.format("%s (compiled on %s)", ProjectProperties.getFormattedNameWithVersion(),
-			ProjectProperties.getTimestamp());
-		System.err.println(header);
-		System.err.println(StringUtil.repeatCharNTimes('=', header.length()));
-	}
-
-	/**
 	 * Print the program header to this print writer
+	 *
+	 * @param writer the writer to print out the program header
 	 */
 	public static void printProgramHeader(PrintWriter writer) {
 		String header = String.format("%s (compiled on %s)", ProjectProperties.getFormattedNameWithVersion(),
@@ -111,7 +103,7 @@ public class Main {
 	 * @return formatted usage
 	 */
 	public static String usageMain() {
-		return String.format("Usage: java -jar %s.jar", ProjectProperties.getName());
+		return String.format("java -jar %s.jar", ProjectProperties.getName());
 	}
 
 	/**
@@ -120,19 +112,31 @@ public class Main {
 	 * @param error the standard error
 	 */
 	public static void generalHelp(String error) {
-		printProgramHeader();
-		System.err.println();
-		System.err.println(usageMain() + " <tool> [options]");
-		System.err.println();
-		System.err.println("Tools:");
+		PrintWriter writer = new PrintWriter(System.err);
+		printProgramHeader(writer);
+		writer.println();
+		writer.print("Usage: ");
+		writer.print(usageMain());
+		writer.println(" <tool> [options]\n");
+		writer.println("Tools:");
 		for (ToolNames name : ToolNames.values()) {
-			System.err.println("\t" + name + ":\t" + name.shortDescription);
+			writer.print("\t");
+			writer.print(name);
+			writer.print(":\t");
+			writer.println(name.shortDescription);
 		}
 		if (!error.equals("")) {
-			System.err.println();
-			System.err.println("error: " + error);
+			writer.println();
+			writer.print("error: ");
+			writer.println(error);
+		} else {
+			writer.println();
+			writer.print("* For specific help: ");
+			writer.print(usageMain());
+			writer.println(" <tool> --help");
 		}
-		System.err.println();
+		writer.println();
+		writer.close();
 		System.exit(1);
 	}
 }
