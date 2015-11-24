@@ -42,7 +42,6 @@ import org.vetmeduni.utils.loggers.ProgressLoggerExtension;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.vetmeduni.tools.ToolNames.ToolException;
 
@@ -62,57 +61,40 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
 public class TaggedBamToFastq extends AbstractTool {
 
 	@Override
-	public int run(String[] args) {
-		try {
-			// parsing command line
-			CommandLine cmd = programParser(args);
-			String inputString = cmd.getOptionValue("i");
-			String outputPrefix = cmd.getOptionValue("o");
-			String barcodes = cmd.getOptionValue("bc");
-			int[] max = getIntArrayOptions(cmd.getOptionValues("m"), MatcherBarcodeDictionary.DEFAULT_MISMATCHES);
-			String[] tags = cmd.getOptionValues("t");
-			logger.debug("Maximum mistmaches (", max.length, "): ", max);
-			logger.debug("Tags (", tags.length, "): ", tags);
-			if (max.length != 1 && max.length != tags.length) {
-				throw new ToolException("Number of maximum mismatches provided and number of tags does not match");
-			}
-			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
-			boolean multi = nThreads != 1;
-			// FINISH PARSING: log the command line (not longer in the param file)
-			logCmdLine(args);
-			// open the barcode dictionary
-			BarcodeDictionary barcodeDict = BarcodeDictionaryFactory
-				.createDefaultDictionary(new File(barcodes), tags.length);
-			logger.info("Loaded barcode file for ", barcodeDict.numberOfUniqueSamples(), " samples with ",
-				barcodeDict.numberOfSamples(), " different barcode sets");
-			MatcherBarcodeDictionary matcher = new MatcherBarcodeDictionary(barcodeDict);
-			// open the bam file
-			SamReader input = ToolsReadersFactory
-				.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
-			// Create the writer factory
-			SplitFastqWriter writer = ToolWritersFactory
-				.getFastqSplitWritersFromInput(outputPrefix, cmd.hasOption("x") ? barcodeDict : null,
-					cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, cmd.hasOption("s"));
-			// run it!
-			run(input, writer, matcher, max, tags, cmd.hasOption("s"));
-			// close the readers and writers
-			input.close();
-			writer.close();
-		} catch (ToolException e) {
-			// This exceptions comes from the command line parsing
-			printUsage(e.getMessage());
-			return 1;
-		} catch (IOException | SAMException e) {
-			// this are expected errors: IO if the user provides bad inputs, SAM if there are problems in the files
-			logger.error(e.getMessage());
-			logger.debug(e);
-			return 1;
-		} catch (Exception e) {
-			// unknow exception
-			logger.debug(e);
-			return 2;
+	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
+		// parsing command line
+		String inputString = cmd.getOptionValue("i");
+		String outputPrefix = cmd.getOptionValue("o");
+		String barcodes = cmd.getOptionValue("bc");
+		int[] max = getIntArrayOptions(cmd.getOptionValues("m"), MatcherBarcodeDictionary.DEFAULT_MISMATCHES);
+		String[] tags = cmd.getOptionValues("t");
+		logger.debug("Maximum mistmaches (", max.length, "): ", max);
+		logger.debug("Tags (", tags.length, "): ", tags);
+		if (max.length != 1 && max.length != tags.length) {
+			throw new ToolException("Number of maximum mismatches provided and number of tags does not match");
 		}
-		return 0;
+		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+		boolean multi = nThreads != 1;
+		// FINISH PARSING: log the command line (not longer in the param file)
+		logCmdLine(cmd);
+		// open the barcode dictionary
+		BarcodeDictionary barcodeDict = BarcodeDictionaryFactory
+			.createDefaultDictionary(new File(barcodes), tags.length);
+		logger.info("Loaded barcode file for ", barcodeDict.numberOfUniqueSamples(), " samples with ",
+			barcodeDict.numberOfSamples(), " different barcode sets");
+		MatcherBarcodeDictionary matcher = new MatcherBarcodeDictionary(barcodeDict);
+		// open the bam file
+		SamReader input = ToolsReadersFactory
+			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
+		// Create the writer factory
+		SplitFastqWriter writer = ToolWritersFactory
+			.getFastqSplitWritersFromInput(outputPrefix, cmd.hasOption("x") ? barcodeDict : null,
+				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, cmd.hasOption("s"));
+		// run it!
+		run(input, writer, matcher, max, tags, cmd.hasOption("s"));
+		// close the readers and writers
+		input.close();
+		writer.close();
 	}
 
 	/**

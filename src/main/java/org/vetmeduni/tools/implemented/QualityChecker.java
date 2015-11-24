@@ -42,34 +42,23 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
 public class QualityChecker extends AbstractTool {
 
 	@Override
-	public int run(String[] args) {
+	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
+		File input = new File(cmd.getOptionValue("i"));
+		long recordsToIterate;
 		try {
-			CommandLine cmd = programParser(args);
-			File input = new File(cmd.getOptionValue("i"));
-			long recordsToIterate;
-			try {
-				recordsToIterate = (cmd.hasOption("m")) ?
-					Long.parseLong(cmd.getOptionValue("m")) :
-					QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE;
-				if (recordsToIterate < 0) {
-					throw new NumberFormatException();
-				}
-			} catch (NumberFormatException e) {
-				throw new ToolException("Number of reads should be a positive long");
+			recordsToIterate = (cmd.hasOption("m")) ?
+				Long.parseLong(cmd.getOptionValue("m")) :
+				QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE;
+			if (recordsToIterate < 0) {
+				throw new NumberFormatException();
 			}
-			logCmdLine(args);
-			FastqQualityFormat format = QualityUtils.getFastqQualityFormat(input, recordsToIterate);
-			String toConsole = (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
-			System.out.println(toConsole);
-		} catch (ToolException e) {
-			// This exceptions comes from the command line parsing
-			printUsage(e.getMessage());
-			return 1;
-		} catch (Exception e) {
-			logger.debug(e);
-			return 2;
+		} catch (NumberFormatException e) {
+			throw new ToolException("Number of reads should be a positive long");
 		}
-		return 0;
+		logCmdLine(cmd);
+		FastqQualityFormat format = QualityUtils.getFastqQualityFormat(input, recordsToIterate);
+		String toConsole = (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
+		System.out.println(toConsole);
 	}
 
 	@Override

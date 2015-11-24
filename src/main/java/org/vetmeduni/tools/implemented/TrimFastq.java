@@ -22,7 +22,6 @@
  */
 package org.vetmeduni.tools.implemented;
 
-import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -64,84 +63,65 @@ public class TrimFastq extends AbstractTool {
 	private static final int DEFAULT_MINIMUM_LENGTH = 40;
 
 	@Override
-	public int run(String[] args) {
+	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
+		// The input file
+		File input1 = new File(cmd.getOptionValue("input1"));
+		// input file 2
+		File input2 = (cmd.hasOption("input2")) ? new File(cmd.getOptionValue("input2")) : null;
+		// The output prefix
+		String output_prefix = cmd.getOptionValue("output");
+		// qualityThreshold
+		int qualThreshold;
 		try {
-			// PARSING THE COMMAND LINE
-			CommandLine cmd = programParser(args);
-			// The input file
-			File input1 = new File(cmd.getOptionValue("input1"));
-			// input file 2
-			File input2 = (cmd.hasOption("input2")) ? new File(cmd.getOptionValue("input2")) : null;
-			// The output prefix
-			String output_prefix = cmd.getOptionValue("output");
-			// qualityThreshold
-			int qualThreshold;
-			try {
-				qualThreshold = (cmd.hasOption("quality-threshold")) ?
-					Integer.parseInt(cmd.getOptionValue("quality-threshold")) :
-					DEFAULT_QUALTITY_SCORE;
-				if (qualThreshold < 0) {
-					throw new NumberFormatException();
-				}
-			} catch (NumberFormatException e) {
-				throw new ToolException("Quality threshold should be a positive integer");
+			qualThreshold = (cmd.hasOption("quality-threshold")) ?
+				Integer.parseInt(cmd.getOptionValue("quality-threshold")) :
+				DEFAULT_QUALTITY_SCORE;
+			if (qualThreshold < 0) {
+				throw new NumberFormatException();
 			}
-			// minimum length
-			int minLength;
-			try {
-				minLength = (cmd.hasOption("m")) ? Integer.parseInt(cmd.getOptionValue("m")) : DEFAULT_MINIMUM_LENGTH;
-				if (minLength < 1) {
-					throw new NumberFormatException();
-				}
-			} catch (NumberFormatException e) {
-				throw new ToolException("Minimum length should be a positive integer");
-			}
-			boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
-			boolean trimQuality = !cmd.hasOption("no-trim-quality");
-			boolean no5ptrim = cmd.hasOption("no-5p-trim");
-			// TODO: add again verbose for something?
-			// boolean verbose = !cmd.hasOption("quiet");
-			// FINISH PARSING: log the command line (not longer in the param file)
-			logCmdLine(args);
-			// save the gzip option
-			boolean dgzip = CommonOptions.isZipDisable(cmd);
-			// save the keep_discard option
-			boolean keepDiscard = cmd.hasOption("k");
-			// start the new factory
-			// multi-thread?
-			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
-			boolean multi = (nThreads != 1);
-			// save the maintained format option
-			boolean isMaintained = CommonOptions.isMaintained(logger, cmd);
-			// open the reader
-			FastqReaderInterface reader = ToolsReadersFactory.getFastqReaderFromInputs(input1, input2, isMaintained);
-			boolean single = !(reader instanceof FastqReaderPairedInterface);
-			// open the writer
-			ReadToolsFastqWriter writer = (keepDiscard) ?
-				ToolWritersFactory.getFastqSplitWritersFromInput(output_prefix, null, dgzip, multi, single) :
-				ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
-			// create the trimmer
-			// create the MottAlgorithm
-			Trimmer trimmer = Trimmer
-				.getTrimmer(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim, single);
-			// run it!
-			process(trimmer, reader, writer, new File(output_prefix + ".metrics"));
-		} catch (ToolException e) {
-			// This exceptions comes from the command line parsing
-			printUsage(e.getMessage());
-			return 1;
-		} catch (IOException | SAMException e) {
-			// this are expected errors: IO if the user provides bad inputs, SAM if there are problems in the files
-			logger.error(e.getMessage());
-			logger.debug(e);
-			return 1;
-		} catch (Exception e) {
-			// unexpected exceptions return a different error code
-			logger.debug(e);
-			logger.error(e.getMessage());
-			return 2;
+		} catch (NumberFormatException e) {
+			throw new ToolException("Quality threshold should be a positive integer");
 		}
-		return 0;
+		// minimum length
+		int minLength;
+		try {
+			minLength = (cmd.hasOption("m")) ? Integer.parseInt(cmd.getOptionValue("m")) : DEFAULT_MINIMUM_LENGTH;
+			if (minLength < 1) {
+				throw new NumberFormatException();
+			}
+		} catch (NumberFormatException e) {
+			throw new ToolException("Minimum length should be a positive integer");
+		}
+		boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
+		boolean trimQuality = !cmd.hasOption("no-trim-quality");
+		boolean no5ptrim = cmd.hasOption("no-5p-trim");
+		// TODO: add again verbose for something?
+		// boolean verbose = !cmd.hasOption("quiet");
+		// FINISH PARSING: log the command line (not longer in the param file)
+		logCmdLine(cmd);
+		// save the gzip option
+		boolean dgzip = CommonOptions.isZipDisable(cmd);
+		// save the keep_discard option
+		boolean keepDiscard = cmd.hasOption("k");
+		// start the new factory
+		// multi-thread?
+		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+		boolean multi = (nThreads != 1);
+		// save the maintained format option
+		boolean isMaintained = CommonOptions.isMaintained(logger, cmd);
+		// open the reader
+		FastqReaderInterface reader = ToolsReadersFactory.getFastqReaderFromInputs(input1, input2, isMaintained);
+		boolean single = !(reader instanceof FastqReaderPairedInterface);
+		// open the writer
+		ReadToolsFastqWriter writer = (keepDiscard) ?
+			ToolWritersFactory.getFastqSplitWritersFromInput(output_prefix, null, dgzip, multi, single) :
+			ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
+		// create the trimmer
+		// create the MottAlgorithm
+		Trimmer trimmer = Trimmer
+			.getTrimmer(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim, single);
+		// run it!
+		process(trimmer, reader, writer, new File(output_prefix + ".metrics"));
 	}
 
 	/**

@@ -22,11 +22,13 @@
  */
 package org.vetmeduni.tools;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.util.Log;
 import org.apache.commons.cli.*;
 import org.vetmeduni.readtools.Main;
 import org.vetmeduni.readtools.ProjectProperties;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
@@ -38,6 +40,48 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
  * @author Daniel Gómez-Sánchez
  */
 public abstract class AbstractTool implements Tool {
+
+	/**
+	 * Implementation that use {@link #runThrowingExceptions(org.apache.commons.cli.CommandLine)} and handle or the know
+	 * exceptions: {@link org.vetmeduni.tools.ToolNames.ToolException} if there is some problem parsing the command
+	 * line, {@link java.io.IOException} if there are problems with the files
+	 *
+	 * @param args arguments that comes directly from the command line and need to be parsed
+	 *
+	 * @return 0 if there is no exception, 1 if there is a known exception, 2 otherwise
+	 */
+	@Override
+	public int run(String[] args) {
+		try {
+			final CommandLine cmd = programParser(args);
+			runThrowingExceptions(cmd);
+		} catch (ToolException e) {
+			// This exceptions comes from the command line parsing
+			printUsage(e.getMessage());
+			return 1;
+		} catch (SAMException | IOException e) {
+			// this are expected errors: IO if the user provides bad inputs, SAM if there are problems in the files
+			logger.error(e.getMessage());
+			logger.debug(e);
+			return 1;
+		} catch (Exception e) {
+			// unexpected exceptions return a different error code
+			logger.debug(e);
+			logger.error(e.getMessage());
+			return 2;
+		}
+		return 0;
+	}
+
+	/**
+	 * Run the current tool and throw exceptions that will be handle by {@link #run(String[])}. See {@link
+	 * #run(String[])} for the exceptions that are handle
+	 *
+	 * @param cmd the already parsed command line with the programParser
+	 *
+	 * @throws Exception
+	 */
+	protected abstract void runThrowingExceptions(final CommandLine cmd) throws Exception;
 
 	/**
 	 * Function that returns the options for the program
@@ -69,9 +113,26 @@ public abstract class AbstractTool implements Tool {
 	 *
 	 * @param args the arguments passed to the tool
 	 */
+	@Deprecated
 	protected void logCmdLine(String[] args) {
 		String cmdLine = getCommandArguments(args);
 		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", cmdLine);
+	}
+
+	/**
+	 * Log the command line (with the known options)
+	 *
+	 * @param cmd the already parsed command line with the programParser
+	 */
+	protected void logCmdLine(CommandLine cmd) {
+		StringBuilder builder = new StringBuilder("");
+		for (Option opt : cmd.getOptions()) {
+			builder.append("--");
+			builder.append(opt.getLongOpt());
+			builder.append(" ");
+			builder.append((opt.getValues().length == 1) ? opt.getValue() : Arrays.toString(opt.getValues()));
+		}
+		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", builder.toString());
 	}
 
 	/**

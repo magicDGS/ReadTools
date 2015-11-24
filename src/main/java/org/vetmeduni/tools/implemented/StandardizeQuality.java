@@ -42,8 +42,6 @@ import org.vetmeduni.utils.misc.IOUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static org.vetmeduni.tools.ToolNames.ToolException;
-
 /**
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
  *
@@ -52,44 +50,28 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
 public class StandardizeQuality extends AbstractTool {
 
 	@Override
-	public int run(String[] args) {
-		try {
-			CommandLine cmd = programParser(args);
-			File input = new File(cmd.getOptionValue("i"));
-			File output = new File(cmd.getOptionValue("o"));
-			boolean index = cmd.hasOption("ind");
-			logCmdLine(args);
-			// first check the quality
-			switch (QualityUtils.getFastqQualityFormat(input)) {
-				case Standard:
-					logger.error("File is already in Sanger formatting. No conversion will be performed");
-					return 1;
-				default:
-					break;
-			}
-			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
-			boolean multi = nThreads != 1;
-			if (IOUtils.isBamOrSam(input)) {
-				runBam(input, output, index, multi);
-			} else {
-				if (index) {
-					logger.warn("Index could not be performed for FASTQ file");
-				}
-				runFastq(input, output, multi);
-			}
-		} catch (ToolException e) {
-			// This exceptions comes from the command line parsing
-			printUsage(e.getMessage());
-			return 1;
-		} catch (IOException e) {
-			logger.info(e.getMessage());
-			logger.debug(e);
-			return 1;
-		} catch (Exception e) {
-			logger.debug(e);
-			return 2;
+	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
+		File input = new File(cmd.getOptionValue("i"));
+		File output = new File(cmd.getOptionValue("o"));
+		boolean index = cmd.hasOption("ind");
+		logCmdLine(cmd);
+		// first check the quality
+		switch (QualityUtils.getFastqQualityFormat(input)) {
+			case Standard:
+				throw new SAMException("File is already in Sanger formatting. No conversion will be performed");
+			default:
+				break;
 		}
-		return 0;
+		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+		boolean multi = nThreads != 1;
+		if (IOUtils.isBamOrSam(input)) {
+			runBam(input, output, index, multi);
+		} else {
+			if (index) {
+				logger.warn("Index could not be performed for FASTQ file");
+			}
+			runFastq(input, output, multi);
+		}
 	}
 
 	/**

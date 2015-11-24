@@ -55,55 +55,38 @@ import static org.vetmeduni.tools.ToolNames.ToolException;
 public class FastqBarcodeDetector extends AbstractTool {
 
 	@Override
-	public int run(String[] args) {
+	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
+		// PARSING THE COMMAND LINE
+		File input1 = new File(cmd.getOptionValue("input1"));
+		File input2 = (cmd.hasOption("input2")) ? new File(cmd.getOptionValue("input2")) : null;
+		String outputPrefix = cmd.getOptionValue("output");
+		File barcodes = new File(cmd.getOptionValue("bc"));
+		int max;
 		try {
-			// PARSING THE COMMAND LINE
-			CommandLine cmd = programParser(args);
-			File input1 = new File(cmd.getOptionValue("input1"));
-			File input2 = (cmd.hasOption("input2")) ? new File(cmd.getOptionValue("input2")) : null;
-			String outputPrefix = cmd.getOptionValue("output");
-			File barcodes = new File(cmd.getOptionValue("bc"));
-			int max;
-			try {
-				max = (cmd.hasOption("m")) ?
-					Integer.parseInt(cmd.getOptionValue("m")) :
-					MatcherBarcodeDictionary.DEFAULT_MISMATCHES;
-			} catch (IllegalArgumentException e) {
-				throw new ToolException("Maximum mismatches should be an integer");
-			}
-			int nThreads = CommonOptions.numberOfThreads(logger, cmd);
-			boolean multi = nThreads != 1;
-			boolean split = cmd.hasOption("x");
-			// logging command line
-			logCmdLine(args);
-			// create the combined dictionary and the barcode method associated
-			BarcodeDictionary dictionary = BarcodeDictionaryFactory.createCombinedDictionary(barcodes);
-			logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
-				dictionary.numberOfSamples(), " different barcode sets");
-			MatcherBarcodeDictionary methods = new MatcherBarcodeDictionary(dictionary);
-			// create the reader and the writer
-			FastqReaderInterface reader = ToolsReadersFactory
-				.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
-			SplitFastqWriter writer = ToolWritersFactory
-				.getFastqSplitWritersFromInput(outputPrefix, split ? dictionary : null,
-					cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null);
-			// run the method
-			run(reader, writer, methods, max);
-		} catch (ToolException e) {
-			// This exceptions comes from the command line parsing
-			printUsage(e.getMessage());
-			return 1;
-		} catch (IOException e) {
-			logger.debug(e);
-			logger.error(e.getMessage());
-			return 1;
-		} catch (Exception e) {
-			// unexpected exceptions return a different error code
-			logger.debug(e);
-			logger.error(e.getMessage());
-			return 2;
+			max = (cmd.hasOption("m")) ?
+				Integer.parseInt(cmd.getOptionValue("m")) :
+				MatcherBarcodeDictionary.DEFAULT_MISMATCHES;
+		} catch (IllegalArgumentException e) {
+			throw new ToolException("Maximum mismatches should be an integer");
 		}
-		return 0;
+		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+		boolean multi = nThreads != 1;
+		boolean split = cmd.hasOption("x");
+		// logging command line
+		logCmdLine(cmd);
+		// create the combined dictionary and the barcode method associated
+		BarcodeDictionary dictionary = BarcodeDictionaryFactory.createCombinedDictionary(barcodes);
+		logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
+			dictionary.numberOfSamples(), " different barcode sets");
+		MatcherBarcodeDictionary methods = new MatcherBarcodeDictionary(dictionary);
+		// create the reader and the writer
+		FastqReaderInterface reader = ToolsReadersFactory
+			.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
+		SplitFastqWriter writer = ToolWritersFactory
+			.getFastqSplitWritersFromInput(outputPrefix, split ? dictionary : null,
+				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null);
+		// run the method
+		run(reader, writer, methods, max);
 	}
 
 	/**
