@@ -20,37 +20,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.writers;
+package org.vetmeduni.io.readers.fastq;
 
-import htsjdk.samtools.fastq.FastqRecord;
-import htsjdk.samtools.fastq.FastqWriter;
-import org.vetmeduni.io.FastqPairedRecord;
+import htsjdk.samtools.util.FastqQualityFormat;
+
+import java.io.Closeable;
 
 /**
- * Wrapper for the htsjdk FastqWriters
+ * Interface for implement different FastqReaders pair-end or single-end and contains information about the encoding
  *
  * @author Daniel Gómez-Sánchez
  */
-public class ReadToolsBasicFastqWriter implements ReadToolsFastqWriter {
+public interface FastqReaderInterface extends Closeable {
 
-	private final FastqWriter writer;
+	/**
+	 * Get the FASTQ quality for the reads. All the records returned should be in this format
+	 *
+	 * @return the FastqQuality for this reader
+	 */
+	public FastqQualityFormat getFastqQuality();
 
-	protected ReadToolsBasicFastqWriter(FastqWriter writer) {
-		this.writer = writer;
-	}
-
-	@Override
-	public void write(FastqPairedRecord rec) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not allow FastqPairedRecords");
-	}
-
-	@Override
-	public void write(FastqRecord rec) {
-		writer.write(rec);
-	}
-
-	@Override
-	public void close() {
-		writer.close();
-	}
+	/**
+	 * Get the original encoding for the file
+	 *
+	 * @return the original FastqQuality (in the file)
+	 */
+	public FastqQualityFormat getOriginalEncoding();
 }

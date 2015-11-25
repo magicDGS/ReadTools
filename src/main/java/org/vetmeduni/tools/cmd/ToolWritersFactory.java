@@ -22,9 +22,9 @@
  */
 package org.vetmeduni.tools.cmd;
 
-import org.vetmeduni.io.writers.ReadToolsFastqWriter;
-import org.vetmeduni.io.writers.ReadToolsFastqWriterFactory;
-import org.vetmeduni.io.writers.SplitFastqWriter;
+import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriter;
+import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriterFactory;
+import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 
 import java.io.IOException;

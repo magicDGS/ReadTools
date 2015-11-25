@@ -20,51 +20,63 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers.paired;
+package org.vetmeduni.io.readers.fastq.single;
 
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.utils.fastq.QualityUtils;
-import org.vetmeduni.utils.record.FastqRecordUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 
 /**
- * Implementation for pair-end reader with two files that always returns a Sanger encoded record
+ * Wrapper for the {@link htsjdk.samtools.fastq.FastqReader} to include it in the ReadTools interface
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedSanger extends FastqReaderPairedImpl implements FastqReaderPairedInterface {
+public class FastqReaderWrapper extends FastqReader implements FastqReaderSingleInterface {
 
-	public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
-		super(reader1, reader2);
+	/**
+	 * The encoding for the file
+	 */
+	protected FastqQualityFormat encoding;
+
+	public FastqReaderWrapper(File file) {
+		this(file, false);
 	}
 
-	public FastqReaderPairedSanger(File reader1, File reader2) throws QualityUtils.QualityException {
-		super(reader1, reader2);
+	public FastqReaderWrapper(File file, boolean skipBlankLines) {
+		super(file, skipBlankLines);
+		init();
+	}
+
+	public FastqReaderWrapper(BufferedReader reader) {
+		this(null, reader);
+	}
+
+	public FastqReaderWrapper(File file, BufferedReader reader, boolean skipBlankLines) {
+		super(file, reader, skipBlankLines);
+		init();
+	}
+
+	public FastqReaderWrapper(File file, BufferedReader reader) {
+		this(file, reader, false);
 	}
 
 	/**
-	 * Next always return a Sanger formatted record
-	 *
-	 * @return the next record
+	 * Get the encoding for the file
 	 */
-	@Override
-	public FastqPairedRecord next() {
-		if (QualityUtils.isStandard(encoding)) {
-			return super.next();
-		}
-		return FastqRecordUtils.copyToSanger(super.next());
+	protected void init() {
+		encoding = QualityUtils.getFastqQualityFormat(this.getFile());
 	}
 
-	/**
-	 * The returning format is always Sanger
-	 *
-	 * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
-	 */
 	@Override
 	public FastqQualityFormat getFastqQuality() {
-		return FastqQualityFormat.Standard;
+		return encoding;
+	}
+
+	@Override
+	public FastqQualityFormat getOriginalEncoding() {
+		return encoding;
 	}
 }

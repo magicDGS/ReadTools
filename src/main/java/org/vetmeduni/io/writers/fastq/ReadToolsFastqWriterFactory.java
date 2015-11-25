@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.writers;
+package org.vetmeduni.io.writers.fastq;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
@@ -28,6 +28,7 @@ import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
 import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.FastqPairedRecord;
+import org.vetmeduni.io.IOdefault;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;
 import org.vetmeduni.utils.misc.IOUtils;
@@ -64,6 +65,11 @@ public class ReadToolsFastqWriterFactory {
 	private boolean GZIP_OUTPUT = true;
 
 	/**
+	 * Should we check the existence of the file. Default value is {@link org.vetmeduni.io.IOdefault#DEFAULT_CHECK_EXISTENCE}
+	 */
+	private boolean CHECK_EXISTENCE = IOdefault.DEFAULT_CHECK_EXISTENCE;
+
+	/**
 	 * Initialize a new factory
 	 */
 	public ReadToolsFastqWriterFactory() {
@@ -92,14 +98,21 @@ public class ReadToolsFastqWriterFactory {
 	}
 
 	/**
+	 * If <code>true</code> the output will be checked for existence, otherwise if will be overwritten if already
+	 * exists
+	 */
+	public void setCheckExistence(final boolean checkExistence) {
+		CHECK_EXISTENCE = checkExistence;
+	}
+
+	/**
 	 * Create a new default writer (using {@link htsjdk.samtools.fastq.FastqWriterFactory#newWriter(java.io.File)})
 	 *
-	 * @param out the file to create the writer from
+	 * @param out the file to create the writer from (it is not checked for anything)
 	 *
 	 * @return a new instance of the writer
 	 */
-	public ReadToolsFastqWriter newWriterDefault(final File out) throws IOException {
-		IOUtils.exceptionIfExists(out);
+	protected ReadToolsFastqWriter newWriterDefault(final File out) {
 		return new ReadToolsBasicFastqWriter(FACTORY.newWriter(out));
 	}
 
@@ -111,7 +124,8 @@ public class ReadToolsFastqWriterFactory {
 	 * @return a new instance of the writer
 	 */
 	public ReadToolsFastqWriter newWriter(String prefix) throws IOException {
-		return newWriterDefault(new File(IOUtils.makeOutputNameFastqWithDefaults(prefix, GZIP_OUTPUT)));
+		final String outputName = IOUtils.makeOutputNameFastqWithDefaults(prefix, GZIP_OUTPUT);
+		return newWriterDefault(IOUtils.newOutputFile(outputName, CHECK_EXISTENCE));
 	}
 
 	/**
@@ -124,8 +138,8 @@ public class ReadToolsFastqWriterFactory {
 	public ReadToolsFastqWriter newPairWriter(String prefix) throws IOException {
 		final FastqWriter pair1 = newWriter(prefix + "_1");
 		final FastqWriter pair2 = newWriter(prefix + "_2");
-		final File seOutput = new File(IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT));
-		IOUtils.exceptionIfExists(seOutput);
+		final String seOutputName = IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT);
+		final File seOutput = IOUtils.newOutputFile(seOutputName, CHECK_EXISTENCE);
 		Lazy<FastqWriter> single = new Lazy<>(new Lazy.LazyInitializer<FastqWriter>() {
 
 			@Override

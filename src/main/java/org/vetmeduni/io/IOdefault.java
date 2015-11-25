@@ -20,20 +20,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers.paired;
-
-import org.vetmeduni.io.FastqPairedRecord;
-import org.vetmeduni.io.readers.FastqReaderInterface;
-
-import java.util.Iterator;
+package org.vetmeduni.io;
 
 /**
- * Abstract class for pair-end fastq reader. The aim of this class is allow to implement pair-end readers for two files
- * and for one interleaved file
+ * Common default options for IO
  *
  * @author Daniel Gómez-Sánchez
  */
-public interface FastqReaderPairedInterface
-	extends Iterator<FastqPairedRecord>, Iterable<FastqPairedRecord>, FastqReaderInterface {
+public class IOdefault {
 
+	/**
+	 * Default value for check the existence of a file
+	 */
+	public static boolean DEFAULT_CHECK_EXISTENCE = true;
 }

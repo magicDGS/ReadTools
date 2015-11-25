@@ -29,9 +29,10 @@ import htsjdk.samtools.fastq.FastqWriterFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.vetmeduni.io.readers.SamReaderSanger;
-import org.vetmeduni.io.readers.single.FastqReaderSingleInterface;
-import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
+import org.vetmeduni.io.readers.bam.SamReaderSanger;
+import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleInterface;
+import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleSanger;
+import org.vetmeduni.io.writers.bam.ReadToolsSAMFileWriterFactory;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.utils.fastq.QualityUtils;
@@ -114,12 +115,11 @@ public class StandardizeQuality extends AbstractTool {
 	 */
 	private void runBam(File input, File output, boolean index, boolean multi) throws IOException {
 		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT);
-		IOUtils.exceptionIfExists(output);
-		SAMFileWriter writer = new SAMFileWriterFactory().setCreateIndex(index).setUseAsyncIo(multi)
-														 .makeSAMOrBAMWriter(reader.getFileHeader(),
-															 SAMFileHeader.SortOrder.coordinate
-																 .equals(reader.getFileHeader().getSortOrder()),
-															 output);
+		SAMFileWriter writer = new ReadToolsSAMFileWriterFactory().setCreateIndex(index).setUseAsyncIo(multi)
+																  .makeSAMOrBAMWriter(reader.getFileHeader(),
+																	  SAMFileHeader.SortOrder.coordinate.equals(
+																		  reader.getFileHeader().getSortOrder()),
+																	  output);
 		// start iterations
 		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
 		for (SAMRecord record : reader) {

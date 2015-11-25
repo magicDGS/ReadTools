@@ -25,12 +25,12 @@ package org.vetmeduni.tools.cmd;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
-import org.vetmeduni.io.readers.FastqReaderInterface;
-import org.vetmeduni.io.readers.SamReaderSanger;
-import org.vetmeduni.io.readers.paired.FastqReaderPairedImpl;
-import org.vetmeduni.io.readers.paired.FastqReaderPairedSanger;
-import org.vetmeduni.io.readers.single.FastqReaderSingleSanger;
-import org.vetmeduni.io.readers.single.FastqReaderWrapper;
+import org.vetmeduni.io.readers.fastq.FastqReaderInterface;
+import org.vetmeduni.io.readers.bam.SamReaderSanger;
+import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedImpl;
+import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedSanger;
+import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleSanger;
+import org.vetmeduni.io.readers.fastq.single.FastqReaderWrapper;
 
 import java.io.File;
 

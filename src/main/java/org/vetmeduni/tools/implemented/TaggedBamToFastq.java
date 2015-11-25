@@ -30,7 +30,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.vetmeduni.io.FastqPairedRecord;
-import org.vetmeduni.io.writers.SplitFastqWriter;
+import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;

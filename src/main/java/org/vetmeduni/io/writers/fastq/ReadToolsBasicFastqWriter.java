@@ -20,24 +20,37 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.writers;
+package org.vetmeduni.io.writers.fastq;
 
+import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import org.vetmeduni.io.FastqPairedRecord;
 
 /**
- * Interface for FastqWriter that allow use all teh classes implemented as FastqWriters in the same interface
+ * Wrapper for the htsjdk FastqWriters
  *
  * @author Daniel Gómez-Sánchez
  */
-public interface ReadToolsFastqWriter extends FastqWriter {
+public class ReadToolsBasicFastqWriter implements ReadToolsFastqWriter {
 
-	/**
-	 * Write a FastqPairedRecord in this writer
-	 *
-	 * @param rec the record to write
-	 *
-	 * @throws java.lang.UnsupportedOperationException if the writer is not pair-end
-	 */
-	void write(final FastqPairedRecord rec) throws UnsupportedOperationException;
+	private final FastqWriter writer;
+
+	protected ReadToolsBasicFastqWriter(FastqWriter writer) {
+		this.writer = writer;
+	}
+
+	@Override
+	public void write(FastqPairedRecord rec) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not allow FastqPairedRecords");
+	}
+
+	@Override
+	public void write(FastqRecord rec) {
+		writer.write(rec);
+	}
+
+	@Override
+	public void close() {
+		writer.close();
+	}
 }

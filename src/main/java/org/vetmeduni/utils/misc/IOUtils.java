@@ -26,6 +26,9 @@ import htsjdk.samtools.BamFileIoUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Utils for the inputs FASTQ and BAM/SAM files
@@ -63,6 +66,40 @@ public class IOUtils {
 	public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
 		return String
 			.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
+	}
+
+	/**
+	 * Create a new output file, generating all the sub-directories and checking for the existence of the file if
+	 * requested
+	 *
+	 * @param output        the output file
+	 * @param checkIfExists <code>true</code> if the file should be check, <code>false</code> otherwise
+	 *
+	 * @return the file object
+	 * @throws IOException if the file already exists or an IO error occurs
+	 */
+	public static File newOutputFile(String output, boolean checkIfExists) throws IOException {
+		final File file = new File(output);
+		// first check if the file already exists
+		if (checkIfExists) {
+			exceptionIfExists(file);
+		}
+		// if not, create all the directories
+		createDirectoriesForOutput(file);
+		// return the file
+		return file;
+	}
+
+	/**
+	 * Create all the directories from an output file
+	 *
+	 * @param output the output file
+	 *
+	 * @throws IOException if IO errors occur
+	 */
+	public static void createDirectoriesForOutput(File output) throws IOException {
+		final Path parentDirectory = Paths.get(output.getAbsolutePath()).getParent();
+		Files.createDirectories(parentDirectory);
 	}
 
 	/**

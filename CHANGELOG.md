@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ## Added
 - Checking of output file existence
+- Create directories for output if they do not exists
 - Checking number of arguments
 
 ## [0.1.1] - 2015-11-24
