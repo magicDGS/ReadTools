@@ -52,9 +52,18 @@ public class SequenceMatchTest {
 
 	@Test
 	public void testMismatchesCount() throws Exception {
+		// test for real bases mismatches
 		Assert.assertEquals(2, mismatchesCount("ACTG", "ACCC"));
 		Assert.assertEquals(2, mismatchesCount("ACTG", "ACCC", false));
+		// test for missing bases
 		Assert.assertEquals(2, mismatchesCount("ACTG", "ACNN"));
+		Assert.assertEquals(2, mismatchesCount("ACNN", "ACTG"));
 		Assert.assertEquals(0, mismatchesCount("ACTG", "ACNN", false));
+		Assert.assertEquals(0, mismatchesCount("ACNN", "ACTG", false));
+		// test for different base case
+		Assert.assertEquals(0, mismatchesCount("ACTG", "actg"));
+		Assert.assertEquals(2, mismatchesCount("ACTG", "accc"));
+		Assert.assertEquals(2, mismatchesCount("ACTG", "acnn"));
+		Assert.assertEquals(0, mismatchesCount("ACTG", "acnn", false));
 	}
 }
