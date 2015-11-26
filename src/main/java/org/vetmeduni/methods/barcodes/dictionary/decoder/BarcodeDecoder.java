@@ -49,7 +49,7 @@ public class BarcodeDecoder {
 	// maps barcode (combined) with sample name; if one barcode returned for some of the methods is not in this map, it is unknown
 
 	/**
-	 * Maps barcodes (combined or not) with a sample; if one barcode returned for some of the methods in this map, it is
+	 * Maps barcodes (combined) with a sample; if one barcode returned for some of the methods in this map, it is
 	 * unknow
 	 */
 	private Hashtable<String, String> barcodeSample = null;
@@ -227,6 +227,152 @@ public class BarcodeDecoder {
 			}
 		}
 		return best;
+	}
+
+	/**
+	 * Get the best barcode using the BarcodeMatch approach
+	 *
+	 * @param nAsMismatches
+	 * @param maxMismatches
+	 * @param maxDiferenceWithSecond
+	 * @param barcode
+	 * @return
+	 */
+	private String getBestBarcode(boolean nAsMismatches, int[] maxMismatches, int[] maxDiferenceWithSecond,
+		String... barcode) {
+		List<BarcodeMatch> bestMatchs = getBestBarcodeMatch(nAsMismatches, barcode);
+		int unknown = 0;
+		// if only one barcode
+		if(bestMatchs.size() == 1) {
+			BarcodeMatch match = bestMatchs.get(0);
+			if(matchPassFilters(match, maxMismatches[0], maxDiferenceWithSecond[0])) {
+				// TODO: change for a metrics
+				dictionary.addOneTo(dictionary.getBarcodesFromIndex(0).indexOf(match.barcode));
+			}
+			return BarcodeMatch.UNKNOWN_STRING;
+		}
+		// map sample indexes and number of times that it occurs
+		HashMap<Integer, Integer> samples = new HashMap<>();
+		// for each barcode, check the quality
+		for (int i = 0; i < bestMatchs.size(); i++) {
+			BarcodeMatch current = bestMatchs.get(i);
+			if (matchPassFilters(current, maxMismatches[i], maxDiferenceWithSecond[i])) {
+				ArrayList<String> allBarcodes = dictionary.getBarcodesFromIndex(i);
+				int sampleIndex = allBarcodes.indexOf(current.barcode);
+				// check if it is unique for this set
+				if (dictionary.isBarcodeUniqueInAt(current.barcode, i)) {
+					// TODO: change for a metrics
+					dictionary.addOneTo(sampleIndex);
+					// return directly the barcode
+					return dictionary.getCombinedBarcodesFor(sampleIndex);
+				} else {
+					for (; sampleIndex < allBarcodes.size(); sampleIndex++) {
+						if (allBarcodes.get(sampleIndex).equals(current)) {
+							Integer count = samples.get(sampleIndex);
+							samples.put(sampleIndex, (count == null) ? 1 : count + 1);
+						}
+					}
+				}
+			} else {
+				unknown++;
+			}
+		}
+		if (samples.size() == 0) {
+			numberOfUnknowReturned++;
+			return UNKNOWN_STRING;
+		}
+		// if we reach this point, there are non unique barcode that identifies the sample
+		// obtain the maximum count
+		int maxCount = Collections.max(samples.values());
+		// if there are more than one sample that could be associated with the barcode
+		if (Collections.frequency(samples.values(), maxCount) != 1) {
+			// it is not determined
+			numberOfUnknowReturned++;
+			return UNKNOWN_STRING;
+		} else {
+			for (Integer sampleIndex : samples.keySet()) {
+				if (samples.get(sampleIndex) == maxCount) {
+					dictionary.addOneTo(sampleIndex);
+					return dictionary.getCombinedBarcodesFor(sampleIndex);
+				}
+			}
+		}
+		// in principle, this cannot be reached
+		throw new IllegalStateException("Unreachable code");
+	}
+
+	/**
+	 * Check if the match pass the filters
+	 *
+	 * @param match
+	 * @param maxMismatches
+	 * @param maxDifferenceWithSecond
+	 * @return
+	 */
+	private boolean matchPassFilters(BarcodeMatch match, int maxMismatches, int maxDifferenceWithSecond) {
+		return match.isMatch() && match.mismatches < maxMismatches && match.getDifferenceWithSecond() < maxDifferenceWithSecond;
+	}
+
+	/**
+	 * Get the best barcode match
+	 *
+	 * @param barcode       the barcode to test
+	 * @param index         the index of the barcode
+	 * @param nAsMismatches if <code>true</code> the Ns count as mismatches
+	 *
+	 * @return the best barcode matched
+	 */
+	private BarcodeMatch getBestBarcodeMatch(int index, boolean nAsMismatches, String barcode) {
+		BarcodeMatch best = new BarcodeMatch(barcode.length());
+		for (String b : dictionary.getSetBarcodesFromIndex(index)) {
+			int currentMismatch;
+			if (barcode.length() > b.length()) {
+				// cut the barcode if it is longer
+				currentMismatch = mismatchesCount(barcode.substring(0, b.length()), b, nAsMismatches);
+			} else {
+				currentMismatch = mismatchesCount(barcode, b);
+			}
+			if (currentMismatch < best.mismatches) {
+				// if the count of mismatches is better than the previous
+				best.mismatchesToSecondBest = best.mismatches;
+				best.mismatches = currentMismatch;
+				best.barcode = b;
+			} else if (currentMismatch < best.mismatchesToSecondBest) {
+				// if it is the second best, track the result
+				best.mismatchesToSecondBest = currentMismatch;
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * Get the best barcode match for several barcodes
+	 *
+	 * @param barcode the array of barcodes to match
+	 *
+	 * @return the list of matched barcodes
+	 * @throws IllegalArgumentException if the length of the arrays does not match the number of barcodes in the
+	 *                                  dictionary
+	 */
+	private List<BarcodeMatch> getBestBarcodeMatch(boolean nAsMismatches, String... barcode) {
+		if (barcode.length != dictionary.getNumberOfBarcodes()) {
+			throw new IllegalArgumentException(
+				"Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
+		}
+		ArrayList<BarcodeMatch> toReturn = new ArrayList<>();
+		// only one barcode
+		if (barcode.length == 1) {
+			toReturn.add(getBestBarcodeMatch(0, nAsMismatches, barcode[0]));
+		} else {
+			// more than one barcode
+			// map sample indexes and number of times that it occurs
+			HashMap<Integer, Integer> samples = new HashMap<>();
+			// we need check in order
+			for (int i = 0; i < dictionary.getNumberOfBarcodes(); i++) {
+				toReturn.add(getBestBarcodeMatch(i, nAsMismatches, barcode[i]));
+			}
+		}
+		return toReturn;
 	}
 
 	/**
