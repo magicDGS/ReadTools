@@ -29,8 +29,8 @@ import htsjdk.samtools.util.Lazy;
 import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.IOdefault;
+import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
-import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;
 import org.vetmeduni.utils.misc.IOUtils;
 import org.vetmeduni.utils.record.FastqRecordUtils;
 
@@ -175,7 +175,7 @@ public class ReadToolsFastqWriterFactory {
 			mapping.put(dictionary.getCombinedBarcodesFor(i), sampleNames.get(sample));
 		}
 		// add a unknow barcode
-		mapping.put(MatcherBarcodeDictionary.UNKNOWN_STRING,
+		mapping.put(BarcodeDecoder.UNKNOWN_STRING,
 			(paired) ? newPairWriter(prefix + "_" + DISCARDED_SUFFIX) : newWriter(prefix + "_" + DISCARDED_SUFFIX));
 		return new SplitFastqWriterAbstract(mapping) {
 
@@ -212,7 +212,7 @@ public class ReadToolsFastqWriterFactory {
 			 * @return the barcode if it is present, the UNKNOWN_STRING otherwise
 			 */
 			private String getUnknownIfNoMapping(String barcode) {
-				return (mapping.contains(barcode)) ? barcode : MatcherBarcodeDictionary.UNKNOWN_STRING;
+				return (mapping.contains(barcode)) ? barcode : BarcodeDecoder.UNKNOWN_STRING;
 			}
 		};
 	}
@@ -245,7 +245,7 @@ public class ReadToolsFastqWriterFactory {
 
 	/**
 	 * Writer that split between assign/unknow barcodes; the mapping is "assign" and {@link
-	 * org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary#UNKNOWN_STRING}. By default, any record is
+	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder#UNKNOWN_STRING}. By default, any record is
 	 * correct unless the unknow string is provided as identifier
 	 *
 	 * @param prefix the prefix for the files
@@ -257,7 +257,7 @@ public class ReadToolsFastqWriterFactory {
 		logger.debug("Creating new Assing-Unknown barcode for ", (paired) ? "paired" : "single", "-end");
 		final Hashtable<String, FastqWriter> mapping = new Hashtable<>(2);
 		mapping.put("assign", (paired) ? newPairWriter(prefix) : newWriter(prefix));
-		mapping.put(MatcherBarcodeDictionary.UNKNOWN_STRING,
+		mapping.put(BarcodeDecoder.UNKNOWN_STRING,
 			(paired) ? newPairWriter(prefix + "_" + DISCARDED_SUFFIX) : newWriter(prefix + "_" + DISCARDED_SUFFIX));
 		return new SplitFastqWriterAbstract(mapping) {
 
@@ -298,7 +298,7 @@ public class ReadToolsFastqWriterFactory {
 
 			@Override
 			public void write(String identifier, FastqRecord record) {
-				if (MatcherBarcodeDictionary.UNKNOWN_STRING.equals(identifier)) {
+				if (BarcodeDecoder.UNKNOWN_STRING.equals(identifier)) {
 					super.write(identifier, record);
 				} else {
 					write(record);
@@ -307,7 +307,7 @@ public class ReadToolsFastqWriterFactory {
 
 			@Override
 			public void write(String identifier, FastqPairedRecord record) {
-				if (MatcherBarcodeDictionary.UNKNOWN_STRING.equals(identifier)) {
+				if (BarcodeDecoder.UNKNOWN_STRING.equals(identifier)) {
 					super.write(identifier, record);
 				} else {
 					write(record);

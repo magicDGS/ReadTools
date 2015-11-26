@@ -32,7 +32,7 @@ import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedInterface;
 import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriter;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
-import org.vetmeduni.methods.barcodes.dictionary.MatcherBarcodeDictionary;
+import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.methods.trimming.trimmers.Trimmer;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
@@ -180,17 +180,17 @@ public class TrimFastq extends AbstractTool {
 				if (newRecord.getRecord1() == null) {
 					writer.write(newRecord.getRecord2());
 					if (keep) {
-						((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record.getRecord1());
+						((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record.getRecord1());
 					}
 				} else {
 					writer.write(newRecord.getRecord1());
 					if (keep) {
-						((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record.getRecord2());
+						((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record.getRecord2());
 					}
 				}
 			} else {
 				if (keep) {
-					((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record);
+					((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record);
 				}
 			}
 			progress.add();
@@ -216,7 +216,7 @@ public class TrimFastq extends AbstractTool {
 				writer.write(newRecord);
 			} else {
 				if (keep) {
-					((SplitFastqWriter) writer).write(MatcherBarcodeDictionary.UNKNOWN_STRING, record);
+					((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record);
 				}
 			}
 			progress.add();

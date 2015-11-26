@@ -190,7 +190,7 @@ public class BarcodeDictionary {
 	 *
 	 * @return the list with the barcodes associated with each sample
 	 */
-	protected ArrayList<String> getBarcodesFromIndex(int index) {
+	public ArrayList<String> getBarcodesFromIndex(int index) {
 		return barcodes.get(index);
 	}
 
@@ -201,7 +201,7 @@ public class BarcodeDictionary {
 	 *
 	 * @return a set representation of the index barcodes
 	 */
-	protected Set<String> getSetBarcodesFromIndex(int index) {
+	public Set<String> getSetBarcodesFromIndex(int index) {
 		if (barcodesSets == null) {
 			initSets();
 		}

@@ -20,9 +20,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.methods.barcodes.dictionary;
+package org.vetmeduni.methods.barcodes.dictionary.decoder;
 
 import htsjdk.samtools.util.Log;
+import htsjdk.samtools.util.SequenceUtil;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.utils.misc.Formats;
 
 import java.util.*;
@@ -32,7 +34,7 @@ import java.util.*;
  *
  * @author Daniel Gómez-Sánchez
  */
-public class MatcherBarcodeDictionary {
+public class BarcodeDecoder {
 
 	/**
 	 * the unknown tag for sample and barcode
@@ -66,7 +68,7 @@ public class MatcherBarcodeDictionary {
 	 *
 	 * @param dictionary the dictionary with the barcodes
 	 */
-	public MatcherBarcodeDictionary(BarcodeDictionary dictionary) {
+	public BarcodeDecoder(BarcodeDictionary dictionary) {
 		this.dictionary = dictionary;
 		this.numberOfUnknowReturned = 0;
 		initBarcodeMap();
@@ -239,7 +241,8 @@ public class MatcherBarcodeDictionary {
 		// if(testBarcode.length() != barcode.length()) return testBarcode.length();
 		int mmCnt = 0;
 		for (int i = 0; i < testBarcode.length(); i++) {
-			if (testBarcode.charAt(i) != targetBarcode.charAt(i)) {
+			// case-insensitive mismatches count
+			if (!SequenceUtil.basesEqual((byte)testBarcode.charAt(i), (byte)targetBarcode.charAt(i))) {
 				mmCnt++;
 			}
 		}
