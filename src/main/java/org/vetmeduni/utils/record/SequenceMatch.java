@@ -22,6 +22,8 @@
  */
 package org.vetmeduni.utils.record;
 
+import htsjdk.samtools.util.SequenceUtil;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +32,7 @@ import java.util.regex.Pattern;
  *
  * @author Daniel Gómez-Sánchez
  */
-public class SequenceMatchs {
+public class SequenceMatch {
 
 	/**
 	 * Pattern for sequence starting by Ns
@@ -81,5 +83,45 @@ public class SequenceMatchs {
 	public static boolean sequenceContainNs(String sequence) {
 		Matcher ns = Ns.matcher(sequence);
 		return ns.find();
+	}
+
+	/**
+	 * Count the number of mismatches between a test barcode and a target barcode counting Ns as mismatch
+	 *
+	 * @param testBarcode   the test barcode
+	 * @param targetBarcode the target barcode
+	 *
+	 * @return the number of mistmatches between barcodes
+	 */
+	public static int mismatchesCount(String testBarcode, String targetBarcode) {
+		return mismatchesCount(testBarcode, targetBarcode, true);
+	}
+
+	/**
+	 * Count the number of mismatches between a test barcode and a target barcode
+	 *
+	 * @param testBarcode   the test barcode
+	 * @param targetBarcode the target barcode
+	 * @param nAsMismatch   if <code>true</code> N and other bases are counted as mismatch; if <code>false</code> it is
+	 *                      ignored
+	 *
+	 * @return the number of mismatches between barcodes
+	 */
+	public static int mismatchesCount(String testBarcode, String targetBarcode, boolean nAsMismatch) {
+		// logger.debug("Testing ", testBarcode, " against ", targetBarcode);
+		// if(testBarcode.length() != barcode.length()) return testBarcode.length();
+		int mmCnt = 0;
+		for (int i = 0; i < testBarcode.length(); i++) {
+			final byte testBase = (byte) testBarcode.charAt(i);
+			final byte targetBase = (byte) targetBarcode.charAt(i);
+			// only count if n is a mismatch of none of the test/target bases is an N
+			final boolean shouldCount =
+				nAsMismatch || !(SequenceUtil.isNoCall(testBase) || SequenceUtil.isNoCall(targetBase));
+			// case-insensitive mismatches count for N or not N
+			if (shouldCount && !SequenceUtil.basesEqual(testBase, targetBase)) {
+				mmCnt++;
+			}
+		}
+		return mmCnt;
 	}
 }

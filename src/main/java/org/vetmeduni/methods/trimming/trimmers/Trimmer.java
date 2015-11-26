@@ -29,7 +29,7 @@ import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.methods.trimming.TrimmingMethods;
 import org.vetmeduni.methods.trimming.trimmers.stats.TrimStat;
-import org.vetmeduni.utils.record.SequenceMatchs;
+import org.vetmeduni.utils.record.SequenceMatch;
 
 import java.io.File;
 
@@ -120,7 +120,7 @@ public abstract class Trimmer {
 			toTrim = newRecord;
 		}
 		// if discard remaining Ns is set and the record to trim contain its, return null
-		if (discardRemainingNs && SequenceMatchs.sequenceContainNs(toTrim.getReadString())) {
+		if (discardRemainingNs && SequenceMatch.sequenceContainNs(toTrim.getReadString())) {
 			metric.INTERNAL_N_DISCARDED++;
 			// stats.addCountRemainingNdiscards();
 			return null;

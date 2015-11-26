@@ -30,8 +30,8 @@ import java.util.regex.Matcher;
 
 import static org.vetmeduni.utils.fastq.QualityUtils.getQuality;
 import static org.vetmeduni.utils.record.FastqRecordUtils.cutRecord;
-import static org.vetmeduni.utils.record.SequenceMatchs.endN;
-import static org.vetmeduni.utils.record.SequenceMatchs.startN;
+import static org.vetmeduni.utils.record.SequenceMatch.endN;
+import static org.vetmeduni.utils.record.SequenceMatch.startN;
 
 /**
  * Different trimming algorithms for FastqRecords implemented as static methods

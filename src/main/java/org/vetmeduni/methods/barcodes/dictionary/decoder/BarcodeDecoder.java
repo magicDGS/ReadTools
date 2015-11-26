@@ -23,11 +23,12 @@
 package org.vetmeduni.methods.barcodes.dictionary.decoder;
 
 import htsjdk.samtools.util.Log;
-import htsjdk.samtools.util.SequenceUtil;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.utils.misc.Formats;
 
 import java.util.*;
+
+import static org.vetmeduni.utils.record.SequenceMatch.mismatchesCount;
 
 /**
  * Class for testing barcodes against a dictionary
@@ -226,27 +227,6 @@ public class BarcodeDecoder {
 			}
 		}
 		return best;
-	}
-
-	/**
-	 * Count the number of mismatches betwen a test barcode and a target barcode
-	 *
-	 * @param testBarcode   the test barcode
-	 * @param targetBarcode the target barcode
-	 *
-	 * @return the number of mistmatches between barcodes
-	 */
-	public int mismatchesCount(String testBarcode, String targetBarcode) {
-		// logger.debug("Testing ", testBarcode, " against ", targetBarcode);
-		// if(testBarcode.length() != barcode.length()) return testBarcode.length();
-		int mmCnt = 0;
-		for (int i = 0; i < testBarcode.length(); i++) {
-			// case-insensitive mismatches count
-			if (!SequenceUtil.basesEqual((byte)testBarcode.charAt(i), (byte)targetBarcode.charAt(i))) {
-				mmCnt++;
-			}
-		}
-		return mmCnt;
 	}
 
 	/**

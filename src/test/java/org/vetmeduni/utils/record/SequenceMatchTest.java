@@ -25,9 +25,9 @@ package org.vetmeduni.utils.record;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.vetmeduni.utils.record.SequenceMatchs.*;
+import static org.vetmeduni.utils.record.SequenceMatch.*;
 
-public class SequenceMatchsTest {
+public class SequenceMatchTest {
 
 	@Test
 	public void testSequenceStartByN() throws Exception {
@@ -48,5 +48,13 @@ public class SequenceMatchsTest {
 		Assert.assertTrue(sequenceContainNs("AAAANNNN"));
 		Assert.assertTrue(sequenceContainNs("NNNAAAAA"));
 		Assert.assertTrue(sequenceContainNs("AANNNNAAA"));
+	}
+
+	@Test
+	public void testMismatchesCount() throws Exception {
+		Assert.assertEquals(2, mismatchesCount("ACTG", "ACCC"));
+		Assert.assertEquals(2, mismatchesCount("ACTG", "ACCC", false));
+		Assert.assertEquals(2, mismatchesCount("ACTG", "ACNN"));
+		Assert.assertEquals(0, mismatchesCount("ACTG", "ACNN", false));
 	}
 }
