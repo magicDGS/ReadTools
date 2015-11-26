@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.1.2] - 2015-11-26
 ## Added
 - Checking of output file existence
 - Create directories for output if they do not exists
@@ -15,5 +15,6 @@ All notable changes to this project will be documented in this file.
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.1.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.2
 [0.1.1]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.1
 [0.1.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.0

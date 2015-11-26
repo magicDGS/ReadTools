@@ -11,7 +11,7 @@ The tools contained in this software are develop for working with FASTQ and BAM 
 
 ### Download release
 
-[Releases](https://github.com/magicDGS/ReadTools/releases) for the software could be downloaded as a jar file. You could use that jar file without installing from source, although some changes could be still not included in the jar file.
+[Releases](https://github.com/magicDGS/ReadTools/releases) for the software could be downloaded as a jar file. You could use that jar file without installing from source, although some developmental changes could be still not included in the jar file.
 
 ---
 
