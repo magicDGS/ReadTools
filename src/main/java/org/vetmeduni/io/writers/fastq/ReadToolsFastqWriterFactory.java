@@ -50,11 +50,6 @@ public class ReadToolsFastqWriterFactory {
 	private final Log logger = Log.getInstance(ReadToolsFastqWriterFactory.class);
 
 	/**
-	 * Discarded suffix for discarded output
-	 */
-	public static final String DISCARDED_SUFFIX = "discarded";
-
-	/**
 	 * The underlying factory
 	 */
 	private final FastqWriterFactory FACTORY;
@@ -176,7 +171,7 @@ public class ReadToolsFastqWriterFactory {
 		}
 		// add a unknow barcode
 		mapping.put(BarcodeDecoder.UNKNOWN_STRING,
-			(paired) ? newPairWriter(prefix + "_" + DISCARDED_SUFFIX) : newWriter(prefix + "_" + DISCARDED_SUFFIX));
+			(paired) ? newPairWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX) : newWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX));
 		return new SplitFastqWriterAbstract(mapping) {
 
 			private final boolean p = paired;
@@ -258,7 +253,7 @@ public class ReadToolsFastqWriterFactory {
 		final Hashtable<String, FastqWriter> mapping = new Hashtable<>(2);
 		mapping.put("assign", (paired) ? newPairWriter(prefix) : newWriter(prefix));
 		mapping.put(BarcodeDecoder.UNKNOWN_STRING,
-			(paired) ? newPairWriter(prefix + "_" + DISCARDED_SUFFIX) : newWriter(prefix + "_" + DISCARDED_SUFFIX));
+			(paired) ? newPairWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX) : newWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX));
 		return new SplitFastqWriterAbstract(mapping) {
 
 			private final boolean p = paired;

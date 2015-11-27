@@ -22,16 +22,18 @@
  */
 package org.vetmeduni.io.writers.bam;
 
-import htsjdk.samtools.CRAMFileWriter;
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.*;
+import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.IOdefault;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
+import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.utils.misc.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 /**
  * SAMFileWriterFactory for ReadTools, that allow the checking of the output file and generating all intermediate
@@ -40,6 +42,8 @@ import java.io.OutputStream;
  * @author Daniel Gómez-Sánchez
  */
 public class ReadToolsSAMFileWriterFactory {
+
+	private final Log logger = Log.getInstance(ReadToolsSAMFileWriterFactory.class);
 
 	/**
 	 * The underlying factory
@@ -232,6 +236,47 @@ public class ReadToolsSAMFileWriterFactory {
 		throws IOException {
 		checkExistenceAndCreateDirs(outputFile);
 		return FACTORY.makeCRAMWriter(header, outputFile, referenceFasta);
+	}
+
+	/**
+	 * Create a split writer by barcode; the default behaviour for add alignment is use the sample tag (SM) in the read
+	 * group
+	 *
+	 * @param header     entire header. Sort order is determined by the sortOrder property of this arg.
+	 * @param filePrefix the prefix for the files
+	 * @param bam        if <code>true</code> the writers will be bam, if <code>false</code> they will be sam
+	 * @param dictionary the barcode dictionary with the barcodes
+	 *
+	 * @return a new instance of the writer
+	 */
+	public SplitSAMFileWriter makeSplitWriterByBarcode(final SAMFileHeader header, final String filePrefix, boolean bam,
+		BarcodeDictionary dictionary) throws IOException {
+		logger.debug("Creating a split by barcode SAM writer");
+		final String extension = (bam) ? BamFileIoUtils.BAM_FILE_EXTENSION : IOUtils.DEFAULT_SAM_EXTENSION;
+		Hashtable<String, SAMFileWriter> mapping = new Hashtable<>();
+		HashMap<String, SAMFileWriter> sampleNames = new HashMap<>();
+		for (int i = 0; i < dictionary.numberOfSamples(); i++) {
+			String sample = dictionary.getSampleNames().get(i);
+			if (!sampleNames.containsKey(sample)) {
+				SAMFileWriter sampleWriter = this
+					.makeSAMOrBAMWriter(header, header.getSortOrder().equals(SAMFileHeader.SortOrder.coordinate),
+						new File(String.format("%s_%s%s", filePrefix, sample, extension)));
+				sampleNames.put(sample, sampleWriter);
+			}
+			mapping.put(dictionary.getCombinedBarcodesFor(i), sampleNames.get(sample));
+		}
+		// add a unknow barcode
+		mapping.put(BarcodeDecoder.UNKNOWN_STRING,
+			this.makeSAMOrBAMWriter(header, header.getSortOrder().equals(SAMFileHeader.SortOrder.coordinate),
+				new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
+		return new SplitSAMFileWriterAbstract(header, mapping) {
+
+			@Override
+			public void addAlignment(SAMRecord alignment) {
+				final String sampleName = alignment.getReadGroup().getSample();
+				addAlignment(sampleName, alignment);
+			}
+		};
 	}
 
 	/**
