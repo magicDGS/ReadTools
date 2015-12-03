@@ -249,7 +249,7 @@ public class ReadToolsSAMFileWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitSAMFileWriter makeSplitWriterByBarcode(final SAMFileHeader header, final String filePrefix, boolean bam,
+	public SplitSAMFileWriter makeSplitByBarcodeWriter(final SAMFileHeader header, final String filePrefix, boolean bam,
 		BarcodeDictionary dictionary) throws IOException {
 		logger.debug("Creating a split by barcode SAM writer");
 		final String extension = (bam) ? BamFileIoUtils.BAM_FILE_EXTENSION : IOUtils.DEFAULT_SAM_EXTENSION;
@@ -258,22 +258,57 @@ public class ReadToolsSAMFileWriterFactory {
 		for (int i = 0; i < dictionary.numberOfSamples(); i++) {
 			String sample = dictionary.getSampleNames().get(i);
 			if (!sampleNames.containsKey(sample)) {
-				SAMFileWriter sampleWriter = this
-					.makeSAMOrBAMWriter(header, header.getSortOrder().equals(SAMFileHeader.SortOrder.coordinate),
-						new File(String.format("%s_%s%s", filePrefix, sample, extension)));
+				SAMFileWriter sampleWriter = this.makeSAMOrBAMWriter(header, true,
+					new File(String.format("%s_%s%s", filePrefix, sample, extension)));
 				sampleNames.put(sample, sampleWriter);
 			}
 			mapping.put(dictionary.getCombinedBarcodesFor(i), sampleNames.get(sample));
 		}
 		// add a unknow barcode
-		mapping.put(BarcodeDecoder.UNKNOWN_STRING,
-			this.makeSAMOrBAMWriter(header, header.getSortOrder().equals(SAMFileHeader.SortOrder.coordinate),
-				new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
+		mapping.put(BarcodeDecoder.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
+			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
 		return new SplitSAMFileWriterAbstract(header, mapping) {
 
 			@Override
 			public void addAlignment(SAMRecord alignment) {
 				final String sampleName = alignment.getReadGroup().getSample();
+				addAlignment(sampleName, alignment);
+			}
+		};
+	}
+
+	/**
+	 * Create a split writer between assign/unknow barcodes; the mapping is "assign" and {@link
+	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder#UNKNOWN_STRING}. The add alignment checks for
+	 * the read group SN; if it is not found (<code>null</code> value for read group) or {@link
+	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder#UNKNOWN_STRING}, it goes to the unknown file,
+	 *
+	 * @param header     entire header. Sort order is determined by the sortOrder property of this arg.
+	 * @param filePrefix the prefix for the files
+	 * @param bam        if <code>true</code> the writers will be bam, if <code>false</code> they will be sam
+	 *
+	 * @return a new instance of the writer
+	 */
+	public SplitSAMFileWriter makeSplitAssingUnknownBarcodeWriter(final SAMFileHeader header, final String filePrefix,
+		boolean bam) throws IOException {
+		logger.debug("Creating a split by barcode SAM writer");
+		final String extension = (bam) ? BamFileIoUtils.BAM_FILE_EXTENSION : IOUtils.DEFAULT_SAM_EXTENSION;
+		Hashtable<String, SAMFileWriter> mapping = new Hashtable<>(2);
+		// add the assing barcode
+		mapping.put("assign", makeSAMOrBAMWriter(header, true, new File(filePrefix + extension)));
+		// add a unknow barcode
+		mapping.put(BarcodeDecoder.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
+			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
+		return new SplitSAMFileWriterAbstract(header, mapping) {
+
+			@Override
+			public void addAlignment(SAMRecord alignment) {
+				String sampleName = alignment.getReadGroup().getSample();
+				if (sampleName == null) {
+					sampleName = BarcodeDecoder.UNKNOWN_STRING;
+				} else if (!sampleName.equals(BarcodeDecoder.UNKNOWN_STRING)) {
+					sampleName = "assign";
+				}
 				addAlignment(sampleName, alignment);
 			}
 		};

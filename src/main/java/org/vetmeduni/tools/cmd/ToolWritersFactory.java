@@ -22,6 +22,9 @@
  */
 package org.vetmeduni.tools.cmd;
 
+import htsjdk.samtools.SAMFileHeader;
+import org.vetmeduni.io.writers.bam.ReadToolsSAMFileWriterFactory;
+import org.vetmeduni.io.writers.bam.SplitSAMFileWriter;
 import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriter;
 import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriterFactory;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
@@ -77,6 +80,29 @@ public class ToolWritersFactory {
 			return factory.newWriter(prefix);
 		} else {
 			return factory.newPairWriter(prefix);
+		}
+	}
+
+	/**
+	 * Get a SAMFileWriter for adding records with RG from the barcode dictionary (split or not)
+	 *
+	 * @param prefix     the output prefix
+	 * @param header     header with read group information (not the original)
+	 * @param dictionary the barcode dictionary; if <code>null</code>, it won't split by barcode
+	 * @param bam        should be the output a bam file?
+	 * @param index      should the output be indexed?
+	 * @param multi      multi-thread output?
+	 *
+	 * @return the writer for splitting or not
+	 */
+	public static SplitSAMFileWriter getBamWriterOrSplitWriterFromImput(String prefix, SAMFileHeader header,
+		BarcodeDictionary dictionary, boolean bam, boolean index, boolean multi) throws IOException {
+		ReadToolsSAMFileWriterFactory factory = new ReadToolsSAMFileWriterFactory().setUseAsyncIo(multi)
+																				   .setCreateIndex(index);
+		if (dictionary != null) {
+			return factory.makeSplitByBarcodeWriter(header, prefix, bam, dictionary);
+		} else {
+			return factory.makeSplitAssingUnknownBarcodeWriter(header, prefix, bam);
 		}
 	}
 }

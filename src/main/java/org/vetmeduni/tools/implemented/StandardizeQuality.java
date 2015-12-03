@@ -116,9 +116,7 @@ public class StandardizeQuality extends AbstractTool {
 	private void runBam(File input, File output, boolean index, boolean multi) throws IOException {
 		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT);
 		SAMFileWriter writer = new ReadToolsSAMFileWriterFactory().setCreateIndex(index).setUseAsyncIo(multi)
-																  .makeSAMOrBAMWriter(reader.getFileHeader(),
-																	  SAMFileHeader.SortOrder.coordinate.equals(
-																		  reader.getFileHeader().getSortOrder()),
+																  .makeSAMOrBAMWriter(reader.getFileHeader(), true,
 																	  output);
 		// start iterations
 		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
