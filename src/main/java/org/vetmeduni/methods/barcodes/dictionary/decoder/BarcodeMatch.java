@@ -30,9 +30,9 @@ package org.vetmeduni.methods.barcodes.dictionary.decoder;
 public class BarcodeMatch {
 
 	/**
-	 * the unknown tag for sample and barcode
+	 * The unknown tag for sample and barcode
 	 */
-	public static final String UNKNOWN_STRING = "unkown";
+	public static final String UNKNOWN_STRING = "UNKNOWN";
 
 	/**
 	 * The best barcode sequence or {@link #UNKNOWN_STRING} if there are no
@@ -57,7 +57,7 @@ public class BarcodeMatch {
 	public BarcodeMatch(int maxMismatches) {
 		barcode = UNKNOWN_STRING;
 		mismatches = maxMismatches;
-		mismatches = maxMismatches;
+		mismatchesToSecondBest = maxMismatches;
 	}
 
 	/**
@@ -66,34 +66,7 @@ public class BarcodeMatch {
 	 * @return <code>true</code> if it is match; <code>false</code> otherwise
 	 */
 	public boolean isMatch() {
-		return barcode.equals(UNKNOWN_STRING);
-	}
-
-	/**
-	 * Get the matched barcode
-	 *
-	 * @return the matched barcode
-	 */
-	public String getBarcode() {
-		return barcode;
-	}
-
-	/**
-	 * Get the number of mismatches for the matched barcode
-	 *
-	 * @return the number of mismatches
-	 */
-	public int getMismatches() {
-		return mismatches;
-	}
-
-	/**
-	 * Get the number of mismatches for the second best match
-	 *
-	 * @return the number of mismatches for the second best barcode
-	 */
-	public int getMismatchesToSecondBest() {
-		return mismatchesToSecondBest;
+		return !barcode.equals(UNKNOWN_STRING);
 	}
 
 	/**
@@ -102,6 +75,6 @@ public class BarcodeMatch {
 	 * @return the differences in absolute value
 	 */
 	public int getDifferenceWithSecond() {
-		return mismatches - mismatchesToSecondBest;
+		return mismatchesToSecondBest - mismatches;
 	}
 }

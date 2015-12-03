@@ -43,6 +43,8 @@ public class IOUtils {
 
 	public static final String DEFAULT_GZIP_EXTENSION = ".gz";
 
+	public static final String DEFAULT_METRICS_EXTENSION = ".metrics";
+
 	/**
 	 * Check if the file is BAM or SAM formatted
 	 *
@@ -66,6 +68,17 @@ public class IOUtils {
 	public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
 		return String
 			.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
+	}
+
+	/**
+	 * Create a default metrics file without checking
+	 *
+	 * @param prefix the prefix for the file
+	 *
+	 * @return the metrics file
+	 */
+	public static File makeMetricsFile(String prefix) {
+		return new File(String.format("%s%s", prefix, DEFAULT_METRICS_EXTENSION));
 	}
 
 	/**

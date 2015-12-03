@@ -33,12 +33,14 @@ import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriter;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
+import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.methods.trimming.trimmers.Trimmer;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.tools.cmd.ToolsReadersFactory;
 import org.vetmeduni.utils.loggers.FastqLogger;
+import org.vetmeduni.utils.misc.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,7 +124,7 @@ public class TrimFastq extends AbstractTool {
 		Trimmer trimmer = Trimmer
 			.getTrimmer(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim, single);
 		// run it!
-		process(trimmer, reader, writer, new File(output_prefix + ".metrics"));
+		process(trimmer, reader, writer, IOUtils.makeMetricsFile(output_prefix));
 	}
 
 	/**
@@ -180,17 +182,17 @@ public class TrimFastq extends AbstractTool {
 				if (newRecord.getRecord1() == null) {
 					writer.write(newRecord.getRecord2());
 					if (keep) {
-						((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record.getRecord1());
+						((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, record.getRecord1());
 					}
 				} else {
 					writer.write(newRecord.getRecord1());
 					if (keep) {
-						((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record.getRecord2());
+						((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, record.getRecord2());
 					}
 				}
 			} else {
 				if (keep) {
-					((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record);
+					((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, record);
 				}
 			}
 			progress.add();
@@ -216,7 +218,7 @@ public class TrimFastq extends AbstractTool {
 				writer.write(newRecord);
 			} else {
 				if (keep) {
-					((SplitFastqWriter) writer).write(BarcodeDecoder.UNKNOWN_STRING, record);
+					((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, record);
 				}
 			}
 			progress.add();

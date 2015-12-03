@@ -22,6 +22,8 @@
  */
 package org.vetmeduni.methods.barcodes.dictionary;
 
+import htsjdk.samtools.SAMReadGroupRecord;
+
 import java.util.*;
 
 /**
@@ -32,15 +34,15 @@ import java.util.*;
 public class BarcodeDictionary {
 
 	/**
-	 * Name of the samples. Samples with the same name are allowed
+	 * New name for the samples
 	 */
-	private final ArrayList<String> samples;
+	private final ArrayList<SAMReadGroupRecord> sampleRecord;
 
 	/**
 	 * Value associated for each sample
 	 */
+	@Deprecated
 	private final int[] samplesValue;
-	// array with one array per barcode, and the size of each array internally is a sample
 
 	/**
 	 * Array which contains the barcodes. The lenght is the number of barcodes used, and the internal array contain the
@@ -59,9 +61,9 @@ public class BarcodeDictionary {
 	 * @param samples  the sample names
 	 * @param barcodes the barcodes
 	 */
-	protected BarcodeDictionary(ArrayList<String> samples, ArrayList<ArrayList<String>> barcodes) {
-		this.samples = samples;
-		this.samplesValue = new int[samples.size()];
+	protected BarcodeDictionary(ArrayList<SAMReadGroupRecord> samples, ArrayList<ArrayList<String>> barcodes) {
+		this.sampleRecord = samples;
+		this.samplesValue = new int[sampleRecord.size()];
 		this.barcodes = barcodes;
 	}
 
@@ -92,7 +94,20 @@ public class BarcodeDictionary {
 	 * @return the sample names
 	 */
 	public List<String> getSampleNames() {
-		return samples;
+		ArrayList<String> toReturn = new ArrayList<>();
+		for (SAMReadGroupRecord s : sampleRecord) {
+			toReturn.add(s.getSample());
+		}
+		return toReturn;
+	}
+
+	/**
+	 * Get the sample names in order
+	 *
+	 * @return the sample names
+	 */
+	public List<SAMReadGroupRecord> getSampleReadGroups() {
+		return sampleRecord;
 	}
 
 	/**
@@ -101,7 +116,7 @@ public class BarcodeDictionary {
 	 * @return the number of samples
 	 */
 	public int numberOfSamples() {
-		return samples.size();
+		return sampleRecord.size();
 	}
 
 	/**
@@ -111,7 +126,7 @@ public class BarcodeDictionary {
 	 */
 	public int numberOfUniqueSamples() {
 		// will it be better to store this value??
-		return new HashSet<>(samples).size();
+		return new HashSet<>(sampleRecord).size();
 	}
 
 	/**
@@ -134,6 +149,7 @@ public class BarcodeDictionary {
 	 *
 	 * @param sampleIndex the sample index
 	 */
+	@Deprecated
 	public void addOneTo(int sampleIndex) {
 		samplesValue[sampleIndex]++;
 	}
@@ -145,8 +161,20 @@ public class BarcodeDictionary {
 	 *
 	 * @return the value for the sample
 	 */
+	@Deprecated
 	public int getValueFor(int sampleIndex) {
 		return samplesValue[sampleIndex];
+	}
+
+	/**
+	 * Get the name for a concrete sample
+	 *
+	 * @param sampleIndex the sample index
+	 *
+	 * @return the read group of the sample
+	 */
+	public SAMReadGroupRecord getReadGroupFor(int sampleIndex) {
+		return sampleRecord.get(sampleIndex);
 	}
 
 	/**
@@ -157,7 +185,7 @@ public class BarcodeDictionary {
 	 * @return the name of the sample
 	 */
 	public String getNameFor(int sampleIndex) {
-		return samples.get(sampleIndex);
+		return getReadGroupFor(sampleIndex).getSample();
 	}
 
 	/**

@@ -26,7 +26,7 @@ import htsjdk.samtools.*;
 import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.IOdefault;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
-import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
+import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.utils.misc.IOUtils;
 
 import java.io.File;
@@ -265,7 +265,7 @@ public class ReadToolsSAMFileWriterFactory {
 			mapping.put(dictionary.getCombinedBarcodesFor(i), sampleNames.get(sample));
 		}
 		// add a unknow barcode
-		mapping.put(BarcodeDecoder.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
+		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
 			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
 		return new SplitSAMFileWriterAbstract(header, mapping) {
 
@@ -279,9 +279,9 @@ public class ReadToolsSAMFileWriterFactory {
 
 	/**
 	 * Create a split writer between assign/unknow barcodes; the mapping is "assign" and {@link
-	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder#UNKNOWN_STRING}. The add alignment checks for
-	 * the read group SN; if it is not found (<code>null</code> value for read group) or {@link
-	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder#UNKNOWN_STRING}, it goes to the unknown file,
+	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. The add alignment checks for the
+	 * read group SN; if it is not found (<code>null</code> value for read group) or {@link
+	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}, it goes to the unknown file,
 	 *
 	 * @param header     entire header. Sort order is determined by the sortOrder property of this arg.
 	 * @param filePrefix the prefix for the files
@@ -297,7 +297,7 @@ public class ReadToolsSAMFileWriterFactory {
 		// add the assing barcode
 		mapping.put("assign", makeSAMOrBAMWriter(header, true, new File(filePrefix + extension)));
 		// add a unknow barcode
-		mapping.put(BarcodeDecoder.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
+		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
 			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
 		return new SplitSAMFileWriterAbstract(header, mapping) {
 
@@ -305,8 +305,8 @@ public class ReadToolsSAMFileWriterFactory {
 			public void addAlignment(SAMRecord alignment) {
 				String sampleName = alignment.getReadGroup().getSample();
 				if (sampleName == null) {
-					sampleName = BarcodeDecoder.UNKNOWN_STRING;
-				} else if (!sampleName.equals(BarcodeDecoder.UNKNOWN_STRING)) {
+					sampleName = BarcodeMatch.UNKNOWN_STRING;
+				} else if (!sampleName.equals(BarcodeMatch.UNKNOWN_STRING)) {
 					sampleName = "assign";
 				}
 				addAlignment(sampleName, alignment);
