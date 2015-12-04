@@ -43,6 +43,8 @@ import org.vetmeduni.utils.misc.IOUtils;
 import java.io.File;
 import java.io.IOException;
 
+import static org.vetmeduni.tools.cmd.OptionUtils.*;
+
 /**
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
  *

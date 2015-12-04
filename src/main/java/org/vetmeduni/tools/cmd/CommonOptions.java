@@ -27,7 +27,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.vetmeduni.tools.ToolNames;
 
-import static org.vetmeduni.tools.AbstractTool.getUniqueValue;
+import static org.vetmeduni.tools.cmd.OptionUtils.*;
 
 /**
  * Class that contains static instances of common options and their checking

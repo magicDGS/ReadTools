@@ -33,6 +33,7 @@ import org.vetmeduni.utils.fastq.QualityUtils;
 import java.io.File;
 
 import static org.vetmeduni.tools.ToolNames.ToolException;
+import static org.vetmeduni.tools.cmd.OptionUtils.*;
 
 /**
  * Tool for check the quality in both FASTQ and BAM files

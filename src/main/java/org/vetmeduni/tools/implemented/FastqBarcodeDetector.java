@@ -31,11 +31,10 @@ import org.vetmeduni.io.readers.fastq.FastqReaderInterface;
 import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedInterface;
 import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
-import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
-import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.tools.AbstractTool;
+import org.vetmeduni.tools.cmd.BarcodeOptions;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.tools.cmd.ToolsReadersFactory;
@@ -47,7 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-import static org.vetmeduni.tools.ToolNames.ToolException;
+import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
  * Tool for split by barcode (in the read name) for FASTQ files
@@ -64,30 +63,18 @@ public class FastqBarcodeDetector extends AbstractTool {
 		String input2string = getUniqueValue(cmd, "input2");
 		File input2 = (input2string == null) ? null : new File(input2string);
 		String outputPrefix = getUniqueValue(cmd, "output");
-		File barcodes = new File(getUniqueValue(cmd, "bc"));
-		int max;
-		try {
-			String maxOpt = getUniqueValue(cmd, "m");
-			max = (maxOpt == null) ? BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES : Integer.parseInt(maxOpt);
-		} catch (IllegalArgumentException e) {
-			throw new ToolException("Maximum mismatches should be an integer");
-		}
-		boolean split = cmd.hasOption("x");
 		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
 		boolean multi = nThreads != 1;
 		// logging command line
 		logCmdLine(cmd);
-		// create the combined dictionary and the barcode method associated
-		BarcodeDictionary dictionary = BarcodeDictionaryFactory.createCombinedDictionary(barcodes);
-		logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
-			dictionary.numberOfSamples(), " different barcode sets");
-		BarcodeDecoder decoder = new BarcodeDecoder(dictionary, max);
+		// open the decoder
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null);
 		// create the reader and the writer
 		FastqReaderInterface reader = ToolsReadersFactory
 			.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
-		SplitFastqWriter writer = ToolWritersFactory
-			.getFastqSplitWritersFromInput(outputPrefix, split ? dictionary : null,
-				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null);
+		SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix,
+			BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
+			cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null);
 		// run the method
 		run(reader, writer, IOUtils.makeMetricsFile(outputPrefix), decoder);
 	}
@@ -181,18 +168,11 @@ public class FastqBarcodeDetector extends AbstractTool {
 							  .hasArg().numberOfArgs(1).argName("input_2.fq").optionalArg(true).build();
 		Option output = Option.builder("o").longOpt("output").desc("The output file prefix").hasArg().numberOfArgs(1)
 							  .argName("output_prefix").required(true).build();
-		Option barcodes = Option.builder("bc").longOpt("barcodes").desc(
-			"Tab-delimited file with the first column with the sample name and the following containing the barcodes (1 or 2 depending on the barcoding method; if two, they will be concatenated and assumed as 1).")
-								.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
-		// TODO: add to description: "It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file."
-		// TODO: only if it could be implemented
+		// TODO: change for the default when updated to the combination with the separator between barcodes
 		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
 			"Maximum number of mismatches alowwed for a matched barcode.  [Default="
 				+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
 						   .required(false).build();
-		Option split = Option.builder("x").longOpt("split")
-							 .desc("Split each sample from the barcode dictionary in a different file.").hasArg(false)
-							 .required(false).build();
 		//		// THIS ARE PREVIOUS OPTIONS IN THE METHOD THAT I DEVELOP OUTSIDE THIS TOOL: not longer supported!
 		//		// this option was to allow a regular expression in the barcode name
 		//		Option re = Option.builder("sx").longOpt("suffix")
@@ -208,9 +188,10 @@ public class FastqBarcodeDetector extends AbstractTool {
 		options.addOption(input1);
 		options.addOption(input2);
 		options.addOption(output);
-		options.addOption(barcodes);
+		// addd options for barcode programs
+		options.addOption(BarcodeOptions.barcodes);
+		options.addOption(BarcodeOptions.split);
 		options.addOption(max);
-		options.addOption(split);
 		// default options
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // maintain the format

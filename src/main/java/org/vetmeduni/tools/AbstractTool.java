@@ -30,7 +30,6 @@ import org.vetmeduni.readtools.ProjectProperties;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 import static org.vetmeduni.tools.ToolNames.ToolException;
 
@@ -109,17 +108,6 @@ public abstract class AbstractTool implements Tool {
 	}
 
 	/**
-	 * Log the command line
-	 *
-	 * @param args the arguments passed to the tool
-	 */
-	@Deprecated
-	protected void logCmdLine(String[] args) {
-		String cmdLine = getCommandArguments(args);
-		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", cmdLine);
-	}
-
-	/**
 	 * Log the command line (with the known options)
 	 *
 	 * @param cmd the already parsed command line with the programParser
@@ -142,42 +130,6 @@ public abstract class AbstractTool implements Tool {
 			}
 		}
 		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", builder.toString());
-	}
-
-	/**
-	 * Get the command line arguments separated by space
-	 *
-	 * @param args the arguments passed to the tool
-	 *
-	 * @return the formatted string
-	 */
-	@Deprecated
-	protected String getCommandArguments(String[] args) {
-		StringBuilder cmdLine = new StringBuilder();
-		for (String ar : args) {
-			cmdLine.append(ar);
-			cmdLine.append(" ");
-		}
-		return cmdLine.toString();
-	}
-
-	/**
-	 * Parse a single option (only one value is allowed)
-	 *
-	 * @param cmd    the already parsed command line with the programParser
-	 * @param option the option to retrieve
-	 *
-	 * @return the value for that option; <code>null</code> if the option is not provided in the cmd
-	 * @throws ToolException if the argument was passed more than one time
-	 */
-	public static String getUniqueValue(CommandLine cmd, String option) throws ToolException {
-		String[] toReturn = cmd.getOptionValues(option);
-		if (toReturn == null) {
-			return null;
-		} else if (toReturn.length == 1) {
-			return toReturn[0];
-		}
-		throw new ToolException("Option --" + option + " provided more than one time");
 	}
 
 	/**
@@ -218,29 +170,6 @@ public abstract class AbstractTool implements Tool {
 		formatter.printUsage(writer, formatter.getWidth(), usage(), programOptions());
 		writer.println("error: " + error);
 		writer.close();
-	}
-
-	/**
-	 * Get an int array from the string formatted version retrived from the command line
-	 *
-	 * @param options      the options retrived from the command line
-	 * @param defaultValue the default value(s)
-	 *
-	 * @return the default values if the options retrieved are <code>null</code>; the formatted int array from the
-	 * string one
-	 * @throws ToolException if some of the options cannot be parsed to an int
-	 */
-	public int[] getIntArrayOptions(String[] options, int... defaultValue) throws ToolException {
-		if (options == null) {
-			return defaultValue;
-		}
-		try {
-			return Arrays.stream(options).mapToInt(Integer::parseInt).toArray();
-		} catch (IllegalArgumentException e) {
-			logger
-				.debug("Trying to obtain integer(s) from the following parameters provided ", Arrays.toString(options));
-			throw new ToolException("This option should be an integer");
-		}
 	}
 
 	/**

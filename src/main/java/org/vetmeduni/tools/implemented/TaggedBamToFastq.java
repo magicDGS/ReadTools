@@ -31,11 +31,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
-import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
-import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.tools.AbstractTool;
+import org.vetmeduni.tools.cmd.BarcodeOptions;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.tools.cmd.ToolsReadersFactory;
@@ -46,7 +45,7 @@ import org.vetmeduni.utils.record.SAMRecordUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static org.vetmeduni.tools.ToolNames.ToolException;
+import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
  * Class for converting from a Barcoded BAM to a FASTQ.
@@ -68,30 +67,19 @@ public class TaggedBamToFastq extends AbstractTool {
 		// parsing command line
 		String inputString = getUniqueValue(cmd, "i");
 		String outputPrefix = getUniqueValue(cmd, "o");
-		String barcodes = getUniqueValue(cmd, "bc");
-		int[] max = getIntArrayOptions(cmd.getOptionValues("m"), BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES);
 		String[] tags = cmd.getOptionValues("t");
-		logger.debug("Maximum mistmaches (", max.length, "): ", max);
-		logger.debug("Tags (", tags.length, "): ", tags);
-		if (max.length != 1 && max.length != tags.length) {
-			throw new ToolException("Number of maximum mismatches provided and number of tags does not match");
-		}
 		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
 		boolean multi = nThreads != 1;
 		// FINISH PARSING: log the command line (not longer in the param file)
 		logCmdLine(cmd);
-		// open the barcode dictionary
-		BarcodeDictionary barcodeDict = BarcodeDictionaryFactory
-			.createDefaultDictionary(new File(barcodes), tags.length);
-		logger.info("Loaded barcode file for ", barcodeDict.numberOfUniqueSamples(), " samples with ",
-			barcodeDict.numberOfSamples(), " different barcode sets");
-		BarcodeDecoder decoder = new BarcodeDecoder(barcodeDict, max);
+		// open the decoder
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, tags.length);
 		// open the bam file
 		SamReader input = ToolsReadersFactory
 			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
 		// Create the writer factory
 		SplitFastqWriter writer = ToolWritersFactory
-			.getFastqSplitWritersFromInput(outputPrefix, cmd.hasOption("x") ? barcodeDict : null,
+			.getFastqSplitWritersFromInput(outputPrefix, BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
 				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, cmd.hasOption("s"));
 		// create the metrics file
 		File metrics = IOUtils.makeMetricsFile(outputPrefix);
@@ -226,26 +214,17 @@ public class TaggedBamToFastq extends AbstractTool {
 		Option tag = Option.builder("t").longOpt("tag").desc(
 			"Tag in the BAM file for the stored barcodes. It should be provided the same number of times as barcodes provided in the file.")
 						   .hasArg().numberOfArgs(1).argName("TAG").required().build();
-		Option barcodes = Option.builder("bc").longOpt("barcodes").desc(
-			"Tab-delimited file with the first column with the sample name and the following containing the barcodes (1 or 2 depending on the barcoding method)")
-								.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
-		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-			"Maximum number of mismatches alowwed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
-				+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
-						   .required(false).build();
 		Option single = Option.builder("s").longOpt("single").desc("Switch to single-end parsing").hasArg(false)
 							  .required(false).build();
-		Option split = Option.builder("x").longOpt("split")
-							 .desc("Split each sample from the barcode dictionary in a different file.").hasArg(false)
-							 .required(false).build();
 		Options options = new Options();
 		options.addOption(single);
 		options.addOption(tag);
-		options.addOption(barcodes);
-		options.addOption(max);
 		options.addOption(output);
 		options.addOption(input);
-		options.addOption(split);
+		// add options for barcode programs
+		options.addOption(BarcodeOptions.barcodes);
+		options.addOption(BarcodeOptions.max);
+		options.addOption(BarcodeOptions.split);
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // mantain the format
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output

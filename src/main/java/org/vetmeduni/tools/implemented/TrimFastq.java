@@ -32,7 +32,6 @@ import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedInterface;
 import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriter;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
-import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.methods.trimming.trimmers.Trimmer;
 import org.vetmeduni.tools.AbstractTool;
@@ -46,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.vetmeduni.tools.ToolNames.ToolException;
+import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
  * Class that implements the trimming algorithm from Kofler et al. 2011
@@ -227,7 +227,6 @@ public class TrimFastq extends AbstractTool {
 
 	@Override
 	protected Options programOptions() {
-		// TODO: add option for store discarded
 		// Creating each options
 		Option input1 = Option.builder("i1").longOpt("input1")
 							  .desc("The FASTQ input file, or the input file of the first read").hasArg()

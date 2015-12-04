@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Changed
 - Changed logic of bacode detection: at least one difference between the best barcode and the second best is needed to do not discard a barcode
+
 ### Added
 - Output metrics file when detecting barcodes
 
