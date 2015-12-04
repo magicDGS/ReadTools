@@ -54,7 +54,7 @@ public enum ToolNames {
 			+ "for latter analysis. It does not support mixed qualities", new StandardizeQuality()),
 	FastqBarcodeDetector(
 		"Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library",
-		"Detect barcodes in the header of the read name (based on the marker " + BarcodeMethods.BARCODE_SEPARATOR
+		"Detect barcodes in the header of the read name (based on the marker " + BarcodeMethods.NAME_BARCODE_SEPARATOR
 			+ ") of a FASTQ file and assign to a sample based on a provided dictionary. Barcodes in the input file that "
 			+ "are larger than the used ones are cut in the last bases.", new FastqBarcodeDetector());
 

@@ -80,7 +80,7 @@ public class SAMRecordUtils {
 	 * @param barcode the barcode
 	 */
 	public static void addBarcodeToName(SAMRecord record, String barcode) {
-		String recordName = String.format("%s%s%s", record.getReadName(), BarcodeMethods.BARCODE_SEPARATOR, barcode);
+		String recordName = String.format("%s%s%s", record.getReadName(), BarcodeMethods.NAME_BARCODE_SEPARATOR, barcode);
 		record.setReadName(recordName);
 	}
 
@@ -93,7 +93,7 @@ public class SAMRecordUtils {
 	 * @return <code>true</code> if the barcode is changed; <code>false</code> otherwise
 	 */
 	public static boolean addBarcodeToNameIfAbsent(SAMRecord record, String barcode) {
-		if (record.getReadName().contains(BarcodeMethods.BARCODE_SEPARATOR)) {
+		if (record.getReadName().contains(BarcodeMethods.NAME_BARCODE_SEPARATOR)) {
 			return false;
 		}
 		addBarcodeToName(record, barcode);

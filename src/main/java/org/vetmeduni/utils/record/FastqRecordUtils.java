@@ -166,7 +166,7 @@ public class FastqRecordUtils {
 	 */
 	public static FastqRecord changeBarcode(FastqRecord record, String newBarcode, int numberOfPair) {
 		return new FastqRecord(String
-			.format("%s%s%s%s%s", getReadNameWithoutBarcode(record), BarcodeMethods.BARCODE_SEPARATOR, newBarcode,
+			.format("%s%s%s%s%s", getReadNameWithoutBarcode(record), BarcodeMethods.NAME_BARCODE_SEPARATOR, newBarcode,
 				BarcodeMethods.READ_PAIR_SEPARATOR, numberOfPair), record.getReadString(),
 			record.getBaseQualityHeader(), record.getBaseQualityString());
 	}
