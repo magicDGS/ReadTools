@@ -37,11 +37,14 @@ import java.util.Set;
 /**
  * Class with utils for work with quality
  *
- * TODO: implement convert methods
- *
  * @author Daniel Gómez Sánchez
  */
 public class QualityUtils {
+
+	/**
+	 * For all the tools that needs to detect the quality, iterate over 1M reads to be sure that the quality is correct
+	 */
+	public static final long DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY = 1_000_000;
 
 	private static final byte phredToSangerOffset = (byte) 31;
 
@@ -123,7 +126,7 @@ public class QualityUtils {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not one of the supported
 	 */
 	public static FastqQualityFormat getFastqQualityFormat(File input) {
-		return getFastqQualityFormat(input, QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE);
+		return getFastqQualityFormat(input, DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY);
 	}
 
 	/**

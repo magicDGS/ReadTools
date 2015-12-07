@@ -23,7 +23,6 @@
 package org.vetmeduni.tools.implemented;
 
 import htsjdk.samtools.util.FastqQualityFormat;
-import htsjdk.samtools.util.QualityEncodingDetector;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -49,7 +48,7 @@ public class QualityChecker extends AbstractTool {
 		try {
 			String toIterate = getUniqueValue(cmd, "m");
 			recordsToIterate = (toIterate == null) ?
-				QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE :
+				QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY :
 				Long.parseLong(toIterate);
 			if (recordsToIterate < 0) {
 				throw new NumberFormatException();
@@ -69,7 +68,7 @@ public class QualityChecker extends AbstractTool {
 							 .numberOfArgs(1).argName("INPUT").required().build();
 		Option max = Option.builder("m").longOpt("maximum-reads").desc(
 			"Maximum number of read to use to iterate. [Default="
-				+ QualityEncodingDetector.DEFAULT_MAX_RECORDS_TO_ITERATE + "]").hasArg().numberOfArgs(1).argName("LONG")
+				+ QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY + "]").hasArg().numberOfArgs(1).argName("LONG")
 						   .required(false).build();
 		Options options = new Options();
 		options.addOption(input);
