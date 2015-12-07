@@ -59,11 +59,44 @@ public class BarcodeDictionary {
 	 *
 	 * @param samples  the sample names
 	 * @param barcodes the barcodes
+	 *
+	 * @deprecated use {@link #BarcodeDictionary(java.util.ArrayList, java.util.ArrayList,
+	 * htsjdk.samtools.SAMReadGroupRecord)} instead
 	 */
+	@Deprecated
 	protected BarcodeDictionary(ArrayList<SAMReadGroupRecord> samples, ArrayList<ArrayList<String>> barcodes) {
 		this.sampleRecord = samples;
 		this.barcodes = barcodes;
-		initBarcodeRGmap();
+	}
+
+	/**
+	 * Protected constructor. For get an instance of a dictionary, use {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory}
+	 *
+	 * @param samples       the sample names
+	 * @param barcodes      the barcodes
+	 * @param readGroupInfo the additional information for the read group
+	 */
+	protected BarcodeDictionary(ArrayList<String> samples, ArrayList<ArrayList<String>> barcodes,
+		SAMReadGroupRecord readGroupInfo) {
+		this.barcodes = barcodes;
+		this.sampleRecord = new ArrayList<>(samples.size());
+		initReadGroups(samples, readGroupInfo);
+	}
+
+	/**
+	 * Create the read group for the samples: the sample name will be in the SM tag, the sampleName_combinedBarcode the
+	 * ID and the rest of tags will come from the read group. The barcode field should be initialized before calling
+	 * this method
+	 *
+	 * @param samples       the sample name
+	 * @param readGroupInfo the read group information
+	 */
+	private void initReadGroups(ArrayList<String> samples, SAMReadGroupRecord readGroupInfo) {
+		for (int i = 0; i < samples.size(); i++) {
+			final SAMReadGroupRecord rg = new SAMReadGroupRecord(String.format("%s_%s", samples.get(i), getCombinedBarcodesFor(i)), readGroupInfo);
+			rg.setSample(samples.get(i));
+			sampleRecord.add(rg);
+		}
 	}
 
 	/**
@@ -152,6 +185,14 @@ public class BarcodeDictionary {
 		return sampleRecord.get(sampleIndex);
 	}
 
+	@Deprecated
+	protected Hashtable<String, SAMReadGroupRecord> getRGmap() {
+		if (barcodeRGmap.isEmpty()) {
+			initBarcodeRGmap();
+		}
+		return barcodeRGmap;
+	}
+
 	/**
 	 * Get the read group for a combined barcode
 	 *
@@ -164,7 +205,7 @@ public class BarcodeDictionary {
 		if (barcodeRGmap.isEmpty()) {
 			initBarcodeRGmap();
 		}
-		return (barcodeRGmap.contains(combinedBarcode)) ?
+		return (barcodeRGmap.containsKey(combinedBarcode)) ?
 			barcodeRGmap.get(combinedBarcode) :
 			BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO;
 	}
@@ -225,5 +266,18 @@ public class BarcodeDictionary {
 		for (ArrayList<String> l : barcodes) {
 			barcodesSets.add(new HashSet<>(l));
 		}
+	}
+
+	/**
+	 * String representation of the dictionary, that is the mapping between the combined barcode (result of {@link
+	 * #getCombinedBarcodesFor(int)}) and the samples as {@link htsjdk.samtools.SAMReadGroupRecord}
+	 *
+	 * @return the short representation
+	 */
+	public String toString() {
+		if (barcodeRGmap.isEmpty()) {
+			initBarcodeRGmap();
+		}
+		return barcodeRGmap.toString();
 	}
 }

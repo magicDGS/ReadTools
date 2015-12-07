@@ -49,9 +49,9 @@ public class BarcodeDictionaryFactory {
 	static {
 		UNKNOWN_READGROUP_INFO = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
 		UNKNOWN_READGROUP_INFO.setProgramGroup(ProjectProperties.getName());
-		UNKNOWN_READGROUP_INFO.setLibrary(BarcodeMatch.UNKNOWN_STRING);
-		UNKNOWN_READGROUP_INFO.setPlatform(BarcodeMatch.UNKNOWN_STRING);
-		UNKNOWN_READGROUP_INFO.setPlatformUnit(BarcodeMatch.UNKNOWN_STRING);
+		// UNKNOWN_READGROUP_INFO.setLibrary(BarcodeMatch.UNKNOWN_STRING);
+		// UNKNOWN_READGROUP_INFO.setPlatform(BarcodeMatch.UNKNOWN_STRING);
+		// UNKNOWN_READGROUP_INFO.setPlatformUnit(BarcodeMatch.UNKNOWN_STRING);
 		UNKNOWN_READGROUP_INFO.setSample(BarcodeMatch.UNKNOWN_STRING);
 	}
 
@@ -87,7 +87,7 @@ public class BarcodeDictionaryFactory {
 		for (int i = 0; i < numberOfBarcodes; i++) {
 			barcodes.add(new ArrayList<>());
 		}
-		ArrayList<SAMReadGroupRecord> samples = new ArrayList<>();
+		ArrayList<String> samples = new ArrayList<>();
 		// reading the rest of the lines
 		while (nextLine != null) {
 			if (numberOfBarcodes != nextLine.length - 1) {
@@ -96,7 +96,7 @@ public class BarcodeDictionaryFactory {
 						.getAbsolutePath());
 			}
 			// the first item is the sample name
-			samples.add(getReadGroupForSample(nextLine[0], readGroupInfo));
+			samples.add(nextLine[0]);
 			// get the barcodes
 			for (int i = 1; i <= numberOfBarcodes; i++) {
 				barcodes.get(i - 1).add(nextLine[i]);
@@ -105,7 +105,7 @@ public class BarcodeDictionaryFactory {
 		}
 		reader.close();
 		// construct the barcode dictionary
-		return new BarcodeDictionary(samples, barcodes);
+		return new BarcodeDictionary(samples, barcodes, readGroupInfo);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class BarcodeDictionaryFactory {
 		ArrayList<ArrayList<String>> barcodes = new ArrayList<>(1);
 		barcodes.add(new ArrayList<>());
 		// create the sample array
-		ArrayList<SAMReadGroupRecord> samples = new ArrayList<>();
+		ArrayList<String> samples = new ArrayList<>();
 		// reading the rest of the lines
 		while (nextLine != null) {
 			if (numberOfBarcodes != nextLine.length - 1) {
@@ -155,7 +155,7 @@ public class BarcodeDictionaryFactory {
 						.getAbsolutePath());
 			}
 			// the first item is the sample name
-			samples.add(getReadGroupForSample(nextLine[0], readGroupInfo));
+			samples.add(nextLine[0]);
 			// get the unique barcode
 			String uniqueBarcode = String.join("", Arrays.copyOfRange(nextLine, 1, nextLine.length));
 			barcodes.get(0).add(uniqueBarcode);
@@ -163,7 +163,7 @@ public class BarcodeDictionaryFactory {
 		}
 		reader.close();
 		// construct the barcode dictionary
-		return new BarcodeDictionary(samples, barcodes);
+		return new BarcodeDictionary(samples, barcodes, readGroupInfo);
 	}
 
 	/**
@@ -177,19 +177,5 @@ public class BarcodeDictionaryFactory {
 	 */
 	public static BarcodeDictionary createCombinedDictionary(File barcodeFile) throws IOException {
 		return createCombinedDictionary(barcodeFile, UNKNOWN_READGROUP_INFO);
-	}
-
-	/**
-	 * Get the read group for a sample including other information
-	 *
-	 * @param sampleName the sample name
-	 * @param info       the rest of the information information
-	 *
-	 * @return a new read group with the SN and ID tag with the sampleName
-	 */
-	private static SAMReadGroupRecord getReadGroupForSample(String sampleName, SAMReadGroupRecord info) {
-		SAMReadGroupRecord readGroup = new SAMReadGroupRecord(sampleName, info);
-		readGroup.setSample(sampleName);
-		return readGroup;
 	}
 }

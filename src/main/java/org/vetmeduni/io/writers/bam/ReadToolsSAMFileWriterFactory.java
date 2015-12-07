@@ -239,7 +239,7 @@ public class ReadToolsSAMFileWriterFactory {
 	}
 
 	/**
-	 * Create a split writer by barcode; the default behaviour for add alignment is use the sample tag (SM) in the read
+	 * Create a split writer by barcode; the default behaviour for add alignment is use the id tag (SM) in the read
 	 * group
 	 *
 	 * @param header     entire header. Sort order is determined by the sortOrder property of this arg.
@@ -280,7 +280,7 @@ public class ReadToolsSAMFileWriterFactory {
 	/**
 	 * Create a split writer between assign/unknow barcodes; the mapping is "assign" and {@link
 	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. The add alignment checks for the
-	 * read group SN; if it is not found (<code>null</code> value for read group) or {@link
+	 * read group ID; if it is not found (<code>null</code> value for read group) or {@link
 	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}, it goes to the unknown file,
 	 *
 	 * @param header     entire header. Sort order is determined by the sortOrder property of this arg.
@@ -303,13 +303,13 @@ public class ReadToolsSAMFileWriterFactory {
 
 			@Override
 			public void addAlignment(SAMRecord alignment) {
-				String sampleName = alignment.getReadGroup().getSample();
-				if (sampleName == null) {
-					sampleName = BarcodeMatch.UNKNOWN_STRING;
-				} else if (!sampleName.equals(BarcodeMatch.UNKNOWN_STRING)) {
-					sampleName = "assign";
+				String assignedId = alignment.getReadGroup().getId();
+				if (assignedId == null) {
+					assignedId = BarcodeMatch.UNKNOWN_STRING;
+				} else if (!assignedId.equals(BarcodeMatch.UNKNOWN_STRING)) {
+					assignedId = "assign";
 				}
-				addAlignment(sampleName, alignment);
+				addAlignment(assignedId, alignment);
 			}
 		};
 	}
