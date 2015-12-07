@@ -22,6 +22,7 @@
  */
 package org.vetmeduni.tools.cmd;
 
+import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.util.Log;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -105,22 +106,27 @@ public class BarcodeOptions {
 	/**
 	 * Get the barcode dictionary option using the command line
 	 *
-	 * @param logger the logger to log results
-	 * @param cmd    the command line already parsed
-	 * @param length the expected number of barcodes; <code>null</code> if combined
+	 * @param logger        the logger to log results
+	 * @param cmd           the command line already parsed
+	 * @param length        the expected number of barcodes; <code>null</code> if combined
+	 * @param readGroupInfo read group info; if <code>null</code> the {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
+	 *                      is used
 	 *
 	 * @return the combined barcode
 	 */
-	public static BarcodeDictionary getBarcodeDictionaryFromOption(Log logger, CommandLine cmd, Integer length)
-		throws IOException {
+	public static BarcodeDictionary getBarcodeDictionaryFromOption(Log logger, CommandLine cmd, Integer length,
+		SAMReadGroupRecord readGroupInfo) throws IOException {
 		final File inputFile = new File(getUniqueValue(cmd, barcodes.getOpt()));
 		final BarcodeDictionary dictionary;
+		if (readGroupInfo == null) {
+			readGroupInfo = BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO;
+		}
 		if (length == null) {
-			dictionary = BarcodeDictionaryFactory.createCombinedDictionary(inputFile);
+			dictionary = BarcodeDictionaryFactory.createCombinedDictionary(inputFile, readGroupInfo);
 			logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
 				dictionary.numberOfSamples(), " different barcode sets");
 		} else {
-			dictionary = BarcodeDictionaryFactory.createDefaultDictionary(inputFile, length);
+			dictionary = BarcodeDictionaryFactory.createDefaultDictionary(inputFile, readGroupInfo, length);
 		}
 		return dictionary;
 	}
@@ -134,10 +140,10 @@ public class BarcodeOptions {
 	 *
 	 * @return the barcode decoder
 	 */
-	public static BarcodeDecoder getBarcodeDecoderFromOption(Log logger, CommandLine cmd, Integer length)
-		throws IOException, ToolNames.ToolException {
+	public static BarcodeDecoder getBarcodeDecoderFromOption(Log logger, CommandLine cmd, Integer length,
+		SAMReadGroupRecord readGroupInfo) throws IOException, ToolNames.ToolException {
 		try {
-			BarcodeDictionary dictionary = getBarcodeDictionaryFromOption(logger, cmd, length);
+			BarcodeDictionary dictionary = getBarcodeDictionaryFromOption(logger, cmd, length, readGroupInfo);
 			int[] mismatches = getIntArrayOptions(cmd, max.getOpt());
 			int[] minDist = getIntArrayOptions(cmd, dist.getOpt());
 			Integer maxNallowed = getUniqueIntOption(cmd, maxN.getOpt());

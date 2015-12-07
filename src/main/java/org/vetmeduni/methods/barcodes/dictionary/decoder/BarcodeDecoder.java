@@ -22,6 +22,7 @@
  */
 package org.vetmeduni.methods.barcodes.dictionary.decoder;
 
+import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.metrics.MetricsFile;
 import htsjdk.samtools.util.Histogram;
 import htsjdk.samtools.util.Log;
@@ -73,7 +74,7 @@ public class BarcodeDecoder {
 	/**
 	 * The barcode dictionary
 	 */
-	private BarcodeDictionary dictionary;
+	private final BarcodeDictionary dictionary;
 
 	/**
 	 * Switch for the decoder considering N as mismatches
@@ -188,7 +189,6 @@ public class BarcodeDecoder {
 	 * Initialize the statistics
 	 */
 	private void initStats() {
-		// TODO: create the statistics for each barcode
 		// get the statistics for the decoding
 		stats = new Hashtable<>();
 		List<String> sampleNames = dictionary.getSampleNames();
@@ -248,6 +248,18 @@ public class BarcodeDecoder {
 				"Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
 		}
 		return getBestBarcode(nAsMismatches, maxMismatches, minDifferenceWithSecond, barcode);
+	}
+
+	/**
+	 * Get the bes barcode with the parameter for this decoder and return the associated sample
+	 *
+	 * @param barcode the array of barcodes to match
+	 *
+	 * @return the best associated sample; {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
+	 * if not found any
+	 */
+	public SAMReadGroupRecord getBestReadGroupRecord(String... barcode) {
+		return dictionary.getReadGroupFor(getBestBarcode(barcode));
 	}
 
 	/**

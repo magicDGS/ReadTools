@@ -39,21 +39,20 @@ public class BarcodeDictionary {
 	private final ArrayList<SAMReadGroupRecord> sampleRecord;
 
 	/**
-	 * Value associated for each sample
-	 */
-	@Deprecated
-	private final int[] samplesValue;
-
-	/**
 	 * Array which contains the barcodes. The lenght is the number of barcodes used, and the internal array contain the
 	 * associated barcode for each sample
 	 */
-	private ArrayList<ArrayList<String>> barcodes;
+	private final ArrayList<ArrayList<String>> barcodes;
+
+	/**
+	 * Cached map between combined barcodes and read groups
+	 */
+	private final Hashtable<String, SAMReadGroupRecord> barcodeRGmap = new Hashtable<>();
 
 	/**
 	 * Cached barcode set(s) for fast access
 	 */
-	private ArrayList<HashSet<String>> barcodesSets = null;
+	private final ArrayList<HashSet<String>> barcodesSets = new ArrayList<>();
 
 	/**
 	 * Protected constructor. For construct an instance, use {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory}
@@ -63,19 +62,17 @@ public class BarcodeDictionary {
 	 */
 	protected BarcodeDictionary(ArrayList<SAMReadGroupRecord> samples, ArrayList<ArrayList<String>> barcodes) {
 		this.sampleRecord = samples;
-		this.samplesValue = new int[sampleRecord.size()];
 		this.barcodes = barcodes;
+		initBarcodeRGmap();
 	}
 
 	/**
-	 * Initialize the barcodes with this number of barcodes
-	 *
-	 * @param numberOfBarcodes the number of barcodes
+	 * Initialize the barcode-RG map for the dictionary to cached
 	 */
-	private void initBarcodes(int numberOfBarcodes) {
-		this.barcodes = new ArrayList<>(numberOfBarcodes);
-		for (int i = 0; i < numberOfBarcodes; i++) {
-			barcodes.add(new ArrayList<>());
+	private void initBarcodeRGmap() {
+		// init the barcode-rg map
+		for (int i = 0; i < numberOfSamples(); i++) {
+			barcodeRGmap.put(getCombinedBarcodesFor(i), getReadGroupFor(i));
 		}
 	}
 
@@ -145,28 +142,6 @@ public class BarcodeDictionary {
 	}
 
 	/**
-	 * Add value to a concrete sample (by index)
-	 *
-	 * @param sampleIndex the sample index
-	 */
-	@Deprecated
-	public void addOneTo(int sampleIndex) {
-		samplesValue[sampleIndex]++;
-	}
-
-	/**
-	 * Get the value for a concrete sample (by index)
-	 *
-	 * @param sampleIndex the sample index
-	 *
-	 * @return the value for the sample
-	 */
-	@Deprecated
-	public int getValueFor(int sampleIndex) {
-		return samplesValue[sampleIndex];
-	}
-
-	/**
 	 * Get the name for a concrete sample
 	 *
 	 * @param sampleIndex the sample index
@@ -178,14 +153,20 @@ public class BarcodeDictionary {
 	}
 
 	/**
-	 * Get the name for a concrete sample
+	 * Get the read group for a combined barcode
 	 *
-	 * @param sampleIndex the sample index
+	 * @param combinedBarcode the combined barcode
 	 *
-	 * @return the name of the sample
+	 * @return the read group associated with that barcode; {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
+	 * if not found
 	 */
-	public String getNameFor(int sampleIndex) {
-		return getReadGroupFor(sampleIndex).getSample();
+	public SAMReadGroupRecord getReadGroupFor(String combinedBarcode) {
+		if (barcodeRGmap.isEmpty()) {
+			initBarcodeRGmap();
+		}
+		return (barcodeRGmap.contains(combinedBarcode)) ?
+			barcodeRGmap.get(combinedBarcode) :
+			BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO;
 	}
 
 	/**
@@ -196,6 +177,7 @@ public class BarcodeDictionary {
 	 * @return the combined barcodes for the sample
 	 */
 	public String getCombinedBarcodesFor(int sampleIndex) {
+		// TODO: change the combination method
 		return String.join("", getBarcodesFor(sampleIndex));
 	}
 
@@ -230,7 +212,7 @@ public class BarcodeDictionary {
 	 * @return a set representation of the index barcodes
 	 */
 	public Set<String> getSetBarcodesFromIndex(int index) {
-		if (barcodesSets == null) {
+		if (barcodesSets.isEmpty()) {
 			initSets();
 		}
 		return barcodesSets.get(index);
@@ -240,7 +222,6 @@ public class BarcodeDictionary {
 	 * Initialize the sets for the barcodes
 	 */
 	private void initSets() {
-		barcodesSets = new ArrayList<>();
 		for (ArrayList<String> l : barcodes) {
 			barcodesSets.add(new HashSet<>(l));
 		}

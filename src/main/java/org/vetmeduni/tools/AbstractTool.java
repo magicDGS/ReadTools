@@ -23,6 +23,7 @@
 package org.vetmeduni.tools;
 
 import htsjdk.samtools.SAMException;
+import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.util.Log;
 import org.apache.commons.cli.*;
 import org.vetmeduni.readtools.Main;
@@ -113,6 +114,17 @@ public abstract class AbstractTool implements Tool {
 	 * @param cmd the already parsed command line with the programParser
 	 */
 	protected void logCmdLine(CommandLine cmd) {
+		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", getCmdLineString(cmd));
+	}
+
+	/**
+	 * Get the arguments with the string
+	 *
+	 * @param cmd the already parsed command line with the programParser
+	 *
+	 * @return the string with the arguments in the command line properly formatted
+	 */
+	protected String getCmdLineString(CommandLine cmd) {
 		StringBuilder builder = new StringBuilder("");
 		for (Option opt : cmd.getOptions()) {
 			if (opt.hasArg()) {
@@ -129,7 +141,7 @@ public abstract class AbstractTool implements Tool {
 				builder.append(" ");
 			}
 		}
-		logger.info("Running ", this.getClass().getSimpleName(), " with arguments: ", builder.toString());
+		return builder.toString();
 	}
 
 	/**
@@ -192,5 +204,20 @@ public abstract class AbstractTool implements Tool {
 			printUsage(exp.getMessage());
 		}
 		return null;
+	}
+
+	/**
+	 * Get the tool record for a SAM header
+	 *
+	 * @param cmd the already parsed command line with the programParser
+	 *
+	 * @return the program record with the tool
+	 */
+	public SAMProgramRecord getToolProgramRecord(CommandLine cmd) {
+		SAMProgramRecord toReturn = new SAMProgramRecord(ProjectProperties.getName());
+		toReturn.setProgramName(ProjectProperties.getName());
+		toReturn.setProgramVersion(ProjectProperties.getFormattedVersion());
+		toReturn.setCommandLine(String.format("%s %s", this.getClass().getSimpleName(), getCmdLineString(cmd)));
+		return toReturn;
 	}
 }

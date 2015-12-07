@@ -73,7 +73,7 @@ public class TaggedBamToFastq extends AbstractTool {
 		// FINISH PARSING: log the command line (not longer in the param file)
 		logCmdLine(cmd);
 		// open the decoder
-		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, tags.length);
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, tags.length, null);
 		// open the bam file
 		SamReader input = ToolsReadersFactory
 			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));

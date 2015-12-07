@@ -25,6 +25,7 @@ package org.vetmeduni.methods.barcodes.dictionary;
 import com.opencsv.CSVReader;
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
+import org.vetmeduni.readtools.ProjectProperties;
 
 import java.io.File;
 import java.io.FileReader;
@@ -42,11 +43,12 @@ public class BarcodeDictionaryFactory {
 	/**
 	 * The read group information for default tags
 	 */
-	private static final SAMReadGroupRecord UNKNOWN_READGROUP_INFO;
+	public static final SAMReadGroupRecord UNKNOWN_READGROUP_INFO;
 
 	// initialize the unknown read group information
 	static {
 		UNKNOWN_READGROUP_INFO = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
+		UNKNOWN_READGROUP_INFO.setProgramGroup(ProjectProperties.getName());
 		UNKNOWN_READGROUP_INFO.setLibrary(BarcodeMatch.UNKNOWN_STRING);
 		UNKNOWN_READGROUP_INFO.setPlatform(BarcodeMatch.UNKNOWN_STRING);
 		UNKNOWN_READGROUP_INFO.setPlatformUnit(BarcodeMatch.UNKNOWN_STRING);
@@ -177,6 +179,14 @@ public class BarcodeDictionaryFactory {
 		return createCombinedDictionary(barcodeFile, UNKNOWN_READGROUP_INFO);
 	}
 
+	/**
+	 * Get the read group for a sample including other information
+	 *
+	 * @param sampleName the sample name
+	 * @param info       the rest of the information information
+	 *
+	 * @return a new read group with the SN and ID tag with the sampleName
+	 */
 	private static SAMReadGroupRecord getReadGroupForSample(String sampleName, SAMReadGroupRecord info) {
 		SAMReadGroupRecord readGroup = new SAMReadGroupRecord(sampleName, info);
 		readGroup.setSample(sampleName);
