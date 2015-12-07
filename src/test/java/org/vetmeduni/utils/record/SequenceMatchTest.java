@@ -31,23 +31,38 @@ public class SequenceMatchTest {
 
 	@Test
 	public void testSequenceStartByN() throws Exception {
+		// uppercase
 		Assert.assertTrue(sequenceStartByN("NNNAAAAA"));
 		Assert.assertFalse(sequenceStartByN("AAAANNNN"));
 		Assert.assertFalse(sequenceStartByN("AANNNNAAA"));
+		// lowercase
+		Assert.assertTrue(sequenceStartByN("nnnaaaaa"));
+		Assert.assertFalse(sequenceStartByN("aaaannnn"));
+		Assert.assertFalse(sequenceStartByN("annnnnna"));
 	}
 
 	@Test
 	public void testSequenceEndByNs() throws Exception {
+		// uppercase
 		Assert.assertTrue(sequenceEndByNs("AAAANNNN"));
 		Assert.assertFalse(sequenceEndByNs("NNNAAAAA"));
 		Assert.assertFalse(sequenceEndByNs("AANNNNAAA"));
+		// lowercase
+		Assert.assertTrue(sequenceEndByNs("aaaannnn"));
+		Assert.assertFalse(sequenceEndByNs("nnnaaaaa"));
+		Assert.assertFalse(sequenceEndByNs("annnnnna"));
 	}
 
 	@Test
 	public void testSequenceContainNs() throws Exception {
+		// uppercase
 		Assert.assertTrue(sequenceContainNs("AAAANNNN"));
 		Assert.assertTrue(sequenceContainNs("NNNAAAAA"));
 		Assert.assertTrue(sequenceContainNs("AANNNNAAA"));
+		// lowercase
+		Assert.assertTrue(sequenceContainNs("nnnaaaaa"));
+		Assert.assertTrue(sequenceContainNs("aaaannnn"));
+		Assert.assertTrue(sequenceContainNs("annnnnna"));
 	}
 
 	@Test
@@ -65,5 +80,13 @@ public class SequenceMatchTest {
 		Assert.assertEquals(2, mismatchesCount("ACTG", "accc"));
 		Assert.assertEquals(2, mismatchesCount("ACTG", "acnn"));
 		Assert.assertEquals(0, mismatchesCount("ACTG", "acnn", false));
+	}
+
+	@Test
+	public void testNcount() throws Exception {
+		// uppercase
+		Assert.assertEquals(6, missingCount("NNAAANNAAANN"));
+		// lowercase
+		Assert.assertEquals(6, missingCount("nnaaannaaann"));
 	}
 }

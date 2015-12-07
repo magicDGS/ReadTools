@@ -86,34 +86,51 @@ public class SequenceMatch {
 	}
 
 	/**
+	 * Count the missing characters in a sequence
+	 *
+	 * @param sequence the sequence
+	 *
+	 * @return the number of missing
+	 */
+	public static int missingCount(String sequence) {
+		int count = 0;
+		for (char b : sequence.toCharArray()) {
+			if (SequenceUtil.isNoCall((byte) b)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	/**
 	 * Count the number of mismatches between a test barcode and a target barcode counting Ns as mismatch
 	 *
-	 * @param testBarcode   the test barcode
-	 * @param targetBarcode the target barcode
+	 * @param testSequence   the test sequence
+	 * @param targetSequence the target sequence
 	 *
 	 * @return the number of mistmatches between barcodes
 	 */
-	public static int mismatchesCount(String testBarcode, String targetBarcode) {
-		return mismatchesCount(testBarcode, targetBarcode, true);
+	public static int mismatchesCount(String testSequence, String targetSequence) {
+		return mismatchesCount(testSequence, targetSequence, true);
 	}
 
 	/**
 	 * Count the number of mismatches between a test barcode and a target barcode
 	 *
-	 * @param testBarcode   the test barcode
-	 * @param targetBarcode the target barcode
-	 * @param nAsMismatch   if <code>true</code> N and other bases are counted as mismatch; if <code>false</code> it is
-	 *                      ignored
+	 * @param testSequence   the test sequence
+	 * @param targetSequence the target sequence
+	 * @param nAsMismatch    if <code>true</code> N and other bases are counted as mismatch; if <code>false</code> it is
+	 *                       ignored
 	 *
 	 * @return the number of mismatches between barcodes
 	 */
-	public static int mismatchesCount(String testBarcode, String targetBarcode, boolean nAsMismatch) {
-		// logger.debug("Testing ", testBarcode, " against ", targetBarcode);
-		// if(testBarcode.length() != barcode.length()) return testBarcode.length();
+	public static int mismatchesCount(String testSequence, String targetSequence, boolean nAsMismatch) {
+		// logger.debug("Testing ", testSequence, " against ", targetSequence);
+		// if(testSequence.length() != barcode.length()) return testSequence.length();
 		int mmCnt = 0;
-		for (int i = 0; i < testBarcode.length(); i++) {
-			final byte testBase = (byte) testBarcode.charAt(i);
-			final byte targetBase = (byte) targetBarcode.charAt(i);
+		for (int i = 0; i < testSequence.length(); i++) {
+			final byte testBase = (byte) testSequence.charAt(i);
+			final byte targetBase = (byte) targetSequence.charAt(i);
 			// only count if n is a mismatch of none of the test/target bases is an N
 			final boolean shouldCount =
 				nAsMismatch || !(SequenceUtil.isNoCall(testBase) || SequenceUtil.isNoCall(targetBase));
