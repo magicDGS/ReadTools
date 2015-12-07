@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - Changed logic of bacode detection: at least one difference between the best barcode and the second best is needed to do not discard a barcode (default).
 
 ### Added
+- BamBarcodeDetector (new tool) for detect barcodes in a BAM file, adding read groups and split if requested
 - New options for barcode detection: maximum Ns, N not counting as mismatch, distance between best barcode and second barcode
 - Output metrics file when detecting barcodes
 
