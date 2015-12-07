@@ -141,7 +141,7 @@ public class ProjectProperties {
 		if (version == null || build == null) {
 			getAllPropertiesForProgramHeader();
 		}
-		return String.format("v.%s.r_%s", version, build);
+		return String.format("%s.r_%s", version, build);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class ProjectProperties {
 		if (version == null || build == null || name == null) {
 			getAllPropertiesForProgramHeader();
 		}
-		return String.format("%s %s", name, getFormattedVersion());
+		return String.format("%s v.%s", name, getFormattedVersion());
 	}
 
 	/**
