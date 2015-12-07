@@ -43,7 +43,7 @@ import org.vetmeduni.utils.misc.IOUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static org.vetmeduni.tools.cmd.OptionUtils.*;
+import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
@@ -68,7 +68,8 @@ public class StandardizeQuality extends AbstractTool {
 				break;
 		}
 		if (IOUtils.isBamOrSam(input)) {
-			runBam(input, output, index, multi);
+			SAMProgramRecord programRecord = getToolProgramRecord(cmd);
+			runBam(input, output, programRecord, index, multi);
 		} else {
 			if (index) {
 				logger.warn("Index could not be performed for FASTQ file");
@@ -108,18 +109,21 @@ public class StandardizeQuality extends AbstractTool {
 	/**
 	 * Change the format in a BAM file
 	 *
-	 * @param input  the input file
-	 * @param output the output file
-	 * @param index  <code>true</code> if index on the fly is requested
-	 * @param multi  <code>true</code> if multi-thread output
+	 * @param input       the input file
+	 * @param output      the output file
+	 * @param programInfo the information for the program to include in the header
+	 * @param index       <code>true</code> if index on the fly is requested
+	 * @param multi       <code>true</code> if multi-thread output
 	 *
 	 * @throws IOException if there is some problem with the files
 	 */
-	private void runBam(File input, File output, boolean index, boolean multi) throws IOException {
+	private void runBam(File input, File output, SAMProgramRecord programInfo, boolean index, boolean multi)
+		throws IOException {
 		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT);
+		final SAMFileHeader header = reader.getFileHeader();
+		header.addProgramRecord(programInfo);
 		SAMFileWriter writer = new ReadToolsSAMFileWriterFactory().setCreateIndex(index).setUseAsyncIo(multi)
-																  .makeSAMOrBAMWriter(reader.getFileHeader(), true,
-																	  output);
+																  .makeSAMOrBAMWriter(header, true, output);
 		// start iterations
 		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
 		for (SAMRecord record : reader) {
