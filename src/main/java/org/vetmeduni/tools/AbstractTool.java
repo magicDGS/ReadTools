@@ -214,10 +214,10 @@ public abstract class AbstractTool implements Tool {
 	 * @return the program record with the tool
 	 */
 	public SAMProgramRecord getToolProgramRecord(CommandLine cmd) {
-		SAMProgramRecord toReturn = new SAMProgramRecord(ProjectProperties.getName());
+		SAMProgramRecord toReturn = new SAMProgramRecord(String.format("%s %s", ProjectProperties.getName(), this.getClass().getSimpleName()));
 		toReturn.setProgramName(ProjectProperties.getName());
 		toReturn.setProgramVersion(ProjectProperties.getFormattedVersion());
-		toReturn.setCommandLine(String.format("%s %s", this.getClass().getSimpleName(), getCmdLineString(cmd)));
+		toReturn.setCommandLine(getCmdLineString(cmd));
 		return toReturn;
 	}
 }
