@@ -78,9 +78,9 @@ public class TaggedBamToFastq extends AbstractTool {
 		SamReader input = ToolsReadersFactory
 			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
 		// Create the writer factory
-		SplitFastqWriter writer = ToolWritersFactory
-			.getFastqSplitWritersFromInput(outputPrefix, BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
-				cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, cmd.hasOption("s"));
+		SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix,
+			BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
+			cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, cmd.hasOption("s"));
 		// create the metrics file
 		File metrics = IOUtils.makeMetricsFile(outputPrefix);
 		// run it!
@@ -222,9 +222,7 @@ public class TaggedBamToFastq extends AbstractTool {
 		options.addOption(output);
 		options.addOption(input);
 		// add options for barcode programs
-		options.addOption(BarcodeOptions.barcodes);
-		options.addOption(BarcodeOptions.max);
-		options.addOption(BarcodeOptions.split);
+		BarcodeOptions.addAllBarcodeOptionsTo(options);
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // mantain the format
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output

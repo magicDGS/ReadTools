@@ -3,9 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Changed
-- Changed logic of bacode detection: at least one difference between the best barcode and the second best is needed to do not discard a barcode
+- Changed logic of bacode detection: at least one difference between the best barcode and the second best is needed to do not discard a barcode (default).
 
 ### Added
+- New options for barcode detection: maximum Ns, N not counting as mismatch, distance between best barcode and second barcode
 - Output metrics file when detecting barcodes
 
 ## [0.1.2] - 2015-11-26

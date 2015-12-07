@@ -22,45 +22,49 @@
  */
 package org.vetmeduni.methods.barcodes.dictionary.decoder.stats;
 
-import htsjdk.samtools.metrics.MetricBase;
+import htsjdk.samtools.metrics.Header;
 
 /**
- * Metrics for barcode detector
- *
  * @author Daniel Gómez-Sánchez
  */
-public class BarcodeStat extends MetricBase {
+public class BarcodeDetector implements Header {
 
 	/**
-	 * The barcode sequence
+	 * Store the number of barcodes discarded because they do not match
 	 */
-	public String SEQUENCE;
+	public int DISCARDED_NO_MATCH;
 
 	/**
-	 * The number of barcodes that match
+	 * Store the number of barcodes discarded by N
 	 */
-	public int MATCHED;
+	public int DISCARDED_BY_N;
 
 	/**
-	 * Average number of mismatches per matched barcode
+	 * Store number of barcodes discarded by mismatches
 	 */
-	public double MEAN_MISMATCH;
+	public int DISCARDED_BY_MISMATCH;
 
 	/**
-	 * Average number of Ns in the sequence
+	 * Store the number of barcodes discarded by distance with the second
 	 */
-	public double MEAN_N;
+	public int DISCARDED_BY_DISTANCE;
 
-	/**
-	 * The number of barcodes discarded by the maximum number of mismatches
-	 */
-	public int DISCARDED;
+	@Override
+	public void parse(String in) {
+		String[] tokens = in.split("\t");
+		tokens[0] = tokens[0].replace("No match: ", "");
+		tokens[1] = tokens[1].replace("Discarded by N:", "");
+		tokens[2] = tokens[2].replace("Discarded by mismatch: ", "");
+		tokens[3] = tokens[3].replace("Discarded by distance: ", "");
+		DISCARDED_NO_MATCH = Integer.valueOf(tokens[0]);
+		DISCARDED_BY_N = Integer.valueOf(tokens[1]);
+		DISCARDED_BY_MISMATCH = Integer.valueOf(tokens[2]);
+		DISCARDED_BY_DISTANCE = Integer.valueOf(tokens[2]);
+	}
 
-	public BarcodeStat(String sequence) {
-		this.SEQUENCE = sequence;
-		this.MATCHED = 0;
-		this.MEAN_MISMATCH = 0;
-		this.MEAN_N = 0;
-		this.DISCARDED = 0;
+	@Override
+	public String toString() {
+		return String.format("No match: %d\tDiscarded by N: %d\tDiscarded by mismatch: %d\tDiscarded by distance: %d",
+			DISCARDED_NO_MATCH, DISCARDED_BY_N, DISCARDED_BY_MISMATCH, DISCARDED_BY_DISTANCE);
 	}
 }

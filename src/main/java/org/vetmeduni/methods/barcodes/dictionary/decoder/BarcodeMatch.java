@@ -50,6 +50,11 @@ public class BarcodeMatch {
 	protected int mismatchesToSecondBest;
 
 	/**
+	 * The number of Ns in the barcode
+	 */
+	protected int numberOfNs;
+
+	/**
 	 * Creates a unknow match with the number of mismatches being equal to the maximum number of mismatches
 	 *
 	 * @param maxMismatches the maximum number of mismatches (barcode lenght)
@@ -58,6 +63,7 @@ public class BarcodeMatch {
 		barcode = UNKNOWN_STRING;
 		mismatches = maxMismatches;
 		mismatchesToSecondBest = maxMismatches;
+		numberOfNs = maxMismatches;
 	}
 
 	/**

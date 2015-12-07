@@ -25,6 +25,7 @@ package org.vetmeduni.tools.cmd;
 import htsjdk.samtools.util.Log;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
@@ -33,8 +34,7 @@ import org.vetmeduni.tools.ToolNames;
 import java.io.File;
 import java.io.IOException;
 
-import static org.vetmeduni.tools.cmd.OptionUtils.getIntArrayOptions;
-import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
+import static org.vetmeduni.tools.cmd.OptionUtils.*;
 
 /**
  * Default options for barcode detectors
@@ -63,7 +63,7 @@ public class BarcodeOptions {
 	 */
 	// TODO: add this option
 	public static Option dist = Option.builder("d").longOpt("minimum-distance").desc(
-		"Minimum distance between the best match and the second to consider a match. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
+		"Minimum distance (in difference between number of mismatches) between the best match and the second to consider a match. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
 			+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
 									  .required(false).build();
 
@@ -71,8 +71,8 @@ public class BarcodeOptions {
 	 * Option for does not count N as mismatches
 	 */
 	// TODO: add this option
-	public static Option nNoMismatch = Option.builder("n").longOpt("n-no-mismatch").desc("Do not count Ns as mismatch")
-											 .hasArg(false).required(false).build();
+	public static Option nNoMismatch = Option.builder("nnm").longOpt("n-no-mismatch")
+											 .desc("Do not count Ns as mismatch").hasArg(false).required(false).build();
 
 	/**
 	 * Option for split the output by barcode
@@ -80,6 +80,27 @@ public class BarcodeOptions {
 	public static Option split = Option.builder("x").longOpt("split")
 									   .desc("Split each sample from the barcode dictionary in a different file.")
 									   .hasArg(false).required(false).build();
+
+	/**
+	 * Option for maximum number of Ns
+	 */
+	public static Option maxN = Option.builder("N").longOpt("maximum-N").desc(
+		"Maximum number of Ns allowed in the barcode to discard it. By default, no N threshold for match a barcode is applied.")
+									  .hasArg().numberOfArgs(1).argName("INT").required(false).build();
+
+	/**
+	 * Add all the options for the barcodes to a set of options
+	 *
+	 * @param options the set of options
+	 */
+	public static void addAllBarcodeOptionsTo(Options options) {
+		options.addOption(barcodes);
+		options.addOption(max);
+		options.addOption(dist);
+		options.addOption(nNoMismatch);
+		options.addOption(split);
+		options.addOption(maxN);
+	}
 
 	/**
 	 * Get the barcode dictionary option using the command line
@@ -119,7 +140,10 @@ public class BarcodeOptions {
 			BarcodeDictionary dictionary = getBarcodeDictionaryFromOption(logger, cmd, length);
 			int[] mismatches = getIntArrayOptions(cmd, max.getOpt());
 			int[] minDist = getIntArrayOptions(cmd, dist.getOpt());
-			return new BarcodeDecoder(dictionary, !cmd.hasOption(nNoMismatch.getOpt()), mismatches, minDist);
+			Integer maxNallowed = getUniqueIntOption(cmd, maxN.getOpt());
+			return new BarcodeDecoder(dictionary,
+				(maxNallowed == null) ? BarcodeDecoder.DEFAULT_MAXIMUM_N : maxNallowed,
+				!cmd.hasOption(nNoMismatch.getOpt()), mismatches, minDist);
 		} catch (IllegalArgumentException e) {
 			throw new ToolNames.ToolException("Number of barcodes and thresholds does not match");
 		}
