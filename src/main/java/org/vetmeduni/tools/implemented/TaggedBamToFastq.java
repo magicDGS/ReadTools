@@ -73,7 +73,7 @@ public class TaggedBamToFastq extends AbstractTool {
 		// FINISH PARSING: log the command line (not longer in the param file)
 		logCmdLine(cmd);
 		// open the decoder
-		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, tags.length, null);
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, tags.length);
 		// open the bam file
 		SamReader input = ToolsReadersFactory
 			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
@@ -222,7 +222,7 @@ public class TaggedBamToFastq extends AbstractTool {
 		options.addOption(output);
 		options.addOption(input);
 		// add options for barcode programs
-		BarcodeOptions.addAllBarcodeOptionsTo(options);
+		BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // mantain the format
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output

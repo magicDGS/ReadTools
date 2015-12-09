@@ -60,10 +60,8 @@ public class BarcodeDictionary {
 	 * @param samples  the sample names
 	 * @param barcodes the barcodes
 	 *
-	 * @deprecated use {@link #BarcodeDictionary(java.util.ArrayList, java.util.ArrayList,
-	 * htsjdk.samtools.SAMReadGroupRecord)} instead
+	 * @deprecated use {@link #BarcodeDictionary(String, ArrayList, ArrayList, ArrayList, SAMReadGroupRecord)} instead
 	 */
-	@Deprecated
 	protected BarcodeDictionary(ArrayList<SAMReadGroupRecord> samples, ArrayList<ArrayList<String>> barcodes) {
 		this.sampleRecord = samples;
 		this.barcodes = barcodes;
@@ -75,12 +73,30 @@ public class BarcodeDictionary {
 	 * @param samples       the sample names
 	 * @param barcodes      the barcodes
 	 * @param readGroupInfo the additional information for the read group
+	 *
+	 * @deprecated use {@link #BarcodeDictionary(String, ArrayList, ArrayList, ArrayList, SAMReadGroupRecord)} instead
 	 */
+	@Deprecated
 	protected BarcodeDictionary(ArrayList<String> samples, ArrayList<ArrayList<String>> barcodes,
 		SAMReadGroupRecord readGroupInfo) {
+		this(null, samples, barcodes, null, readGroupInfo);
+	}
+
+	/**
+	 * Protected constructor. For get an instance of a dictionary, use {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory}
+	 *
+	 * @param run           the run name for the samples; if <code>null</code> it will be igonored
+	 * @param samples       the sample names
+	 * @param barcodes      the barcodes
+	 * @param libraries     the library for each barcode; if <code>null</code>, the library is the
+	 *                      samples_combinedBarcodes
+	 * @param readGroupInfo the additional information for the read group
+	 */
+	protected BarcodeDictionary(String run, ArrayList<String> samples, ArrayList<ArrayList<String>> barcodes,
+		ArrayList<String> libraries, SAMReadGroupRecord readGroupInfo) {
 		this.barcodes = barcodes;
 		this.sampleRecord = new ArrayList<>(samples.size());
-		initReadGroups(samples, readGroupInfo);
+		initReadGroups(run, samples, libraries, readGroupInfo);
 	}
 
 	/**
@@ -88,13 +104,24 @@ public class BarcodeDictionary {
 	 * ID and the rest of tags will come from the read group. The barcode field should be initialized before calling
 	 * this method
 	 *
+	 * @param run           the run name for the samples; if <code>null</code> it will be igonored
+	 * @param libraries     the library for each barcode; if <code>null</code>, the library is the
+	 *                      samples_combinedBarcodes
 	 * @param samples       the sample name
 	 * @param readGroupInfo the read group information
 	 */
-	private void initReadGroups(ArrayList<String> samples, SAMReadGroupRecord readGroupInfo) {
+	private void initReadGroups(String run, ArrayList<String> samples, ArrayList<String> libraries,
+		SAMReadGroupRecord readGroupInfo) {
 		for (int i = 0; i < samples.size(); i++) {
-			final SAMReadGroupRecord rg = new SAMReadGroupRecord(String.format("%s_%s", samples.get(i), getCombinedBarcodesFor(i)), readGroupInfo);
+			final String sampleBarcode = String.format("%s_%s", samples.get(i), getCombinedBarcodesFor(i));
+			final SAMReadGroupRecord rg = new SAMReadGroupRecord(
+				(run == null) ? sampleBarcode : String.format("%s_%s", run, sampleBarcode), readGroupInfo);
 			rg.setSample(samples.get(i));
+			if (libraries != null) {
+				rg.setLibrary(libraries.get(i));
+			} else {
+				rg.setLibrary(sampleBarcode);
+			}
 			sampleRecord.add(rg);
 		}
 	}

@@ -49,9 +49,6 @@ public class BarcodeDictionaryFactory {
 	static {
 		UNKNOWN_READGROUP_INFO = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
 		UNKNOWN_READGROUP_INFO.setProgramGroup(ProjectProperties.getName());
-		// UNKNOWN_READGROUP_INFO.setLibrary(BarcodeMatch.UNKNOWN_STRING);
-		// UNKNOWN_READGROUP_INFO.setPlatform(BarcodeMatch.UNKNOWN_STRING);
-		// UNKNOWN_READGROUP_INFO.setPlatformUnit(BarcodeMatch.UNKNOWN_STRING);
 		UNKNOWN_READGROUP_INFO.setSample(BarcodeMatch.UNKNOWN_STRING);
 	}
 
@@ -59,6 +56,7 @@ public class BarcodeDictionaryFactory {
 	 * Create a barcode dictionary from a tab-delimited file, with the first column being the barcode and the subsequent
 	 * the barcodes. Each of the barcodes is stored independently
 	 *
+	 * @param run              the run name; <code>null</code> is allowed
 	 * @param barcodeFile      the file
 	 * @param readGroupInfo    read group record where tags for other barcodes will be used (except ID and SN)
 	 * @param numberOfBarcodes the expected number of barcodes; if < 0, it is computed for the first line in the file
@@ -66,8 +64,8 @@ public class BarcodeDictionaryFactory {
 	 * @return the barcode dictionary
 	 * @throws java.io.IOException if the file have some problem
 	 */
-	public static BarcodeDictionary createDefaultDictionary(File barcodeFile, final SAMReadGroupRecord readGroupInfo,
-		int numberOfBarcodes) throws IOException {
+	public static BarcodeDictionary createDefaultDictionary(String run, File barcodeFile,
+		final SAMReadGroupRecord readGroupInfo, int numberOfBarcodes) throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(barcodeFile), '\t');
 		// read the first line
 		String[] nextLine = reader.readNext();
@@ -105,7 +103,8 @@ public class BarcodeDictionaryFactory {
 		}
 		reader.close();
 		// construct the barcode dictionary
-		return new BarcodeDictionary(samples, barcodes, readGroupInfo);
+		// TODO: add library info
+		return new BarcodeDictionary(run, samples, barcodes, null, readGroupInfo);
 	}
 
 	/**
@@ -119,21 +118,22 @@ public class BarcodeDictionaryFactory {
 	 * @throws java.io.IOException if the file have some problem
 	 */
 	public static BarcodeDictionary createDefaultDictionary(File barcodeFile, int numberOfBarcodes) throws IOException {
-		return createDefaultDictionary(barcodeFile, UNKNOWN_READGROUP_INFO, numberOfBarcodes);
+		return createDefaultDictionary(null, barcodeFile, UNKNOWN_READGROUP_INFO, numberOfBarcodes);
 	}
 
 	/**
 	 * Creates a barcode dictionary from a tab-delimited file, with the first column being the barcode and the
 	 * subsequent the barcodes. All the barcodes are stored together as an "unique" barcode.
 	 *
+	 * @param run           the run name; <code>null</code> is allowed
 	 * @param barcodeFile   the file
 	 * @param readGroupInfo read group record where tags for other barcodes will be used (except ID and SN)
 	 *
 	 * @return the barcode dictionary
 	 * @throws IOException
 	 */
-	public static BarcodeDictionary createCombinedDictionary(File barcodeFile, final SAMReadGroupRecord readGroupInfo)
-		throws IOException {
+	public static BarcodeDictionary createCombinedDictionary(String run, File barcodeFile,
+		final SAMReadGroupRecord readGroupInfo) throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(barcodeFile), '\t');
 		// read the first line
 		String[] nextLine = reader.readNext();
@@ -163,7 +163,8 @@ public class BarcodeDictionaryFactory {
 		}
 		reader.close();
 		// construct the barcode dictionary
-		return new BarcodeDictionary(samples, barcodes, readGroupInfo);
+		// TODO: add library info
+		return new BarcodeDictionary(run, samples, barcodes, null, readGroupInfo);
 	}
 
 	/**
@@ -176,6 +177,6 @@ public class BarcodeDictionaryFactory {
 	 * @throws IOException
 	 */
 	public static BarcodeDictionary createCombinedDictionary(File barcodeFile) throws IOException {
-		return createCombinedDictionary(barcodeFile, UNKNOWN_READGROUP_INFO);
+		return createCombinedDictionary(null, barcodeFile, UNKNOWN_READGROUP_INFO);
 	}
 }

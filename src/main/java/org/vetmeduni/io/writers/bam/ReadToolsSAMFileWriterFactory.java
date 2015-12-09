@@ -26,12 +26,14 @@ import htsjdk.samtools.*;
 import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.IOdefault;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
+import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.utils.misc.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -265,14 +267,18 @@ public class ReadToolsSAMFileWriterFactory {
 			mapping.put(dictionary.getCombinedBarcodesFor(i), sampleNames.get(sample));
 		}
 		// add a unknow barcode
-		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
+		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
 			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
 		return new SplitSAMFileWriterAbstract(header, mapping) {
 
 			@Override
 			public void addAlignment(SAMRecord alignment) {
-				final String sampleName = alignment.getReadGroup().getSample();
-				addAlignment(sampleName, alignment);
+				try {
+					final String sampleName = alignment.getReadGroup().getSample();
+					addAlignment(sampleName, alignment);
+				} catch (NullPointerException e) {
+					addAlignment(BarcodeMatch.UNKNOWN_STRING, alignment);
+				}
 			}
 		};
 	}
@@ -297,13 +303,18 @@ public class ReadToolsSAMFileWriterFactory {
 		// add the assing barcode
 		mapping.put("assign", makeSAMOrBAMWriter(header, true, new File(filePrefix + extension)));
 		// add a unknow barcode
-		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(header, true,
+		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
 			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
 		return new SplitSAMFileWriterAbstract(header, mapping) {
 
 			@Override
 			public void addAlignment(SAMRecord alignment) {
-				String assignedId = alignment.getReadGroup().getId();
+				String assignedId;
+				try {
+					assignedId = alignment.getReadGroup().getId();
+				} catch (NullPointerException e) {
+					assignedId = BarcodeMatch.UNKNOWN_STRING;
+				}
 				if (assignedId == null) {
 					assignedId = BarcodeMatch.UNKNOWN_STRING;
 				} else if (!assignedId.equals(BarcodeMatch.UNKNOWN_STRING)) {
@@ -312,6 +323,21 @@ public class ReadToolsSAMFileWriterFactory {
 				addAlignment(assignedId, alignment);
 			}
 		};
+	}
+
+	/**
+	 * Clone the original header and add as the only read group the discarded one
+	 *
+	 * @param original the original header
+	 *
+	 * @return the header for the discarded file
+	 */
+	private static SAMFileHeader getDiscardedFileHeader(SAMFileHeader original) {
+		SAMFileHeader discardedHeader = original.clone();
+		discardedHeader.setReadGroups(new ArrayList<SAMReadGroupRecord>() {{
+			add(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
+		}});
+		return discardedHeader;
 	}
 
 	/**

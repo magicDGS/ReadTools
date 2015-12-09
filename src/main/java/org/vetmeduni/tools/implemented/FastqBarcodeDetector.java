@@ -68,7 +68,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 		// logging command line
 		logCmdLine(cmd);
 		// open the decoder
-		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null, null);
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null);
 		// create the reader and the writer
 		FastqReaderInterface reader = ToolsReadersFactory
 			.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));

@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.vetmeduni.tools.cmd.BarcodeOptions.addAllReadGroupCommonOptionsTo;
 import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
@@ -67,7 +68,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		// create the combined dictionary and the barcode method associated
 		// open the decoder
 		// TODO: add barcode information to the dictionary
-		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null, null);
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null);
 		// open the reader
 		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT);
 		// create the new header adding the read groups
@@ -129,18 +130,19 @@ public class BamBarcodeDetector extends AbstractTool {
 			try {
 				header.addReadGroup(sample);
 			} catch (IllegalArgumentException e) {
-				logger.warn("Updating information for Read Group with ", sample.getId());
+				logger.warn("Read Group ", sample.getId(), " found in original file: previous tags will be removed");
 				final SAMReadGroupRecord rg = header.getReadGroup(sample.getId());
 				for (String tag : SAMReadGroupRecord.STANDARD_TAGS) {
 					rg.setAttribute(tag, sample.getAttribute(tag));
 				}
 			}
 		}
-		try {
-			header.addReadGroup(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
-		} catch (IllegalArgumentException e) {
-			logger.warn(e.getMessage());
-		}
+		// TODO: check if it did not add an error
+		//		try {
+		//			header.addReadGroup(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
+		//		} catch (IllegalArgumentException e) {
+		//			logger.warn(e.getMessage());
+		//		}
 	}
 
 	@Override
@@ -173,6 +175,8 @@ public class BamBarcodeDetector extends AbstractTool {
 		// TODO: change for adding all when implemented combined barcode with "_"
 		options.addOption(max);
 		options.addOption(dist);
+		// add options for read groups
+		addAllReadGroupCommonOptionsTo(options);
 		// addd options for barcode programs
 		options.addOption(BarcodeOptions.barcodes);
 		options.addOption(BarcodeOptions.nNoMismatch);

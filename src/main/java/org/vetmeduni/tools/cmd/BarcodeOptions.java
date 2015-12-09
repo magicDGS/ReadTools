@@ -30,6 +30,7 @@ import org.apache.commons.cli.Options;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
+import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.tools.ToolNames;
 
 import java.io.File;
@@ -47,54 +48,88 @@ public class BarcodeOptions {
 	/**
 	 * Default option for barcodes file (it is required)
 	 */
-	public static Option barcodes = Option.builder("bc").longOpt("barcodes").desc(
+	// TODO: change barcode file
+	public static final Option barcodes = Option.builder("bc").longOpt("barcodes").desc(
 		"Tab-delimited file with the first column with the sample name and the following containing the barcodes (1 or 2 depending on the barcoding method)")
-										  .hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
+												.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
 
 	/**
 	 * Option for maximum number of mismatches
 	 */
-	public static Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
+	public static final Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
 		"Maximum number of mismatches alowwed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
 			+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT").required(false)
-									 .build();
+										   .build();
 
 	/**
 	 * Option for minimum distance between matches in barcodes
 	 */
-	// TODO: add this option
-	public static Option dist = Option.builder("d").longOpt("minimum-distance").desc(
+	public static final Option dist = Option.builder("d").longOpt("minimum-distance").desc(
 		"Minimum distance (in difference between number of mismatches) between the best match and the second to consider a match. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
 			+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
-									  .required(false).build();
+											.required(false).build();
 
 	/**
 	 * Option for does not count N as mismatches
 	 */
-	// TODO: add this option
-	public static Option nNoMismatch = Option.builder("nnm").longOpt("n-no-mismatch")
-											 .desc("Do not count Ns as mismatch").hasArg(false).required(false).build();
+	public static final Option nNoMismatch = Option.builder("nnm").longOpt("n-no-mismatch")
+												   .desc("Do not count Ns as mismatch").hasArg(false).required(false)
+												   .build();
 
 	/**
 	 * Option for split the output by barcode
 	 */
-	public static Option split = Option.builder("x").longOpt("split")
-									   .desc("Split each sample from the barcode dictionary in a different file.")
-									   .hasArg(false).required(false).build();
+	public static final Option split = Option.builder("x").longOpt("split")
+											 .desc("Split each sample from the barcode dictionary in a different file.")
+											 .hasArg(false).required(false).build();
 
 	/**
 	 * Option for maximum number of Ns
 	 */
-	public static Option maxN = Option.builder("N").longOpt("maximum-N").desc(
+	public static final Option maxN = Option.builder("N").longOpt("maximum-N").desc(
 		"Maximum number of Ns allowed in the barcode to discard it. By default, no N threshold for match a barcode is applied.")
-									  .hasArg().numberOfArgs(1).argName("INT").required(false).build();
+											.hasArg().numberOfArgs(1).argName("INT").required(false).build();
+
+	/**
+	 * Option for read group ID
+	 */
+	public static final Option run = Option.builder("run").longOpt("run-id").desc(
+		"Run name to add to the ID in the read group information. By default, nothing is added").hasArg()
+										   .numberOfArgs(1).argName("String").required(false).build();
+
+	/**
+	 * Option for the platform in the read group
+	 */
+	public static final Option platform = Option.builder("pl").longOpt("platform").desc(
+		"Platform to add to the Read Group information. By default, nothing is added. It should be one of the following: "
+			+ getFormattedPlatformValues()).hasArg().numberOfArgs(1).argName("String").required(false).build();
+
+	/**
+	 * Option for the platform unit in the read group
+	 */
+	public static Option platformUnit = Option.builder("pu").longOpt("platform-unit").desc(
+		"Platform Unit to add to the Read Group information. By default, nothing is added.").hasArg().numberOfArgs(1)
+											  .argName("String").required(false).build();
+
+	;
+
+	/**
+	 * Add all the options for the barcodes that have read groups information to a set of options
+	 *
+	 * @param options the set of options
+	 */
+	public static void addAllReadGroupCommonOptionsTo(Options options) {
+		options.addOption(run);
+		options.addOption(platform);
+		options.addOption(platformUnit);
+	}
 
 	/**
 	 * Add all the options for the barcodes to a set of options
 	 *
 	 * @param options the set of options
 	 */
-	public static void addAllBarcodeOptionsTo(Options options) {
+	public static void addAllBarcodeCommonOptionsTo(Options options) {
 		options.addOption(barcodes);
 		options.addOption(max);
 		options.addOption(dist);
@@ -106,27 +141,36 @@ public class BarcodeOptions {
 	/**
 	 * Get the barcode dictionary option using the command line
 	 *
-	 * @param logger        the logger to log results
-	 * @param cmd           the command line already parsed
-	 * @param length        the expected number of barcodes; <code>null</code> if combined
-	 * @param readGroupInfo read group info; if <code>null</code> the {@link org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
-	 *                      is used
+	 * @param logger the logger to log results
+	 * @param cmd    the command line already parsed
+	 * @param length the expected number of barcodes; <code>null</code> if combined
 	 *
 	 * @return the combined barcode
 	 */
-	public static BarcodeDictionary getBarcodeDictionaryFromOption(Log logger, CommandLine cmd, Integer length,
-		SAMReadGroupRecord readGroupInfo) throws IOException {
+	public static BarcodeDictionary getBarcodeDictionaryFromOption(Log logger, CommandLine cmd, Integer length)
+		throws IOException {
 		final File inputFile = new File(getUniqueValue(cmd, barcodes.getOpt()));
 		final BarcodeDictionary dictionary;
-		if (readGroupInfo == null) {
-			readGroupInfo = BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO;
+		SAMReadGroupRecord readGroupInfo = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING,
+			BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
+		String pl = getUniqueValue(cmd, platform.getOpt());
+		if (pl != null) {
+			try {
+				SAMReadGroupRecord.PlatformValue.valueOf(pl);
+			} catch (IllegalArgumentException e) {
+				throw new ToolNames.ToolException(
+					"Platform could be only one of the following: " + getFormattedPlatformValues());
+			}
+			readGroupInfo.setPlatform(pl);
 		}
+		readGroupInfo.setPlatformUnit(getUniqueValue(cmd, platformUnit.getOpt()));
+		String runID = getUniqueValue(cmd, run.getOpt());
 		if (length == null) {
-			dictionary = BarcodeDictionaryFactory.createCombinedDictionary(inputFile, readGroupInfo);
+			dictionary = BarcodeDictionaryFactory.createCombinedDictionary(runID, inputFile, readGroupInfo);
 			logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
 				dictionary.numberOfSamples(), " different barcode sets");
 		} else {
-			dictionary = BarcodeDictionaryFactory.createDefaultDictionary(inputFile, readGroupInfo, length);
+			dictionary = BarcodeDictionaryFactory.createDefaultDictionary(runID, inputFile, readGroupInfo, length);
 		}
 		return dictionary;
 	}
@@ -140,10 +184,10 @@ public class BarcodeOptions {
 	 *
 	 * @return the barcode decoder
 	 */
-	public static BarcodeDecoder getBarcodeDecoderFromOption(Log logger, CommandLine cmd, Integer length,
-		SAMReadGroupRecord readGroupInfo) throws IOException, ToolNames.ToolException {
+	public static BarcodeDecoder getBarcodeDecoderFromOption(Log logger, CommandLine cmd, Integer length)
+		throws IOException, ToolNames.ToolException {
 		try {
-			BarcodeDictionary dictionary = getBarcodeDictionaryFromOption(logger, cmd, length, readGroupInfo);
+			BarcodeDictionary dictionary = getBarcodeDictionaryFromOption(logger, cmd, length);
 			int[] mismatches = getIntArrayOptions(cmd, max.getOpt());
 			int[] minDist = getIntArrayOptions(cmd, dist.getOpt());
 			Integer maxNallowed = getUniqueIntOption(cmd, maxN.getOpt());
@@ -166,5 +210,20 @@ public class BarcodeOptions {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Get a commma-separated String with the valid values for platform
+	 *
+	 * @return the formatted string
+	 */
+	private static String getFormattedPlatformValues() {
+		StringBuilder builder = new StringBuilder();
+		for (SAMReadGroupRecord.PlatformValue val : SAMReadGroupRecord.PlatformValue.values()) {
+			builder.append(val);
+			builder.append(", ");
+		}
+		builder.delete(builder.length() - 2, builder.length());
+		return builder.toString();
 	}
 }
