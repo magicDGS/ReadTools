@@ -22,13 +22,12 @@
  */
 package org.vetmeduni.methods.barcodes.dictionary;
 
-import com.opencsv.CSVReader;
 import htsjdk.samtools.SAMReadGroupRecord;
+import org.vetmeduni.io.readers.SpaceDelimitedReader;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.readtools.ProjectProperties;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,9 +65,9 @@ public class BarcodeDictionaryFactory {
 	 */
 	public static BarcodeDictionary createDefaultDictionary(String run, File barcodeFile,
 		final SAMReadGroupRecord readGroupInfo, int numberOfBarcodes) throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(barcodeFile), '\t');
+		SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile);
 		// read the first line
-		String[] nextLine = reader.readNext();
+		String[] nextLine = reader.next();
 		if (nextLine == null) {
 			throw new IOException("No data in the barcode file");
 		}
@@ -99,7 +98,7 @@ public class BarcodeDictionaryFactory {
 			for (int i = 1; i <= numberOfBarcodes; i++) {
 				barcodes.get(i - 1).add(nextLine[i]);
 			}
-			nextLine = reader.readNext();
+			nextLine = reader.next();
 		}
 		reader.close();
 		// construct the barcode dictionary
@@ -134,9 +133,9 @@ public class BarcodeDictionaryFactory {
 	 */
 	public static BarcodeDictionary createCombinedDictionary(String run, File barcodeFile,
 		final SAMReadGroupRecord readGroupInfo) throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(barcodeFile), '\t');
+		SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile);
 		// read the first line
-		String[] nextLine = reader.readNext();
+		String[] nextLine = reader.next();
 		if (nextLine == null) {
 			throw new IOException("No data in the barcode file");
 		}
@@ -159,7 +158,7 @@ public class BarcodeDictionaryFactory {
 			// get the unique barcode
 			String uniqueBarcode = String.join("", Arrays.copyOfRange(nextLine, 1, nextLine.length));
 			barcodes.get(0).add(uniqueBarcode);
-			nextLine = reader.readNext();
+			nextLine = reader.next();
 		}
 		reader.close();
 		// construct the barcode dictionary
