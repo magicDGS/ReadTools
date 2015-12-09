@@ -39,6 +39,7 @@ import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
 import org.vetmeduni.tools.cmd.ToolsReadersFactory;
 import org.vetmeduni.utils.loggers.ProgressLoggerExtension;
+import org.vetmeduni.utils.misc.Formats;
 import org.vetmeduni.utils.misc.IOUtils;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
@@ -103,14 +104,17 @@ public class TaggedBamToFastq extends AbstractTool {
 		boolean single) throws IOException {
 		ProgressLoggerExtension progress;
 		// single end processing
+		int pf;
 		if (single) {
 			progress = new ProgressLoggerExtension(logger, 1000000, "Processed", "records");
-			runSingle(reader, writer, decoder, tags, progress);
+			pf = runSingle(reader, writer, decoder, tags, progress);
 		} else {
 			progress = new ProgressLoggerExtension(logger, 1000000, "Processed", "pairs");
-			runPaired(reader, writer, decoder, tags, progress);
+			pf = runPaired(reader, writer, decoder, tags, progress);
 		}
 		progress.logNumberOfVariantsProcessed();
+		logger.warn(Formats.commaFmt.format(pf), (single) ? " records " : " pairs ",
+			"fails vendor quality (PF flag) and are discarded");
 		decoder.logMatcherResult(logger);
 		decoder.outputStats(metrics);
 	}
@@ -122,9 +126,12 @@ public class TaggedBamToFastq extends AbstractTool {
 	 * @param writer  the output
 	 * @param matcher the matcher to use to split
 	 * @param tags    the tags where the barcodes are
+	 *
+	 * @return the number of reads that fails the vendor quality
 	 */
-	private void runPaired(SamReader reader, SplitFastqWriter writer, BarcodeDecoder matcher, String[] tags,
+	private int runPaired(SamReader reader, SplitFastqWriter writer, BarcodeDecoder matcher, String[] tags,
 		ProgressLoggerExtension progress) {
+		int pf = 0;
 		SAMRecordIterator it = reader.iterator();
 		while (it.hasNext()) {
 			SAMRecord record1 = it.next();
@@ -132,8 +139,13 @@ public class TaggedBamToFastq extends AbstractTool {
 				throw new SAMException("Truncated interleaved BAM file");
 			}
 			SAMRecord record2 = it.next();
+			String best;
 			String[] barcodes = getBarcodeFromTags(record1, tags);
-			String best = matcher.getBestBarcode(barcodes);
+			if (!record1.getReadFailsVendorQualityCheckFlag()) {
+				best = matcher.getBestBarcode(barcodes);
+			} else {
+				best = BarcodeMatch.UNKNOWN_STRING;
+			}
 			if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
 				SAMRecordUtils.addBarcodeToName(record1, String.join("", barcodes));
 				SAMRecordUtils.addBarcodeToName(record2, String.join("", barcodes));
@@ -146,6 +158,7 @@ public class TaggedBamToFastq extends AbstractTool {
 			writer.write(best, outputRecord);
 			progress.record(record1);
 		}
+		return pf;
 	}
 
 	/**
@@ -155,20 +168,28 @@ public class TaggedBamToFastq extends AbstractTool {
 	 * @param writer  the output
 	 * @param matcher the matcher to use to split
 	 * @param tags    the tags where the barcodes are
+	 *
+	 * @return the number of reads that fails the vendor quality
 	 */
-	private void runSingle(SamReader reader, SplitFastqWriter writer, BarcodeDecoder matcher, String[] tags,
+	private int runSingle(SamReader reader, SplitFastqWriter writer, BarcodeDecoder matcher, String[] tags,
 		ProgressLoggerExtension progress) {
+		int pf = 0;
 		for (SAMRecord record : reader) {
 			String[] barcodes = getBarcodeFromTags(record, tags);
-			String best = matcher.getBestBarcode(barcodes);
+			String best;
+			if (!record.getReadFailsVendorQualityCheckFlag()) {
+				best = matcher.getBestBarcode(barcodes);
+			} else {
+				best = BarcodeMatch.UNKNOWN_STRING;
+			}
 			if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
 				SAMRecordUtils.addBarcodeToName(record, String.join("", barcodes));
 			} else {
 				SAMRecordUtils.addBarcodeToName(record, best);
 			}
-			writer.write(best, SAMRecordUtils.toFastqRecord(record, null));
-			progress.record(record);
+			writer.write(BarcodeMatch.UNKNOWN_STRING, SAMRecordUtils.toFastqRecord(record, null));
 		}
+		return pf;
 	}
 
 	/**
