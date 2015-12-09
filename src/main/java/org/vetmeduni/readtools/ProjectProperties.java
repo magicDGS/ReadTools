@@ -169,6 +169,16 @@ public class ProjectProperties {
 	}
 
 	/**
+	 * Get the operating system where the program is running as ${os.name} ${os.version} (${os.arch})
+	 *
+	 * @return the formatted string
+	 */
+	public static String getOperatingSystem() {
+		return String.format("%s %s (%s)", System.getProperty("os.name"), System.getProperty("os.version"),
+			System.getProperty("os.arch"));
+	}
+
+	/**
 	 * Get a value from the property file
 	 *
 	 * @param tag the tag in the property file

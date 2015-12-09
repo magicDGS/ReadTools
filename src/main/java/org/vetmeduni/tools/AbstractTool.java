@@ -54,6 +54,7 @@ public abstract class AbstractTool implements Tool {
 	public int run(String[] args) {
 		try {
 			final CommandLine cmd = programParser(args);
+			logger.debug("Running on ", ProjectProperties.getOperatingSystem());
 			runThrowingExceptions(cmd);
 		} catch (ToolException e) {
 			// This exceptions comes from the command line parsing
