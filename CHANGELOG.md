@@ -1,9 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.1.3]
 ### Changed
-- Changed logic of bacode detection: at least one difference between the best barcode and the second best is needed to do not discard a barcode (default).
+- Changed logic of bacode detection: at least one difference between the best barcode and the second best is needed to do not discard a barcode (default). For the previous behaviour, use -d 0
+- TaggedBamToFastq check the PF flag in the BAM file and ignore reads that does not pass the vendor quality
 
 ### Added
 - BamBarcodeDetector (new tool) for detect barcodes in a BAM file, adding read groups and split if requested
@@ -24,6 +25,7 @@ All notable changes to this project will be documented in this file.
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.1.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.3
 [0.1.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.2
 [0.1.1]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.1
 [0.1.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.0
