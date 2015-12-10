@@ -33,6 +33,7 @@ The current release includes the following tools:
 * __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
 * __StandardizeQuality__: Convert an Illumina BAM/FASTQ file into a Sanger
 * __FastqBarcodeDetector__: Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library
+* __BamBarcodeDetector__:	Identify barcodes in the read name for a BAM file and assign to the ones used on the library
 
 ---
 
