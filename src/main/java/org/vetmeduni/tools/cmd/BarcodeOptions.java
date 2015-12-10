@@ -48,9 +48,8 @@ public class BarcodeOptions {
 	/**
 	 * Default option for barcodes file (it is required)
 	 */
-	// TODO: change barcode file
 	public static final Option barcodes = Option.builder("bc").longOpt("barcodes").desc(
-		"Tab-delimited file with the first column with the sample name and the following containing the barcodes (1 or 2 depending on the barcoding method)")
+		"White-space delimited (tabs or spaces) file with the first column with the sample name, the second with the library name and the following containing the barcodes (1 or 2 depending on the indexing method)")
 												.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
 
 	/**
@@ -95,21 +94,21 @@ public class BarcodeOptions {
 	 */
 	public static final Option run = Option.builder("run").longOpt("run-id").desc(
 		"Run name to add to the ID in the read group information. By default, nothing is added").hasArg()
-										   .numberOfArgs(1).argName("String").required(false).build();
+										   .numberOfArgs(1).argName("RUN_ID").required(false).build();
 
 	/**
 	 * Option for the platform in the read group
 	 */
 	public static final Option platform = Option.builder("pl").longOpt("platform").desc(
 		"Platform to add to the Read Group information. By default, nothing is added. It should be one of the following: "
-			+ getFormattedPlatformValues()).hasArg().numberOfArgs(1).argName("String").required(false).build();
+			+ getFormattedPlatformValues()).hasArg().numberOfArgs(1).argName("PLATFORM").required(false).build();
 
 	/**
 	 * Option for the platform unit in the read group
 	 */
 	public static Option platformUnit = Option.builder("pu").longOpt("platform-unit").desc(
 		"Platform Unit to add to the Read Group information. By default, nothing is added.").hasArg().numberOfArgs(1)
-											  .argName("String").required(false).build();
+											  .argName("PLATFORM_UNIT").required(false).build();
 
 	;
 

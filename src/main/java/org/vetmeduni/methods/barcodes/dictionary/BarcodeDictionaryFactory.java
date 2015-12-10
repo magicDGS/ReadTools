@@ -33,7 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Class to create different barcode dictionaries dependending on the application
+ * Class to create different combined/not combined dictionaries from a barcode file. Barcode files have the following
+ * columns: sampleName, library, and several barcodes. They are space delimited (tabs or other white spaces)
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -52,8 +53,8 @@ public class BarcodeDictionaryFactory {
 	}
 
 	/**
-	 * Create a barcode dictionary from a tab-delimited file, with the first column being the barcode and the subsequent
-	 * the barcodes. Each of the barcodes is stored independently
+	 * Create a barcode dictionary from a file, with the first column being the barcode and the subsequent the barcodes.
+	 * Each of the barcodes is stored independently
 	 *
 	 * @param run              the run name; <code>null</code> is allowed
 	 * @param barcodeFile      the file
@@ -69,14 +70,14 @@ public class BarcodeDictionaryFactory {
 		// read the first line
 		String[] nextLine = reader.next();
 		if (nextLine == null) {
-			throw new IOException("No data in the barcode file");
+			throwWrongFormatException(barcodeFile);
 		}
 		// check the number of barcodes
 		if (numberOfBarcodes < 1) {
-			numberOfBarcodes = nextLine.length - 1;
+			numberOfBarcodes = nextLine.length - 2;
 		}
 		if (numberOfBarcodes < 1) {
-			throw new IOException("Barcode file wrongly formatted");
+			throwWrongFormatException(barcodeFile);
 		}
 		// at this point, we know the number of barcodes
 		ArrayList<ArrayList<String>> barcodes = new ArrayList<>(numberOfBarcodes);
@@ -84,38 +85,42 @@ public class BarcodeDictionaryFactory {
 		for (int i = 0; i < numberOfBarcodes; i++) {
 			barcodes.add(new ArrayList<>());
 		}
+		// create the lists with samples and libraries
 		ArrayList<String> samples = new ArrayList<>();
+		ArrayList<String> libraries = new ArrayList<>();
 		// reading the rest of the lines
 		while (nextLine != null) {
-			if (numberOfBarcodes != nextLine.length - 1) {
-				throw new IOException(
-					"Each sample should have the same number of barcodes. Check the formatting of " + barcodeFile
-						.getAbsolutePath());
+			if (numberOfBarcodes != nextLine.length - 2) {
+				throwWrongFormatException(barcodeFile);
 			}
 			// the first item is the sample name
 			samples.add(nextLine[0]);
+			libraries.add(nextLine[1]);
 			// get the barcodes
-			for (int i = 1; i <= numberOfBarcodes; i++) {
-				barcodes.get(i - 1).add(nextLine[i]);
+			for (int i = 2; i <= nextLine.length; i++) {
+				barcodes.get(i - 2).add(nextLine[i]);
 			}
 			nextLine = reader.next();
 		}
 		reader.close();
 		// construct the barcode dictionary
 		// TODO: add library info
-		return new BarcodeDictionary(run, samples, barcodes, null, readGroupInfo);
+		return new BarcodeDictionary(run, samples, barcodes, libraries, readGroupInfo);
 	}
 
 	/**
-	 * Create a barcode dictionary from a tab-delimited file, with the first column being the barcode and the subsequent
-	 * the barcodes. Each of the barcodes is stored independently
+	 * Create a barcode dictionary from a file, with the first column being the barcode and the subsequent the barcodes.
+	 * Each of the barcodes is stored independently
 	 *
 	 * @param barcodeFile      the file
 	 * @param numberOfBarcodes the expected number of barcodes; if < 0, it is computed for the first line in the file
 	 *
 	 * @return the barcode dictionary
 	 * @throws java.io.IOException if the file have some problem
+	 * @deprecated use {@link #createCombinedDictionary(String, java.io.File, htsjdk.samtools.SAMReadGroupRecord)}
+	 * instead
 	 */
+	@Deprecated
 	public static BarcodeDictionary createDefaultDictionary(File barcodeFile, int numberOfBarcodes) throws IOException {
 		return createDefaultDictionary(null, barcodeFile, UNKNOWN_READGROUP_INFO, numberOfBarcodes);
 	}
@@ -137,33 +142,32 @@ public class BarcodeDictionaryFactory {
 		// read the first line
 		String[] nextLine = reader.next();
 		if (nextLine == null) {
-			throw new IOException("No data in the barcode file");
+			throwWrongFormatException(barcodeFile);
 		}
 		// compute the number of barcodes in the file
-		int numberOfBarcodes = nextLine.length - 1;
+		int numberOfBarcodes = nextLine.length - 2;
 		// the number of barcodes in the dictionary will be one
 		ArrayList<ArrayList<String>> barcodes = new ArrayList<>(1);
 		barcodes.add(new ArrayList<>());
-		// create the sample array
+		// create the lists with samples and libraries
 		ArrayList<String> samples = new ArrayList<>();
+		ArrayList<String> libraries = new ArrayList<>();
 		// reading the rest of the lines
 		while (nextLine != null) {
-			if (numberOfBarcodes != nextLine.length - 1) {
-				throw new IOException(
-					"Each sample should have the same number of barcodes. Check the formatting of " + barcodeFile
-						.getAbsolutePath());
+			if (numberOfBarcodes != nextLine.length - 2) {
+				throwWrongFormatException(barcodeFile);
 			}
 			// the first item is the sample name
 			samples.add(nextLine[0]);
+			libraries.add(nextLine[1]);
 			// get the unique barcode
-			String uniqueBarcode = String.join("", Arrays.copyOfRange(nextLine, 1, nextLine.length));
+			String uniqueBarcode = String.join("", Arrays.copyOfRange(nextLine, 2, nextLine.length));
 			barcodes.get(0).add(uniqueBarcode);
 			nextLine = reader.next();
 		}
 		reader.close();
 		// construct the barcode dictionary
-		// TODO: add library info
-		return new BarcodeDictionary(run, samples, barcodes, null, readGroupInfo);
+		return new BarcodeDictionary(run, samples, barcodes, libraries, readGroupInfo);
 	}
 
 	/**
@@ -174,8 +178,16 @@ public class BarcodeDictionaryFactory {
 	 *
 	 * @return the barcode dictionary
 	 * @throws IOException
+	 * @deprecated use {@link #createCombinedDictionary(String, java.io.File, htsjdk.samtools.SAMReadGroupRecord)}
+	 * instead
 	 */
+	@Deprecated
 	public static BarcodeDictionary createCombinedDictionary(File barcodeFile) throws IOException {
 		return createCombinedDictionary(null, barcodeFile, UNKNOWN_READGROUP_INFO);
+	}
+
+	private static void throwWrongFormatException(File barcodeFile) throws IOException {
+		throw new IOException("Wrong barcode format for " + barcodeFile.getAbsoluteFile()
+			+ ". Each line should have two first columns (for the sample and the library) and the same number of barcodes after them.");
 	}
 }

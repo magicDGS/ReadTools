@@ -105,7 +105,7 @@ public class BarcodeDictionary {
 	 * this method
 	 *
 	 * @param run           the run name for the samples; if <code>null</code> it will be igonored
-	 * @param libraries     the library for each barcode; if <code>null</code>, the library is the
+	 * @param libraries     the library for each barcode; if <code>null</code> or empty, the library is the
 	 *                      samples_combinedBarcodes
 	 * @param samples       the sample name
 	 * @param readGroupInfo the read group information
@@ -117,7 +117,7 @@ public class BarcodeDictionary {
 			final SAMReadGroupRecord rg = new SAMReadGroupRecord(
 				(run == null) ? sampleBarcode : String.format("%s_%s", run, sampleBarcode), readGroupInfo);
 			rg.setSample(samples.get(i));
-			if (libraries != null) {
+			if (libraries != null && !libraries.isEmpty()) {
 				rg.setLibrary(libraries.get(i));
 			} else {
 				rg.setLibrary(sampleBarcode);

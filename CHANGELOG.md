@@ -2,7 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-
+### Changed
+- New barcode file format (without header): SampleName, Library, FirstBarcode, SecondBarcode. The program detects if the library is single or double indexed depending on the existence of the SecondBarcode column.
 
 ## [0.1.4] - 2015-12-10
 ### Fixed
@@ -10,13 +11,14 @@ All notable changes to this project will be documented in this file.
 
 ## [0.1.3] - 2015-12-09
 ### Changed
-- Changed logic of bacode detection: at least one difference between the best barcode and the second best is needed to do not discard a barcode (default). For the previous behaviour, use `-d 0`
+- Logic of bacode detection by default: at least one difference between the best barcode and the second best is needed to do not discard a barcode. For the previous behaviour, use `-d 0`
 - TaggedBamToFastq check the PF flag in the BAM file and ignore reads that does not pass the vendor quality
 
 ### Added
 - BamBarcodeDetector (new tool) for detect barcodes in a BAM file, adding read groups and split if requested
 - New options for barcode detection: maximum Ns, N not counting as mismatch, distance between best barcode and second barcode
 - Output metrics file when detecting barcodes
+- Barcode files are white space delimited (either space or tabs)
 
 ## [0.1.2] - 2015-11-26
 ### Added
