@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+
 ## [0.1.4] - 2015-12-10
 ### Fixed
 - Fixed bug in (issue #14)
