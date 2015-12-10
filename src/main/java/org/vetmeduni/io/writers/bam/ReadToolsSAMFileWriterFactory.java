@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * SAMFileWriterFactory for ReadTools, that allow the checking of the output file and generating all intermediate
@@ -256,15 +257,21 @@ public class ReadToolsSAMFileWriterFactory {
 		logger.debug("Creating a split by barcode SAM writer");
 		final String extension = (bam) ? BamFileIoUtils.BAM_FILE_EXTENSION : IOUtils.DEFAULT_SAM_EXTENSION;
 		Hashtable<String, SAMFileWriter> mapping = new Hashtable<>();
-		HashMap<String, SAMFileWriter> sampleNames = new HashMap<>();
+		// HashMap<String, SAMFileWriter> sampleNames = new HashMap<>();
+		HashMap<String, ArrayList<SAMReadGroupRecord>> readGroups = new HashMap<>();
+		// first create the samples
 		for (int i = 0; i < dictionary.numberOfSamples(); i++) {
-			String sample = dictionary.getSampleNames().get(i);
-			if (!sampleNames.containsKey(sample)) {
-				SAMFileWriter sampleWriter = this.makeSAMOrBAMWriter(header, true,
-					new File(String.format("%s_%s%s", filePrefix, sample, extension)));
-				sampleNames.put(sample, sampleWriter);
+			final SAMReadGroupRecord sampleRG = dictionary.getReadGroupFor(i);
+			final String sample = sampleRG.getSample();
+			if (!readGroups.containsKey(sample)) {
+				readGroups.put(sample, new ArrayList<>());
 			}
-			mapping.put(dictionary.getCombinedBarcodesFor(i), sampleNames.get(sample));
+			readGroups.get(sample).add(sampleRG);
+		}
+		// create the mapping
+		for (Map.Entry<String, ArrayList<SAMReadGroupRecord>> entry : readGroups.entrySet()) {
+			mapping.put(entry.getKey(), this.makeSAMOrBAMWriter(getReadHeaderFor(header, entry.getValue()), true,
+				new File(String.format("%s_%s%s", filePrefix, entry.getKey(), extension))));
 		}
 		// add a unknow barcode
 		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
@@ -326,18 +333,30 @@ public class ReadToolsSAMFileWriterFactory {
 	}
 
 	/**
-	 * Clone the original header and add as the only read group the discarded one
+	 * Clone the original header and add as the only one read group
+	 *
+	 * @param original      the original header
+	 * @param readGroupInfo the requested read group
+	 *
+	 * @return the header for the sample file
+	 */
+	private static SAMFileHeader getReadHeaderFor(SAMFileHeader original, ArrayList<SAMReadGroupRecord> readGroupInfo) {
+		SAMFileHeader toReturn = original.clone();
+		toReturn.setReadGroups(readGroupInfo);
+		return toReturn;
+	}
+
+	/**
+	 * Clone the original header and add as the only one read group for the unknown
 	 *
 	 * @param original the original header
 	 *
 	 * @return the header for the discarded file
 	 */
 	private static SAMFileHeader getDiscardedFileHeader(SAMFileHeader original) {
-		SAMFileHeader discardedHeader = original.clone();
-		discardedHeader.setReadGroups(new ArrayList<SAMReadGroupRecord>() {{
+		return getReadHeaderFor(original, new ArrayList<SAMReadGroupRecord>() {{
 			add(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
 		}});
-		return discardedHeader;
 	}
 
 	/**
