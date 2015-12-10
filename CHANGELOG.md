@@ -1,7 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.1.4] - 2015-12-10
+### Fixed
+- Fixed bug in (issue #14)
 
 ## [0.1.3] - 2015-12-09
 ### Changed
@@ -21,12 +23,13 @@ All notable changes to this project will be documented in this file.
 
 ## [0.1.1] - 2015-11-24
 ### Fixed
-- Fixed bug in single-end TrimFastq tool
+- Fixed bug in single-end TrimFastq tool (issue #9)
 
 ## [0.1.0] - 2015-11-20
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.1.4]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.4
 [0.1.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.3
 [0.1.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.2
 [0.1.1]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.1
