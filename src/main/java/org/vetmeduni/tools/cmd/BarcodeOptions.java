@@ -49,7 +49,7 @@ public class BarcodeOptions {
 	 * Default option for barcodes file (it is required)
 	 */
 	public static final Option barcodes = Option.builder("bc").longOpt("barcodes").desc(
-		"White-space delimited (tabs or spaces) file with the first column with the sample name, the second with the library name and the following containing the barcodes (1 or 2 depending on the indexing method)")
+		"White-space delimited (tabs or spaces) file with the first column with the sample name, the second with the library name and the following containing the barcodes (1 or 2 depending on the barcoding method)")
 												.hasArg().numberOfArgs(1).argName("BARCODES.tab").required().build();
 
 	/**
