@@ -199,10 +199,16 @@ public class QualityUtils {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
 	 */
 	public static void checkEncoding(byte quality, FastqQualityFormat encoding) {
+		// TODO: is this method working for the byte qualities encoded in the SAMRecord???
+		// there are no qualities smaller than 33
+		if (quality < 33) {
+			throw new QualityException("Found " + quality + " (" + (char) quality + ") encoded quality");
+		}
 		switch (encoding) {
 			case Illumina:
 				if (quality < 64) {
-					throw new QualityException("Found " + quality + " (" + (char) quality + ") in Illumina encoded base");
+					throw new QualityException(
+						"Found " + quality + " (" + (char) quality + ") in Illumina encoded base");
 				}
 				break;
 			case Standard:
@@ -213,6 +219,15 @@ public class QualityUtils {
 			default:
 				throw new QualityException(encoding + " format not supported");
 		}
+	}
+
+	/**
+	 * Check if a base quality is correctly standard encoded
+	 *
+	 * @param quality the quality to check
+	 */
+	public static void checkStandardEncoding(byte quality) {
+		checkEncoding(quality, FastqQualityFormat.Standard);
 	}
 
 	/**
@@ -227,5 +242,14 @@ public class QualityUtils {
 		for (byte qual : qualities) {
 			checkEncoding(qual, encoding);
 		}
+	}
+
+	/**
+	 * Check if a several base qualities are correctly standard encoded
+	 *
+	 * @param qualities the array of qualities to check
+	 */
+	public static void checkStandardEncoding(byte[] qualities) {
+		checkEncoding(qualities, FastqQualityFormat.Standard);
 	}
 }
