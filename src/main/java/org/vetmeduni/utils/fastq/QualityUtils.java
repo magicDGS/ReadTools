@@ -88,6 +88,14 @@ public class QualityUtils {
 		return qual - 33;
 	}
 
+	/**
+	 * Get the integer quality from a character
+	 *
+	 * @param qual   the quality
+	 * @param format in which format is encoded
+	 *
+	 * @return the integer value of the encoded quality (phred score)
+	 */
 	public static int getQuality(char qual, FastqQualityFormat format) {
 		if (format == FastqQualityFormat.Illumina) {
 			return getIlluminaQuality(qual);
@@ -96,25 +104,6 @@ public class QualityUtils {
 			return getSangerQuality(qual);
 		}
 		throw new QualityException(format + " format not supported");
-	}
-
-	/**
-	 * Get the quality enconding for a FastqFile
-	 *
-	 * @param file the filte to get the encoding
-	 *
-	 * @return the format
-	 * @deprecated this is only for FASTQ files; use the more general {@link #getFastqQualityFormat}
-	 */
-	@Deprecated
-	public static FastqQualityFormat getEncoding(File file) {
-		FastqReader reader = new FastqReader(file);
-		FastqQualityFormat format = QualityEncodingDetector.detect(reader);
-		if (format.equals(FastqQualityFormat.Solexa)) {
-			throw new RuntimeException(format + " format not supported");
-		}
-		reader.close();
-		return format;
 	}
 
 	/**
@@ -199,5 +188,44 @@ public class QualityUtils {
 	 */
 	public static boolean isStandard(FastqQualityFormat encoding) {
 		return encoding.equals(FastqQualityFormat.Standard);
+	}
+
+	/**
+	 * Check if a base quality is well encoded
+	 *
+	 * @param quality  the quality to check
+	 * @param encoding the encoding
+	 *
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
+	 */
+	public static void checkEncoding(byte quality, FastqQualityFormat encoding) {
+		switch (encoding) {
+			case Illumina:
+				if (quality < 64) {
+					throw new QualityException("Found " + quality + " (" + (char) quality + ") in Illumina encoded base");
+				}
+				break;
+			case Standard:
+				if (quality > 73) {
+					throw new QualityException("Found " + quality + "(" + (char) quality + ") in Sanger encoded base");
+				}
+				break;
+			default:
+				throw new QualityException(encoding + " format not supported");
+		}
+	}
+
+	/**
+	 * Check if a several base qualities are well encoded
+	 *
+	 * @param qualities the array of qualities to check
+	 * @param encoding  the encoding
+	 *
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
+	 */
+	public static void checkEncoding(byte[] qualities, FastqQualityFormat encoding) {
+		for (byte qual : qualities) {
+			checkEncoding(qual, encoding);
+		}
 	}
 }

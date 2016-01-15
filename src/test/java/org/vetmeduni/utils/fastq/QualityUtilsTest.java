@@ -25,6 +25,8 @@ package org.vetmeduni.utils.fastq;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.junit.*;
 
+import java.util.Arrays;
+
 public class QualityUtilsTest {
 
 	/**
@@ -61,12 +63,48 @@ public class QualityUtilsTest {
 
 	@Test
 	public void testGetQuality() throws Exception {
-		for (int i = 1; i < quality.length; i++) {
+		for (int i = 0; i < quality.length; i++) {
 			Assert.assertEquals(quality[i],
 				QualityUtils.getQuality(sangerQuality.charAt(i), FastqQualityFormat.Standard));
 			Assert.assertEquals(quality[i],
 				QualityUtils.getQuality(illuminaQuality.charAt(i), FastqQualityFormat.Illumina));
 		}
+	}
+
+	@Test
+	public void testCheckEncoding() throws Exception {
+		// TODO: implement
+		// first check correct qualities
+		try {
+			for (byte b : sangerQuality.getBytes()) {
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard);
+			}
+			for (byte b : illuminaQuality.getBytes()) {
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina);
+			}
+		} catch (QualityUtils.QualityException e) {
+			Assert.fail(e.getMessage());
+		}
+		// now check if it does not raise an error in the not shared qualities
+		byte[] sangerBytesToTest = Arrays.copyOfRange(sangerQuality.getBytes(), 0, sangerQuality.length() - 10);
+		for(byte b : sangerBytesToTest) {
+			try {
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina);
+				Assert.fail("QualityException is not thrown for quality " + b + " (" + (char) b + ") in Illumina encoding");
+			} catch(QualityUtils.QualityException e) {
+
+			}
+		}
+		byte[] illuminaBytesToTest = Arrays.copyOfRange(illuminaQuality.getBytes(), 10, illuminaQuality.length());
+		for(byte b : illuminaBytesToTest) {
+			try {
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard);
+				Assert.fail("QualityException is not thrown for quality " + b + " (" + (char) b + ") in Sanger encoding");
+			} catch(QualityUtils.QualityException e) {
+
+			}
+		}
+
 	}
 
 	@Ignore("We will need BAM/FASTQ files in resources for this test")
