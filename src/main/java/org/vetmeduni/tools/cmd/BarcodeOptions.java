@@ -56,7 +56,7 @@ public class BarcodeOptions {
 	 * Option for maximum number of mismatches
 	 */
 	public static final Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-		"Maximum number of mismatches alowwed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
+		"Maximum number of mismatches allowed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. [Default="
 			+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT").required(false)
 										   .build();
 
@@ -106,11 +106,9 @@ public class BarcodeOptions {
 	/**
 	 * Option for the platform unit in the read group
 	 */
-	public static Option platformUnit = Option.builder("pu").longOpt("platform-unit").desc(
+	public static final Option platformUnit = Option.builder("pu").longOpt("platform-unit").desc(
 		"Platform Unit to add to the Read Group information. By default, nothing is added.").hasArg().numberOfArgs(1)
-											  .argName("PLATFORM_UNIT").required(false).build();
-
-	;
+													.argName("PLATFORM_UNIT").required(false).build();
 
 	/**
 	 * Add all the options for the barcodes that have read groups information to a set of options

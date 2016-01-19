@@ -8,7 +8,7 @@ hs_err_pid*
 # Git
 *~
 
-# InteliJ
+# IntelliJ
 *.iml
 .idea*
 

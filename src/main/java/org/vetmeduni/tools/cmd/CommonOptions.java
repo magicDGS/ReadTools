@@ -27,7 +27,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.vetmeduni.tools.ToolNames;
 
-import static org.vetmeduni.tools.cmd.OptionUtils.*;
+import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
  * Class that contains static instances of common options and their checking
@@ -49,10 +49,10 @@ public class CommonOptions {
 													  .hasArg(false).optionalArg(true).build();
 
 	/**
-	 * Option for disable zipped output for FATSQ outputs
+	 * Option for disable zipped output for FASTQ outputs
 	 */
 	public static final Option disableZippedOutput = Option.builder("dgz").longOpt("disable-zipped-output")
-														   .desc("Dissable zipped output").hasArg(false)
+														   .desc("Disable zipped output").hasArg(false)
 														   .optionalArg(true).build();
 
 	/**
@@ -66,7 +66,7 @@ public class CommonOptions {
 	/**
 	 * Check if the command line provides the maintain format option and log into the logger
 	 *
-	 * @param logger the logger where ouptut the information
+	 * @param logger the logger where output the information
 	 * @param cmd    the command line where check if the option is set
 	 *
 	 * @return <code>true</code> if the format is maintained; <code>false</code> if it should be standardize

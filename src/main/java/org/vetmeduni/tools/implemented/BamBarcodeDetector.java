@@ -26,7 +26,6 @@ import htsjdk.samtools.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.vetmeduni.io.readers.bam.SamReaderSanger;
 import org.vetmeduni.io.writers.bam.SplitSAMFileWriter;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionary;
 import org.vetmeduni.methods.barcodes.dictionary.BarcodeDictionaryFactory;
@@ -43,7 +42,6 @@ import org.vetmeduni.utils.record.SAMRecordUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.vetmeduni.tools.cmd.BarcodeOptions.addAllReadGroupCommonOptionsTo;
 import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
@@ -66,9 +64,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		boolean multi = nThreads != 1;
 		// logging command line
 		logCmdLine(cmd);
-		// create the combined dictionary and the barcode method associated
-		// open the decoder
-		// TODO: add barcode information to the dictionary
+		// open the decoder with its corresponding dictionary
 		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null);
 		// open the reader
 		SamReader reader = ToolsReadersFactory.getSamReaderFromInput(input, CommonOptions.isMaintained(logger, cmd));
@@ -77,7 +73,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		addReadGroupToHeader(header, decoder.getDictionary());
 		header.addProgramRecord(getToolProgramRecord(cmd));
 		// create the BAM writer
-		SplitSAMFileWriter writer = ToolWritersFactory.getBamWriterOrSplitWriterFromImput(outputPrefix, header,
+		SplitSAMFileWriter writer = ToolWritersFactory.getBamWriterOrSplitWriterFromInput(outputPrefix, header,
 			BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null, bamFormat, index, multi);
 		addReadGroupByBarcode(reader, writer, IOUtils.makeMetricsFile(outputPrefix), decoder);
 	}
@@ -96,7 +92,6 @@ public class BamBarcodeDetector extends AbstractTool {
 		BarcodeDecoder decoder) throws IOException {
 		ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
 		SAMRecordIterator it = reader.iterator();
-		List<SAMReadGroupRecord> readGroups = decoder.getDictionary().getSampleReadGroups();
 		while (it.hasNext()) {
 			SAMRecord record = it.next();
 			String barcode = SAMRecordUtils.getBarcodeInName(record);
@@ -138,12 +133,6 @@ public class BamBarcodeDetector extends AbstractTool {
 				}
 			}
 		}
-		// TODO: check if it did not add an error
-		//		try {
-		//			header.addReadGroup(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
-		//		} catch (IllegalArgumentException e) {
-		//			logger.warn(e.getMessage());
-		//		}
 	}
 
 	@Override
@@ -154,7 +143,7 @@ public class BamBarcodeDetector extends AbstractTool {
 							  .argName("output_prefix").required(true).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
 		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-			"Maximum number of mismatches alowwed for a matched barcode.  [Default="
+			"Maximum number of mismatches allowed for a matched barcode.  [Default="
 				+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
 						   .required(false).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
@@ -178,7 +167,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		options.addOption(dist);
 		// add options for read groups
 		addAllReadGroupCommonOptionsTo(options);
-		// addd options for barcode programs
+		// add options for barcode programs
 		options.addOption(BarcodeOptions.barcodes);
 		options.addOption(BarcodeOptions.nNoMismatch);
 		options.addOption(BarcodeOptions.split);

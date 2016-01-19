@@ -170,7 +170,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 							  .argName("output_prefix").required(true).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
 		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-			"Maximum number of mismatches alowwed for a matched barcode.  [Default="
+			"Maximum number of mismatches allowed for a matched barcode.  [Default="
 				+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
 						   .required(false).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
@@ -196,7 +196,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 		// TODO: change for adding all when implemented combined barcode with "_"
 		options.addOption(max);
 		options.addOption(dist);
-		// addd options for barcode programs
+		// add options for barcode programs
 		options.addOption(BarcodeOptions.barcodes);
 		options.addOption(BarcodeOptions.nNoMismatch);
 		options.addOption(BarcodeOptions.split);

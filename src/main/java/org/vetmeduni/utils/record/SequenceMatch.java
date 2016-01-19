@@ -108,7 +108,7 @@ public class SequenceMatch {
 	 * @param testSequence   the test sequence
 	 * @param targetSequence the target sequence
 	 *
-	 * @return the number of mistmatches between barcodes
+	 * @return the number of mismatches between barcodes
 	 */
 	public static int mismatchesCount(String testSequence, String targetSequence) {
 		return mismatchesCount(testSequence, targetSequence, true);

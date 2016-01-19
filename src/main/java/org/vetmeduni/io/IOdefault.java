@@ -32,7 +32,7 @@ public class IOdefault {
 	/**
 	 * Default value for check the existence of a file
 	 */
-	public static boolean DEFAULT_CHECK_EXISTENCE = true;
+	public static final boolean DEFAULT_CHECK_EXISTENCE = true;
 
 	/**
 	 * Discarded suffix for discarded output

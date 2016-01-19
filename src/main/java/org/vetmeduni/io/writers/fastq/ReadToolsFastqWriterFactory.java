@@ -55,7 +55,7 @@ public class ReadToolsFastqWriterFactory {
 	private final FastqWriterFactory FACTORY;
 
 	/**
-	 * By default, the ouput will be GZIPPED if a prefix is provided; if a file is provided, it is not needed
+	 * By default, the output will be GZIPPED if a prefix is provided; if a file is provided, it is not needed
 	 */
 	private boolean GZIP_OUTPUT = true;
 
@@ -169,7 +169,7 @@ public class ReadToolsFastqWriterFactory {
 			}
 			mapping.put(dictionary.getCombinedBarcodesFor(i), sampleNames.get(sample));
 		}
-		// add a unknow barcode
+		// add a unknown barcode
 		mapping.put(BarcodeMatch.UNKNOWN_STRING, (paired) ?
 			newPairWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX) :
 			newWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX));
@@ -240,17 +240,17 @@ public class ReadToolsFastqWriterFactory {
 	}
 
 	/**
-	 * Writer that split between assign/unknow barcodes; the mapping is "assign" and {@link
+	 * Writer that split between assign/unknown barcodes; the mapping is "assign" and {@link
 	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. By default, any record is correct
-	 * unless the unknow string is provided as identifier
+	 * unless the unknown string is provided as identifier
 	 *
 	 * @param prefix the prefix for the files
 	 * @param paired <code>true</code> indicates that paired writers are used; otherwise a default is used
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitAssingUnknownBarcodeWriter(String prefix, boolean paired) throws IOException {
-		logger.debug("Creating new Assing-Unknown barcode for ", (paired) ? "paired" : "single", "-end");
+	public SplitFastqWriter newSplitAssignUnknownBarcodeWriter(String prefix, boolean paired) throws IOException {
+		logger.debug("Creating new Assign-Unknown barcode for ", (paired) ? "paired" : "single", "-end");
 		final Hashtable<String, FastqWriter> mapping = new Hashtable<>(2);
 		mapping.put("assign", (paired) ? newPairWriter(prefix) : newWriter(prefix));
 		mapping.put(BarcodeMatch.UNKNOWN_STRING, (paired) ?
@@ -314,24 +314,24 @@ public class ReadToolsFastqWriterFactory {
 	}
 
 	/**
-	 * Writer that split between assign/unknow barcodes for single-end
+	 * Writer that split between assign/unknown barcodes for single-end
 	 *
 	 * @param prefix the prefix for the files
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitAssingUnknownBarcodeWriterSingle(String prefix) throws IOException {
-		return newSplitAssingUnknownBarcodeWriter(prefix, false);
+	public SplitFastqWriter newSplitAssignUnknownBarcodeWriterSingle(String prefix) throws IOException {
+		return newSplitAssignUnknownBarcodeWriter(prefix, false);
 	}
 
 	/**
-	 * Writer that split between assign/unknow barcodes for single-end
+	 * Writer that split between assign/unknown barcodes for single-end
 	 *
 	 * @param prefix the prefix for the files
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitFastqWriter newSplitAssingUnknownBarcodeWriterPaired(String prefix) throws IOException {
-		return newSplitAssingUnknownBarcodeWriter(prefix, true);
+	public SplitFastqWriter newSplitAssignUnknownBarcodeWriterPaired(String prefix) throws IOException {
+		return newSplitAssignUnknownBarcodeWriter(prefix, true);
 	}
 }

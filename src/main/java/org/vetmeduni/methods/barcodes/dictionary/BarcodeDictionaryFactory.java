@@ -104,7 +104,6 @@ public class BarcodeDictionaryFactory {
 		}
 		reader.close();
 		// construct the barcode dictionary
-		// TODO: add library info
 		return new BarcodeDictionary(run, samples, barcodes, libraries, readGroupInfo);
 	}
 

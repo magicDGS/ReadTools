@@ -73,7 +73,6 @@ public class QualityUtilsTest {
 
 	@Test
 	public void testCheckEncoding() throws Exception {
-		// TODO: implement
 		// first check correct qualities
 		try {
 			for (byte b : sangerQuality.getBytes()) {
@@ -87,28 +86,28 @@ public class QualityUtilsTest {
 		}
 		// now check if it does not raise an error in the not shared qualities
 		byte[] sangerBytesToTest = Arrays.copyOfRange(sangerQuality.getBytes(), 0, sangerQuality.length() - 10);
-		for(byte b : sangerBytesToTest) {
+		for (byte b : sangerBytesToTest) {
 			try {
 				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina);
-				Assert.fail("QualityException is not thrown for quality " + b + " (" + (char) b + ") in Illumina encoding");
-			} catch(QualityUtils.QualityException e) {
-
+				Assert.fail(
+					"QualityException is not thrown for quality " + b + " (" + (char) b + ") in Illumina encoding");
+			} catch (QualityUtils.QualityException e) {
 			}
 		}
 		byte[] illuminaBytesToTest = Arrays.copyOfRange(illuminaQuality.getBytes(), 10, illuminaQuality.length());
-		for(byte b : illuminaBytesToTest) {
+		for (byte b : illuminaBytesToTest) {
 			try {
 				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard);
-				Assert.fail("QualityException is not thrown for quality " + b + " (" + (char) b + ") in Sanger encoding");
-			} catch(QualityUtils.QualityException e) {
-
+				Assert
+					.fail("QualityException is not thrown for quality " + b + " (" + (char) b + ") in Sanger encoding");
+			} catch (QualityUtils.QualityException e) {
 			}
 		}
-
 	}
 
 	@Ignore("We will need BAM/FASTQ files in resources for this test")
 	@Test
 	public void testGetEncoding() throws Exception {
+		// TODO: implement
 	}
 }

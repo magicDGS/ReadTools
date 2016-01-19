@@ -49,7 +49,7 @@ public interface SplitFastqWriter extends ReadToolsFastqWriter {
 	 *
 	 * @return the map between the identifier and the current report
 	 */
-	public Hashtable<String, Integer> getCurrenCount();
+	public Hashtable<String, Integer> getCurrentCount();
 
 	/**
 	 * Get the report for each identifier (the report could be whatever object

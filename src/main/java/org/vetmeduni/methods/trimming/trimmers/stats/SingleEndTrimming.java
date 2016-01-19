@@ -25,7 +25,7 @@ package org.vetmeduni.methods.trimming.trimmers.stats;
 import htsjdk.samtools.metrics.StringHeader;
 
 /**
- * Header for single end timming
+ * Header for single end trimming
  *
  * @author Daniel Gómez-Sánchez
  */

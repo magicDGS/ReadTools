@@ -140,7 +140,7 @@ public class StandardizeQuality extends AbstractTool {
 		Option input = Option.builder("i").longOpt("input").desc("Input BAM/FASTQ to standardize the quality").hasArg()
 							 .numberOfArgs(1).argName("INPUT").required().build();
 		Option output = Option.builder("o").longOpt("output").desc(
-			"Output for the coverted file. The extension determine the format SAM/BAM or FASTQ/GZIP").hasArg()
+			"Output for the converted file. The extension determine the format SAM/BAM or FASTQ/GZIP").hasArg()
 							  .numberOfArgs(1).argName("OUTPUT").required().build();
 		Option index = Option.builder("ind").longOpt("index").desc("If the output is a BAM file, index it")
 							 .hasArg(false).required(false).build();
@@ -148,7 +148,7 @@ public class StandardizeQuality extends AbstractTool {
 		options.addOption(input);
 		options.addOption(output);
 		options.addOption(index);
-		// commmon options
+		// common options
 		options.addOption(CommonOptions.parallel);
 		return options;
 	}

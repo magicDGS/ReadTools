@@ -129,8 +129,7 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
 		if (!hasNext()) {
 			throw new NoSuchElementException("next() called when !hasNext()");
 		}
-		final FastqPairedRecord toReturn = new FastqPairedRecord(reader1.next(), reader2.next());
-		return toReturn;
+		return new FastqPairedRecord(reader1.next(), reader2.next());
 	}
 
 	@Override

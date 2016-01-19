@@ -85,12 +85,6 @@ public class StandardizerAndCheckerTest {
 		illuminaChecker.checkMisencoded(sangerSAM);
 	}
 
-	/**
-	 * Check if an exception is thrown
-	 *
-	 * @param read
-	 * @param checkerFormat
-	 */
 	private void checkMisencodedException(Object read, FastqQualityFormat checkerFormat) {
 		final StandardizerAndChecker checker;
 		switch (checkerFormat) {

@@ -26,7 +26,6 @@ import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
-import org.vetmeduni.utils.fastq.QualityUtils;
 
 /**
  * Utils for FASTQ records (both single and paired)

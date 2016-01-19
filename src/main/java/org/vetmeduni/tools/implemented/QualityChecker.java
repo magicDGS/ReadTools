@@ -32,7 +32,7 @@ import org.vetmeduni.utils.fastq.QualityUtils;
 import java.io.File;
 
 import static org.vetmeduni.tools.ToolNames.ToolException;
-import static org.vetmeduni.tools.cmd.OptionUtils.*;
+import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
  * Tool for check the quality in both FASTQ and BAM files
@@ -67,9 +67,8 @@ public class QualityChecker extends AbstractTool {
 		Option input = Option.builder("i").longOpt("input").desc("Input BAM/FASTQ to determine the quality").hasArg()
 							 .numberOfArgs(1).argName("INPUT").required().build();
 		Option max = Option.builder("m").longOpt("maximum-reads").desc(
-			"Maximum number of read to use to iterate. [Default="
-				+ QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY + "]").hasArg().numberOfArgs(1).argName("LONG")
-						   .required(false).build();
+			"Maximum number of read to use to iterate. [Default=" + QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY
+				+ "]").hasArg().numberOfArgs(1).argName("LONG").required(false).build();
 		Options options = new Options();
 		options.addOption(input);
 		options.addOption(max);

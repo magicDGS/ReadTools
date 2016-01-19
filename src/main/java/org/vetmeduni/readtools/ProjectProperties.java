@@ -133,7 +133,7 @@ public class ProjectProperties {
 	}
 
 	/**
-	 * Get the formated version in the format v.${version}.r_${build}
+	 * Get the formatted version in the format v.${version}.r_${build}
 	 *
 	 * @return the formatted version
 	 */
@@ -225,7 +225,7 @@ public class ProjectProperties {
 	}
 
 	/**
-	 * Check if the propertie value is absent (null or start with $)
+	 * Check if the property value is absent (null or start with $)
 	 *
 	 * @param value the value to test
 	 *

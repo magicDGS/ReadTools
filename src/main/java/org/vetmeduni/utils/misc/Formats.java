@@ -51,7 +51,7 @@ public class Formats {
 	/**
 	 * Get a rounded format with certain number of significant digits
 	 *
-	 * @param digits the numer of digits
+	 * @param digits the number of digits
 	 *
 	 * @return the number formatted as a String
 	 */

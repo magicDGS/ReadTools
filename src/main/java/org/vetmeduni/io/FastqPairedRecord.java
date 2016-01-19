@@ -74,7 +74,7 @@ public class FastqPairedRecord {
 	}
 
 	/**
-	 * Chek if the record contain both record1 and record2
+	 * Checks if the record contain both record1 and record2
 	 *
 	 * @return <code>true</code> if both records are not <code>null</code>; <code>false</code> otherwise
 	 */

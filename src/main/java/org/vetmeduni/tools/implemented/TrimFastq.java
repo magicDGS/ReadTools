@@ -101,8 +101,6 @@ public class TrimFastq extends AbstractTool {
 		boolean multi = (nThreads != 1);
 		// FINISH PARSING: log the command line (not longer in the param file)
 		logCmdLine(cmd);
-		// TODO: add again verbose for something?
-		// boolean verbose = !cmd.hasOption("quiet");
 		// save the gzip option
 		boolean dgzip = CommonOptions.isZipDisable(cmd);
 		// save the keep_discard option
@@ -254,9 +252,6 @@ public class TrimFastq extends AbstractTool {
 		Option keep_discard = Option.builder("k").longOpt("keep-discarded").desc(
 			"NOT IMPLEMENTED YET: Keep the reads completely trimmed or that does not pass the thresholds in a discarded file (original reads stored)")
 									.hasArg(false).optionalArg(true).build();
-		// REMOVED THE QUIET OPTION
-		// Option quiet = Option.builder("s").longOpt("quiet").desc("Suppress output to console").optionalArg(false)
-		//					 .build();
 		Options options = new Options();
 		// options.addOption(quiet);
 		options.addOption(keep_discard);

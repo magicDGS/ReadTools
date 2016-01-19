@@ -44,7 +44,7 @@ public class StandardizerAndChecker {
 	private final FastqQualityFormat encoding;
 
 	// the number of records that passed by this count
-	protected AtomicInteger count = new AtomicInteger();
+	protected final AtomicInteger count;
 
 	/**
 	 * Default constructor
@@ -53,6 +53,7 @@ public class StandardizerAndChecker {
 	 */
 	public StandardizerAndChecker(final FastqQualityFormat encoding) {
 		this.encoding = encoding;
+		this.count = new AtomicInteger();
 	}
 
 	/**

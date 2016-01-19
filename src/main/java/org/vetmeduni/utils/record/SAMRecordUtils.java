@@ -63,7 +63,7 @@ public class SAMRecordUtils {
 	 * Check the flags for two records and assert that one of them have the first of pair and the other the second
 	 *
 	 * @param record1 one of the pairs
-	 * @param record2 second of the pais
+	 * @param record2 second of the pairs
 	 */
 	public static void assertPairedMates(final SAMRecord record1, final SAMRecord record2) {
 		if (!(record1.getFirstOfPairFlag() && record2.getSecondOfPairFlag() || record2.getFirstOfPairFlag() && record1
@@ -81,7 +81,8 @@ public class SAMRecordUtils {
 	 * @param barcode the barcode
 	 */
 	public static void addBarcodeToName(SAMRecord record, String barcode) {
-		String recordName = String.format("%s%s%s", record.getReadName(), BarcodeMethods.NAME_BARCODE_SEPARATOR, barcode);
+		String recordName = String
+			.format("%s%s%s", record.getReadName(), BarcodeMethods.NAME_BARCODE_SEPARATOR, barcode);
 		record.setReadName(recordName);
 	}
 

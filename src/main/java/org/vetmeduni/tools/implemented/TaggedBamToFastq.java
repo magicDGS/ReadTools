@@ -188,6 +188,7 @@ public class TaggedBamToFastq extends AbstractTool {
 				SAMRecordUtils.addBarcodeToName(record, best);
 			}
 			writer.write(BarcodeMatch.UNKNOWN_STRING, SAMRecordUtils.toFastqRecord(record, null));
+			progress.record(record);
 		}
 		return pf;
 	}
@@ -245,7 +246,7 @@ public class TaggedBamToFastq extends AbstractTool {
 		// add options for barcode programs
 		BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
 		// add common options
-		options.addOption(CommonOptions.maintainFormat); // mantain the format
+		options.addOption(CommonOptions.maintainFormat); // maintain the format
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
 		options.addOption(CommonOptions.parallel);
 		return options;

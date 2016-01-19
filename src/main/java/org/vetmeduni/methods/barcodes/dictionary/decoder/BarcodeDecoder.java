@@ -169,7 +169,7 @@ public class BarcodeDecoder {
 	 * @param parameter a single value if it is the same for all the barcodes, an array containing the values for each
 	 *                  barcode or <code>null</code> if default value is requested
 	 *
-	 * @return the int aray formatted to use in the decoder
+	 * @return the int array formatted to use in the decoder
 	 */
 	private int[] setIntParameter(int defaultValue, int... parameter) {
 		final int[] toReturn = new int[dictionary.getNumberOfBarcodes()];
@@ -456,7 +456,7 @@ public class BarcodeDecoder {
 	/**
 	 * Output the statistics for the processed barcodes
 	 *
-	 * @param statsFile the file to ouptut the statistics
+	 * @param statsFile the file to output the statistics
 	 */
 	public void outputStats(File statsFile) throws IOException {
 		Writer statsWriter = new FileWriter(statsFile);

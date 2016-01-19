@@ -273,7 +273,7 @@ public class ReadToolsSAMFileWriterFactory {
 			mapping.put(entry.getKey(), this.makeSAMOrBAMWriter(getReadHeaderFor(header, entry.getValue()), true,
 				new File(String.format("%s_%s%s", filePrefix, entry.getKey(), extension))));
 		}
-		// add a unknow barcode
+		// add a unknown barcode
 		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
 			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
 		return new SplitSAMFileWriterAbstract(header, mapping) {
@@ -291,7 +291,7 @@ public class ReadToolsSAMFileWriterFactory {
 	}
 
 	/**
-	 * Create a split writer between assign/unknow barcodes; the mapping is "assign" and {@link
+	 * Create a split writer between assign/unknown barcodes; the mapping is "assign" and {@link
 	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. The add alignment checks for the
 	 * read group ID; if it is not found (<code>null</code> value for read group) or {@link
 	 * org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}, it goes to the unknown file,
@@ -302,14 +302,14 @@ public class ReadToolsSAMFileWriterFactory {
 	 *
 	 * @return a new instance of the writer
 	 */
-	public SplitSAMFileWriter makeSplitAssingUnknownBarcodeWriter(final SAMFileHeader header, final String filePrefix,
+	public SplitSAMFileWriter makeSplitAssignUnknownBarcodeWriter(final SAMFileHeader header, final String filePrefix,
 		boolean bam) throws IOException {
 		logger.debug("Creating a split by barcode SAM writer");
 		final String extension = (bam) ? BamFileIoUtils.BAM_FILE_EXTENSION : IOUtils.DEFAULT_SAM_EXTENSION;
 		Hashtable<String, SAMFileWriter> mapping = new Hashtable<>(2);
-		// add the assing barcode
+		// add the assign barcode
 		mapping.put("assign", makeSAMOrBAMWriter(header, true, new File(filePrefix + extension)));
-		// add a unknow barcode
+		// add a unknown barcode
 		mapping.put(BarcodeMatch.UNKNOWN_STRING, this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
 			new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX, extension))));
 		return new SplitSAMFileWriterAbstract(header, mapping) {

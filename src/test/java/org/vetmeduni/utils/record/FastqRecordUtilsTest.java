@@ -74,25 +74,28 @@ public class FastqRecordUtilsTest {
 		int length = QualityUtilsTest.illuminaQuality.length();
 		int offset = 5;
 		// cutting the end
-		char[] a = new char[length-offset];
+		char[] a = new char[length - offset];
 		Arrays.fill(a, 'A');
-		FastqRecord cut1 = FastqRecordUtils.cutRecord(illumina1, 0, length-offset);
-		Assert.assertEquals(length-offset, cut1.length());
+		FastqRecord cut1 = FastqRecordUtils.cutRecord(illumina1, 0, length - offset);
+		Assert.assertEquals(length - offset, cut1.length());
 		Assert.assertEquals(new String(a), cut1.getReadString());
-		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(length-offset-1), cut1.getBaseQualityString().charAt(cut1.length()-1));
+		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(length - offset - 1),
+			cut1.getBaseQualityString().charAt(cut1.length() - 1));
 		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(0), cut1.getBaseQualityString().charAt(0));
 		// cutting the start
 		FastqRecord cut2 = FastqRecordUtils.cutRecord(illumina1, offset, length);
-		Assert.assertEquals(length-offset, cut2.length());
+		Assert.assertEquals(length - offset, cut2.length());
 		Assert.assertEquals(new String(a), cut2.getReadString());
-		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(length-1), cut2.getBaseQualityString().charAt(cut2.length()-1));
+		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(length - 1),
+			cut2.getBaseQualityString().charAt(cut2.length() - 1));
 		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(offset), cut2.getBaseQualityString().charAt(0));
 		// cutting both start and end
-		FastqRecord cut3 = FastqRecordUtils.cutRecord(illumina1, offset, length-offset);
-		a = Arrays.copyOf(a, length-offset-offset);
-		Assert.assertEquals(length-offset-offset, cut3.length());
+		FastqRecord cut3 = FastqRecordUtils.cutRecord(illumina1, offset, length - offset);
+		a = Arrays.copyOf(a, length - offset - offset);
+		Assert.assertEquals(length - offset - offset, cut3.length());
 		Assert.assertEquals(new String(a), cut3.getReadString());
-		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(length-offset-1), cut3.getBaseQualityString().charAt(cut3.length()-1));
+		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(length - offset - 1),
+			cut3.getBaseQualityString().charAt(cut3.length() - 1));
 		Assert.assertEquals(QualityUtilsTest.illuminaQuality.charAt(offset), cut3.getBaseQualityString().charAt(0));
 		// null cuts
 		Assert.assertNull(FastqRecordUtils.cutRecord(illumina1, length, 0));

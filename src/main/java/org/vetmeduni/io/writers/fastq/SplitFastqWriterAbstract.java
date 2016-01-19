@@ -64,7 +64,7 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
 	}
 
 	@Override
-	public Hashtable<String, Integer> getCurrenCount() {
+	public Hashtable<String, Integer> getCurrentCount() {
 		return counts;
 	}
 

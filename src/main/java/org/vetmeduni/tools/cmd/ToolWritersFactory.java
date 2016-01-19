@@ -58,7 +58,7 @@ public class ToolWritersFactory {
 		if (dictionary != null) {
 			return factory.newSplitByBarcodeWriter(prefix, dictionary, !single);
 		} else {
-			return factory.newSplitAssingUnknownBarcodeWriter(prefix, !single);
+			return factory.newSplitAssignUnknownBarcodeWriter(prefix, !single);
 		}
 	}
 
@@ -95,14 +95,14 @@ public class ToolWritersFactory {
 	 *
 	 * @return the writer for splitting or not
 	 */
-	public static SplitSAMFileWriter getBamWriterOrSplitWriterFromImput(String prefix, SAMFileHeader header,
+	public static SplitSAMFileWriter getBamWriterOrSplitWriterFromInput(String prefix, SAMFileHeader header,
 		BarcodeDictionary dictionary, boolean bam, boolean index, boolean multi) throws IOException {
 		ReadToolsSAMFileWriterFactory factory = new ReadToolsSAMFileWriterFactory().setUseAsyncIo(multi)
 																				   .setCreateIndex(index);
 		if (dictionary != null) {
 			return factory.makeSplitByBarcodeWriter(header, prefix, bam, dictionary);
 		} else {
-			return factory.makeSplitAssingUnknownBarcodeWriter(header, prefix, bam);
+			return factory.makeSplitAssignUnknownBarcodeWriter(header, prefix, bam);
 		}
 	}
 }

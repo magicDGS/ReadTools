@@ -32,7 +32,7 @@ import htsjdk.samtools.metrics.Header;
 public class PairEndTrimming implements Header {
 
 	/**
-	 * Read pairs timmed in pairs
+	 * Read pairs trimmed in pairs
 	 */
 	public int IN_PAIR;
 

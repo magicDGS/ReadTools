@@ -26,7 +26,7 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.util.FastqQualityFormat;
 
 /**
- * Iterface for SamReader for ReadTools
+ * Interface for SamReader for ReadTools
  *
  * @author Daniel Gómez-Sánchez
  */

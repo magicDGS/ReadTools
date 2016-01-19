@@ -61,7 +61,7 @@ public class PairFastqWriters implements ReadToolsFastqWriter {
 	}
 
 	/**
-	 * Write in the first writer (not accesible: must to be paired)
+	 * Write in the first writer (not accessible: must to be paired)
 	 *
 	 * @param record the record to write
 	 */
@@ -70,7 +70,7 @@ public class PairFastqWriters implements ReadToolsFastqWriter {
 	}
 
 	/**
-	 * Write in the second writer (not accesible: must to be paired)
+	 * Write in the second writer (not accessible: must to be paired)
 	 *
 	 * @param record the record to write
 	 */

@@ -59,7 +59,6 @@ public class BarcodeDictionary {
 	 *
 	 * @param samples  the sample names
 	 * @param barcodes the barcodes
-	 *
 	 */
 	protected BarcodeDictionary(ArrayList<SAMReadGroupRecord> samples, ArrayList<ArrayList<String>> barcodes) {
 		this.sampleRecord = samples;

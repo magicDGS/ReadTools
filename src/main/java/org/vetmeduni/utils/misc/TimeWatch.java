@@ -27,8 +27,6 @@ import static org.vetmeduni.utils.misc.Formats.timeFmt;
 /**
  * Simple time watch to get the elapsed times
  *
- * TODO: unit tests?
- *
  * @author Daniel Gómez-Sánchez
  */
 public class TimeWatch {
@@ -79,7 +77,7 @@ public class TimeWatch {
 	}
 
 	/**
-	 * Private formatter for the elapsed tiem in seconds
+	 * Private formatter for the elapsed time in seconds
 	 *
 	 * @param seconds the time in seconds
 	 *
