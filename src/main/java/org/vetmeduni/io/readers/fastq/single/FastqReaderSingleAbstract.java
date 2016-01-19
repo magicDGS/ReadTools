@@ -23,60 +23,69 @@
 package org.vetmeduni.io.readers.fastq.single;
 
 import htsjdk.samtools.fastq.FastqReader;
+import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.vetmeduni.utils.fastq.QualityUtils;
+import org.vetmeduni.utils.fastq.StandardizerAndChecker;
 
 import java.io.BufferedReader;
 import java.io.File;
 
 /**
- * Wrapper for the {@link htsjdk.samtools.fastq.FastqReader} to include it in the ReadTools interface
+ * Abstract wrapper for the {@link htsjdk.samtools.fastq.FastqReader} to include it in the ReadTools interface
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderWrapper extends FastqReader implements FastqReaderSingleInterface {
+public abstract class FastqReaderSingleAbstract extends FastqReader implements FastqReaderSingleInterface {
 
 	/**
-	 * The encoding for the file
+	 * Checker for the reader
 	 */
-	protected FastqQualityFormat encoding;
+	protected StandardizerAndChecker checker;
 
-	public FastqReaderWrapper(File file) {
+	public FastqReaderSingleAbstract(File file) {
 		this(file, false);
 	}
 
-	public FastqReaderWrapper(File file, boolean skipBlankLines) {
+	public FastqReaderSingleAbstract(File file, boolean skipBlankLines) {
 		super(file, skipBlankLines);
 		init();
 	}
 
-	public FastqReaderWrapper(BufferedReader reader) {
+	public FastqReaderSingleAbstract(BufferedReader reader) {
 		this(null, reader);
 	}
 
-	public FastqReaderWrapper(File file, BufferedReader reader, boolean skipBlankLines) {
+	public FastqReaderSingleAbstract(File file, BufferedReader reader, boolean skipBlankLines) {
 		super(file, reader, skipBlankLines);
 		init();
 	}
 
-	public FastqReaderWrapper(File file, BufferedReader reader) {
+	public FastqReaderSingleAbstract(File file, BufferedReader reader) {
 		this(file, reader, false);
 	}
 
 	/**
 	 * Get the encoding for the file
 	 */
-	protected void init() {
-		encoding = QualityUtils.getFastqQualityFormat(this.getFile());
+	private void init() {
+		checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(this.getFile()));
+	}
+
+	/**
+	 * Get the next record directly from {@link htsjdk.samtools.fastq.FastqReader#next()}
+	 *
+	 * @return the record as is
+	 */
+	protected FastqRecord nextUnchangedRecord() {
+		return super.next();
 	}
 
 	@Override
-	public FastqQualityFormat getFastqQuality() {
-		return encoding;
-	}
+	public abstract FastqRecord next();
 
 	@Override
 	public FastqQualityFormat getOriginalEncoding() {
-		return encoding;
+		return checker.getEncoding();
 	}
 }

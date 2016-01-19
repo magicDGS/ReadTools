@@ -20,42 +20,55 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.vetmeduni.io.readers.fastq.paired;
+package org.vetmeduni.io.readers.fastq.single;
 
-import htsjdk.samtools.fastq.FastqReader;
+import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.vetmeduni.io.FastqPairedRecord;
-import org.vetmeduni.utils.fastq.QualityUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 
 /**
- * Implementation for pair-end reader with two files that always returns a Sanger encoded record
+ * FasstqReader implementation for ReadTools interface
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedSanger extends FastqReaderPairedAbstract {
+public class FastqReaderSingleImpl extends FastqReaderSingleAbstract {
 
-	public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
-		super(reader1, reader2);
+	public FastqReaderSingleImpl(File file) {
+		super(file);
 	}
 
-	public FastqReaderPairedSanger(File reader1, File reader2) throws QualityUtils.QualityException {
-		super(reader1, reader2);
+	public FastqReaderSingleImpl(File file, boolean skipBlankLines) {
+		super(file, skipBlankLines);
+	}
+
+	public FastqReaderSingleImpl(BufferedReader reader) {
+		super(reader);
+	}
+
+	public FastqReaderSingleImpl(File file, BufferedReader reader, boolean skipBlankLines) {
+		super(file, reader, skipBlankLines);
+	}
+
+	public FastqReaderSingleImpl(File file, BufferedReader reader) {
+		super(file, reader);
+	}
+
+	@Override
+	public FastqRecord next() {
+		FastqRecord toReturn = nextUnchangedRecord();
+		checker.checkMisencoded(toReturn);
+		return toReturn;
 	}
 
 	/**
-	 * The returning format is always Sanger
+	 * Returns the same as the original encoding
 	 *
-	 * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+	 * @return
 	 */
 	@Override
 	public FastqQualityFormat getFastqQuality() {
-		return FastqQualityFormat.Standard;
-	}
-
-	@Override
-	public FastqPairedRecord next() {
-		return checker.standardize(nextUnchangedRecord());
+		return getOriginalEncoding();
 	}
 }

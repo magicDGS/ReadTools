@@ -29,8 +29,8 @@ import org.vetmeduni.io.readers.bam.SamReaderSanger;
 import org.vetmeduni.io.readers.fastq.FastqReaderInterface;
 import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedImpl;
 import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedSanger;
+import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleImpl;
 import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleSanger;
-import org.vetmeduni.io.readers.fastq.single.FastqReaderWrapper;
 
 import java.io.File;
 
@@ -55,7 +55,7 @@ public class ToolsReadersFactory {
 	public static FastqReaderInterface getFastqReaderFromInputs(File input1, File input2, boolean isMaintained) {
 		FastqReaderInterface toReturn;
 		if (input2 == null) {
-			toReturn = (isMaintained) ? new FastqReaderWrapper(input1) : new FastqReaderSingleSanger(input1);
+			toReturn = (isMaintained) ? new FastqReaderSingleImpl(input1) : new FastqReaderSingleSanger(input1);
 		} else {
 			toReturn = (isMaintained) ?
 				new FastqReaderPairedImpl(input1, input2) :
