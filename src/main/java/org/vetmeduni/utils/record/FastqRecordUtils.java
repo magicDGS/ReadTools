@@ -57,47 +57,6 @@ public class FastqRecordUtils {
 	}
 
 	/**
-	 * Return a new FastqRecord with a new quality encoding
-	 *
-	 * WARNING: the quality encoding is not checked
-	 *
-	 * @param record the record to update
-	 *
-	 * @deprecated use an {@link org.vetmeduni.utils.fastq.StandardizerAndChecker} instance to ensure checking
-	 *
-	 * @return a new record with the sanger encoding
-	 */
-	@Deprecated
-	public static FastqRecord copyToSanger(FastqRecord record) {
-		byte[] asciiQualities = record.getBaseQualityString().getBytes();
-		byte[] newQualities = new byte[asciiQualities.length];
-		for (int i = 0; i < asciiQualities.length; i++) {
-			newQualities[i] = QualityUtils.byteToSanger(asciiQualities[i]);
-		}
-		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
-			new String(newQualities));
-	}
-
-	/**
-	 * Return a new FastqRecord with a new quality encoding
-	 *
-	 * WARNING: the quality encoding is not checked
-	 *
-	 * @param record the record to update
-	 *
-	 * @deprecated use an {@link org.vetmeduni.utils.fastq.StandardizerAndChecker} instance to ensure checking
-	 *
-	 * @return a new record with the sanger encoding
-	 */
-	@Deprecated
-	public static FastqPairedRecord copyToSanger(FastqPairedRecord record) {
-		// transform the first record
-		FastqRecord record1 = copyToSanger(record.getRecord1());
-		FastqRecord record2 = copyToSanger(record.getRecord2());
-		return new FastqPairedRecord(record1, record2);
-	}
-
-	/**
 	 * Get the barcode in the name from a FastqRecord
 	 *
 	 * @param record the record to extract the barcode from

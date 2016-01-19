@@ -133,28 +133,6 @@ public class SAMRecordUtils {
 	}
 
 	/**
-	 * Return a new SAMRecord with a new quality encoding
-	 *
-	 * WARNING: the quality encoding is not checked
-	 *
-	 * @param record the record to update
-	 *
-	 * @return a new record with the sanger encoding
-	 * @deprecated use an {@link org.vetmeduni.utils.fastq.StandardizerAndChecker} instance to ensure checking
-	 */
-	@Deprecated
-	public static SAMRecord copyToSanger(SAMRecord record) {
-		try {
-			SAMRecord newRecord = (SAMRecord) record.clone();
-			toSanger(newRecord);
-			return newRecord;
-		} catch (CloneNotSupportedException e) {
-			// This should not happen, because it is suppose to be implemented
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
 	 * Get the barcode in the name from a SAMRecord
 	 *
 	 * @param record the record to extract the barcode from

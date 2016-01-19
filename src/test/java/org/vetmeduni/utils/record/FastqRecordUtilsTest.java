@@ -100,17 +100,6 @@ public class FastqRecordUtilsTest {
 	}
 
 	@Test
-	@Ignore("Deprecated method")
-	public void testCopyToSanger() throws Exception {
-		FastqRecord sangerCopy1 = FastqRecordUtils.copyToSanger(illumina1);
-		FastqRecord sangerCopy2 = FastqRecordUtils.copyToSanger(illumina2);
-		FastqPairedRecord sangerPaired = FastqRecordUtils.copyToSanger(illuminaPaired);
-		Assert.assertEquals(sanger1, sangerCopy1);
-		Assert.assertEquals(sanger2, sangerCopy2);
-		Assert.assertEquals(new FastqPairedRecord(sanger1, sanger2), sangerPaired);
-	}
-
-	@Test
 	public void testGetBarcodeInName() throws Exception {
 		String barcodeSingle = FastqRecordUtils.getBarcodeInName(sanger1);
 		Assert.assertEquals("ACGT", barcodeSingle);

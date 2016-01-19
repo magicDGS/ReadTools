@@ -60,7 +60,6 @@ public class BarcodeDictionary {
 	 * @param samples  the sample names
 	 * @param barcodes the barcodes
 	 *
-	 * @deprecated use {@link #BarcodeDictionary(String, ArrayList, ArrayList, ArrayList, SAMReadGroupRecord)} instead
 	 */
 	protected BarcodeDictionary(ArrayList<SAMReadGroupRecord> samples, ArrayList<ArrayList<String>> barcodes) {
 		this.sampleRecord = samples;
