@@ -2,8 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+## Fixed
+- Fixed BAM file not standardize output when `-nstd` option is provided
 ### Changed
 - New barcode file format (without header): SampleName, Library, FirstBarcode, SecondBarcode. The program detects if the library is single or double indexed depending on the existence of the SecondBarcode column.
+### Added
+- Checking quality of every base when converting and every 1000 reads when not
 
 ## [0.1.4] - 2015-12-10
 ### Fixed
