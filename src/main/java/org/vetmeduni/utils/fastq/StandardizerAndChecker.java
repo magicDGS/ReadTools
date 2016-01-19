@@ -73,7 +73,7 @@ public class StandardizerAndChecker {
 		// TODO: this should be synchronized?
 		if (++count >= frequency) {
 			count = 0;
-			QualityUtils.checkEncoding(record.getBaseQualityString().getBytes(), encoding);
+			checkMisencoded((Object) record);
 		}
 	}
 
@@ -88,8 +88,8 @@ public class StandardizerAndChecker {
 		// TODO: this should be synchronized
 		if (++count >= frequency) {
 			count = 0;
-			checkMisencoded(record.getRecord1());
-			checkMisencoded(record.getRecord2());
+			checkMisencoded((Object) record.getRecord1());
+			checkMisencoded((Object) record.getRecord2());
 		}
 	}
 
@@ -104,8 +104,25 @@ public class StandardizerAndChecker {
 		// TODO: this should be synchronized?
 		if (++count >= frequency) {
 			count = 0;
-			QualityUtils.checkEncoding(record.getBaseQualities(), encoding);
+			checkMisencoded((Object) record);
 		}
+	}
+
+	/**
+	 * Check an object (instance of SAMRecord, FastqRecord or FastqPairedRecord)
+	 *
+	 * @param record the record to check
+	 */
+	protected void checkMisencoded(Object record) {
+		final byte[] quals;
+		if (record instanceof SAMRecord) {
+			quals = ((SAMRecord) record).getBaseQualityString().getBytes();
+		} else if (record instanceof FastqRecord) {
+			quals = ((FastqRecord) record).getBaseQualityString().getBytes();
+		} else {
+			throw new IllegalArgumentException("checkMisencoded only accepts FastqRecord/SAMRecord");
+		}
+		QualityUtils.checkEncoding(quals, encoding);
 	}
 
 	/**
@@ -160,6 +177,7 @@ public class StandardizerAndChecker {
 		}
 		try {
 			SAMRecord newRecord = (SAMRecord) record.clone();
+			// relies on the checking of the record
 			SAMRecordUtils.toSanger(newRecord);
 			return newRecord;
 		} catch (CloneNotSupportedException e) {
