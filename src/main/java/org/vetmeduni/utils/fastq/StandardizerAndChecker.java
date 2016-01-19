@@ -65,28 +65,28 @@ public class StandardizerAndChecker {
 	}
 
 	/**
-	 * If by sampling is time to check, check the quality of the record
+	 * If by sampling is time to check, check the quality of the record. Null records are ignored
 	 *
 	 * @param record the record to check
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(FastqRecord record) {
-		if (count.incrementAndGet() >= frequency) {
+		if (record != null && count.incrementAndGet() >= frequency) {
 			count.set(0);
 			checkMisencoded((Object) record);
 		}
 	}
 
 	/**
-	 * If by sampling is time to check, check the quality of the record
+	 * If by sampling is time to check, check the quality of the record. Null records are ignored
 	 *
 	 * @param record the record to check
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(FastqPairedRecord record) {
-		if (count.incrementAndGet() >= frequency) {
+		if (record != null && count.incrementAndGet() >= frequency) {
 			count.set(0);
 			checkMisencoded((Object) record.getRecord1());
 			checkMisencoded((Object) record.getRecord2());
@@ -94,14 +94,14 @@ public class StandardizerAndChecker {
 	}
 
 	/**
-	 * If by sampling is time to check, check the quality of the record
+	 * If by sampling is time to check, check the quality of the record. Null records are ignored
 	 *
 	 * @param record the record to check
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(SAMRecord record) {
-		if (count.incrementAndGet() >= frequency) {
+		if (record != null && count.incrementAndGet() >= frequency) {
 			count.set(0);
 			checkMisencoded((Object) record);
 		}
@@ -129,10 +129,14 @@ public class StandardizerAndChecker {
 	 *
 	 * @param record the record to standardize
 	 *
-	 * @return a new record with the standard encoding or the same if the encoder is sanger
+	 * @return a new record with the standard encoding or the same if the encoder is sanger; <code>null</code> if the
+	 * argument is null
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the conversion causes a misencoded quality
 	 */
 	public FastqRecord standardize(FastqRecord record) {
+		if (record == null) {
+			return record;
+		}
 		if (QualityUtils.isStandard(encoding)) {
 			checkMisencoded(record);
 			return record;
@@ -152,10 +156,14 @@ public class StandardizerAndChecker {
 	 *
 	 * @param record the record to standardize
 	 *
-	 * @return a new record with the standard encoding or the same if the encoder is sanger
+	 * @return a new record with the standard encoding or the same if the encoder is sanger; <code>null</code> if the
+	 * argument is null
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the conversion causes a misencoded quality
 	 */
 	public FastqPairedRecord standardize(FastqPairedRecord record) {
+		if (record == null) {
+			return record;
+		}
 		FastqRecord record1 = standardize(record.getRecord1());
 		FastqRecord record2 = standardize(record.getRecord2());
 		return new FastqPairedRecord(record1, record2);
@@ -166,10 +174,14 @@ public class StandardizerAndChecker {
 	 *
 	 * @param record the record to standardize
 	 *
-	 * @return a new record with the standard encoding or the same if the encoder is sanger
+	 * @return a new record with the standard encoding or the same if the encoder is sanger; <code>null</code> if the
+	 * argument is null
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the conversion causes a misencoded quality
 	 */
 	public SAMRecord standardize(SAMRecord record) {
+		if (record == null) {
+			return record;
+		}
 		if (QualityUtils.isStandard(encoding)) {
 			checkMisencoded(record);
 			return record;
