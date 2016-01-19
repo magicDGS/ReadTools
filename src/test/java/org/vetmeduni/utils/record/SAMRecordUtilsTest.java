@@ -41,7 +41,7 @@ public class SAMRecordUtilsTest {
 
 	static final SAMFileHeader emptyHeader = new SAMFileHeader();
 
-	static SAMRecord createSamRecord(String readName, byte base, String quality) {
+	public static SAMRecord createSamRecord(String readName, byte base, String quality) {
 		SAMRecord record = new SAMRecord(emptyHeader);
 		record.setReadName(readName);
 		byte[] bases = new byte[quality.length()];
