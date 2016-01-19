@@ -134,7 +134,10 @@ public class BarcodeDictionaryFactory {
 	 *
 	 * @return the barcode dictionary
 	 * @throws IOException
+	 * @deprecated use {@link #createDefaultDictionary(String, java.io.File, htsjdk.samtools.SAMReadGroupRecord, int)}
+	 * because we are going to handle the read names differently to allow the retrieval of both from the read names
 	 */
+	@Deprecated
 	public static BarcodeDictionary createCombinedDictionary(String run, File barcodeFile,
 		final SAMReadGroupRecord readGroupInfo) throws IOException {
 		SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile);

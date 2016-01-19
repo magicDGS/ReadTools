@@ -109,8 +109,18 @@ public class SAMRecordUtilsTest {
 		String barcode = SAMRecordUtils.getBarcodeInName(sangerRecord);
 		Assert.assertEquals("ACTG", barcode);
 		// assert that the original is not changed
-		Assert.assertEquals(createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality),
-			illuminaRecord);
+		Assert.assertEquals(createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.sangerQuality), sangerRecord);
+	}
+
+	@Test
+	public void testGetBarcodesInName() throws Exception {
+		String[] barcode = SAMRecordUtils.getBarcodesInName(sangerRecord);
+		Assert.assertArrayEquals(new String[] {"ACTG"}, barcode);
+		// assert that the original is not changed
+		Assert.assertEquals(createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.sangerQuality), sangerRecord);
+		String[] doubleBarcode = SAMRecordUtils
+			.getBarcodesInName(createSamRecord("Read1#ACTG_TTTT/1", (byte) 'A', QualityUtilsTest.sangerQuality));
+		Assert.assertArrayEquals(new String[] {"ACTG", "TTTT"}, doubleBarcode);
 	}
 
 	@Test

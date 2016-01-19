@@ -27,6 +27,8 @@ import htsjdk.samtools.fastq.FastqRecord;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.methods.barcodes.BarcodeMethods;
 
+import java.util.Arrays;
+
 /**
  * Utils for FASTQ records (both single and paired)
  *
@@ -67,6 +69,29 @@ public class FastqRecordUtils {
 	}
 
 	/**
+	 * Get the barcode(s) in the name from a SAMRecord
+	 *
+	 * @param record the record to extract the barcode from
+	 *
+	 * @return an array with the barcode(s) without read information; <code>null</code> if no barcode is found
+	 */
+	public static String[] getBarcodesInName(FastqRecord record) {
+		return BarcodeMethods.getSeveralBarcodesFromName(record.getReadHeader());
+	}
+
+	/**
+	 * Get the barcode(s) in the name from a SAMRecord
+	 *
+	 * @param record    the record to extract the barcode from
+	 * @param separator the separator between barcodes
+	 *
+	 * @return an array with the barcode(s) without read information; <code>null</code> if no barcode is found
+	 */
+	public static String[] getBarcodesInName(FastqRecord record, String separator) {
+		return BarcodeMethods.getSeveralBarcodesFromName(record.getReadHeader(), separator);
+	}
+
+	/**
 	 * Get the barcode in the name from a FastqPairedRecord. If only one is present or both match, return the first one;
 	 * if they do not match, thrown an error
 	 *
@@ -85,6 +110,41 @@ public class FastqRecordUtils {
 			return barcode1;
 		}
 		throw new SAMException("Barcodes from FastqPairedRecord do not match: " + barcode1 + "-" + barcode2);
+	}
+
+	/**
+	 * Get the barcode(s) in the name from a SAMRecord
+	 *
+	 * @param record the record to extract the barcode from
+	 *
+	 * @return an array with the barcode(s) without read information; <code>null</code> if no barcode is found
+	 */
+	public static String[] getBarcodesInName(FastqPairedRecord record) {
+		return pairedBarcodesConsensus(getBarcodesInName(record.getRecord1()), getBarcodesInName(record.getRecord2()));
+	}
+
+	/**
+	 * Get the barcode(s) in the name from a SAMRecord
+	 *
+	 * @param record    the record to extract the barcode from
+	 * @param separator the separator between barcodes
+	 *
+	 * @return an array with the barcode(s) without read information; <code>null</code> if no barcode is found
+	 */
+	public static String[] getBarcodesInName(FastqPairedRecord record, String separator) {
+		return pairedBarcodesConsensus(getBarcodesInName(record.getRecord1(), separator),
+			getBarcodesInName(record.getRecord2(), separator));
+	}
+
+	private static String[] pairedBarcodesConsensus(String[] barcode1, String[] barcode2) {
+		if (barcode1 == null) {
+			return barcode2;
+		}
+		if (Arrays.equals(barcode1, barcode2)) {
+			return barcode1;
+		}
+		throw new SAMException("Barcodes from FastqPairedRecord do not match: " +
+			Arrays.toString(barcode1) + "-" + Arrays.toString(barcode2));
 	}
 
 	/**

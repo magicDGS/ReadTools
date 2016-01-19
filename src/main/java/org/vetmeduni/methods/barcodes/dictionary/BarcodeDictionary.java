@@ -243,8 +243,9 @@ public class BarcodeDictionary {
 	 * @return the combined barcodes for the sample
 	 */
 	public String getCombinedBarcodesFor(int sampleIndex) {
-		// TODO: change the combination method
-		return String.join("", getBarcodesFor(sampleIndex));
+		// TODO: changed the combination method!!!!
+		// TODO: be sure that it is working!!!
+		return String.join("_", getBarcodesFor(sampleIndex));
 	}
 
 	/**

@@ -94,7 +94,9 @@ public class BamBarcodeDetector extends AbstractTool {
 		SAMRecordIterator it = reader.iterator();
 		while (it.hasNext()) {
 			SAMRecord record = it.next();
-			String barcode = SAMRecordUtils.getBarcodeInName(record);
+			// TODO: test if the new method is working properly
+			// String barcode = SAMRecordUtils.getBarcodeInName(record);
+			String[] barcode = SAMRecordUtils.getBarcodesInName(record);
 			String best = decoder.getBestBarcode(barcode);
 			SAMReadGroupRecord rg = decoder.getDictionary().getReadGroupFor(best);
 			if (!rg.equals(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO)) {

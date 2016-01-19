@@ -89,7 +89,7 @@ public class BarcodeMethods {
 	 */
 	public static String[] getSeveralBarcodesFromName(String readName, String barcodeSeparator) {
 		String combined = getOnlyBarcodeFromName(readName);
-		return combined.split(barcodeSeparator);
+		return (combined == null) ? null : combined.split(barcodeSeparator);
 	}
 
 	/**

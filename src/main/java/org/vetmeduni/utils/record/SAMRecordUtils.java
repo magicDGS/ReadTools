@@ -145,6 +145,29 @@ public class SAMRecordUtils {
 	}
 
 	/**
+	 * Get the barcode(s) in the name from a SAMRecord
+	 *
+	 * @param record the record to extract the barcode from
+	 *
+	 * @return an array with the barcode(s) without read information; <code>null</code> if no barcode is found
+	 */
+	public static String[] getBarcodesInName(SAMRecord record) {
+		return BarcodeMethods.getSeveralBarcodesFromName(record.getReadName());
+	}
+
+	/**
+	 * Get the barcode(s) in the name from a SAMRecord
+	 *
+	 * @param record    the record to extract the barcode from
+	 * @param separator the separator between barcodes
+	 *
+	 * @return an array with the barcode(s) without read information; <code>null</code> if no barcode is found
+	 */
+	public static String[] getBarcodesInName(SAMRecord record, String separator) {
+		return BarcodeMethods.getSeveralBarcodesFromName(record.getReadName(), separator);
+	}
+
+	/**
 	 * Get the read name for a record without the record
 	 *
 	 * @param record the record to extract the name from

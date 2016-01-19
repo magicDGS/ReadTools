@@ -52,8 +52,7 @@ public class BarcodeDictionaryTest {
 		barcodesDouble.add(new ArrayList<>());
 		barcodesDouble.add(new ArrayList<>());
 		for (int i = 0; i < barcodes.length; i++) {
-			// TODO: this test will fail because of the combined sample: implement with the new method
-			final SAMReadGroupRecord rg = new SAMReadGroupRecord("sample" + i + String.join("", barcodes[i]),
+			final SAMReadGroupRecord rg = new SAMReadGroupRecord("sample" + i + String.join("_", barcodes[i]),
 				BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
 			samples.add(rg);
 			barcodesSingle.get(0).add(barcodes[i]);

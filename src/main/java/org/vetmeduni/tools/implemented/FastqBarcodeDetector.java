@@ -122,7 +122,9 @@ public class FastqBarcodeDetector extends AbstractTool {
 		Iterator<FastqRecord> it = reader.iterator();
 		while (it.hasNext()) {
 			FastqRecord record = it.next();
-			String barcode = FastqRecordUtils.getBarcodeInName(record);
+			// TODO: checks if it is working perfectly
+			// String barcode = FastqRecordUtils.getBarcodeInName(record);
+			String[] barcode = FastqRecordUtils.getBarcodesInName(record);
 			String best = decoder.getBestBarcode(barcode);
 			if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
 				writer.write(best, record);
@@ -147,7 +149,9 @@ public class FastqBarcodeDetector extends AbstractTool {
 		Iterator<FastqPairedRecord> it = reader.iterator();
 		while (it.hasNext()) {
 			FastqPairedRecord record = it.next();
-			String barcode = FastqRecordUtils.getBarcodeInName(record);
+			// TODO: checks if it is working perfectly
+			// String barcode = FastqRecordUtils.getBarcodeInName(record);
+			String[] barcode = FastqRecordUtils.getBarcodesInName(record);
 			String best = decoder.getBestBarcode(barcode);
 			if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
 				writer.write(best, record);
