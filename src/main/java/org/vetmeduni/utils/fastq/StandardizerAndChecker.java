@@ -28,6 +28,8 @@ import htsjdk.samtools.util.FastqQualityFormat;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.utils.record.SAMRecordUtils;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Class to randomly check qualities in the records that are input
  *
@@ -42,7 +44,7 @@ public class StandardizerAndChecker {
 	private final FastqQualityFormat encoding;
 
 	// the number of records that passed by this count
-	protected int count = 0;
+	protected AtomicInteger count = new AtomicInteger();
 
 	/**
 	 * Default constructor
@@ -70,9 +72,8 @@ public class StandardizerAndChecker {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(FastqRecord record) {
-		// TODO: this should be synchronized?
-		if (++count >= frequency) {
-			count = 0;
+		if (count.incrementAndGet() >= frequency) {
+			count.set(0);
 			checkMisencoded((Object) record);
 		}
 	}
@@ -85,9 +86,8 @@ public class StandardizerAndChecker {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(FastqPairedRecord record) {
-		// TODO: this should be synchronized
-		if (++count >= frequency) {
-			count = 0;
+		if (count.incrementAndGet() >= frequency) {
+			count.set(0);
 			checkMisencoded((Object) record.getRecord1());
 			checkMisencoded((Object) record.getRecord2());
 		}
@@ -101,9 +101,8 @@ public class StandardizerAndChecker {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(SAMRecord record) {
-		// TODO: this should be synchronized?
-		if (++count >= frequency) {
-			count = 0;
+		if (count.incrementAndGet() >= frequency) {
+			count.set(0);
 			checkMisencoded((Object) record);
 		}
 	}

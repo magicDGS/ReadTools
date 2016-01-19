@@ -75,8 +75,8 @@ public class StandardizerAndCheckerTest {
 		checkMisencodedException(sangerFASTQ, FastqQualityFormat.Illumina);
 		checkMisencodedException(sangerSAM, FastqQualityFormat.Illumina);
 		// set to 0 the counters and in that case an exception should not be thrown
-		sangerChecker.count = 0;
-		illuminaChecker.count = 0;
+		sangerChecker.count.set(0);
+		illuminaChecker.count.set(0);
 		// this should not thrown an exception because of the counter
 		sangerChecker.checkMisencoded(illuminaFASTQ);
 		sangerChecker.checkMisencoded(illuminaSAM);
