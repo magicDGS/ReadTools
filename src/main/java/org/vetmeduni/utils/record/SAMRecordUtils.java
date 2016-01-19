@@ -24,6 +24,7 @@ package org.vetmeduni.utils.record;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMUtils;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.SequenceUtil;
 import htsjdk.samtools.util.StringUtil;
@@ -112,17 +113,23 @@ public class SAMRecordUtils {
 	}
 
 	/**
-	 * Update the quality encoding for a record
+	 * Update the quality encoding for a record to sanger. Checks if the record is correctly formatted on the fly
 	 *
 	 * @param record the record to update
 	 */
 	public static void toSanger(SAMRecord record) {
-		byte[] qualities = record.getBaseQualities();
-		byte[] newQualities = new byte[qualities.length];
-		for (int i = 0; i < qualities.length; i++) {
-			newQualities[i] = QualityUtils.byteToSanger(qualities[i]);
+		try {
+			// get the base qualities as ascii bytes
+			byte[] qualities = record.getBaseQualityString().getBytes();
+			byte[] newQualities = new byte[qualities.length];
+			for (int i = 0; i < qualities.length; i++) {
+				// it is suppose to be checked here
+				newQualities[i] = (byte) SAMUtils.fastqToPhred((char) QualityUtils.byteToSanger(qualities[i]));
+			}
+			record.setBaseQualities(newQualities);
+		} catch (IllegalArgumentException e) {
+			throw new QualityUtils.QualityException(e);
 		}
-		record.setBaseQualities(newQualities);
 	}
 
 	/**

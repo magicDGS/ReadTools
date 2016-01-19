@@ -199,7 +199,6 @@ public class QualityUtils {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
 	 */
 	public static void checkEncoding(byte quality, FastqQualityFormat encoding) {
-		// TODO: is this method working for the byte qualities encoded in the SAMRecord???
 		// there are no qualities smaller than 33
 		if (quality < 33) {
 			throw new QualityException("Found " + quality + " (" + (char) quality + ") encoded quality");
