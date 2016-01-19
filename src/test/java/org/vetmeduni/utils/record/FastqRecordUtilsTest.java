@@ -100,6 +100,7 @@ public class FastqRecordUtilsTest {
 	}
 
 	@Test
+	@Ignore("Deprecated method")
 	public void testCopyToSanger() throws Exception {
 		FastqRecord sangerCopy1 = FastqRecordUtils.copyToSanger(illumina1);
 		FastqRecord sangerCopy2 = FastqRecordUtils.copyToSanger(illumina2);

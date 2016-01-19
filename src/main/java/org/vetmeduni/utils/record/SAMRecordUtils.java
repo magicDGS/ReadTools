@@ -140,7 +140,9 @@ public class SAMRecordUtils {
 	 * @param record the record to update
 	 *
 	 * @return a new record with the sanger encoding
+	 * @deprecated use an {@link org.vetmeduni.utils.fastq.StandardizerAndChecker} instance to ensure checking
 	 */
+	@Deprecated
 	public static SAMRecord copyToSanger(SAMRecord record) {
 		try {
 			SAMRecord newRecord = (SAMRecord) record.clone();

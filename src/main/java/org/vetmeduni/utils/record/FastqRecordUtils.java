@@ -63,8 +63,11 @@ public class FastqRecordUtils {
 	 *
 	 * @param record the record to update
 	 *
+	 * @deprecated use an {@link org.vetmeduni.utils.fastq.StandardizerAndChecker} instance to ensure checking
+	 *
 	 * @return a new record with the sanger encoding
 	 */
+	@Deprecated
 	public static FastqRecord copyToSanger(FastqRecord record) {
 		byte[] asciiQualities = record.getBaseQualityString().getBytes();
 		byte[] newQualities = new byte[asciiQualities.length];
@@ -82,8 +85,11 @@ public class FastqRecordUtils {
 	 *
 	 * @param record the record to update
 	 *
+	 * @deprecated use an {@link org.vetmeduni.utils.fastq.StandardizerAndChecker} instance to ensure checking
+	 *
 	 * @return a new record with the sanger encoding
 	 */
+	@Deprecated
 	public static FastqPairedRecord copyToSanger(FastqPairedRecord record) {
 		// transform the first record
 		FastqRecord record1 = copyToSanger(record.getRecord1());

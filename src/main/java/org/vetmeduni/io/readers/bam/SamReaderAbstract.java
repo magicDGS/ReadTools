@@ -31,7 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Abstract class for our SamReaders
+ * Abstract wrapper for SamReader
  *
  * @author Daniel Gómez-Sánchez
  */

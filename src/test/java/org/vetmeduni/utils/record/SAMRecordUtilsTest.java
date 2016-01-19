@@ -99,6 +99,7 @@ public class SAMRecordUtilsTest {
 	}
 
 	@Test
+	@Ignore("Deprecated method")
 	public void testCopyToSanger() throws Exception {
 		SAMRecord sangerCopy = SAMRecordUtils.copyToSanger(illuminaRecord);
 		Assert.assertEquals(sangerRecord, sangerCopy);
