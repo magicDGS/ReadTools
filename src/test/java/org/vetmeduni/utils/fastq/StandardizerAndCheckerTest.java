@@ -22,23 +22,26 @@
  */
 package org.vetmeduni.utils.fastq;
 
+import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.junit.*;
+import org.vetmeduni.utils.record.SAMRecordUtilsTest;
 
 public class StandardizerAndCheckerTest {
 
-	FastqRecord illumina1;
+	FastqRecord illuminaFASTQ;
 
-	FastqRecord sanger1;
+	FastqRecord sangerFASTQ;
 
-	FastqRecord illumina2;
+	SAMRecord illuminaSAM;
 
-	FastqRecord sanger2;
+	SAMRecord sangerSAM;
 
-	StandardizerAndChecker sangerChecker;
+	private static final StandardizerAndChecker sangerChecker = new StandardizerAndChecker(FastqQualityFormat.Standard);
 
-	StandardizerAndChecker illuminaChecker;
+	private static final StandardizerAndChecker illuminaChecker = new StandardizerAndChecker(
+		FastqQualityFormat.Illumina);
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -50,17 +53,14 @@ public class StandardizerAndCheckerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		illumina1 = new FastqRecord("Record1#ACGT/1", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "",
+		// init FASTQ
+		illuminaFASTQ = new FastqRecord("Record1#ACGT/1", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "",
 			QualityUtilsTest.illuminaQuality);
-		illumina2 = new FastqRecord("Record1#ACGT/2", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", "",
-			QualityUtilsTest.illuminaQuality);
-		sanger1 = new FastqRecord("Record1#ACGT/1", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "",
+		sangerFASTQ = new FastqRecord("Record1#ACGT/1", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "",
 			QualityUtilsTest.sangerQuality);
-		sanger2 = new FastqRecord("Record1#ACGT/2", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", "",
-			QualityUtilsTest.sangerQuality);
-		// init the checkers
-		sangerChecker = new StandardizerAndChecker(FastqQualityFormat.Standard);
-		illuminaChecker = new StandardizerAndChecker(FastqQualityFormat.Illumina);
+		// init SAMR
+		illuminaSAM = SAMRecordUtilsTest.createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality);
+		sangerSAM = SAMRecordUtilsTest.createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.sangerQuality);
 	}
 
 	@After
@@ -68,58 +68,70 @@ public class StandardizerAndCheckerTest {
 	}
 
 	@Test
-	@Ignore("Not implemented")
 	public void testCheckMisencoded() throws Exception {
-		// TODO: more tests
-		// check if checkMisencoded throws an error if the counter is high
+		// Check exceptions
+		checkMisencodedException(illuminaFASTQ, FastqQualityFormat.Standard);
+		checkMisencodedException(illuminaSAM, FastqQualityFormat.Standard);
+		checkMisencodedException(sangerFASTQ, FastqQualityFormat.Illumina);
+		checkMisencodedException(sangerSAM, FastqQualityFormat.Illumina);
+		// set to 0 the counters and in that case an exception should not be thrown
+		sangerChecker.count = 0;
+		illuminaChecker.count = 0;
+		// this should not thrown an exception because of the counter
+		sangerChecker.checkMisencoded(illuminaFASTQ);
+		sangerChecker.checkMisencoded(illuminaSAM);
+		// this should not thrown an exception because of the counter
+		illuminaChecker.checkMisencoded(sangerFASTQ);
+		illuminaChecker.checkMisencoded(sangerSAM);
+	}
+
+	/**
+	 * Check if an exception is thrown
+	 *
+	 * @param read
+	 * @param checkerFormat
+	 */
+	private void checkMisencodedException(Object read, FastqQualityFormat checkerFormat) {
+		final StandardizerAndChecker checker;
+		switch (checkerFormat) {
+			case Standard:
+				checker = sangerChecker;
+				break;
+			case Illumina:
+				checker = illuminaChecker;
+				break;
+			default:
+				throw new RuntimeException("Unreachable code");
+		}
 		try {
-			sangerChecker.count = StandardizerAndChecker.frequency + 1;
-			sangerChecker.checkMisencoded(illumina1);
-			Assert.fail(
-				"Sanger checkMisencoded does not throw a QualityException if the quality is Illumina and it is checking");
+			checker.checkMisencoded(read);
+			Assert.fail(checkerFormat
+				+ ".checkMisencoded does not throw a QualityException if the quality is not correctly formatted");
 		} catch (QualityUtils.QualityException e) {
 		}
-		// this should not thrown an exception because of the counter
-		sangerChecker.checkMisencoded(illumina1);
-		// check if checkMisencoded throws an error if the counter is high
-		try {
-			illuminaChecker.count = StandardizerAndChecker.frequency + 1;
-			illuminaChecker.checkMisencoded(sanger1);
-			Assert.fail(
-				"Sanger checkMisencoded does not throw a QualityException if the quality is Illumina and it is checking");
-		} catch (QualityUtils.QualityException e) {
-		}
-		// this should not thrown an exception because of the counter
-		illuminaChecker.checkMisencoded(sanger1);
 	}
 
 	@Test
 	public void testStandardize() throws Exception {
 		// checking standardizer for illumina
-		FastqRecord standard1 = illuminaChecker.standardize(illumina1);
-		FastqRecord standard2 = illuminaChecker.standardize(illumina2);
-		Assert.assertEquals(sanger1, standard1);
-		Assert.assertEquals(sanger2, standard2);
+		Assert.assertEquals(sangerFASTQ, illuminaChecker.standardize(illuminaFASTQ));
+		Assert.assertEquals(sangerSAM, illuminaChecker.standardize(illuminaSAM));
 		// checking that the standard is not changed
-		FastqRecord copySanger1 = sangerChecker.standardize(sanger1);
-		FastqRecord copySanger2 = sangerChecker.standardize(sanger2);
-		Assert.assertEquals(sanger1, copySanger1);
-		Assert.assertEquals(sanger2, copySanger2);
+		Assert.assertEquals(sangerFASTQ, sangerChecker.standardize(sangerFASTQ));
+		Assert.assertEquals(sangerSAM, sangerChecker.standardize(sangerSAM));
 		// checking that an error is thrown if the quality is misencoded
 		try {
-			illuminaChecker.standardize(sanger1);
-			Assert.fail("Illumina Standardizer does not throw a QualityException if the quality is Sanger");
+			illuminaChecker.standardize(sangerFASTQ);
+			Assert.fail("FASTQ Illumina Standardizer does not throw a QualityException if the quality is Sanger");
 		} catch (QualityUtils.QualityException e) {
 		}
-		// check if checkMisencoded throws an error if the counter is high
 		try {
-			sangerChecker.count = StandardizerAndChecker.frequency + 1;
-			sangerChecker.standardize(illumina1);
-			Assert.fail(
-				"Sanger Standardize does not throw a QualityException if the quality is Illumina and it is checking");
+			illuminaChecker.standardize(sangerSAM);
+			Assert.fail("SAM Illumina Standardizer does not throw a QualityException if the quality is Sanger");
 		} catch (QualityUtils.QualityException e) {
 		}
-		// this should not thrown an exception because of the counter
-		sangerChecker.standardize(illumina1);
+		// this should not throw errors, but return the exactly same result
+		Assert.assertEquals(illuminaFASTQ, sangerChecker.standardize(illuminaFASTQ));
+		Assert.assertEquals(illuminaSAM, sangerChecker.standardize(illuminaSAM));
 	}
 }
