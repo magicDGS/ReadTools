@@ -35,6 +35,7 @@ import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.BarcodeOptions;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
+import org.vetmeduni.tools.cmd.ToolsReadersFactory;
 import org.vetmeduni.utils.loggers.ProgressLoggerExtension;
 import org.vetmeduni.utils.misc.IOUtils;
 import org.vetmeduni.utils.record.SAMRecordUtils;
@@ -70,7 +71,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		// TODO: add barcode information to the dictionary
 		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null);
 		// open the reader
-		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT);
+		SamReader reader = ToolsReadersFactory.getSamReaderFromInput(input, CommonOptions.isMaintained(logger, cmd));
 		// create the new header adding the read groups
 		SAMFileHeader header = reader.getFileHeader();
 		addReadGroupToHeader(header, decoder.getDictionary());

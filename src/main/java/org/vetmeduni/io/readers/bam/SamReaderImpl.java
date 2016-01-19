@@ -31,36 +31,43 @@ import htsjdk.samtools.util.FastqQualityFormat;
 import java.io.File;
 
 /**
- * SamReader implementation that returns only records with Sanger formatting. It wraps a {@link
- * htsjdk.samtools.SamReader} It only could be constructed by a File
+ * SamReader implementation for ReadTools
  *
  * @author Daniel Gómez-Sánchez
  */
-public class SamReaderSanger extends SamReaderAbstract {
+public class SamReaderImpl extends SamReaderAbstract {
 
-	public SamReaderSanger(File file) {
+	public SamReaderImpl(File file) {
 		super(file);
 	}
 
-	public SamReaderSanger(File file, ValidationStringency stringency) {
+	public SamReaderImpl(File file, ValidationStringency stringency) {
 		super(file, stringency);
 	}
 
-	public SamReaderSanger(File file, SamReaderFactory factory) {
+	public SamReaderImpl(File file, SamReaderFactory factory) {
 		super(file, factory);
 	}
 
-	SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator) {
-		return SamRecordIteratorWithStandardizer.of(iterator, checker, true);
+	@Override
+	SAMRecordIterator toReturnIterator(SAMRecordIterator iterator) {
+		return SamRecordIteratorWithStandardizer.of(iterator, checker, false);
 	}
 
+	/**
+	 * Returns the original encoding
+	 *
+	 * @return the original encoding
+	 */
 	@Override
 	public FastqQualityFormat getFastqQuality() {
-		return FastqQualityFormat.Standard;
+		return getOriginalEncoding();
 	}
 
 	@Override
 	public SAMRecord queryMate(SAMRecord rec) {
-		return checker.standardize(reader.queryMate(rec));
+		SAMRecord toReturn = reader.queryMate(rec);
+		checker.checkMisencoded(toReturn);
+		return toReturn;
 	}
 }

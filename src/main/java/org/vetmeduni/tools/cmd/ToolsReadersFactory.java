@@ -23,10 +23,10 @@
 package org.vetmeduni.tools.cmd;
 
 import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
-import org.vetmeduni.io.readers.fastq.FastqReaderInterface;
+import org.vetmeduni.io.readers.bam.SamReaderImpl;
 import org.vetmeduni.io.readers.bam.SamReaderSanger;
+import org.vetmeduni.io.readers.fastq.FastqReaderInterface;
 import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedImpl;
 import org.vetmeduni.io.readers.fastq.paired.FastqReaderPairedSanger;
 import org.vetmeduni.io.readers.fastq.single.FastqReaderSingleSanger;
@@ -75,7 +75,7 @@ public class ToolsReadersFactory {
 	public static SamReader getSamReaderFromInput(File input, boolean isMaintained) {
 		if (isMaintained) {
 			// if the format is maintained, create a default sam reader
-			return SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT).open(input);
+			return new SamReaderImpl(input, ValidationStringency.SILENT);
 		} else {
 			// if not, standardize
 			return new SamReaderSanger(input, ValidationStringency.SILENT);
