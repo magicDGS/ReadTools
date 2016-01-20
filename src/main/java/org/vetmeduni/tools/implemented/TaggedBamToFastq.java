@@ -113,8 +113,10 @@ public class TaggedBamToFastq extends AbstractTool {
 			pf = runPaired(reader, writer, decoder, tags, progress);
 		}
 		progress.logNumberOfVariantsProcessed();
-		logger.warn(Formats.commaFmt.format(pf), (single) ? " records " : " pairs ",
-			"fails vendor quality (PF flag) and are discarded");
+		if (pf != 0) {
+			logger.warn(Formats.commaFmt.format(pf), (single) ? " records " : " pairs ",
+				"fails vendor quality (PF flag) and are discarded");
+		}
 		decoder.logMatcherResult(logger);
 		decoder.outputStats(metrics);
 	}
