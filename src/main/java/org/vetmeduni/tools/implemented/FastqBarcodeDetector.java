@@ -68,7 +68,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 		// logging command line
 		logCmdLine(cmd);
 		// open the decoder
-		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null);
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
 		// create the reader and the writer
 		FastqReaderInterface reader = ToolsReadersFactory
 			.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
@@ -173,24 +173,15 @@ public class FastqBarcodeDetector extends AbstractTool {
 		Option output = Option.builder("o").longOpt("output").desc("The output file prefix").hasArg().numberOfArgs(1)
 							  .argName("output_prefix").required(true).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
-		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-			"Maximum number of mismatches allowed for a matched barcode.  [Default="
-				+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
-						   .required(false).build();
+		// Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
+		//	"Maximum number of mismatches allowed for a matched barcode.  [Default="
+		//		+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
+		//				   .required(false).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
-		Option dist = Option.builder("d").longOpt("minimum-distance").desc(
-			"Minimum distance between the best match and the second to consider a match. [Default="
-				+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
-							.required(false).build();
-		//		// THIS ARE PREVIOUS OPTIONS IN THE METHOD THAT I DEVELOP OUTSIDE THIS TOOL: not longer supported!
-		//		// this option was to allow a regular expression in the barcode name
-		//		Option re = Option.builder("sx").longOpt("suffix")
-		//			.desc("Regular expression for the suffix in the barcode. For instance, if the barcode is BARCODE_SEQUENCE, the regular expression should be \"_.*\" [default=null]")
-		//			.hasArg().numberOfArgs(1).argName("REGEXP").required(false).build();
-		//		// this option was because the pattern was only considering ATCGN in the barcode sequence. Now it it more flexible
-		//		Option symbol = Option.builder("s").longOpt("symbol")
-		//			.desc("The barcode contains symbols instead of only a sequence with ATCGN")
-		//			.hasArg(false).numberOfArgs(1).required(false).build();
+		// Option dist = Option.builder("d").longOpt("minimum-distance").desc(
+		//	"Minimum distance between the best match and the second to consider a match. [Default="
+		//		+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
+		//					.required(false).build();
 		// create the options
 		Options options = new Options();
 		// add the options
@@ -198,13 +189,15 @@ public class FastqBarcodeDetector extends AbstractTool {
 		options.addOption(input2);
 		options.addOption(output);
 		// TODO: change for adding all when implemented combined barcode with "_"
-		options.addOption(max);
-		options.addOption(dist);
+		// options.addOption(max);
+		// options.addOption(dist);
 		// add options for barcode programs
-		options.addOption(BarcodeOptions.barcodes);
-		options.addOption(BarcodeOptions.nNoMismatch);
-		options.addOption(BarcodeOptions.split);
-		options.addOption(BarcodeOptions.maxN);
+		BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
+		// TODO: remove following lines
+		// options.addOption(BarcodeOptions.barcodes);
+		// options.addOption(BarcodeOptions.nNoMismatch);
+		// options.addOption(BarcodeOptions.split);
+		// options.addOption(BarcodeOptions.maxN);
 		// default options
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // maintain the format

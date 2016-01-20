@@ -65,7 +65,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		// logging command line
 		logCmdLine(cmd);
 		// open the decoder with its corresponding dictionary
-		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, null);
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
 		// open the reader
 		SamReader reader = ToolsReadersFactory.getSamReaderFromInput(input, CommonOptions.isMaintained(logger, cmd));
 		// create the new header adding the read groups
@@ -144,15 +144,15 @@ public class BamBarcodeDetector extends AbstractTool {
 		Option output = Option.builder("o").longOpt("output").desc("The output file prefix").hasArg().numberOfArgs(1)
 							  .argName("output_prefix").required(true).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
-		Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-			"Maximum number of mismatches allowed for a matched barcode.  [Default="
-				+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
-						   .required(false).build();
+		// Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
+		//	"Maximum number of mismatches allowed for a matched barcode.  [Default="
+		//		+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
+		//				   .required(false).build();
 		// TODO: change for the default when updated to the combination with the separator between barcodes
-		Option dist = Option.builder("d").longOpt("minimum-distance").desc(
-			"Minimum distance between the best match and the second to consider a match. [Default="
-				+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
-							.required(false).build();
+		// Option dist = Option.builder("d").longOpt("minimum-distance").desc(
+		//	"Minimum distance between the best match and the second to consider a match. [Default="
+		//		+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
+		//					.required(false).build();
 		Option samFormat = Option.builder("s").longOpt("sam").desc("Output will be in sam format instead of bam")
 								 .hasArg(false).required(false).build();
 		Option index = Option.builder("ind").longOpt("index").desc("Index the output file").hasArg(false)
@@ -165,15 +165,17 @@ public class BamBarcodeDetector extends AbstractTool {
 		options.addOption(samFormat);
 		options.addOption(index);
 		// TODO: change for adding all when implemented combined barcode with "_"
-		options.addOption(max);
-		options.addOption(dist);
+		// options.addOption(max);
+		// options.addOption(dist);
 		// add options for read groups
 		addAllReadGroupCommonOptionsTo(options);
 		// add options for barcode programs
-		options.addOption(BarcodeOptions.barcodes);
-		options.addOption(BarcodeOptions.nNoMismatch);
-		options.addOption(BarcodeOptions.split);
-		options.addOption(BarcodeOptions.maxN);
+		BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
+		// TODO: remove following lines
+		// options.addOption(BarcodeOptions.barcodes);
+		// options.addOption(BarcodeOptions.nNoMismatch);
+		// options.addOption(BarcodeOptions.split);
+		// options.addOption(BarcodeOptions.maxN);
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // maintain the format
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
