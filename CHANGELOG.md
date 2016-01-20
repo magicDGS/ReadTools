@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - Fixed BAM file not standardize output when `-nstd` option is provided in BamBarcodeDetector
 ### Changed
 - New barcode file format (without header): SampleName, Library, FirstBarcode, SecondBarcode. The program detects if the library is single or double indexed depending on the existence of the SecondBarcode column.
+- Now barcodes with several indexes are not merged in the read name, but separated by "_". This breaks the compatibility with respect to version 0.1.*
 ### Added
 - Checking quality of every base when converting and every 1000 reads when not
 
