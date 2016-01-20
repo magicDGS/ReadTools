@@ -163,13 +163,12 @@ public class BarcodeOptions {
 		readGroupInfo.setPlatformUnit(getUniqueValue(cmd, platformUnit.getOpt()));
 		String runID = getUniqueValue(cmd, run.getOpt());
 		if (length == null) {
-			// TODO: change this!!!!!!
 			dictionary = BarcodeDictionaryFactory.createCombinedDictionary(runID, inputFile, readGroupInfo);
-			logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
-				dictionary.numberOfSamples(), " different barcode sets");
 		} else {
 			dictionary = BarcodeDictionaryFactory.createDefaultDictionary(runID, inputFile, readGroupInfo, length);
 		}
+		logger.info("Loaded barcode file for ", dictionary.numberOfUniqueSamples(), " samples with ",
+			dictionary.numberOfSamples(), " different barcode sets");
 		return dictionary;
 	}
 
