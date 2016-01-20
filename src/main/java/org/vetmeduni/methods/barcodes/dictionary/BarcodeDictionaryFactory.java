@@ -23,6 +23,7 @@
 package org.vetmeduni.methods.barcodes.dictionary;
 
 import htsjdk.samtools.SAMReadGroupRecord;
+import htsjdk.samtools.util.Log;
 import org.vetmeduni.io.readers.SpaceDelimitedReader;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.readtools.ProjectProperties;
@@ -52,6 +53,8 @@ public class BarcodeDictionaryFactory {
 		UNKNOWN_READGROUP_INFO.setSample(BarcodeMatch.UNKNOWN_STRING);
 	}
 
+	private static final Log logger = Log.getInstance(BarcodeDictionaryFactory.class);
+
 	/**
 	 * Create a barcode dictionary from a file, with the first column being the barcode and the subsequent the barcodes.
 	 * Each of the barcodes is stored independently
@@ -75,6 +78,7 @@ public class BarcodeDictionaryFactory {
 		// check the number of barcodes
 		if (numberOfBarcodes < 1) {
 			numberOfBarcodes = nextLine.length - 2;
+			logger.debug("Detected ", numberOfBarcodes, "barcodes");
 		}
 		if (numberOfBarcodes < 1) {
 			throwWrongFormatException(barcodeFile);
@@ -90,6 +94,7 @@ public class BarcodeDictionaryFactory {
 		ArrayList<String> libraries = new ArrayList<>();
 		// reading the rest of the lines
 		while (nextLine != null) {
+			logger.debug(Arrays.toString(nextLine));
 			if (numberOfBarcodes != nextLine.length - 2) {
 				throwWrongFormatException(barcodeFile);
 			}
@@ -97,7 +102,7 @@ public class BarcodeDictionaryFactory {
 			samples.add(nextLine[0]);
 			libraries.add(nextLine[1]);
 			// get the barcodes
-			for (int i = 2; i <= nextLine.length; i++) {
+			for (int i = 2; i < nextLine.length; i++) {
 				barcodes.get(i - 2).add(nextLine[i]);
 			}
 			nextLine = reader.next();
