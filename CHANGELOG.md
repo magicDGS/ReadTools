@@ -2,19 +2,24 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-## Fixed
+
+### Fixed
 - Fixed BAM file not standardize output when `-nstd` option is provided in BamBarcodeDetector
+
 ### Changed
 - New barcode file format (without header): SampleName, Library, FirstBarcode, SecondBarcode. The program detects if the library is single or double indexed depending on the existence of the SecondBarcode column.
 - Now barcodes with several indexes are not merged in the read name, but separated by "_". This breaks the compatibility with respect to version 0.1.*
+
 ### Added
 - Checking quality of every base when converting and every 1000 reads when not
 
 ## [0.1.4] - 2015-12-10
+
 ### Fixed
 - Fixed bug in (issue [#14](https://github.com/magicDGS/ReadTools/issues/14))
 
 ## [0.1.3] - 2015-12-09
+
 ### Changed
 - Logic of bacode detection by default: at least one difference between the best barcode and the second best is needed to do not discard a barcode. For the previous behaviour, use `-d 0`
 - TaggedBamToFastq check the PF flag in the BAM file and ignore reads that does not pass the vendor quality
@@ -26,12 +31,14 @@ All notable changes to this project will be documented in this file.
 - Barcode files are white space delimited (either space or tabs)
 
 ## [0.1.2] - 2015-11-26
+
 ### Added
 - Checking output file existence
 - Create directories for output if they do not exists
 - Checking number of arguments
 
 ## [0.1.1] - 2015-11-24
+
 ### Fixed
 - Fixed bug in single-end TrimFastq tool (issue [#9](https://github.com/magicDGS/ReadTools/issues/9))
 
