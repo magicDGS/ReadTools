@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Checking quality of every base when converting and every 1000 reads when not
+- Default values (BC and B2) for tags containing the barcodes in unmapped BAM files 
 
 ## [0.1.4] - 2015-12-10
 
