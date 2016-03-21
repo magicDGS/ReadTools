@@ -80,6 +80,28 @@ public class BarcodeMethods {
 	}
 
 	/**
+	 * Join several barcodes together using teh barcode separator
+	 *
+	 * @param barcodes the barcodes
+	 *
+	 * @return the formatted barcode
+	 */
+	public static String joinBarcodes(String[] barcodes, String barcodeSeparator) {
+		return String.join(barcodeSeparator, barcodes);
+	}
+
+	/**
+	 * Join several barcodes together usin {@link #BARCODE_BARCODE_SEPARATOR}
+	 *
+	 * @param barcodes the barcodes
+	 *
+	 * @return the formatted barcode
+	 */
+	public static String joinBarcodes(String[] barcodes) {
+		return joinBarcodes(barcodes, BARCODE_BARCODE_SEPARATOR);
+	}
+
+	/**
 	 * Get several barcodes encoding after {@link #NAME_BARCODE_SEPARATOR}
 	 *
 	 * @param readName         the readName to extract the name from

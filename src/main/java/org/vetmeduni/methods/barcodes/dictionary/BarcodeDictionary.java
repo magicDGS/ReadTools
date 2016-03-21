@@ -23,6 +23,7 @@
 package org.vetmeduni.methods.barcodes.dictionary;
 
 import htsjdk.samtools.SAMReadGroupRecord;
+import org.vetmeduni.methods.barcodes.BarcodeMethods;
 
 import java.util.*;
 
@@ -245,7 +246,7 @@ public class BarcodeDictionary {
 	public String getCombinedBarcodesFor(int sampleIndex) {
 		// TODO: changed the combination method!!!!
 		// TODO: be sure that it is working!!!
-		return String.join("_", getBarcodesFor(sampleIndex));
+		return BarcodeMethods.joinBarcodes(getBarcodesFor(sampleIndex));
 	}
 
 	/**

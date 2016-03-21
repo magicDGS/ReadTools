@@ -31,6 +31,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.vetmeduni.io.FastqPairedRecord;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
+import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.tools.AbstractTool;
@@ -185,11 +186,11 @@ public class TaggedBamToFastq extends AbstractTool {
 				best = BarcodeMatch.UNKNOWN_STRING;
 			}
 			if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
-				SAMRecordUtils.addBarcodeToName(record, String.join("", barcodes));
+				SAMRecordUtils.addBarcodeToName(record, BarcodeMethods.joinBarcodes(barcodes));
 			} else {
 				SAMRecordUtils.addBarcodeToName(record, best);
 			}
-			writer.write(BarcodeMatch.UNKNOWN_STRING, SAMRecordUtils.toFastqRecord(record, null));
+			writer.write(best, SAMRecordUtils.toFastqRecord(record, null));
 			progress.record(record);
 		}
 		return pf;
