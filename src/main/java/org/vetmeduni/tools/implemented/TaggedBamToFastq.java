@@ -35,6 +35,7 @@ import org.vetmeduni.methods.barcodes.BarcodeMethods;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.tools.AbstractTool;
+import org.vetmeduni.tools.ToolNames;
 import org.vetmeduni.tools.cmd.BarcodeOptions;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
@@ -64,6 +65,16 @@ import static org.vetmeduni.tools.cmd.OptionUtils.getUniqueValue;
  */
 public class TaggedBamToFastq extends AbstractTool {
 
+	/**
+	 * Default barcode tag for the first barcode
+	 */
+	private static String DEFAULT_BARCODE_TAG1 = "BC";
+
+	/**
+	 * Default barcode tag for the second barcode
+	 */
+	private static String DEFAULT_BARCODE_TAG2 = "B2";
+
 	@Override
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
 		// parsing command line
@@ -75,7 +86,16 @@ public class TaggedBamToFastq extends AbstractTool {
 		// FINISH PARSING: log the command line (not longer in the param file)
 		logCmdLine(cmd);
 		// open the decoder
-		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, tags.length);
+		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
+		if (tags == null) {
+			tags = (decoder.getDictionary().getNumberOfBarcodes() == 1) ?
+				new String[] {DEFAULT_BARCODE_TAG1} :
+				new String[] {DEFAULT_BARCODE_TAG1, DEFAULT_BARCODE_TAG2};
+		}
+		if (tags.length != decoder.getDictionary().getNumberOfBarcodes()) {
+			throw new ToolNames.ToolException(
+				"Number of barcodes in the file is different for the number of barcodes provided/detected");
+		}
 		// open the bam file
 		SamReader input = ToolsReadersFactory
 			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
@@ -237,8 +257,9 @@ public class TaggedBamToFastq extends AbstractTool {
 		Option output = Option.builder("o").longOpt("output").desc("FASTQ output prefix").hasArg()
 							  .argName("OUTPUT_PREFIX").numberOfArgs(1).required().build();
 		Option tag = Option.builder("t").longOpt("tag").desc(
-			"Tag in the BAM file for the stored barcodes. It should be provided the same number of times as barcodes provided in the file.")
-						   .hasArg().numberOfArgs(1).argName("TAG").required().build();
+			"Tag in the BAM file for the stored barcodes. It should be provided the same number of times as barcodes provided in the file. Default: "
+				+ DEFAULT_BARCODE_TAG1 + " for the first barcode, " + DEFAULT_BARCODE_TAG2 + " for the second.")
+						   .hasArg().numberOfArgs(1).argName("TAG").required(false).build();
 		Option single = Option.builder("s").longOpt("single").desc("Switch to single-end parsing").hasArg(false)
 							  .required(false).build();
 		Options options = new Options();
