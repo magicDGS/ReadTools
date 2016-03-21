@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.2.0] - 2016-03-21
 
 ### Fixed
 - Fixed BAM file not standardize output when `-nstd` option is provided in BamBarcodeDetector
@@ -48,6 +48,7 @@ All notable changes to this project will be documented in this file.
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.0
 [0.1.4]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.4
 [0.1.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.3
 [0.1.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.2
