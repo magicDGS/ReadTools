@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed BAM file not standardize output when `-nstd` option is provided in BamBarcodeDetector
+- Fixed bug in (issue [#19](https://github.com/magicDGS/ReadTools/issues/19))
 
 ### Changed
 - New barcode file format (without header): SampleName, Library, FirstBarcode, SecondBarcode. The program detects if the library is single or double indexed depending on the existence of the SecondBarcode column.
