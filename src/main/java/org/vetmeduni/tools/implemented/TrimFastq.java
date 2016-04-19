@@ -68,7 +68,6 @@ public class TrimFastq extends AbstractTool {
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
 		// The input file
 		File input1 = new File(getUniqueValue(cmd, "input1"));
-		logger.debug(input1);
 		// input file 2
 		String input2string = getUniqueValue(cmd, "input2");
 		File input2 = (input2string == null) ? null : new File(input2string);

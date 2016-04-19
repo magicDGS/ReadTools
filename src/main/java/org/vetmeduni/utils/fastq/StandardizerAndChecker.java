@@ -22,6 +22,7 @@
  */
 package org.vetmeduni.utils.fastq;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -73,9 +74,14 @@ public class StandardizerAndChecker {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(FastqRecord record) {
-		if (record != null && count.incrementAndGet() >= frequency) {
-			count.set(0);
-			checkMisencoded((Object) record);
+		try {
+			if (record != null && count.incrementAndGet() >= frequency) {
+				count.set(0);
+				checkMisencoded((Object) record);
+			}
+		} catch (QualityUtils.QualityException e) {
+			throw new SAMException("Wrongly formatted quality string for " +
+				record.getReadHeader() + ": " + record.getBaseQualityString());
 		}
 	}
 
@@ -87,10 +93,16 @@ public class StandardizerAndChecker {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(FastqPairedRecord record) {
-		if (record != null && count.incrementAndGet() >= frequency) {
-			count.set(0);
-			checkMisencoded((Object) record.getRecord1());
-			checkMisencoded((Object) record.getRecord2());
+		try {
+			if (record != null && count.incrementAndGet() >= frequency) {
+				count.set(0);
+				checkMisencoded((Object) record.getRecord1());
+				checkMisencoded((Object) record.getRecord2());
+			}
+		} catch (QualityUtils.QualityException e) {
+			throw new SAMException("Wrongly formatted quality string for paired-record" +
+				record.getRecord1().getReadHeader() + ": " + record.getRecord1().getBaseQualityString() + " and "
+				+ record.getRecord2().getBaseQualityString());
 		}
 	}
 
@@ -102,9 +114,14 @@ public class StandardizerAndChecker {
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
 	public void checkMisencoded(SAMRecord record) {
-		if (record != null && count.incrementAndGet() >= frequency) {
-			count.set(0);
-			checkMisencoded((Object) record);
+		try {
+			if (record != null && count.incrementAndGet() >= frequency) {
+				count.set(0);
+				checkMisencoded((Object) record);
+			}
+		} catch (QualityUtils.QualityException e) {
+			throw new SAMException("Wrongly formatted quality string for " +
+				record.getReadName() + ": " + record.getBaseQualityString());
 		}
 	}
 
@@ -138,18 +155,23 @@ public class StandardizerAndChecker {
 		if (record == null) {
 			return record;
 		}
-		if (QualityUtils.isStandard(encoding)) {
-			checkMisencoded(record);
-			return record;
+		try {
+			if (QualityUtils.isStandard(encoding)) {
+				checkMisencoded(record);
+				return record;
+			}
+			byte[] asciiQualities = record.getBaseQualityString().getBytes();
+			byte[] newQualities = new byte[asciiQualities.length];
+			for (int i = 0; i < asciiQualities.length; i++) {
+				newQualities[i] = QualityUtils.byteToSanger(asciiQualities[i]);
+				QualityUtils.checkStandardEncoding(newQualities[i]);
+			}
+			return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
+				new String(newQualities));
+		} catch (QualityUtils.QualityException e) {
+			throw new SAMException("Wrongly formatted quality string for " +
+				record.getReadHeader() + ": " + record.getBaseQualityString());
 		}
-		byte[] asciiQualities = record.getBaseQualityString().getBytes();
-		byte[] newQualities = new byte[asciiQualities.length];
-		for (int i = 0; i < asciiQualities.length; i++) {
-			newQualities[i] = QualityUtils.byteToSanger(asciiQualities[i]);
-			QualityUtils.checkStandardEncoding(newQualities[i]);
-		}
-		return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
-			new String(newQualities));
 	}
 
 	/**
@@ -179,15 +201,15 @@ public class StandardizerAndChecker {
 	 * argument is null
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the conversion causes a misencoded quality
 	 */
-	public SAMRecord standardize(SAMRecord record) {
+	public SAMRecord standardize(final SAMRecord record) {
 		if (record == null) {
 			return record;
 		}
-		if (QualityUtils.isStandard(encoding)) {
-			checkMisencoded(record);
-			return record;
-		}
 		try {
+			if (QualityUtils.isStandard(encoding)) {
+				checkMisencoded(record);
+				return record;
+			}
 			SAMRecord newRecord = (SAMRecord) record.clone();
 			// relies on the checking of the record
 			SAMRecordUtils.toSanger(newRecord);
@@ -195,6 +217,9 @@ public class StandardizerAndChecker {
 		} catch (CloneNotSupportedException e) {
 			// This should not happen, because it is suppose to be implemented
 			throw new RuntimeException("Unreachable code: " + e.getMessage());
+		} catch (QualityUtils.QualityException e) {
+			throw new SAMException("Wrongly formatted quality string for " +
+				record.getReadName() + ": " + record.getBaseQualityString());
 		}
 	}
 }
