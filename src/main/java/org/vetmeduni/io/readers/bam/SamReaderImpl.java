@@ -66,7 +66,6 @@ public class SamReaderImpl extends SamReaderAbstract {
 
 	@Override
 	public SAMRecord queryMate(SAMRecord rec) {
-		// TODO: I think that this have a bug
 		SAMRecord toReturn = reader.queryMate(rec);
 		checker.checkMisencoded(toReturn);
 		return toReturn;
