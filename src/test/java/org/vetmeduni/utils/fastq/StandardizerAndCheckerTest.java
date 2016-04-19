@@ -22,6 +22,7 @@
  */
 package org.vetmeduni.utils.fastq;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -40,8 +41,7 @@ public class StandardizerAndCheckerTest {
 
 	private static final StandardizerAndChecker sangerChecker = new StandardizerAndChecker(FastqQualityFormat.Standard);
 
-	private static final StandardizerAndChecker illuminaChecker = new StandardizerAndChecker(
-		FastqQualityFormat.Illumina);
+	private static final StandardizerAndChecker illuminaChecker = new StandardizerAndChecker(FastqQualityFormat.Illumina);
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -116,13 +116,13 @@ public class StandardizerAndCheckerTest {
 		// checking that an error is thrown if the quality is misencoded
 		try {
 			illuminaChecker.standardize(sangerFASTQ);
-			Assert.fail("FASTQ Illumina Standardizer does not throw a QualityException if the quality is Sanger");
-		} catch (QualityUtils.QualityException e) {
+			Assert.fail("FASTQ Illumina Standardizer does not throw a SAMException if the quality is Sanger");
+		} catch (SAMException e) {
 		}
 		try {
 			illuminaChecker.standardize(sangerSAM);
-			Assert.fail("SAM Illumina Standardizer does not throw a QualityException if the quality is Sanger");
-		} catch (QualityUtils.QualityException e) {
+			Assert.fail("SAM Illumina Standardizer does not throw a SAMException if the quality is Sanger");
+		} catch (SAMException e) {
 		}
 		// this should not throw errors, but return the exactly same result
 		Assert.assertEquals(illuminaFASTQ, sangerChecker.standardize(illuminaFASTQ));
