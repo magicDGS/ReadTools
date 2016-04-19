@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.2.1] - 2016-04-19
 
 ### Fixed
 - Fixed bug with standard qualities encoded withe the Illumina 1.8 protocol (issue [#21](https://github.com/magicDGS/ReadTools/issues/21))
@@ -57,6 +57,7 @@ All notable changes to this project will be documented in this file.
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.1
 [0.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.0
 [0.1.4]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.4
 [0.1.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.3
