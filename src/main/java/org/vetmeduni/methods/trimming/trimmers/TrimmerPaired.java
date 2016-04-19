@@ -62,9 +62,8 @@ public class TrimmerPaired extends Trimmer {
 	 */
 	private final PairEndTrimming header;
 
-	protected TrimmerPaired(boolean trimQuality, int qualThreshold, int minLength, boolean discardRemainingNs,
-		boolean no5ptrim) {
-		super(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim);
+	TrimmerPaired(boolean trimQuality, int qualThreshold, int minLength, int maxLength, boolean discardRemainingNs, boolean no5ptrim) {
+		super(trimQuality, qualThreshold, minLength, maxLength, discardRemainingNs, no5ptrim);
 		header = new PairEndTrimming();
 		metricPair1 = new TrimStat("first");
 		metricPair2 = new TrimStat("second");

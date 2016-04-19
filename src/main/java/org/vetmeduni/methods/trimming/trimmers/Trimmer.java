@@ -49,6 +49,8 @@ public abstract class Trimmer {
 
 	protected final int minLength;
 
+	protected final int maxLength;
+
 	protected final boolean discardRemainingNs;
 
 	protected final boolean no5ptrim;
@@ -62,14 +64,14 @@ public abstract class Trimmer {
 	 * @param discardRemainingNs should we discard reads with Ns in the middle?
 	 * @param no5ptrim           no trim the 5 prime end
 	 */
-	protected Trimmer(boolean trimQuality, int qualThreshold, int minLength, boolean discardRemainingNs,
+	Trimmer(boolean trimQuality, int qualThreshold, int minLength, int maxLength, boolean discardRemainingNs,
 		boolean no5ptrim) {
 		this.trimQuality = trimQuality;
 		this.qualThreshold = qualThreshold;
+		this.maxLength = maxLength;
 		this.minLength = minLength;
 		this.discardRemainingNs = discardRemainingNs;
 		this.no5ptrim = no5ptrim;
-		// this.stats = new TrimmingStatsDeprecated();
 	}
 
 	/**
@@ -83,14 +85,15 @@ public abstract class Trimmer {
 	 * @param single             <code>true</code> if it is single; <code>false</code> otherwise
 	 *
 	 * @return the trimmer
+	 * @deprecated use {@link org.vetmeduni.methods.trimming.trimmers.TrimmerBuilder} instead
 	 */
+	@Deprecated
 	public static Trimmer getTrimmer(boolean trimQuality, int qualThreshold, int minLength, boolean discardRemainingNs,
 		boolean no5ptrim, boolean single) {
-		if (single) {
-			return new TrimmerSingle(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim);
-		} else {
-			return new TrimmerPaired(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim);
-		}
+		// TODO: change with trimmer builder
+		return new TrimmerBuilder(single).setTrimQuality(trimQuality).setQualityThreshold(qualThreshold)
+										 .setMinLength(minLength).setDiscardRemainingNs(discardRemainingNs)
+										 .setNo5pTrimming(no5ptrim).build();
 	}
 
 	/**
@@ -140,7 +143,7 @@ public abstract class Trimmer {
 			}
 		}
 		// filter by length
-		if (toTrim.length() < minLength) {
+		if (toTrim.length() < minLength || toTrim.length() > maxLength) {
 			metric.LENGTH_DISCARDED++;
 			// stats.addCountLengthDiscard();
 			return null;

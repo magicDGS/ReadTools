@@ -34,6 +34,7 @@ import org.vetmeduni.io.writers.fastq.ReadToolsFastqWriter;
 import org.vetmeduni.io.writers.fastq.SplitFastqWriter;
 import org.vetmeduni.methods.barcodes.dictionary.decoder.BarcodeMatch;
 import org.vetmeduni.methods.trimming.trimmers.Trimmer;
+import org.vetmeduni.methods.trimming.trimmers.TrimmerBuilder;
 import org.vetmeduni.tools.AbstractTool;
 import org.vetmeduni.tools.cmd.CommonOptions;
 import org.vetmeduni.tools.cmd.ToolWritersFactory;
@@ -95,6 +96,17 @@ public class TrimFastq extends AbstractTool {
 		} catch (NumberFormatException e) {
 			throw new ToolException("Minimum length should be a positive integer");
 		}
+		// maximum length
+		int maxLength;
+		try {
+			String maxOpt = getUniqueValue(cmd, "max");
+			maxLength = (maxOpt == null) ? Integer.MAX_VALUE : Integer.parseInt(maxOpt);
+			if(maxLength < 1) {
+				throw new NumberFormatException();
+			}
+		} catch (NumberFormatException e) {
+			throw new ToolException("Maximum length should be a positive integer");
+		}
 		// multi-thread?
 		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
 		boolean multi = (nThreads != 1);
@@ -118,8 +130,10 @@ public class TrimFastq extends AbstractTool {
 			ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
 		// create the trimmer
 		// create the MottAlgorithm
-		Trimmer trimmer = Trimmer
-			.getTrimmer(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim, single);
+		Trimmer trimmer = new TrimmerBuilder(single).setTrimQuality(trimQuality).setQualityThreshold(qualThreshold)
+													.setMinLength(minLength).setMaxLength(maxLength)
+													.setDiscardRemainingNs(discardRemainingNs).setNo5pTrimming(no5ptrim)
+													.build();
 		// run it!
 		process(trimmer, reader, writer, IOUtils.makeMetricsFile(output_prefix));
 	}
@@ -242,6 +256,9 @@ public class TrimFastq extends AbstractTool {
 										  .optionalArg(true).build();
 		Option min_length = Option.builder("m").longOpt("minimum-length").desc(
 			"The minimum length of the read after trimming. [Default=" + DEFAULT_MINIMUM_LENGTH + "]").hasArg()
+								  .numberOfArgs(1).argName("INT").optionalArg(true).build();
+		Option max_length = Option.builder("max").longOpt("maximum-length").desc(
+			"The maximum length of the read after trimming. [Default=" + Integer.MAX_VALUE + "]").hasArg()
 								  .numberOfArgs(1).argName("INT").optionalArg(true).build();
 		Option no_trim_qual = Option.builder("nq").longOpt("no-trim-quality").desc("Switch off quality trimming")
 									.hasArg(false).optionalArg(false).build();

@@ -54,9 +54,8 @@ public class TrimmerSingle extends Trimmer {
 	 */
 	private static final SingleEndTrimming header = new SingleEndTrimming();
 
-	protected TrimmerSingle(boolean trimQuality, int qualThreshold, int minLength, boolean discardRemainingNs,
-		boolean no5ptrim) {
-		super(trimQuality, qualThreshold, minLength, discardRemainingNs, no5ptrim);
+	TrimmerSingle(boolean trimQuality, int qualThreshold, int minLength, int maxLength, boolean discardRemainingNs, boolean no5ptrim) {
+		super(trimQuality, qualThreshold, minLength, maxLength, discardRemainingNs, no5ptrim);
 		metric = new TrimStat("single");
 		histogram = new Histogram<>("length", "count");
 	}
