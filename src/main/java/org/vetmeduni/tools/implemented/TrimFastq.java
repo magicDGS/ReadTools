@@ -274,6 +274,7 @@ public class TrimFastq extends AbstractTool {
 		options.addOption(no_5p_trim);
 		options.addOption(no_trim_qual);
 		options.addOption(min_length);
+		options.addOption(max_length);
 		options.addOption(discard_internal_N);
 		options.addOption(quality_threshold);
 		options.addOption(output);
