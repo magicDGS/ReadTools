@@ -35,20 +35,25 @@ import static org.vetmeduni.utils.misc.Formats.timeFmt;
  */
 public class ProgressLoggerExtension extends ProgressLogger {
 
-	public ProgressLoggerExtension(Log log, int n, String verb, String noun) {
+	private final String verb;
+	private final String noun;
+
+	public ProgressLoggerExtension(final Log log, final int n, final String verb, final String noun) {
 		super(log, n, verb, noun);
+		this.verb = verb;
+		this.noun = noun;
 	}
 
 	public ProgressLoggerExtension(Log log, int n, String verb) {
-		super(log, n, verb);
+		this(log, n, verb, "records");
 	}
 
 	public ProgressLoggerExtension(Log log, int n) {
-		super(log, n);
+		this(log, n, "Processed");
 	}
 
 	public ProgressLoggerExtension(Log log) {
-		super(log);
+		this(log, 1000000);
 	}
 
 	/**
@@ -72,8 +77,7 @@ public class ProgressLoggerExtension extends ProgressLogger {
 	public synchronized String numberOfVariantsProcessed() {
 		final long seconds = getElapsedSeconds();
 		final String elapsed = formatElapseTime(seconds);
-		return String
-			.format("%s %s %s. Elapsed time: %s", this.verb, Formats.commaFmt.format(getCount()), this.noun, elapsed);
+		return String.format("%s %s %s. Elapsed time: %s", verb, Formats.commaFmt.format(getCount()), noun, elapsed);
 	}
 
 	/**
