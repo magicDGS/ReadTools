@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Fixed bug with standard qualities encoded withe the Illumina 1.8 protocol (issue [#21](https://github.com/magicDGS/ReadTools/issues/21))
+
+### Added
+- Maximum length option for TrimFastq (--max)
+- More informative error when quality checking fails
 
 ## [0.2.0] - 2016-03-21
 
