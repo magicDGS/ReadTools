@@ -211,7 +211,8 @@ public class QualityUtils {
 				}
 				break;
 			case Standard:
-				if (quality > 73) {
+				// it is 74 and not 73 because of Illumina 1.8+
+				if (quality > 74) {
 					throw new QualityException("Found " + quality + "(" + (char) quality + ") in Sanger encoded base");
 				}
 				break;

@@ -69,6 +69,8 @@ public class QualityUtilsTest {
 			Assert.assertEquals(quality[i],
 				QualityUtils.getQuality(illuminaQuality.charAt(i), FastqQualityFormat.Illumina));
 		}
+		// check the 41 quality for the sanger Illumina 1.8+
+		Assert.assertEquals(41, QualityUtils.getQuality('J', FastqQualityFormat.Standard));
 	}
 
 	@Test
@@ -94,7 +96,7 @@ public class QualityUtilsTest {
 			} catch (QualityUtils.QualityException e) {
 			}
 		}
-		byte[] illuminaBytesToTest = Arrays.copyOfRange(illuminaQuality.getBytes(), 10, illuminaQuality.length());
+		byte[] illuminaBytesToTest = Arrays.copyOfRange(illuminaQuality.getBytes(), 11, illuminaQuality.length());
 		for (byte b : illuminaBytesToTest) {
 			try {
 				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard);
