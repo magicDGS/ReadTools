@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/magicDGS/ReadTools.svg?branch=master)](https://travis-ci.org/magicDGS/ReadTools)
+[![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
+
 # ReadTools
 
 Tools for sequencing data (BAM and FASTQ files)
