@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Fixed
-- Option for allow higher qualities when standard encoding for solving (issue [#24](https://github.com/magicDGS/ReadTools/issues/24))
+- Option for allow higher qualities (`-ahq`) when standard encoding for solving (issue [#24](https://github.com/magicDGS/ReadTools/issues/24))
 
 ## [0.2.1] - 2016-04-19
 
