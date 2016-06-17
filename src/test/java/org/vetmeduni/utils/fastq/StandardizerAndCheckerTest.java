@@ -39,9 +39,9 @@ public class StandardizerAndCheckerTest {
 
 	SAMRecord sangerSAM;
 
-	private static final StandardizerAndChecker sangerChecker = new StandardizerAndChecker(FastqQualityFormat.Standard);
+	private static final StandardizerAndChecker sangerChecker = new StandardizerAndChecker(FastqQualityFormat.Standard, false);
 
-	private static final StandardizerAndChecker illuminaChecker = new StandardizerAndChecker(FastqQualityFormat.Illumina);
+	private static final StandardizerAndChecker illuminaChecker = new StandardizerAndChecker(FastqQualityFormat.Illumina, false);
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

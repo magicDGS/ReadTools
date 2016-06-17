@@ -145,9 +145,9 @@ public class SAMRecordUtils {
 			byte[] qualities = record.getBaseQualityString().getBytes();
 			byte[] newQualities = new byte[qualities.length];
 			for (int i = 0; i < qualities.length; i++) {
-				// it is suppose to be checked here
-				newQualities[i] = (byte) SAMUtils.fastqToPhred((char) QualityUtils.byteToSanger(qualities[i]));
-				QualityUtils.checkStandardEncoding(newQualities[i], allowHighQualities);
+				final byte sangerQual = QualityUtils.byteToSanger(qualities[i]);
+				QualityUtils.checkStandardEncoding(sangerQual, allowHighQualities);
+				newQualities[i] = (byte) SAMUtils.fastqToPhred((char) sangerQual);
 			}
 			record.setBaseQualities(newQualities);
 		} catch (IllegalArgumentException e) {
