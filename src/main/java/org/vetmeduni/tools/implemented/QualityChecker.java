@@ -43,6 +43,7 @@ public class QualityChecker extends AbstractTool {
 
 	@Override
 	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
+		// TODO: check the qualities for the reader completely
 		File input = new File(getUniqueValue(cmd, "i"));
 		long recordsToIterate;
 		try {

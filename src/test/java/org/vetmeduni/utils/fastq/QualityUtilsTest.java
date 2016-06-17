@@ -78,10 +78,10 @@ public class QualityUtilsTest {
 		// first check correct qualities
 		try {
 			for (byte b : sangerQuality.getBytes()) {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard);
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false);
 			}
 			for (byte b : illuminaQuality.getBytes()) {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina);
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false);
 			}
 		} catch (QualityUtils.QualityException e) {
 			Assert.fail(e.getMessage());
@@ -90,7 +90,7 @@ public class QualityUtilsTest {
 		byte[] sangerBytesToTest = Arrays.copyOfRange(sangerQuality.getBytes(), 0, sangerQuality.length() - 10);
 		for (byte b : sangerBytesToTest) {
 			try {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina);
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false);
 				Assert.fail(
 					"QualityException is not thrown for quality " + b + " (" + (char) b + ") in Illumina encoding");
 			} catch (QualityUtils.QualityException e) {
@@ -99,10 +99,18 @@ public class QualityUtilsTest {
 		byte[] illuminaBytesToTest = Arrays.copyOfRange(illuminaQuality.getBytes(), 11, illuminaQuality.length());
 		for (byte b : illuminaBytesToTest) {
 			try {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard);
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false);
 				Assert
 					.fail("QualityException is not thrown for quality " + b + " (" + (char) b + ") in Sanger encoding");
 			} catch (QualityUtils.QualityException e) {
+			}
+		}
+		// check if allow higher qualities is working
+		for (byte b : illuminaBytesToTest) {
+			try {
+				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, true);
+			} catch (QualityUtils.QualityException e) {
+				Assert.fail("QualityException is thrown for quality " + b + " (" + (char) b + ") in Sanger encoding when allowing higher qualities");
 			}
 		}
 	}

@@ -59,6 +59,7 @@ public class StandardizeQuality extends AbstractTool {
 		boolean index = cmd.hasOption("ind");
 		int nThreads = CommonOptions.numberOfThreads(logger, cmd);
 		boolean multi = nThreads != 1;
+		boolean allowHigherQualities = CommonOptions.allowHigherQualities(logger, cmd);
 		logCmdLine(cmd);
 		// first check the quality
 		switch (QualityUtils.getFastqQualityFormat(input)) {
@@ -69,12 +70,12 @@ public class StandardizeQuality extends AbstractTool {
 		}
 		if (IOUtils.isBamOrSam(input)) {
 			SAMProgramRecord programRecord = getToolProgramRecord(cmd);
-			runBam(input, output, programRecord, index, multi);
+			runBam(input, output, programRecord, index, multi,allowHigherQualities);
 		} else {
 			if (index) {
 				logger.warn("Index could not be performed for FASTQ file");
 			}
-			runFastq(input, output, multi);
+			runFastq(input, output, multi,allowHigherQualities);
 		}
 	}
 
@@ -87,9 +88,9 @@ public class StandardizeQuality extends AbstractTool {
 	 *
 	 * @throws IOException if there is some problem with the files
 	 */
-	private void runFastq(File input, File output, boolean multi) throws IOException {
+	private void runFastq(File input, File output, boolean multi, boolean allowHigherQualities) throws IOException {
 		// open reader (directly converting)
-		FastqReaderSingleInterface reader = new FastqReaderSingleSanger(input);
+		FastqReaderSingleInterface reader = new FastqReaderSingleSanger(input,allowHigherQualities);
 		// open factory for writer
 		FastqWriterFactory factory = new FastqWriterFactory();
 		factory.setUseAsyncIo(multi);
@@ -117,9 +118,9 @@ public class StandardizeQuality extends AbstractTool {
 	 *
 	 * @throws IOException if there is some problem with the files
 	 */
-	private void runBam(File input, File output, SAMProgramRecord programInfo, boolean index, boolean multi)
+	private void runBam(File input, File output, SAMProgramRecord programInfo, boolean index, boolean multi, boolean allowHigherQualities)
 		throws IOException {
-		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT);
+		SamReader reader = new SamReaderSanger(input, ValidationStringency.SILENT, allowHigherQualities);
 		final SAMFileHeader header = reader.getFileHeader();
 		header.addProgramRecord(programInfo);
 		SAMFileWriter writer = new ReadToolsSAMFileWriterFactory().setCreateIndex(index).setUseAsyncIo(multi)
@@ -149,6 +150,7 @@ public class StandardizeQuality extends AbstractTool {
 		options.addOption(output);
 		options.addOption(index);
 		// common options
+		options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
 		options.addOption(CommonOptions.parallel);
 		return options;
 	}

@@ -38,16 +38,16 @@ import java.io.File;
  */
 public class SamReaderSanger extends SamReaderAbstract {
 
-	public SamReaderSanger(File file) {
-		super(file);
+	public SamReaderSanger(File file, boolean allowHigherSangerQualitie) {
+		super(file, allowHigherSangerQualitie);
 	}
 
-	public SamReaderSanger(File file, ValidationStringency stringency) {
-		super(file, stringency);
+	public SamReaderSanger(File file, ValidationStringency stringency, boolean allowHigherSangerQualities) {
+		super(file, stringency, allowHigherSangerQualities);
 	}
 
-	public SamReaderSanger(File file, SamReaderFactory factory) {
-		super(file, factory);
+	public SamReaderSanger(File file, SamReaderFactory factory, boolean allowHigherSangerQualities) {
+		super(file, factory, allowHigherSangerQualities);
 	}
 
 	SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator) {

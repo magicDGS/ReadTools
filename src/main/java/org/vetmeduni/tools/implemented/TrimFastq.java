@@ -122,7 +122,7 @@ public class TrimFastq extends AbstractTool {
 		// save the maintained format option
 		boolean isMaintained = CommonOptions.isMaintained(logger, cmd);
 		// open the reader
-		FastqReaderInterface reader = ToolsReadersFactory.getFastqReaderFromInputs(input1, input2, isMaintained);
+		FastqReaderInterface reader = ToolsReadersFactory.getFastqReaderFromInputs(input1, input2, isMaintained, CommonOptions.allowHigherQualities(logger, cmd));
 		boolean single = !(reader instanceof FastqReaderPairedInterface);
 		// open the writer
 		ReadToolsFastqWriter writer = (keepDiscard) ?
@@ -282,6 +282,7 @@ public class TrimFastq extends AbstractTool {
 		options.addOption(input1);
 		// adding common options
 		options.addOption(CommonOptions.maintainFormat); // maintain the format
+		options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
 		options.addOption(CommonOptions.disableZippedOutput); // disable the zipped output
 		options.addOption(CommonOptions.parallel); // parallelization allowed
 		return options;

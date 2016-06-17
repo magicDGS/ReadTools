@@ -67,7 +67,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		// open the decoder with its corresponding dictionary
 		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
 		// open the reader
-		SamReader reader = ToolsReadersFactory.getSamReaderFromInput(input, CommonOptions.isMaintained(logger, cmd));
+		SamReader reader = ToolsReadersFactory.getSamReaderFromInput(input, CommonOptions.isMaintained(logger, cmd), CommonOptions.allowHigherQualities(logger, cmd));
 		// create the new header adding the read groups
 		SAMFileHeader header = reader.getFileHeader();
 		addReadGroupToHeader(header, decoder.getDictionary());
@@ -178,6 +178,7 @@ public class BamBarcodeDetector extends AbstractTool {
 		// options.addOption(BarcodeOptions.maxN);
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // maintain the format
+		options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
 		options.addOption(CommonOptions.parallel); // allow parallel output
 		return options;

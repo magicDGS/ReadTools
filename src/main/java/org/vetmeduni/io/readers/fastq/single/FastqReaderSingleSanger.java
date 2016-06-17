@@ -35,24 +35,25 @@ import java.io.File;
  */
 public class FastqReaderSingleSanger extends FastqReaderSingleAbstract {
 
-	public FastqReaderSingleSanger(File file) {
-		super(file);
+
+	public FastqReaderSingleSanger(File file, boolean allowHigherQualities) {
+		super(file, allowHigherQualities);
 	}
 
-	public FastqReaderSingleSanger(File file, boolean skipBlankLines) {
-		super(file, skipBlankLines);
+	public FastqReaderSingleSanger(File file, boolean skipBlankLines, boolean allowHigherQualities) {
+		super(file, skipBlankLines, allowHigherQualities);
 	}
 
-	public FastqReaderSingleSanger(BufferedReader reader) {
-		super(reader);
+	public FastqReaderSingleSanger(BufferedReader reader, boolean allowHigherQualities) {
+		super(reader, allowHigherQualities);
 	}
 
-	public FastqReaderSingleSanger(File file, BufferedReader reader, boolean skipBlankLines) {
-		super(file, reader, skipBlankLines);
+	public FastqReaderSingleSanger(File file, BufferedReader reader, boolean skipBlankLines, boolean allowHigherQualities) {
+		super(file, reader, skipBlankLines, allowHigherQualities);
 	}
 
-	public FastqReaderSingleSanger(File file, BufferedReader reader) {
-		super(file, reader);
+	public FastqReaderSingleSanger(File file, BufferedReader reader, boolean allowHigherQualities) {
+		super(file, reader, allowHigherQualities);
 	}
 
 	/**

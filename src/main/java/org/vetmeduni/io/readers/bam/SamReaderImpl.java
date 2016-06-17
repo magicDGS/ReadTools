@@ -37,16 +37,17 @@ import java.io.File;
  */
 public class SamReaderImpl extends SamReaderAbstract {
 
-	public SamReaderImpl(File file) {
-		super(file);
+
+	public SamReaderImpl(File file, boolean allowHigherSangerQualitie) {
+		super(file, allowHigherSangerQualitie);
 	}
 
-	public SamReaderImpl(File file, ValidationStringency stringency) {
-		super(file, stringency);
+	public SamReaderImpl(File file, ValidationStringency stringency, boolean allowHigherSangerQualities) {
+		super(file, stringency, allowHigherSangerQualities);
 	}
 
-	public SamReaderImpl(File file, SamReaderFactory factory) {
-		super(file, factory);
+	public SamReaderImpl(File file, SamReaderFactory factory, boolean allowHigherSangerQualities) {
+		super(file, factory, allowHigherSangerQualities);
 	}
 
 	@Override

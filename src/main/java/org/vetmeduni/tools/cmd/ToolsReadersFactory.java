@@ -49,17 +49,18 @@ public class ToolsReadersFactory {
 	 * @param input1       the input for the first pair
 	 * @param input2       the input for the second pair; <code>null</code> if it is single end processing
 	 * @param isMaintained should be the format maintained or standardize?
+	 * @param allowHigherQualities higher qualities does not thrown an error?
 	 *
 	 * @return the reader for the file(s)
 	 */
-	public static FastqReaderInterface getFastqReaderFromInputs(File input1, File input2, boolean isMaintained) {
+	public static FastqReaderInterface getFastqReaderFromInputs(File input1, File input2, boolean isMaintained, boolean allowHigherQualities) {
 		FastqReaderInterface toReturn;
 		if (input2 == null) {
-			toReturn = (isMaintained) ? new FastqReaderSingleImpl(input1) : new FastqReaderSingleSanger(input1);
+			toReturn = (isMaintained) ? new FastqReaderSingleImpl(input1, allowHigherQualities) : new FastqReaderSingleSanger(input1, allowHigherQualities);
 		} else {
 			toReturn = (isMaintained) ?
-				new FastqReaderPairedImpl(input1, input2) :
-				new FastqReaderPairedSanger(input1, input2);
+				new FastqReaderPairedImpl(input1, input2, allowHigherQualities) :
+				new FastqReaderPairedSanger(input1, input2, allowHigherQualities);
 		}
 		return toReturn;
 	}
@@ -69,16 +70,17 @@ public class ToolsReadersFactory {
 	 *
 	 * @param input        the input BAM/SAM file
 	 * @param isMaintained should be the format maintained or standardize?
+	 * @param allowHigherQualities higher qualities does not thrown an error?
 	 *
 	 * @return the reader for the file
 	 */
-	public static SamReader getSamReaderFromInput(File input, boolean isMaintained) {
+	public static SamReader getSamReaderFromInput(File input, boolean isMaintained, boolean allowHigherQualities) {
 		if (isMaintained) {
 			// if the format is maintained, create a default sam reader
-			return new SamReaderImpl(input, ValidationStringency.SILENT);
+			return new SamReaderImpl(input, ValidationStringency.SILENT, allowHigherQualities);
 		} else {
 			// if not, standardize
-			return new SamReaderSanger(input, ValidationStringency.SILENT);
+			return new SamReaderSanger(input, ValidationStringency.SILENT, allowHigherQualities);
 		}
 	}
 }

@@ -98,7 +98,7 @@ public class TaggedBamToFastq extends AbstractTool {
 		}
 		// open the bam file
 		SamReader input = ToolsReadersFactory
-			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd));
+			.getSamReaderFromInput(new File(inputString), CommonOptions.isMaintained(logger, cmd), CommonOptions.allowHigherQualities(logger, cmd));
 		// Create the writer factory
 		SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix,
 			BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
@@ -271,6 +271,7 @@ public class TaggedBamToFastq extends AbstractTool {
 		BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // maintain the format
+		options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
 		options.addOption(CommonOptions.parallel);
 		return options;

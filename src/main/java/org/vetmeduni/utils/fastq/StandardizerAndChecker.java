@@ -47,14 +47,30 @@ public class StandardizerAndChecker {
 	// the number of records that passed by this count
 	protected final AtomicInteger count;
 
+	// if higher qualities are allowed
+	protected final boolean allowHighQualities;
+
 	/**
 	 * Default constructor
 	 *
 	 * @param encoding the encoding associated with the detector
+	 * @param allowHighQualities should higher qualities throw an error?
 	 */
-	public StandardizerAndChecker(final FastqQualityFormat encoding) {
+	public StandardizerAndChecker(final FastqQualityFormat encoding, final boolean allowHighQualities) {
 		this.encoding = encoding;
 		this.count = new AtomicInteger();
+		this.allowHighQualities = allowHighQualities;
+	}
+
+	/**
+	 * Constructor for strict checking ({@link #allowHighQualities} set to false)
+	 *
+	 * @param encoding the encoding associated with the detector
+	 * @deprecated use {@link #StandardizerAndChecker(FastqQualityFormat, boolean)} instead
+	 */
+	@Deprecated
+	public StandardizerAndChecker(final FastqQualityFormat encoding) {
+		this(encoding, false);
 	}
 
 	/**
@@ -73,7 +89,7 @@ public class StandardizerAndChecker {
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
-	public void checkMisencoded(FastqRecord record) {
+	public void checkMisencoded(final FastqRecord record) {
 		try {
 			if (record != null && count.incrementAndGet() >= frequency) {
 				count.set(0);
@@ -92,7 +108,7 @@ public class StandardizerAndChecker {
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
-	public void checkMisencoded(FastqPairedRecord record) {
+	public void checkMisencoded(final FastqPairedRecord record) {
 		try {
 			if (record != null && count.incrementAndGet() >= frequency) {
 				count.set(0);
@@ -113,7 +129,7 @@ public class StandardizerAndChecker {
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is checked and misencoded
 	 */
-	public void checkMisencoded(SAMRecord record) {
+	public void checkMisencoded(final SAMRecord record) {
 		try {
 			if (record != null && count.incrementAndGet() >= frequency) {
 				count.set(0);
@@ -130,7 +146,7 @@ public class StandardizerAndChecker {
 	 *
 	 * @param record the record to check
 	 */
-	protected void checkMisencoded(Object record) {
+	protected void checkMisencoded(final Object record) {
 		final byte[] quals;
 		if (record instanceof SAMRecord) {
 			quals = ((SAMRecord) record).getBaseQualityString().getBytes();
@@ -139,7 +155,7 @@ public class StandardizerAndChecker {
 		} else {
 			throw new IllegalArgumentException("checkMisencoded only accepts FastqRecord/SAMRecord");
 		}
-		QualityUtils.checkEncoding(quals, encoding);
+		QualityUtils.checkEncoding(quals, encoding, allowHighQualities);
 	}
 
 	/**
@@ -151,7 +167,7 @@ public class StandardizerAndChecker {
 	 * argument is null
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the conversion causes a misencoded quality
 	 */
-	public FastqRecord standardize(FastqRecord record) {
+	public FastqRecord standardize(final FastqRecord record) {
 		if (record == null) {
 			return record;
 		}
@@ -164,7 +180,7 @@ public class StandardizerAndChecker {
 			byte[] newQualities = new byte[asciiQualities.length];
 			for (int i = 0; i < asciiQualities.length; i++) {
 				newQualities[i] = QualityUtils.byteToSanger(asciiQualities[i]);
-				QualityUtils.checkStandardEncoding(newQualities[i]);
+				QualityUtils.checkStandardEncoding(newQualities[i], allowHighQualities);
 			}
 			return new FastqRecord(record.getReadHeader(), record.getReadString(), record.getBaseQualityHeader(),
 				new String(newQualities));
@@ -183,7 +199,7 @@ public class StandardizerAndChecker {
 	 * argument is null
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the conversion causes a misencoded quality
 	 */
-	public FastqPairedRecord standardize(FastqPairedRecord record) {
+	public FastqPairedRecord standardize(final FastqPairedRecord record) {
 		if (record == null) {
 			return record;
 		}
@@ -212,7 +228,7 @@ public class StandardizerAndChecker {
 			}
 			SAMRecord newRecord = (SAMRecord) record.clone();
 			// relies on the checking of the record
-			SAMRecordUtils.toSanger(newRecord);
+			SAMRecordUtils.toSanger(newRecord, allowHighQualities);
 			return newRecord;
 		} catch (CloneNotSupportedException e) {
 			// This should not happen, because it is suppose to be implemented

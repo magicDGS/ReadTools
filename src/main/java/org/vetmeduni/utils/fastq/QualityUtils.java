@@ -195,10 +195,11 @@ public class QualityUtils {
 	 *
 	 * @param quality  the quality to check
 	 * @param encoding the encoding
+	 * @param allowHigherQualitiesSanger allow higher qualities when sanger encoding
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
 	 */
-	public static void checkEncoding(byte quality, FastqQualityFormat encoding) {
+	public static void checkEncoding(final byte quality, final FastqQualityFormat encoding, final boolean allowHigherQualitiesSanger) {
 		// there are no qualities smaller than 33
 		if (quality < 33) {
 			throw new QualityException("Found " + quality + " (" + (char) quality + ") encoded quality");
@@ -212,7 +213,7 @@ public class QualityUtils {
 				break;
 			case Standard:
 				// it is 74 and not 73 because of Illumina 1.8+
-				if (quality > 74) {
+				if (quality > 74 && !allowHigherQualitiesSanger) {
 					throw new QualityException("Found " + quality + "(" + (char) quality + ") in Sanger encoded base");
 				}
 				break;
@@ -222,12 +223,38 @@ public class QualityUtils {
 	}
 
 	/**
+	 * Check if a base quality is well encoded (strict form)
+	 *
+	 * @param quality  the quality to check
+	 * @param encoding the encoding
+	 *
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
+	 * @deprecated use {@link #checkEncoding(byte, FastqQualityFormat, boolean)} instead to fine control
+	 */
+	@Deprecated
+	public static void checkEncoding(final byte quality, final FastqQualityFormat encoding) {
+		checkEncoding(quality, encoding, false);
+	}
+
+	/**
 	 * Check if a base quality is correctly standard encoded
 	 *
 	 * @param quality the quality to check
+	 * @deprecated use {@link #checkStandardEncoding(byte, boolean)}
 	 */
+	@Deprecated
 	public static void checkStandardEncoding(byte quality) {
 		checkEncoding(quality, FastqQualityFormat.Standard);
+	}
+
+	/**
+	 * Check if a base quality is correctly standard encoded
+	 *
+	 * @param quality the quality to check
+	 * @param allowHigherQualities allow higher qualities
+	 */
+	public static void checkStandardEncoding(final byte quality, final boolean allowHigherQualities) {
+		checkEncoding(quality, FastqQualityFormat.Standard, allowHigherQualities);
 	}
 
 	/**
@@ -237,7 +264,9 @@ public class QualityUtils {
 	 * @param encoding  the encoding
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
+	 * @deprecated use {@link #checkEncoding(byte, FastqQualityFormat, boolean)}
 	 */
+	@Deprecated
 	public static void checkEncoding(byte[] qualities, FastqQualityFormat encoding) {
 		for (byte qual : qualities) {
 			checkEncoding(qual, encoding);
@@ -245,11 +274,38 @@ public class QualityUtils {
 	}
 
 	/**
+	 * Check if a several base qualities are well encoded
+	 *
+	 * @param qualities the array of qualities to check
+	 * @param encoding  the encoding
+	 * @param allowHigherQualitiesSanger if it is sanger encoding
+	 *
+	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if the quality is not well encoded
+	 */
+	public static void checkEncoding(final byte[] qualities, final FastqQualityFormat encoding, final boolean allowHigherQualitiesSanger) {
+		for (byte qual : qualities) {
+			checkEncoding(qual, encoding, allowHigherQualitiesSanger);
+		}
+	}
+
+	/**
 	 * Check if a several base qualities are correctly standard encoded
 	 *
 	 * @param qualities the array of qualities to check
+	 * @deprecated use {@link #checkStandardEncoding(byte[], boolean)}
 	 */
+	@Deprecated
 	public static void checkStandardEncoding(byte[] qualities) {
 		checkEncoding(qualities, FastqQualityFormat.Standard);
+	}
+
+	/**
+	 * Check if a several base qualities are correctly standard encoded
+	 *
+	 * @param qualities the array of qualities to check
+	 * @param allowHigherQualities allow higher qualities
+	 */
+	public static void checkStandardEncoding(byte[] qualities, final boolean allowHigherQualities) {
+		checkEncoding(qualities, FastqQualityFormat.Standard, allowHigherQualities);
 	}
 }

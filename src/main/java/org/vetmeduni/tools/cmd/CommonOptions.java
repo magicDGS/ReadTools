@@ -56,6 +56,13 @@ public class CommonOptions {
 														   .optionalArg(true).build();
 
 	/**
+	 * Opton for allow higher qualities in sanger
+	 */
+	public static final Option allowHigherSangerQualities = Option.builder("ahq").longOpt("allow-higher-qualities")
+																.desc("Allow higher qualities for Standard encoding")
+																.hasArg(false).optionalArg(true).build();
+
+	/**
 	 * Option for parallelization. Currently is not really multi-thread
 	 */
 	// TODO: change the description when real multi-thread
@@ -80,6 +87,23 @@ public class CommonOptions {
 			logger.info("Output will be in Sanger format independently of the input format");
 			return false;
 		}
+	}
+
+	/**
+	 * Check if the command line provides the higher qualities option and log into the logger
+	 *
+	 * @param logger the logger where output the information
+	 * @param cmd    the command line where check if the option is set
+	 *
+	 * @return <code>true</code> if higher qualities are allowed; <code>false</code> otherwise
+	 */
+	public static boolean allowHigherQualities(final Log logger, final CommandLine cmd) {
+		if(cmd.hasOption(allowHigherSangerQualities.getOpt())) {
+			logger.warn("Standard qualities higher than specifications will be allowed. Does not provide the option -",
+					allowHigherSangerQualities.getOpt(), " to avoid this behaviour");
+			return true;
+		}
+		return false;
 	}
 
 	/**

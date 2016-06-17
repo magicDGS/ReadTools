@@ -71,7 +71,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 		BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
 		// create the reader and the writer
 		FastqReaderInterface reader = ToolsReadersFactory
-			.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd));
+			.getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd), CommonOptions.allowHigherQualities(logger, cmd));
 		SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix,
 			BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
 			cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null);
@@ -201,6 +201,7 @@ public class FastqBarcodeDetector extends AbstractTool {
 		// default options
 		// add common options
 		options.addOption(CommonOptions.maintainFormat); // maintain the format
+		options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
 		options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
 		options.addOption(CommonOptions.parallel); // allow parallel output
 		return options;

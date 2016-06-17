@@ -117,8 +117,9 @@ public class SAMRecordUtils {
 	 * Update the quality encoding for a record to sanger. Checks if the record is correctly formatted on the fly
 	 *
 	 * @param record the record to update
+	 * @deprecated use {@link #toSanger(SAMRecord, boolean)} instead
 	 */
-	public static void toSanger(SAMRecord record) {
+	public static void toSanger(final SAMRecord record) {
 		try {
 			// get the base qualities as ascii bytes
 			byte[] qualities = record.getBaseQualityString().getBytes();
@@ -126,6 +127,27 @@ public class SAMRecordUtils {
 			for (int i = 0; i < qualities.length; i++) {
 				// it is suppose to be checked here
 				newQualities[i] = (byte) SAMUtils.fastqToPhred((char) QualityUtils.byteToSanger(qualities[i]));
+			}
+			record.setBaseQualities(newQualities);
+		} catch (IllegalArgumentException e) {
+			throw new QualityUtils.QualityException(e);
+		}
+	}
+
+	/**
+	 * Update the quality encoding for a record to sanger. Checks if the record is correctly formatted on the fly
+	 *
+	 * @param record the record to update
+	 */
+	public static void toSanger(final SAMRecord record, final boolean allowHighQualities) {
+		try {
+			// get the base qualities as ascii bytes
+			byte[] qualities = record.getBaseQualityString().getBytes();
+			byte[] newQualities = new byte[qualities.length];
+			for (int i = 0; i < qualities.length; i++) {
+				// it is suppose to be checked here
+				newQualities[i] = (byte) SAMUtils.fastqToPhred((char) QualityUtils.byteToSanger(qualities[i]));
+				QualityUtils.checkStandardEncoding(newQualities[i], allowHighQualities);
 			}
 			record.setBaseQualities(newQualities);
 		} catch (IllegalArgumentException e) {

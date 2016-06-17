@@ -51,9 +51,32 @@ public abstract class SamReaderAbstract implements SamReaderInterface {
 	 * Creates a SamReaderSanger from a file, with default SamReaderFactory
 	 *
 	 * @param file the file
+	 * @deprecated use {@link #SamReaderAbstract(File, boolean)} instead
 	 */
+	@Deprecated
 	public SamReaderAbstract(File file) {
 		this(file, SamReaderFactory.makeDefault());
+	}
+
+	/**
+	 * Creates a SamReaderSanger from a file, with default SamReaderFactory
+	 *
+	 * @param file the file
+	 */
+	public SamReaderAbstract(final File file, final boolean allowHigherSangerQualitie) {
+		this(file, SamReaderFactory.makeDefault(), allowHigherSangerQualitie);
+	}
+
+	/**
+	 * Creates a SamReaderSanger with the default SamReaderFactory and the provided validation stringency
+	 *
+	 * @param file       the file
+	 * @param stringency the validation stringency
+	 * @deprecated use {@link #SamReaderAbstract(File, ValidationStringency, boolean)} instead
+	 */
+	@Deprecated
+	public SamReaderAbstract(File file, ValidationStringency stringency) {
+		this(file, SamReaderFactory.makeDefault().validationStringency(stringency), false);
 	}
 
 	/**
@@ -62,8 +85,20 @@ public abstract class SamReaderAbstract implements SamReaderInterface {
 	 * @param file       the file
 	 * @param stringency the validation stringency
 	 */
-	public SamReaderAbstract(File file, ValidationStringency stringency) {
-		this(file, SamReaderFactory.makeDefault().validationStringency(stringency));
+	public SamReaderAbstract(final File file, final ValidationStringency stringency, final boolean allowHigherSangerQualities) {
+		this(file, SamReaderFactory.makeDefault().validationStringency(stringency), allowHigherSangerQualities);
+	}
+
+	/**
+	 * Creates a SamReaderSanger with the provided factory (it only open the file)
+	 *
+	 * @param file    the file
+	 * @param factory the factory
+	 * @deprecated use {@link #SamReaderAbstract(File, SamReaderFactory, boolean)}
+	 */
+	@Deprecated
+	public SamReaderAbstract(File file, SamReaderFactory factory) {
+		this(file, factory, false);
 	}
 
 	/**
@@ -72,9 +107,9 @@ public abstract class SamReaderAbstract implements SamReaderInterface {
 	 * @param file    the file
 	 * @param factory the factory
 	 */
-	public SamReaderAbstract(File file, SamReaderFactory factory) {
+	public SamReaderAbstract(final File file, final SamReaderFactory factory, final boolean allowHigherSangerQualities) {
 		this.reader = factory.open(file);
-		this.checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(file));
+		this.checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(file), allowHigherSangerQualities);
 	}
 
 	/**

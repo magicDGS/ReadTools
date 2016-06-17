@@ -43,33 +43,33 @@ public abstract class FastqReaderSingleAbstract extends FastqReader implements F
 	 */
 	protected StandardizerAndChecker checker;
 
-	public FastqReaderSingleAbstract(File file) {
-		this(file, false);
+	public FastqReaderSingleAbstract(final File file, final boolean allowHigherQualities) {
+		this(file, false, allowHigherQualities);
 	}
 
-	public FastqReaderSingleAbstract(File file, boolean skipBlankLines) {
+	public FastqReaderSingleAbstract(final File file, boolean skipBlankLines, final boolean allowHigherQualities) {
 		super(file, skipBlankLines);
-		init();
+		init(allowHigherQualities);
 	}
 
-	public FastqReaderSingleAbstract(BufferedReader reader) {
-		this(null, reader);
+	public FastqReaderSingleAbstract(final BufferedReader reader, final boolean allowHigherQualities) {
+		this(null, reader, allowHigherQualities);
 	}
 
-	public FastqReaderSingleAbstract(File file, BufferedReader reader, boolean skipBlankLines) {
+	public FastqReaderSingleAbstract(final File file, final BufferedReader reader, final boolean skipBlankLines, final boolean allowHigherQualities) {
 		super(file, reader, skipBlankLines);
-		init();
+		init(allowHigherQualities);
 	}
 
-	public FastqReaderSingleAbstract(File file, BufferedReader reader) {
-		this(file, reader, false);
+	public FastqReaderSingleAbstract(final File file, final BufferedReader reader, final boolean allowHigherQualities) {
+		this(file, reader, false, allowHigherQualities);
 	}
 
 	/**
 	 * Get the encoding for the file
 	 */
-	private void init() {
-		checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(this.getFile()));
+	private void init(final boolean allowHigherQualities) {
+		checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(this.getFile()), allowHigherQualities);
 	}
 
 	/**

@@ -36,12 +36,12 @@ import java.io.File;
  */
 public class FastqReaderPairedImpl extends FastqReaderPairedAbstract {
 
-	public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
-		super(reader1, reader2);
+	public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2, boolean allowHighQualities) throws QualityUtils.QualityException {
+		super(reader1, reader2, allowHighQualities);
 	}
 
-	public FastqReaderPairedImpl(File reader1, File reader2) throws QualityUtils.QualityException {
-		super(reader1, reader2);
+	public FastqReaderPairedImpl(File reader1, File reader2, boolean allowHighQualities) throws QualityUtils.QualityException {
+		super(reader1, reader2, allowHighQualities);
 	}
 
 	@Override

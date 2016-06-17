@@ -50,6 +50,10 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
 
 	protected Log logger;
 
+	@Deprecated
+	public FastqReaderPairedAbstract(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
+		this(reader1, reader2, false);
+	}
 	/**
 	 * Default constructor with two readers
 	 *
@@ -58,11 +62,11 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if both files are encoding differently
 	 */
-	public FastqReaderPairedAbstract(FastqReader reader1, FastqReader reader2) throws QualityUtils.QualityException {
+	public FastqReaderPairedAbstract(final FastqReader reader1, final FastqReader reader2, final boolean allowHighQualities) throws QualityUtils.QualityException {
 		logger = Log.getInstance(this.getClass());
 		this.reader1 = reader1;
 		this.reader2 = reader2;
-		this.checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(reader1.getFile()));
+		this.checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(reader1.getFile()), allowHighQualities);
 		if (checker.getEncoding() != QualityUtils.getFastqQualityFormat(reader2.getFile())) {
 			throw new QualityUtils.QualityException("Pair-end encoding is different for both read pairs");
 		}
@@ -77,6 +81,11 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
 	 *
 	 * @throws org.vetmeduni.utils.fastq.QualityUtils.QualityException if both files are encoding differently
 	 */
+	public FastqReaderPairedAbstract(final File reader1, final File reader2, final boolean allowHighQualities) throws QualityUtils.QualityException {
+		this(new FastqReader(reader1), new FastqReader(reader2), allowHighQualities);
+	}
+
+	@Deprecated
 	public FastqReaderPairedAbstract(File reader1, File reader2) throws QualityUtils.QualityException {
 		this(new FastqReader(reader1), new FastqReader(reader2));
 	}
