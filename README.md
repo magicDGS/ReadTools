@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/magicDGS/ReadTools.svg?branch=master)](https://travis-ci.org/magicDGS/ReadTools)
+[![Coverage Status](https://coveralls.io/repos/github/magicDGS/ReadTools/badge.svg?branch=master)](https://coveralls.io/github/magicDGS/ReadTools?branch=master)
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
 
 # ReadTools
