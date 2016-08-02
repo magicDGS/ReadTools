@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/magicDGS/ReadTools.svg?branch=master)](https://travis-ci.org/magicDGS/ReadTools)
 [![Coverage Status](https://coveralls.io/repos/github/magicDGS/ReadTools/badge.svg?branch=master)](https://coveralls.io/github/magicDGS/ReadTools?branch=master)
+[![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # ReadTools
 
