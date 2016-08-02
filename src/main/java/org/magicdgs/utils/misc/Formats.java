@@ -33,29 +33,30 @@ import java.util.Collections;
  */
 public class Formats {
 
-	/**
-	 * Format for times
-	 */
-	public final static DecimalFormat timeFmt = new DecimalFormat("00");
+    /**
+     * Format for times
+     */
+    public final static DecimalFormat timeFmt = new DecimalFormat("00");
 
-	/**
-	 * Format for big numbers with commas each 3 numbers
-	 */
-	public final static NumberFormat commaFmt = new DecimalFormat("#,###");
+    /**
+     * Format for big numbers with commas each 3 numbers
+     */
+    public final static NumberFormat commaFmt = new DecimalFormat("#,###");
 
-	/**
-	 * Format for decimal numbers rounded to 7
-	 */
-	public final static DecimalFormat roundToSevenFmt = new DecimalFormat("#.#######");
+    /**
+     * Format for decimal numbers rounded to 7
+     */
+    public final static DecimalFormat roundToSevenFmt = new DecimalFormat("#.#######");
 
-	/**
-	 * Get a rounded format with certain number of significant digits
-	 *
-	 * @param digits the number of digits
-	 *
-	 * @return the number formatted as a String
-	 */
-	public static DecimalFormat getRoundFormat(int digits) {
-		return new DecimalFormat(String.format("#.%s", String.join("", Collections.nCopies(digits, "#"))));
-	}
+    /**
+     * Get a rounded format with certain number of significant digits
+     *
+     * @param digits the number of digits
+     *
+     * @return the number formatted as a String
+     */
+    public static DecimalFormat getRoundFormat(int digits) {
+        return new DecimalFormat(
+                String.format("#.%s", String.join("", Collections.nCopies(digits, "#"))));
+    }
 }

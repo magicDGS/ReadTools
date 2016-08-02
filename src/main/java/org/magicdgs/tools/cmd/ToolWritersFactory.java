@@ -22,13 +22,14 @@
  */
 package org.magicdgs.tools.cmd;
 
-import htsjdk.samtools.SAMFileHeader;
 import org.magicdgs.io.writers.bam.ReadToolsSAMFileWriterFactory;
 import org.magicdgs.io.writers.bam.SplitSAMFileWriter;
 import org.magicdgs.io.writers.fastq.ReadToolsFastqWriter;
 import org.magicdgs.io.writers.fastq.ReadToolsFastqWriterFactory;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.methods.barcodes.dictionary.BarcodeDictionary;
+
+import htsjdk.samtools.SAMFileHeader;
 
 import java.io.IOException;
 
@@ -39,70 +40,75 @@ import java.io.IOException;
  */
 public class ToolWritersFactory {
 
-	/**
-	 * Get FASTQ split writers for the input, either spliting by barcodes or not
-	 *
-	 * @param prefix     the output prefix
-	 * @param dictionary the barcode dictionary; if <code>null</code>, it won't split by barcode
-	 * @param dgzip      disable gzip?
-	 * @param multi      multi-thread output?
-	 * @param single     single end?
-	 *
-	 * @return the writer for splitting
-	 */
-	public static SplitFastqWriter getFastqSplitWritersFromInput(String prefix, BarcodeDictionary dictionary,
-		boolean dgzip, boolean multi, boolean single) throws IOException {
-		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
-		factory.setGzipOutput(!dgzip);
-		factory.setUseAsyncIo(multi);
-		if (dictionary != null) {
-			return factory.newSplitByBarcodeWriter(prefix, dictionary, !single);
-		} else {
-			return factory.newSplitAssignUnknownBarcodeWriter(prefix, !single);
-		}
-	}
+    /**
+     * Get FASTQ split writers for the input, either spliting by barcodes or not
+     *
+     * @param prefix     the output prefix
+     * @param dictionary the barcode dictionary; if <code>null</code>, it won't split by barcode
+     * @param dgzip      disable gzip?
+     * @param multi      multi-thread output?
+     * @param single     single end?
+     *
+     * @return the writer for splitting
+     */
+    public static SplitFastqWriter getFastqSplitWritersFromInput(String prefix,
+            BarcodeDictionary dictionary,
+            boolean dgzip, boolean multi, boolean single) throws IOException {
+        ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
+        factory.setGzipOutput(!dgzip);
+        factory.setUseAsyncIo(multi);
+        if (dictionary != null) {
+            return factory.newSplitByBarcodeWriter(prefix, dictionary, !single);
+        } else {
+            return factory.newSplitAssignUnknownBarcodeWriter(prefix, !single);
+        }
+    }
 
-	/**
-	 * Get a FASTQ writer either single or pair for the input
-	 *
-	 * @param dgzip  disable gzip?
-	 * @param multi  multi-thread output?
-	 * @param single single end?
-	 *
-	 * @return FastqWriter for single; PairFastqWriter for paired end
-	 */
-	public static ReadToolsFastqWriter getSingleOrPairWriter(String prefix, boolean dgzip, boolean multi,
-		boolean single) throws IOException {
-		ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
-		factory.setGzipOutput(!dgzip);
-		factory.setUseAsyncIo(multi);
-		if (single) {
-			return factory.newWriter(prefix);
-		} else {
-			return factory.newPairWriter(prefix);
-		}
-	}
+    /**
+     * Get a FASTQ writer either single or pair for the input
+     *
+     * @param dgzip  disable gzip?
+     * @param multi  multi-thread output?
+     * @param single single end?
+     *
+     * @return FastqWriter for single; PairFastqWriter for paired end
+     */
+    public static ReadToolsFastqWriter getSingleOrPairWriter(String prefix, boolean dgzip,
+            boolean multi,
+            boolean single) throws IOException {
+        ReadToolsFastqWriterFactory factory = new ReadToolsFastqWriterFactory();
+        factory.setGzipOutput(!dgzip);
+        factory.setUseAsyncIo(multi);
+        if (single) {
+            return factory.newWriter(prefix);
+        } else {
+            return factory.newPairWriter(prefix);
+        }
+    }
 
-	/**
-	 * Get a SAMFileWriter for adding records with RG from the barcode dictionary (split or not)
-	 *
-	 * @param prefix     the output prefix
-	 * @param header     header with read group information (not the original)
-	 * @param dictionary the barcode dictionary; if <code>null</code>, it won't split by barcode
-	 * @param bam        should be the output a bam file?
-	 * @param index      should the output be indexed?
-	 * @param multi      multi-thread output?
-	 *
-	 * @return the writer for splitting or not
-	 */
-	public static SplitSAMFileWriter getBamWriterOrSplitWriterFromInput(String prefix, SAMFileHeader header,
-		BarcodeDictionary dictionary, boolean bam, boolean index, boolean multi) throws IOException {
-		ReadToolsSAMFileWriterFactory factory = new ReadToolsSAMFileWriterFactory().setUseAsyncIo(multi)
-																				   .setCreateIndex(index);
-		if (dictionary != null) {
-			return factory.makeSplitByBarcodeWriter(header, prefix, bam, dictionary);
-		} else {
-			return factory.makeSplitAssignUnknownBarcodeWriter(header, prefix, bam);
-		}
-	}
+    /**
+     * Get a SAMFileWriter for adding records with RG from the barcode dictionary (split or not)
+     *
+     * @param prefix     the output prefix
+     * @param header     header with read group information (not the original)
+     * @param dictionary the barcode dictionary; if <code>null</code>, it won't split by barcode
+     * @param bam        should be the output a bam file?
+     * @param index      should the output be indexed?
+     * @param multi      multi-thread output?
+     *
+     * @return the writer for splitting or not
+     */
+    public static SplitSAMFileWriter getBamWriterOrSplitWriterFromInput(String prefix,
+            SAMFileHeader header,
+            BarcodeDictionary dictionary, boolean bam, boolean index, boolean multi)
+            throws IOException {
+        ReadToolsSAMFileWriterFactory factory =
+                new ReadToolsSAMFileWriterFactory().setUseAsyncIo(multi)
+                        .setCreateIndex(index);
+        if (dictionary != null) {
+            return factory.makeSplitByBarcodeWriter(header, prefix, bam, dictionary);
+        } else {
+            return factory.makeSplitAssignUnknownBarcodeWriter(header, prefix, bam);
+        }
+    }
 }

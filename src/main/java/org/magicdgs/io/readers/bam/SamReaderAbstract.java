@@ -22,10 +22,16 @@
  */
 package org.magicdgs.io.readers.bam;
 
-import htsjdk.samtools.*;
-import htsjdk.samtools.util.FastqQualityFormat;
 import org.magicdgs.utils.fastq.QualityUtils;
 import org.magicdgs.utils.fastq.StandardizerAndChecker;
+
+import htsjdk.samtools.QueryInterval;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.util.FastqQualityFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,167 +43,176 @@ import java.io.IOException;
  */
 public abstract class SamReaderAbstract implements SamReaderInterface {
 
-	/**
-	 * The backed reader
-	 */
-	protected final SamReader reader;
+    /**
+     * The backed reader
+     */
+    protected final SamReader reader;
 
-	/**
-	 * The checker
-	 */
-	protected final StandardizerAndChecker checker;
+    /**
+     * The checker
+     */
+    protected final StandardizerAndChecker checker;
 
-	/**
-	 * Creates a SamReaderSanger from a file, with default SamReaderFactory
-	 *
-	 * @param file the file
-	 * @deprecated use {@link #SamReaderAbstract(File, boolean)} instead
-	 */
-	@Deprecated
-	public SamReaderAbstract(File file) {
-		this(file, SamReaderFactory.makeDefault());
-	}
+    /**
+     * Creates a SamReaderSanger from a file, with default SamReaderFactory
+     *
+     * @param file the file
+     *
+     * @deprecated use {@link #SamReaderAbstract(File, boolean)} instead
+     */
+    @Deprecated
+    public SamReaderAbstract(File file) {
+        this(file, SamReaderFactory.makeDefault());
+    }
 
-	/**
-	 * Creates a SamReaderSanger from a file, with default SamReaderFactory
-	 *
-	 * @param file the file
-	 */
-	public SamReaderAbstract(final File file, final boolean allowHigherSangerQualitie) {
-		this(file, SamReaderFactory.makeDefault(), allowHigherSangerQualitie);
-	}
+    /**
+     * Creates a SamReaderSanger from a file, with default SamReaderFactory
+     *
+     * @param file the file
+     */
+    public SamReaderAbstract(final File file, final boolean allowHigherSangerQualitie) {
+        this(file, SamReaderFactory.makeDefault(), allowHigherSangerQualitie);
+    }
 
-	/**
-	 * Creates a SamReaderSanger with the default SamReaderFactory and the provided validation stringency
-	 *
-	 * @param file       the file
-	 * @param stringency the validation stringency
-	 * @deprecated use {@link #SamReaderAbstract(File, ValidationStringency, boolean)} instead
-	 */
-	@Deprecated
-	public SamReaderAbstract(File file, ValidationStringency stringency) {
-		this(file, SamReaderFactory.makeDefault().validationStringency(stringency), false);
-	}
+    /**
+     * Creates a SamReaderSanger with the default SamReaderFactory and the provided validation
+     * stringency
+     *
+     * @param file       the file
+     * @param stringency the validation stringency
+     *
+     * @deprecated use {@link #SamReaderAbstract(File, ValidationStringency, boolean)} instead
+     */
+    @Deprecated
+    public SamReaderAbstract(File file, ValidationStringency stringency) {
+        this(file, SamReaderFactory.makeDefault().validationStringency(stringency), false);
+    }
 
-	/**
-	 * Creates a SamReaderSanger with the default SamReaderFactory and the provided validation stringency
-	 *
-	 * @param file       the file
-	 * @param stringency the validation stringency
-	 */
-	public SamReaderAbstract(final File file, final ValidationStringency stringency, final boolean allowHigherSangerQualities) {
-		this(file, SamReaderFactory.makeDefault().validationStringency(stringency), allowHigherSangerQualities);
-	}
+    /**
+     * Creates a SamReaderSanger with the default SamReaderFactory and the provided validation
+     * stringency
+     *
+     * @param file       the file
+     * @param stringency the validation stringency
+     */
+    public SamReaderAbstract(final File file, final ValidationStringency stringency,
+            final boolean allowHigherSangerQualities) {
+        this(file, SamReaderFactory.makeDefault().validationStringency(stringency),
+                allowHigherSangerQualities);
+    }
 
-	/**
-	 * Creates a SamReaderSanger with the provided factory (it only open the file)
-	 *
-	 * @param file    the file
-	 * @param factory the factory
-	 * @deprecated use {@link #SamReaderAbstract(File, SamReaderFactory, boolean)}
-	 */
-	@Deprecated
-	public SamReaderAbstract(File file, SamReaderFactory factory) {
-		this(file, factory, false);
-	}
+    /**
+     * Creates a SamReaderSanger with the provided factory (it only open the file)
+     *
+     * @param file    the file
+     * @param factory the factory
+     *
+     * @deprecated use {@link #SamReaderAbstract(File, SamReaderFactory, boolean)}
+     */
+    @Deprecated
+    public SamReaderAbstract(File file, SamReaderFactory factory) {
+        this(file, factory, false);
+    }
 
-	/**
-	 * Creates a SamReaderSanger with the provided factory (it only open the file)
-	 *
-	 * @param file    the file
-	 * @param factory the factory
-	 */
-	public SamReaderAbstract(final File file, final SamReaderFactory factory, final boolean allowHigherSangerQualities) {
-		this.reader = factory.open(file);
-		this.checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(file), allowHigherSangerQualities);
-	}
+    /**
+     * Creates a SamReaderSanger with the provided factory (it only open the file)
+     *
+     * @param file    the file
+     * @param factory the factory
+     */
+    public SamReaderAbstract(final File file, final SamReaderFactory factory,
+            final boolean allowHigherSangerQualities) {
+        this.reader = factory.open(file);
+        this.checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(file),
+                allowHigherSangerQualities);
+    }
 
-	/**
-	 * Get the SAMRecordIterator for this reader that either checks or standardize the qualities
-	 *
-	 * @param iterator the original iterator created by the reader
-	 *
-	 * @return a {@link org.magicdgs.io.readers.bam.SamRecordIteratorWithStandardizer}
-	 */
-	abstract SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator);
+    /**
+     * Get the SAMRecordIterator for this reader that either checks or standardize the qualities
+     *
+     * @param iterator the original iterator created by the reader
+     *
+     * @return a {@link org.magicdgs.io.readers.bam.SamRecordIteratorWithStandardizer}
+     */
+    abstract SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator);
 
-	@Override
-	public FastqQualityFormat getOriginalEncoding() {
-		return checker.getEncoding();
-	}
+    @Override
+    public FastqQualityFormat getOriginalEncoding() {
+        return checker.getEncoding();
+    }
 
-	@Override
-	public SAMFileHeader getFileHeader() {
-		return reader.getFileHeader();
-	}
+    @Override
+    public SAMFileHeader getFileHeader() {
+        return reader.getFileHeader();
+    }
 
-	@Override
-	public Type type() {
-		return reader.type();
-	}
+    @Override
+    public Type type() {
+        return reader.type();
+    }
 
-	@Override
-	public String getResourceDescription() {
-		return reader.getResourceDescription();
-	}
+    @Override
+    public String getResourceDescription() {
+        return reader.getResourceDescription();
+    }
 
-	@Override
-	public boolean hasIndex() {
-		return reader.hasIndex();
-	}
+    @Override
+    public boolean hasIndex() {
+        return reader.hasIndex();
+    }
 
-	@Override
-	public Indexing indexing() {
-		return reader.indexing();
-	}
+    @Override
+    public Indexing indexing() {
+        return reader.indexing();
+    }
 
-	@Override
-	public SAMRecordIterator iterator() {
-		return toReturnIterator(reader.iterator());
-	}
+    @Override
+    public SAMRecordIterator iterator() {
+        return toReturnIterator(reader.iterator());
+    }
 
-	@Override
-	public SAMRecordIterator query(String sequence, int start, int end, boolean contained) {
-		return toReturnIterator(reader.query(sequence, start, end, contained));
-	}
+    @Override
+    public SAMRecordIterator query(String sequence, int start, int end, boolean contained) {
+        return toReturnIterator(reader.query(sequence, start, end, contained));
+    }
 
-	@Override
-	public SAMRecordIterator queryOverlapping(String sequence, int start, int end) {
-		return toReturnIterator(reader.queryOverlapping(sequence, start, end));
-	}
+    @Override
+    public SAMRecordIterator queryOverlapping(String sequence, int start, int end) {
+        return toReturnIterator(reader.queryOverlapping(sequence, start, end));
+    }
 
-	@Override
-	public SAMRecordIterator queryContained(String sequence, int start, int end) {
-		return toReturnIterator(reader.queryContained(sequence, start, end));
-	}
+    @Override
+    public SAMRecordIterator queryContained(String sequence, int start, int end) {
+        return toReturnIterator(reader.queryContained(sequence, start, end));
+    }
 
-	@Override
-	public SAMRecordIterator query(QueryInterval[] intervals, boolean contained) {
-		return toReturnIterator(reader.query(intervals, contained));
-	}
+    @Override
+    public SAMRecordIterator query(QueryInterval[] intervals, boolean contained) {
+        return toReturnIterator(reader.query(intervals, contained));
+    }
 
-	@Override
-	public SAMRecordIterator queryOverlapping(QueryInterval[] intervals) {
-		return toReturnIterator(reader.queryOverlapping(intervals));
-	}
+    @Override
+    public SAMRecordIterator queryOverlapping(QueryInterval[] intervals) {
+        return toReturnIterator(reader.queryOverlapping(intervals));
+    }
 
-	@Override
-	public SAMRecordIterator queryContained(QueryInterval[] intervals) {
-		return toReturnIterator(reader.queryContained(intervals));
-	}
+    @Override
+    public SAMRecordIterator queryContained(QueryInterval[] intervals) {
+        return toReturnIterator(reader.queryContained(intervals));
+    }
 
-	@Override
-	public SAMRecordIterator queryUnmapped() {
-		return toReturnIterator(reader.queryUnmapped());
-	}
+    @Override
+    public SAMRecordIterator queryUnmapped() {
+        return toReturnIterator(reader.queryUnmapped());
+    }
 
-	@Override
-	public SAMRecordIterator queryAlignmentStart(String sequence, int start) {
-		return toReturnIterator(reader.queryAlignmentStart(sequence, start));
-	}
+    @Override
+    public SAMRecordIterator queryAlignmentStart(String sequence, int start) {
+        return toReturnIterator(reader.queryAlignmentStart(sequence, start));
+    }
 
-	@Override
-	public void close() throws IOException {
-		reader.close();
-	}
+    @Override
+    public void close() throws IOException {
+        reader.close();
+    }
 }

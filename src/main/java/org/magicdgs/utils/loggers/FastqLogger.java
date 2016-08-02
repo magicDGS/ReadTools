@@ -22,150 +22,155 @@
  */
 package org.magicdgs.utils.loggers;
 
-import htsjdk.samtools.util.Log;
-
 import static org.magicdgs.utils.misc.Formats.commaFmt;
 import static org.magicdgs.utils.misc.Formats.timeFmt;
 
+import htsjdk.samtools.util.Log;
+
 /**
- * Logger for Fastq files, similar to {@link htsjdk.samtools.util.ProgressLogger} but without the need of input a read
+ * Logger for Fastq files, similar to {@link htsjdk.samtools.util.ProgressLogger} but without the
+ * need of input a read
  *
  * @author Daniel Gómez Sánchez
  */
 public class FastqLogger {
 
-	private final Log log;
+    private final Log log;
 
-	private final int n;
+    private final int n;
 
-	private final String verb;
+    private final String verb;
 
-	private final String noun;
+    private final String noun;
 
-	private final long startTime = System.currentTimeMillis();
+    private final long startTime = System.currentTimeMillis();
 
-	private long processed = 0;
+    private long processed = 0;
 
-	// Set to -1 until the first record is added
-	private long lastStartTime = -1;
+    // Set to -1 until the first record is added
+    private long lastStartTime = -1;
 
-	/**
-	 * Construct a progress logger.
-	 *
-	 * @param log  the Log object to write outputs to
-	 * @param n    the frequency with which to output (i.e. every N records)
-	 * @param verb the verb to log, e.g. "Processed, Read, Written".
-	 * @param noun the noun to use when logging, e.g. "Records, Variants, Loci"
-	 */
-	public FastqLogger(final Log log, final int n, final String verb, final String noun) {
-		this.log = log;
-		this.n = n;
-		this.verb = verb;
-		this.noun = noun;
-	}
+    /**
+     * Construct a progress logger.
+     *
+     * @param log  the Log object to write outputs to
+     * @param n    the frequency with which to output (i.e. every N records)
+     * @param verb the verb to log, e.g. "Processed, Read, Written".
+     * @param noun the noun to use when logging, e.g. "Records, Variants, Loci"
+     */
+    public FastqLogger(final Log log, final int n, final String verb, final String noun) {
+        this.log = log;
+        this.n = n;
+        this.verb = verb;
+        this.noun = noun;
+    }
 
-	/**
-	 * Construct a progress logger.
-	 *
-	 * @param log  the Log object to write outputs to
-	 * @param n    the frequency with which to output (i.e. every N records)
-	 * @param verb the verb to log, e.g. "Processed, Read, Written".
-	 */
-	public FastqLogger(final Log log, final int n, final String verb) {
-		this(log, n, verb, "reads");
-	}
+    /**
+     * Construct a progress logger.
+     *
+     * @param log  the Log object to write outputs to
+     * @param n    the frequency with which to output (i.e. every N records)
+     * @param verb the verb to log, e.g. "Processed, Read, Written".
+     */
+    public FastqLogger(final Log log, final int n, final String verb) {
+        this(log, n, verb, "reads");
+    }
 
-	/**
-	 * Construct a progress logger with the desired log and frequency and the verb "Processed".
-	 *
-	 * @param log the Log object to write outputs to
-	 * @param n   the frequency with which to output (i.e. every N records)
-	 */
-	public FastqLogger(final Log log, final int n) {
-		this(log, n, "Processed");
-	}
+    /**
+     * Construct a progress logger with the desired log and frequency and the verb "Processed".
+     *
+     * @param log the Log object to write outputs to
+     * @param n   the frequency with which to output (i.e. every N records)
+     */
+    public FastqLogger(final Log log, final int n) {
+        this(log, n, "Processed");
+    }
 
-	/**
-	 * Construct a progress logger with the desired log, the verb "Processed" and a period of 1m records.
-	 *
-	 * @param log the Log object to write outputs to
-	 */
-	public FastqLogger(final Log log) {
-		this(log, 1000000);
-	}
+    /**
+     * Construct a progress logger with the desired log, the verb "Processed" and a period of 1m
+     * records.
+     *
+     * @param log the Log object to write outputs to
+     */
+    public FastqLogger(final Log log) {
+        this(log, 1000000);
+    }
 
-	public synchronized boolean add() {
-		if (this.lastStartTime == -1) {
-			this.lastStartTime = System.currentTimeMillis();
-		}
-		if (++this.processed % this.n == 0) {
-			final long now = System.currentTimeMillis();
-			final long lastPeriodSeconds = (now - this.lastStartTime) / 1000;
-			this.lastStartTime = now;
-			final long seconds = (System.currentTimeMillis() - startTime) / 1000;
-			final String elapsed = formatElapseTime(seconds);
-			final String period = pad(commaFmt.format(lastPeriodSeconds), 4);
-			final String processed = pad(commaFmt.format(this.processed), 13);
-			log.info(this.verb, " ", processed, " " + noun + ".  Elapsed time: ", elapsed, "s.  Time for last ",
-				commaFmt.format(this.n), ": ", period, "s.");
-			return true;
-		} else {
-			return false;
-		}
-	}
+    public synchronized boolean add() {
+        if (this.lastStartTime == -1) {
+            this.lastStartTime = System.currentTimeMillis();
+        }
+        if (++this.processed % this.n == 0) {
+            final long now = System.currentTimeMillis();
+            final long lastPeriodSeconds = (now - this.lastStartTime) / 1000;
+            this.lastStartTime = now;
+            final long seconds = (System.currentTimeMillis() - startTime) / 1000;
+            final String elapsed = formatElapseTime(seconds);
+            final String period = pad(commaFmt.format(lastPeriodSeconds), 4);
+            final String processed = pad(commaFmt.format(this.processed), 13);
+            log.info(this.verb, " ", processed, " " + noun + ".  Elapsed time: ", elapsed,
+                    "s.  Time for last ",
+                    commaFmt.format(this.n), ": ", period, "s.");
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * Returns the count of records processed.
-	 */
-	public long getCount() {
-		return this.processed;
-	}
+    /**
+     * Returns the count of records processed.
+     */
+    public long getCount() {
+        return this.processed;
+    }
 
-	/**
-	 * Returns the number of seconds since progress tracking began.
-	 */
-	public long getElapsedSeconds() {
-		return (System.currentTimeMillis() - this.startTime) / 1000;
-	}
+    /**
+     * Returns the number of seconds since progress tracking began.
+     */
+    public long getElapsedSeconds() {
+        return (System.currentTimeMillis() - this.startTime) / 1000;
+    }
 
-	/**
-	 * Left pads a string until it is at least the given length.
-	 */
-	private String pad(String in, final int length) {
-		while (in.length() < length) {
-			in = " " + in;
-		}
-		return in;
-	}
+    /**
+     * Left pads a string until it is at least the given length.
+     */
+    private String pad(String in, final int length) {
+        while (in.length() < length) {
+            in = " " + in;
+        }
+        return in;
+    }
 
-	/**
-	 * Formats a number of seconds into hours:minutes:seconds.
-	 */
-	private String formatElapseTime(final long seconds) {
-		final long s = seconds % 60;
-		final long allMinutes = seconds / 60;
-		final long m = allMinutes % 60;
-		final long h = allMinutes / 60;
-		return timeFmt.format(h) + ":" + timeFmt.format(m) + ":" + timeFmt.format(s);
-	}
+    /**
+     * Formats a number of seconds into hours:minutes:seconds.
+     */
+    private String formatElapseTime(final long seconds) {
+        final long s = seconds % 60;
+        final long allMinutes = seconds / 60;
+        final long m = allMinutes % 60;
+        final long h = allMinutes / 60;
+        return timeFmt.format(h) + ":" + timeFmt.format(m) + ":" + timeFmt.format(s);
+    }
 
-	/**
-	 * Get the total number of variants processed now and the elapsed time
-	 *
-	 * @return formatted String with the number of variants processed and the elapsed time for this logger
-	 */
-	public synchronized String numberOfVariantsProcessed() {
-		final long seconds = (System.currentTimeMillis() - startTime) / 1000;
-		final String elapsed = formatElapseTime(seconds);
-		return String
-			.format("%s %s %s. Elapsed time: %s", this.verb, commaFmt.format(this.processed), this.noun, elapsed);
-	}
+    /**
+     * Get the total number of variants processed now and the elapsed time
+     *
+     * @return formatted String with the number of variants processed and the elapsed time for this
+     * logger
+     */
+    public synchronized String numberOfVariantsProcessed() {
+        final long seconds = (System.currentTimeMillis() - startTime) / 1000;
+        final String elapsed = formatElapseTime(seconds);
+        return String
+                .format("%s %s %s. Elapsed time: %s", this.verb, commaFmt.format(this.processed),
+                        this.noun, elapsed);
+    }
 
-	/**
-	 * Log the number of variants processed in this logger
-	 */
-	public synchronized void logNumberOfVariantsProcessed() {
-		log.info(numberOfVariantsProcessed());
-	}
+    /**
+     * Log the number of variants processed in this logger
+     */
+    public synchronized void logNumberOfVariantsProcessed() {
+        log.info(numberOfVariantsProcessed());
+    }
 }
 

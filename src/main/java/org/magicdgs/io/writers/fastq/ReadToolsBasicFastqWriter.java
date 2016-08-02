@@ -22,9 +22,10 @@
  */
 package org.magicdgs.io.writers.fastq;
 
+import org.magicdgs.io.FastqPairedRecord;
+
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
-import org.magicdgs.io.FastqPairedRecord;
 
 /**
  * Wrapper for the htsjdk FastqWriters
@@ -33,24 +34,25 @@ import org.magicdgs.io.FastqPairedRecord;
  */
 public class ReadToolsBasicFastqWriter implements ReadToolsFastqWriter {
 
-	private final FastqWriter writer;
+    private final FastqWriter writer;
 
-	protected ReadToolsBasicFastqWriter(FastqWriter writer) {
-		this.writer = writer;
-	}
+    protected ReadToolsBasicFastqWriter(FastqWriter writer) {
+        this.writer = writer;
+    }
 
-	@Override
-	public void write(FastqPairedRecord rec) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not allow FastqPairedRecords");
-	}
+    @Override
+    public void write(FastqPairedRecord rec) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException(
+                this.getClass().getSimpleName() + " does not allow FastqPairedRecords");
+    }
 
-	@Override
-	public void write(FastqRecord rec) {
-		writer.write(rec);
-	}
+    @Override
+    public void write(FastqRecord rec) {
+        writer.write(rec);
+    }
 
-	@Override
-	public void close() {
-		writer.close();
-	}
+    @Override
+    public void close() {
+        writer.close();
+    }
 }

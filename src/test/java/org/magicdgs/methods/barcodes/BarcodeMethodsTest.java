@@ -22,55 +22,60 @@
  */
 package org.magicdgs.methods.barcodes;
 
-import org.junit.*;
-
 import static org.magicdgs.methods.barcodes.BarcodeMethods.getNameWithoutBarcode;
 import static org.magicdgs.methods.barcodes.BarcodeMethods.getOnlyBarcodeFromName;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 public class BarcodeMethodsTest {
 
-	static String basename;
+    static String basename;
 
-	static String barcode;
+    static String barcode;
 
-	String nameWithBarcode;
+    String nameWithBarcode;
 
-	String nameWithBarcodeAndSeparator;
+    String nameWithBarcodeAndSeparator;
 
-	String nameWithoutBarcode;
+    String nameWithoutBarcode;
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		basename = "Record1";
-		barcode = "AAATTT";
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        basename = "Record1";
+        barcode = "AAATTT";
+    }
 
-	@AfterClass
-	public static void tearDownAfterClass() {
-	}
+    @AfterClass
+    public static void tearDownAfterClass() {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		nameWithBarcode = basename + "#" + barcode;
-		nameWithBarcodeAndSeparator = basename + "#" + barcode + "/1";
-		nameWithoutBarcode = basename;
-	}
+    @Before
+    public void setUp() throws Exception {
+        nameWithBarcode = basename + "#" + barcode;
+        nameWithBarcodeAndSeparator = basename + "#" + barcode + "/1";
+        nameWithoutBarcode = basename;
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
 
-	@Test
-	public void testGetOnlyBarcodeFromName() throws Exception {
-		Assert.assertEquals(barcode, getOnlyBarcodeFromName(nameWithBarcode));
-		Assert.assertEquals(barcode, getOnlyBarcodeFromName(nameWithBarcodeAndSeparator));
-		Assert.assertNull(getOnlyBarcodeFromName(nameWithoutBarcode));
-	}
+    @Test
+    public void testGetOnlyBarcodeFromName() throws Exception {
+        Assert.assertEquals(barcode, getOnlyBarcodeFromName(nameWithBarcode));
+        Assert.assertEquals(barcode, getOnlyBarcodeFromName(nameWithBarcodeAndSeparator));
+        Assert.assertNull(getOnlyBarcodeFromName(nameWithoutBarcode));
+    }
 
-	@Test
-	public void testGetNameWithoutBarcode() throws Exception {
-		Assert.assertEquals(basename, getNameWithoutBarcode(nameWithBarcode));
-		Assert.assertEquals(basename, getNameWithoutBarcode(nameWithBarcodeAndSeparator));
-		Assert.assertEquals(basename, getNameWithoutBarcode(nameWithoutBarcode));
-	}
+    @Test
+    public void testGetNameWithoutBarcode() throws Exception {
+        Assert.assertEquals(basename, getNameWithoutBarcode(nameWithBarcode));
+        Assert.assertEquals(basename, getNameWithoutBarcode(nameWithBarcodeAndSeparator));
+        Assert.assertEquals(basename, getNameWithoutBarcode(nameWithoutBarcode));
+    }
 }

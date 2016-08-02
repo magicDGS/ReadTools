@@ -29,42 +29,44 @@ import htsjdk.samtools.metrics.Header;
  */
 public class BarcodeDetector implements Header {
 
-	/**
-	 * Store the number of barcodes discarded because they do not match
-	 */
-	public int DISCARDED_NO_MATCH;
+    /**
+     * Store the number of barcodes discarded because they do not match
+     */
+    public int DISCARDED_NO_MATCH;
 
-	/**
-	 * Store the number of barcodes discarded by N
-	 */
-	public int DISCARDED_BY_N;
+    /**
+     * Store the number of barcodes discarded by N
+     */
+    public int DISCARDED_BY_N;
 
-	/**
-	 * Store number of barcodes discarded by mismatches
-	 */
-	public int DISCARDED_BY_MISMATCH;
+    /**
+     * Store number of barcodes discarded by mismatches
+     */
+    public int DISCARDED_BY_MISMATCH;
 
-	/**
-	 * Store the number of barcodes discarded by distance with the second
-	 */
-	public int DISCARDED_BY_DISTANCE;
+    /**
+     * Store the number of barcodes discarded by distance with the second
+     */
+    public int DISCARDED_BY_DISTANCE;
 
-	@Override
-	public void parse(String in) {
-		String[] tokens = in.split("\t");
-		tokens[0] = tokens[0].replace("No match: ", "");
-		tokens[1] = tokens[1].replace("Discarded by N:", "");
-		tokens[2] = tokens[2].replace("Discarded by mismatch: ", "");
-		tokens[3] = tokens[3].replace("Discarded by distance: ", "");
-		DISCARDED_NO_MATCH = Integer.valueOf(tokens[0]);
-		DISCARDED_BY_N = Integer.valueOf(tokens[1]);
-		DISCARDED_BY_MISMATCH = Integer.valueOf(tokens[2]);
-		DISCARDED_BY_DISTANCE = Integer.valueOf(tokens[2]);
-	}
+    @Override
+    public void parse(String in) {
+        String[] tokens = in.split("\t");
+        tokens[0] = tokens[0].replace("No match: ", "");
+        tokens[1] = tokens[1].replace("Discarded by N:", "");
+        tokens[2] = tokens[2].replace("Discarded by mismatch: ", "");
+        tokens[3] = tokens[3].replace("Discarded by distance: ", "");
+        DISCARDED_NO_MATCH = Integer.valueOf(tokens[0]);
+        DISCARDED_BY_N = Integer.valueOf(tokens[1]);
+        DISCARDED_BY_MISMATCH = Integer.valueOf(tokens[2]);
+        DISCARDED_BY_DISTANCE = Integer.valueOf(tokens[2]);
+    }
 
-	@Override
-	public String toString() {
-		return String.format("No match: %d\tDiscarded by N: %d\tDiscarded by mismatch: %d\tDiscarded by distance: %d",
-			DISCARDED_NO_MATCH, DISCARDED_BY_N, DISCARDED_BY_MISMATCH, DISCARDED_BY_DISTANCE);
-	}
+    @Override
+    public String toString() {
+        return String
+                .format("No match: %d\tDiscarded by N: %d\tDiscarded by mismatch: %d\tDiscarded by distance: %d",
+                        DISCARDED_NO_MATCH, DISCARDED_BY_N, DISCARDED_BY_MISMATCH,
+                        DISCARDED_BY_DISTANCE);
+    }
 }

@@ -29,24 +29,24 @@ import htsjdk.samtools.metrics.MetricBase;
  */
 public class MatcherStat extends MetricBase {
 
-	/**
-	 * The sample name
-	 */
-	public String SAMPLE;
+    /**
+     * The sample name
+     */
+    public String SAMPLE;
 
-	/**
-	 * The barcode sequence
-	 */
-	public String BARCODE;
+    /**
+     * The barcode sequence
+     */
+    public String BARCODE;
 
-	/**
-	 * The number of records for this sequence
-	 */
-	public int RECORDS;
+    /**
+     * The number of records for this sequence
+     */
+    public int RECORDS;
 
-	public MatcherStat(String barcode, String sample) {
-		this.BARCODE = barcode;
-		this.SAMPLE = sample;
-		this.RECORDS = 0;
-	}
+    public MatcherStat(String barcode, String sample) {
+        this.BARCODE = barcode;
+        this.SAMPLE = sample;
+        this.RECORDS = 0;
+    }
 }

@@ -35,45 +35,45 @@ import java.util.NoSuchElementException;
  */
 public abstract class SplitSAMFileWriterAbstract implements SplitSAMFileWriter {
 
-	/**
-	 * Hashtable mapping the identifier and the writer
-	 */
-	protected final Hashtable<String, ? extends SAMFileWriter> mapping;
+    /**
+     * Hashtable mapping the identifier and the writer
+     */
+    protected final Hashtable<String, ? extends SAMFileWriter> mapping;
 
-	protected final SAMFileHeader header;
+    protected final SAMFileHeader header;
 
-	protected SplitSAMFileWriterAbstract(SAMFileHeader commonHeader,
-		Hashtable<String, ? extends SAMFileWriter> mapping) {
-		this.mapping = mapping;
-		this.header = commonHeader;
-	}
+    protected SplitSAMFileWriterAbstract(SAMFileHeader commonHeader,
+            Hashtable<String, ? extends SAMFileWriter> mapping) {
+        this.mapping = mapping;
+        this.header = commonHeader;
+    }
 
-	@Override
-	public Hashtable<String, ? extends SAMFileWriter> getMapping() {
-		return mapping;
-	}
+    @Override
+    public Hashtable<String, ? extends SAMFileWriter> getMapping() {
+        return mapping;
+    }
 
-	@Override
-	public void addAlignment(String identifier, SAMRecord alignment) throws NoSuchElementException {
-		mapping.get(identifier).addAlignment(alignment);
-	}
+    @Override
+    public void addAlignment(String identifier, SAMRecord alignment) throws NoSuchElementException {
+        mapping.get(identifier).addAlignment(alignment);
+    }
 
-	@Override
-	public SAMFileHeader getFileHeader() {
-		return header;
-	}
+    @Override
+    public SAMFileHeader getFileHeader() {
+        return header;
+    }
 
-	@Override
-	public void setProgressLogger(ProgressLoggerInterface progress) {
-		for (SAMFileWriter w : mapping.values()) {
-			w.setProgressLogger(progress);
-		}
-	}
+    @Override
+    public void setProgressLogger(ProgressLoggerInterface progress) {
+        for (SAMFileWriter w : mapping.values()) {
+            w.setProgressLogger(progress);
+        }
+    }
 
-	@Override
-	public void close() {
-		for (SAMFileWriter w : mapping.values()) {
-			w.close();
-		}
-	}
+    @Override
+    public void close() {
+        for (SAMFileWriter w : mapping.values()) {
+            w.close();
+        }
+    }
 }

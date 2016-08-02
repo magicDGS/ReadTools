@@ -38,29 +38,31 @@ import java.io.File;
  */
 public class SamReaderSanger extends SamReaderAbstract {
 
-	public SamReaderSanger(File file, boolean allowHigherSangerQualitie) {
-		super(file, allowHigherSangerQualitie);
-	}
+    public SamReaderSanger(File file, boolean allowHigherSangerQualitie) {
+        super(file, allowHigherSangerQualitie);
+    }
 
-	public SamReaderSanger(File file, ValidationStringency stringency, boolean allowHigherSangerQualities) {
-		super(file, stringency, allowHigherSangerQualities);
-	}
+    public SamReaderSanger(File file, ValidationStringency stringency,
+            boolean allowHigherSangerQualities) {
+        super(file, stringency, allowHigherSangerQualities);
+    }
 
-	public SamReaderSanger(File file, SamReaderFactory factory, boolean allowHigherSangerQualities) {
-		super(file, factory, allowHigherSangerQualities);
-	}
+    public SamReaderSanger(File file, SamReaderFactory factory,
+            boolean allowHigherSangerQualities) {
+        super(file, factory, allowHigherSangerQualities);
+    }
 
-	SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator) {
-		return SamRecordIteratorWithStandardizer.of(iterator, checker, true);
-	}
+    SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator) {
+        return SamRecordIteratorWithStandardizer.of(iterator, checker, true);
+    }
 
-	@Override
-	public FastqQualityFormat getFastqQuality() {
-		return FastqQualityFormat.Standard;
-	}
+    @Override
+    public FastqQualityFormat getFastqQuality() {
+        return FastqQualityFormat.Standard;
+    }
 
-	@Override
-	public SAMRecord queryMate(SAMRecord rec) {
-		return checker.standardize(reader.queryMate(rec));
-	}
+    @Override
+    public SAMRecord queryMate(SAMRecord rec) {
+        return checker.standardize(reader.queryMate(rec));
+    }
 }

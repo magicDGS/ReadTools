@@ -22,70 +22,78 @@
  */
 package org.magicdgs.io.readers.fastq.single;
 
+import org.magicdgs.utils.fastq.QualityUtils;
+import org.magicdgs.utils.fastq.StandardizerAndChecker;
+
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.magicdgs.utils.fastq.QualityUtils;
-import org.magicdgs.utils.fastq.StandardizerAndChecker;
 
 import java.io.BufferedReader;
 import java.io.File;
 
 /**
- * Abstract wrapper for the {@link htsjdk.samtools.fastq.FastqReader} to include it in the ReadTools interface
+ * Abstract wrapper for the {@link htsjdk.samtools.fastq.FastqReader} to include it in the ReadTools
+ * interface
  *
  * @author Daniel Gómez-Sánchez
  */
-public abstract class FastqReaderSingleAbstract extends FastqReader implements FastqReaderSingleInterface {
+public abstract class FastqReaderSingleAbstract extends FastqReader
+        implements FastqReaderSingleInterface {
 
-	/**
-	 * Checker for the reader
-	 */
-	protected StandardizerAndChecker checker;
+    /**
+     * Checker for the reader
+     */
+    protected StandardizerAndChecker checker;
 
-	public FastqReaderSingleAbstract(final File file, final boolean allowHigherQualities) {
-		this(file, false, allowHigherQualities);
-	}
+    public FastqReaderSingleAbstract(final File file, final boolean allowHigherQualities) {
+        this(file, false, allowHigherQualities);
+    }
 
-	public FastqReaderSingleAbstract(final File file, boolean skipBlankLines, final boolean allowHigherQualities) {
-		super(file, skipBlankLines);
-		init(allowHigherQualities);
-	}
+    public FastqReaderSingleAbstract(final File file, boolean skipBlankLines,
+            final boolean allowHigherQualities) {
+        super(file, skipBlankLines);
+        init(allowHigherQualities);
+    }
 
-	public FastqReaderSingleAbstract(final BufferedReader reader, final boolean allowHigherQualities) {
-		this(null, reader, allowHigherQualities);
-	}
+    public FastqReaderSingleAbstract(final BufferedReader reader,
+            final boolean allowHigherQualities) {
+        this(null, reader, allowHigherQualities);
+    }
 
-	public FastqReaderSingleAbstract(final File file, final BufferedReader reader, final boolean skipBlankLines, final boolean allowHigherQualities) {
-		super(file, reader, skipBlankLines);
-		init(allowHigherQualities);
-	}
+    public FastqReaderSingleAbstract(final File file, final BufferedReader reader,
+            final boolean skipBlankLines, final boolean allowHigherQualities) {
+        super(file, reader, skipBlankLines);
+        init(allowHigherQualities);
+    }
 
-	public FastqReaderSingleAbstract(final File file, final BufferedReader reader, final boolean allowHigherQualities) {
-		this(file, reader, false, allowHigherQualities);
-	}
+    public FastqReaderSingleAbstract(final File file, final BufferedReader reader,
+            final boolean allowHigherQualities) {
+        this(file, reader, false, allowHigherQualities);
+    }
 
-	/**
-	 * Get the encoding for the file
-	 */
-	private void init(final boolean allowHigherQualities) {
-		checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(this.getFile()), allowHigherQualities);
-	}
+    /**
+     * Get the encoding for the file
+     */
+    private void init(final boolean allowHigherQualities) {
+        checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(this.getFile()),
+                allowHigherQualities);
+    }
 
-	/**
-	 * Get the next record directly from {@link htsjdk.samtools.fastq.FastqReader#next()}
-	 *
-	 * @return the record as is
-	 */
-	protected FastqRecord nextUnchangedRecord() {
-		return super.next();
-	}
+    /**
+     * Get the next record directly from {@link htsjdk.samtools.fastq.FastqReader#next()}
+     *
+     * @return the record as is
+     */
+    protected FastqRecord nextUnchangedRecord() {
+        return super.next();
+    }
 
-	@Override
-	public abstract FastqRecord next();
+    @Override
+    public abstract FastqRecord next();
 
-	@Override
-	public FastqQualityFormat getOriginalEncoding() {
-		return checker.getEncoding();
-	}
+    @Override
+    public FastqQualityFormat getOriginalEncoding() {
+        return checker.getEncoding();
+    }
 }

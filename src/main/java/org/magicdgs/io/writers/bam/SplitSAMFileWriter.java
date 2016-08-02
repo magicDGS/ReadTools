@@ -35,32 +35,36 @@ import java.util.NoSuchElementException;
  */
 public interface SplitSAMFileWriter extends SAMFileWriter {
 
-	/**
-	 * The mapping between the identifier and the corresponding FastqWriter. Several identifiers could be associated
-	 * with the same writer
-	 *
-	 * @return the mapping identifier-writer
-	 */
-	public Hashtable<String, ? extends SAMFileWriter> getMapping();
+    /**
+     * The mapping between the identifier and the corresponding FastqWriter. Several identifiers
+     * could be associated
+     * with the same writer
+     *
+     * @return the mapping identifier-writer
+     */
+    public Hashtable<String, ? extends SAMFileWriter> getMapping();
 
-	/**
-	 * Write a SAMRecord that includes some information for the identifier, or in the default writer depending on the
-	 * implementation
-	 *
-	 * @param alignment the record to write
-	 *
-	 * @throws java.util.NoSuchElementException if the detected identifier is not in the mapping or there are no default
-	 *                                          writer
-	 */
-	void addAlignment(SAMRecord alignment);
+    /**
+     * Write a SAMRecord that includes some information for the identifier, or in the default writer
+     * depending on the
+     * implementation
+     *
+     * @param alignment the record to write
+     *
+     * @throws java.util.NoSuchElementException if the detected identifier is not in the mapping or
+     *                                          there are no default
+     *                                          writer
+     */
+    void addAlignment(SAMRecord alignment);
 
-	/**
-	 * Write a SAMRecord into the split fastq writer
-	 *
-	 * @param identifier the identifier for the record
-	 * @param alignment  the record to write
-	 *
-	 * @throws java.util.NoSuchElementException if the identifier is not in the mapping (or <code>null</code>)
-	 */
-	void addAlignment(String identifier, SAMRecord alignment) throws NoSuchElementException;
+    /**
+     * Write a SAMRecord into the split fastq writer
+     *
+     * @param identifier the identifier for the record
+     * @param alignment  the record to write
+     *
+     * @throws java.util.NoSuchElementException if the identifier is not in the mapping (or
+     *                                          <code>null</code>)
+     */
+    void addAlignment(String identifier, SAMRecord alignment) throws NoSuchElementException;
 }

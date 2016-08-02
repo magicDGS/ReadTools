@@ -31,7 +31,7 @@ import htsjdk.samtools.metrics.StringHeader;
  */
 public class SingleEndTrimming extends StringHeader {
 
-	public SingleEndTrimming() {
-		this.setValue("All reads trimmed as singles");
-	}
+    public SingleEndTrimming() {
+        this.setValue("All reads trimmed as singles");
+    }
 }

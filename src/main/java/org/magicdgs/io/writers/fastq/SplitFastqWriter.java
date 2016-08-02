@@ -22,9 +22,10 @@
  */
 package org.magicdgs.io.writers.fastq;
 
+import org.magicdgs.io.FastqPairedRecord;
+
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
-import org.magicdgs.io.FastqPairedRecord;
 
 import java.util.Hashtable;
 import java.util.NoSuchElementException;
@@ -36,73 +37,80 @@ import java.util.NoSuchElementException;
  */
 public interface SplitFastqWriter extends ReadToolsFastqWriter {
 
-	/**
-	 * The mapping between the identifier and the corresponding FastqWriter. Several identifiers could be associated
-	 * with the same writer
-	 *
-	 * @return the mapping identifier-writer
-	 */
-	public Hashtable<String, ? extends FastqWriter> getMapping();
+    /**
+     * The mapping between the identifier and the corresponding FastqWriter. Several identifiers
+     * could be associated
+     * with the same writer
+     *
+     * @return the mapping identifier-writer
+     */
+    public Hashtable<String, ? extends FastqWriter> getMapping();
 
-	/**
-	 * Get the number of times that each of the identifiers' writers was used
-	 *
-	 * @return the map between the identifier and the current report
-	 */
-	public Hashtable<String, Integer> getCurrentCount();
+    /**
+     * Get the number of times that each of the identifiers' writers was used
+     *
+     * @return the map between the identifier and the current report
+     */
+    public Hashtable<String, Integer> getCurrentCount();
 
-	/**
-	 * Get the report for each identifier (the report could be whatever object
-	 *
-	 * @return the map between the identifier and the current report
-	 */
-	public Hashtable<String, Object> getCurrentReport();
+    /**
+     * Get the report for each identifier (the report could be whatever object
+     *
+     * @return the map between the identifier and the current report
+     */
+    public Hashtable<String, Object> getCurrentReport();
 
-	/**
-	 * Write a FastqRecord into the split fastq writer
-	 *
-	 * @param identifier the identifier for the record
-	 * @param record     the record to write
-	 *
-	 * @throws java.util.NoSuchElementException        if the identifier is not in the mapping (or <code>null</code>)
-	 * @throws java.lang.UnsupportedOperationException if the writer does not allow a FastqRecords
-	 */
-	public void write(String identifier, FastqRecord record)
-		throws NoSuchElementException, UnsupportedOperationException;
+    /**
+     * Write a FastqRecord into the split fastq writer
+     *
+     * @param identifier the identifier for the record
+     * @param record     the record to write
+     *
+     * @throws java.util.NoSuchElementException        if the identifier is not in the mapping (or
+     *                                                 <code>null</code>)
+     * @throws java.lang.UnsupportedOperationException if the writer does not allow a FastqRecords
+     */
+    public void write(String identifier, FastqRecord record)
+            throws NoSuchElementException, UnsupportedOperationException;
 
-	/**
-	 * Write a FastqRecord that includes some information for the identifier, or in the default writer depending on the
-	 * implementation
-	 *
-	 * @param record the record to write
-	 *
-	 * @throws java.util.NoSuchElementException        if the detected identifier is not in the mapping or there are no
-	 *                                                 default writer
-	 * @throws java.lang.UnsupportedOperationException if the writer does noa allow FastqRecords
-	 */
-	public void write(FastqRecord record);
+    /**
+     * Write a FastqRecord that includes some information for the identifier, or in the default
+     * writer depending on the
+     * implementation
+     *
+     * @param record the record to write
+     *
+     * @throws java.util.NoSuchElementException        if the detected identifier is not in the
+     *                                                 mapping or there are no
+     *                                                 default writer
+     * @throws java.lang.UnsupportedOperationException if the writer does noa allow FastqRecords
+     */
+    public void write(FastqRecord record);
 
-	/**
-	 * Write a FastqPairedRecord into the split fastq writer
-	 *
-	 * @param identifier the identifier for the record
-	 * @param record     the record to write
-	 *
-	 * @throws java.util.NoSuchElementException        if the identifier is not in the mapping (or <code>null</code>)
-	 * @throws java.lang.UnsupportedOperationException if the writer does not allow a FastqPairedRecords
-	 */
-	public void write(String identifier, FastqPairedRecord record)
-		throws NoSuchElementException, UnsupportedOperationException;
+    /**
+     * Write a FastqPairedRecord into the split fastq writer
+     *
+     * @param identifier the identifier for the record
+     * @param record     the record to write
+     *
+     * @throws java.util.NoSuchElementException        if the identifier is not in the mapping (or
+     *                                                 <code>null</code>)
+     * @throws java.lang.UnsupportedOperationException if the writer does not allow a FastqPairedRecords
+     */
+    public void write(String identifier, FastqPairedRecord record)
+            throws NoSuchElementException, UnsupportedOperationException;
 
-	/**
-	 * Write a FastqPairedRecord that includes some information for the identifier, or in the default writer depending
-	 * on the implementation
-	 *
-	 * @param record the record to write
-	 *
-	 * @throws java.util.NoSuchElementException        if the detected identifier is not in the mapping or there are no
-	 *                                                 default writer
-	 * @throws java.lang.UnsupportedOperationException if the writer does noa allow FastqPairedRecords
-	 */
-	public void write(FastqPairedRecord record);
+    /**
+     * Write a FastqPairedRecord that includes some information for the identifier, or in the
+     * default writer depending
+     * on the implementation
+     *
+     * @param record the record to write
+     *
+     * @throws java.util.NoSuchElementException        if the detected identifier is not in the
+     *                                                 mapping or there are no
+     *                                                 default writer
+     * @throws java.lang.UnsupportedOperationException if the writer does noa allow FastqPairedRecords
+     */
+    public void write(FastqPairedRecord record);
 }

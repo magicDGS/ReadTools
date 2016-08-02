@@ -36,43 +36,45 @@ import java.io.File;
 public class FastqReaderSingleSanger extends FastqReaderSingleAbstract {
 
 
-	public FastqReaderSingleSanger(File file, boolean allowHigherQualities) {
-		super(file, allowHigherQualities);
-	}
+    public FastqReaderSingleSanger(File file, boolean allowHigherQualities) {
+        super(file, allowHigherQualities);
+    }
 
-	public FastqReaderSingleSanger(File file, boolean skipBlankLines, boolean allowHigherQualities) {
-		super(file, skipBlankLines, allowHigherQualities);
-	}
+    public FastqReaderSingleSanger(File file, boolean skipBlankLines,
+            boolean allowHigherQualities) {
+        super(file, skipBlankLines, allowHigherQualities);
+    }
 
-	public FastqReaderSingleSanger(BufferedReader reader, boolean allowHigherQualities) {
-		super(reader, allowHigherQualities);
-	}
+    public FastqReaderSingleSanger(BufferedReader reader, boolean allowHigherQualities) {
+        super(reader, allowHigherQualities);
+    }
 
-	public FastqReaderSingleSanger(File file, BufferedReader reader, boolean skipBlankLines, boolean allowHigherQualities) {
-		super(file, reader, skipBlankLines, allowHigherQualities);
-	}
+    public FastqReaderSingleSanger(File file, BufferedReader reader, boolean skipBlankLines,
+            boolean allowHigherQualities) {
+        super(file, reader, skipBlankLines, allowHigherQualities);
+    }
 
-	public FastqReaderSingleSanger(File file, BufferedReader reader, boolean allowHigherQualities) {
-		super(file, reader, allowHigherQualities);
-	}
+    public FastqReaderSingleSanger(File file, BufferedReader reader, boolean allowHigherQualities) {
+        super(file, reader, allowHigherQualities);
+    }
 
-	/**
-	 * Next always return a Sanger formatted record
-	 *
-	 * @return the next record
-	 */
-	@Override
-	public FastqRecord next() {
-		return checker.standardize(nextUnchangedRecord());
-	}
+    /**
+     * Next always return a Sanger formatted record
+     *
+     * @return the next record
+     */
+    @Override
+    public FastqRecord next() {
+        return checker.standardize(nextUnchangedRecord());
+    }
 
-	/**
-	 * The returning format is always Sanger
-	 *
-	 * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
-	 */
-	@Override
-	public FastqQualityFormat getFastqQuality() {
-		return FastqQualityFormat.Standard;
-	}
+    /**
+     * The returning format is always Sanger
+     *
+     * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+     */
+    @Override
+    public FastqQualityFormat getFastqQuality() {
+        return FastqQualityFormat.Standard;
+    }
 }

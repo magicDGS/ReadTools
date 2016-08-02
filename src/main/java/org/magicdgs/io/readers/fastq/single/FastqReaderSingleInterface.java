@@ -22,17 +22,20 @@
  */
 package org.magicdgs.io.readers.fastq.single;
 
-import htsjdk.samtools.fastq.FastqRecord;
 import org.magicdgs.io.readers.fastq.FastqReaderInterface;
+
+import htsjdk.samtools.fastq.FastqRecord;
 
 import java.util.Iterator;
 
 /**
- * Abstract class for pair-end fastq reader. The aim of this class is allow to implement pair-end readers for two files
+ * Abstract class for pair-end fastq reader. The aim of this class is allow to implement pair-end
+ * readers for two files
  * and for one interleaved file
  *
  * @author Daniel Gómez-Sánchez
  */
-public interface FastqReaderSingleInterface extends Iterator<FastqRecord>, Iterable<FastqRecord>, FastqReaderInterface {
+public interface FastqReaderSingleInterface
+        extends Iterator<FastqRecord>, Iterable<FastqRecord>, FastqReaderInterface {
 
 }

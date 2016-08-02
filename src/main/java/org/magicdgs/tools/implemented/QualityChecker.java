@@ -22,17 +22,18 @@
  */
 package org.magicdgs.tools.implemented;
 
+import static org.magicdgs.tools.ToolNames.ToolException;
+import static org.magicdgs.tools.cmd.OptionUtils.getUniqueValue;
+
+import org.magicdgs.tools.AbstractTool;
+import org.magicdgs.utils.fastq.QualityUtils;
+
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.magicdgs.tools.AbstractTool;
-import org.magicdgs.utils.fastq.QualityUtils;
 
 import java.io.File;
-
-import static org.magicdgs.tools.ToolNames.ToolException;
-import static org.magicdgs.tools.cmd.OptionUtils.getUniqueValue;
 
 /**
  * Tool for check the quality in both FASTQ and BAM files
@@ -41,38 +42,40 @@ import static org.magicdgs.tools.cmd.OptionUtils.getUniqueValue;
  */
 public class QualityChecker extends AbstractTool {
 
-	@Override
-	protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-		// TODO: check the qualities for the reader completely
-		File input = new File(getUniqueValue(cmd, "i"));
-		long recordsToIterate;
-		try {
-			String toIterate = getUniqueValue(cmd, "m");
-			recordsToIterate = (toIterate == null) ?
-				QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY :
-				Long.parseLong(toIterate);
-			if (recordsToIterate < 0) {
-				throw new NumberFormatException();
-			}
-		} catch (NumberFormatException e) {
-			throw new ToolException("Number of reads should be a positive long");
-		}
-		logCmdLine(cmd);
-		FastqQualityFormat format = QualityUtils.getFastqQualityFormat(input, recordsToIterate);
-		String toConsole = (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
-		System.out.println(toConsole);
-	}
+    @Override
+    protected void runThrowingExceptions(CommandLine cmd) throws Exception {
+        // TODO: check the qualities for the reader completely
+        File input = new File(getUniqueValue(cmd, "i"));
+        long recordsToIterate;
+        try {
+            String toIterate = getUniqueValue(cmd, "m");
+            recordsToIterate = (toIterate == null) ?
+                    QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY :
+                    Long.parseLong(toIterate);
+            if (recordsToIterate < 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            throw new ToolException("Number of reads should be a positive long");
+        }
+        logCmdLine(cmd);
+        FastqQualityFormat format = QualityUtils.getFastqQualityFormat(input, recordsToIterate);
+        String toConsole = (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
+        System.out.println(toConsole);
+    }
 
-	@Override
-	protected Options programOptions() {
-		Option input = Option.builder("i").longOpt("input").desc("Input BAM/FASTQ to determine the quality").hasArg()
-							 .numberOfArgs(1).argName("INPUT").required().build();
-		Option max = Option.builder("m").longOpt("maximum-reads").desc(
-			"Maximum number of read to use to iterate. [Default=" + QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY
-				+ "]").hasArg().numberOfArgs(1).argName("LONG").required(false).build();
-		Options options = new Options();
-		options.addOption(input);
-		options.addOption(max);
-		return options;
-	}
+    @Override
+    protected Options programOptions() {
+        Option input = Option.builder("i").longOpt("input")
+                .desc("Input BAM/FASTQ to determine the quality").hasArg()
+                .numberOfArgs(1).argName("INPUT").required().build();
+        Option max = Option.builder("m").longOpt("maximum-reads").desc(
+                "Maximum number of read to use to iterate. [Default="
+                        + QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY
+                        + "]").hasArg().numberOfArgs(1).argName("LONG").required(false).build();
+        Options options = new Options();
+        options.addOption(input);
+        options.addOption(max);
+        return options;
+    }
 }

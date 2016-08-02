@@ -29,13 +29,13 @@ package org.magicdgs.io;
  */
 public class IOdefault {
 
-	/**
-	 * Default value for check the existence of a file
-	 */
-	public static final boolean DEFAULT_CHECK_EXISTENCE = true;
+    /**
+     * Default value for check the existence of a file
+     */
+    public static final boolean DEFAULT_CHECK_EXISTENCE = true;
 
-	/**
-	 * Discarded suffix for discarded output
-	 */
-	public static final String DISCARDED_SUFFIX = "discarded";
+    /**
+     * Discarded suffix for discarded output
+     */
+    public static final String DISCARDED_SUFFIX = "discarded";
 }

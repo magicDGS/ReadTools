@@ -29,12 +29,12 @@ package org.magicdgs.tools;
  */
 public interface Tool {
 
-	/**
-	 * Run this tool with the arguments provided (the tool name should be removed before)
-	 *
-	 * @param args arguments that comes directly from the command line and need to be parsed
-	 *
-	 * @return the exit status for the tool
-	 */
-	public int run(String[] args);
+    /**
+     * Run this tool with the arguments provided (the tool name should be removed before)
+     *
+     * @param args arguments that comes directly from the command line and need to be parsed
+     *
+     * @return the exit status for the tool
+     */
+    public int run(String[] args);
 }

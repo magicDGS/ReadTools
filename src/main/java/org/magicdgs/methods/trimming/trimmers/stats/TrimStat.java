@@ -29,27 +29,27 @@ import htsjdk.samtools.metrics.MetricBase;
  */
 public class TrimStat extends MetricBase {
 
-	public String PAIR;
+    public String PAIR;
 
-	public int TOTAL;
+    public int TOTAL;
 
-	public int PASSED;
+    public int PASSED;
 
-	public int POLY_N_TRIMMED;
+    public int POLY_N_TRIMMED;
 
-	public int INTERNAL_N_DISCARDED;
+    public int INTERNAL_N_DISCARDED;
 
-	public int LENGTH_DISCARDED;
+    public int LENGTH_DISCARDED;
 
-	public int QUALITY_TRIMMED;
+    public int QUALITY_TRIMMED;
 
-	public TrimStat(String pair) {
-		PAIR = pair;
-		TOTAL = 0;
-		POLY_N_TRIMMED = 0;
-		INTERNAL_N_DISCARDED = 0;
-		QUALITY_TRIMMED = 0;
-		LENGTH_DISCARDED = 0;
-		PASSED = 0;
-	}
+    public TrimStat(String pair) {
+        PAIR = pair;
+        TOTAL = 0;
+        POLY_N_TRIMMED = 0;
+        INTERNAL_N_DISCARDED = 0;
+        QUALITY_TRIMMED = 0;
+        LENGTH_DISCARDED = 0;
+        PASSED = 0;
+    }
 }

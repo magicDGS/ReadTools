@@ -37,107 +37,111 @@ import java.nio.file.Paths;
  */
 public class IOUtils {
 
-	public static final String DEFAULT_SAM_EXTENSION = ".sam";
+    public static final String DEFAULT_SAM_EXTENSION = ".sam";
 
-	public static final String DEFAULT_FQ_EXTENSION = ".fq";
+    public static final String DEFAULT_FQ_EXTENSION = ".fq";
 
-	public static final String DEFAULT_GZIP_EXTENSION = ".gz";
+    public static final String DEFAULT_GZIP_EXTENSION = ".gz";
 
-	public static final String DEFAULT_METRICS_EXTENSION = ".metrics";
+    public static final String DEFAULT_METRICS_EXTENSION = ".metrics";
 
-	/**
-	 * Check if the file is BAM or SAM formatted
-	 *
-	 * @param input the input file
-	 *
-	 * @return <code>true</code> if it is a BAM/SAM; <code>false</code> otherwise
-	 */
-	public static boolean isBamOrSam(File input) {
-		return BamFileIoUtils.isBamFile(input) || input.getName().endsWith(DEFAULT_SAM_EXTENSION);
-	}
+    /**
+     * Check if the file is BAM or SAM formatted
+     *
+     * @param input the input file
+     *
+     * @return <code>true</code> if it is a BAM/SAM; <code>false</code> otherwise
+     */
+    public static boolean isBamOrSam(File input) {
+        return BamFileIoUtils.isBamFile(input) || input.getName().endsWith(DEFAULT_SAM_EXTENSION);
+    }
 
-	/**
-	 * Make an output FASTQ with the default extensions {@link #DEFAULT_FQ_EXTENSION} and {@link
-	 * #DEFAULT_GZIP_EXTENSION} if gzip is requested
-	 *
-	 * @param prefix the prefix for the file
-	 * @param gzip   <code>true</code> indicates that the output will be gzipped
-	 *
-	 * @return the formatted output name
-	 */
-	public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
-		return String
-			.format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION, (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
-	}
+    /**
+     * Make an output FASTQ with the default extensions {@link #DEFAULT_FQ_EXTENSION} and {@link
+     * #DEFAULT_GZIP_EXTENSION} if gzip is requested
+     *
+     * @param prefix the prefix for the file
+     * @param gzip   <code>true</code> indicates that the output will be gzipped
+     *
+     * @return the formatted output name
+     */
+    public static String makeOutputNameFastqWithDefaults(String prefix, boolean gzip) {
+        return String
+                .format("%s%s%s", prefix, IOUtils.DEFAULT_FQ_EXTENSION,
+                        (gzip) ? IOUtils.DEFAULT_GZIP_EXTENSION : "");
+    }
 
-	/**
-	 * Create a default metrics file without checking
-	 *
-	 * @param prefix the prefix for the file
-	 *
-	 * @return the metrics file
-	 */
-	public static File makeMetricsFile(String prefix) {
-		return new File(String.format("%s%s", prefix, DEFAULT_METRICS_EXTENSION));
-	}
+    /**
+     * Create a default metrics file without checking
+     *
+     * @param prefix the prefix for the file
+     *
+     * @return the metrics file
+     */
+    public static File makeMetricsFile(String prefix) {
+        return new File(String.format("%s%s", prefix, DEFAULT_METRICS_EXTENSION));
+    }
 
-	/**
-	 * Create a new output file, generating all the sub-directories and checking for the existence of the file if
-	 * requested
-	 *
-	 * @param output        the output file
-	 * @param checkIfExists <code>true</code> if the file should be check, <code>false</code> otherwise
-	 *
-	 * @return the file object
-	 * @throws IOException if the file already exists or an IO error occurs
-	 */
-	public static File newOutputFile(String output, boolean checkIfExists) throws IOException {
-		final File file = new File(output);
-		// first check if the file already exists
-		if (checkIfExists) {
-			exceptionIfExists(file);
-		}
-		// if not, create all the directories
-		createDirectoriesForOutput(file);
-		// return the file
-		return file;
-	}
+    /**
+     * Create a new output file, generating all the sub-directories and checking for the existence
+     * of the file if
+     * requested
+     *
+     * @param output        the output file
+     * @param checkIfExists <code>true</code> if the file should be check, <code>false</code>
+     *                      otherwise
+     *
+     * @return the file object
+     *
+     * @throws IOException if the file already exists or an IO error occurs
+     */
+    public static File newOutputFile(String output, boolean checkIfExists) throws IOException {
+        final File file = new File(output);
+        // first check if the file already exists
+        if (checkIfExists) {
+            exceptionIfExists(file);
+        }
+        // if not, create all the directories
+        createDirectoriesForOutput(file);
+        // return the file
+        return file;
+    }
 
-	/**
-	 * Create all the directories from an output file
-	 *
-	 * @param output the output file
-	 *
-	 * @throws IOException if IO errors occur
-	 */
-	public static void createDirectoriesForOutput(File output) throws IOException {
-		final Path parentDirectory = Paths.get(output.getAbsolutePath()).getParent();
-		Files.createDirectories(parentDirectory);
-	}
+    /**
+     * Create all the directories from an output file
+     *
+     * @param output the output file
+     *
+     * @throws IOException if IO errors occur
+     */
+    public static void createDirectoriesForOutput(File output) throws IOException {
+        final Path parentDirectory = Paths.get(output.getAbsolutePath()).getParent();
+        Files.createDirectories(parentDirectory);
+    }
 
-	/**
-	 * Check if the file exists and throw an exception if so
-	 *
-	 * @param file the file to check
-	 *
-	 * @throws IOException if the file exists
-	 */
-	public static void exceptionIfExists(File file) throws IOException {
-		if (file.isFile()) {
-			throw new IOException("File " + file.getAbsolutePath() + " already exists");
-		}
-	}
+    /**
+     * Check if the file exists and throw an exception if so
+     *
+     * @param file the file to check
+     *
+     * @throws IOException if the file exists
+     */
+    public static void exceptionIfExists(File file) throws IOException {
+        if (file.isFile()) {
+            throw new IOException("File " + file.getAbsolutePath() + " already exists");
+        }
+    }
 
-	/**
-	 * Check if several files exists and throw an exception if at least one of them do
-	 *
-	 * @param file the file to check
-	 *
-	 * @throws IOException if one of the files already exists
-	 */
-	public static void exceptionIfExists(File... file) throws IOException {
-		for (File f : file) {
-			exceptionIfExists(f);
-		}
-	}
+    /**
+     * Check if several files exists and throw an exception if at least one of them do
+     *
+     * @param file the file to check
+     *
+     * @throws IOException if one of the files already exists
+     */
+    public static void exceptionIfExists(File... file) throws IOException {
+        for (File f : file) {
+            exceptionIfExists(f);
+        }
+    }
 }

@@ -31,81 +31,83 @@ import htsjdk.samtools.fastq.FastqRecord;
  */
 public class FastqPairedRecord {
 
-	private final FastqRecord record1;
+    private final FastqRecord record1;
 
-	private final FastqRecord record2;
+    private final FastqRecord record2;
 
-	/**
-	 * Constructor for two records
-	 *
-	 * @param record1 the first record
-	 * @param record2 the second record
-	 */
-	public FastqPairedRecord(FastqRecord record1, FastqRecord record2) {
-		this.record1 = record1;
-		this.record2 = record2;
-	}
+    /**
+     * Constructor for two records
+     *
+     * @param record1 the first record
+     * @param record2 the second record
+     */
+    public FastqPairedRecord(FastqRecord record1, FastqRecord record2) {
+        this.record1 = record1;
+        this.record2 = record2;
+    }
 
-	/**
-	 * Get the first record
-	 *
-	 * @return the first record
-	 */
-	public FastqRecord getRecord1() {
-		return record1;
-	}
+    /**
+     * Get the first record
+     *
+     * @return the first record
+     */
+    public FastqRecord getRecord1() {
+        return record1;
+    }
 
-	/**
-	 * Get the second record
-	 *
-	 * @return the second record
-	 */
-	public FastqRecord getRecord2() {
-		return record2;
-	}
+    /**
+     * Get the second record
+     *
+     * @return the second record
+     */
+    public FastqRecord getRecord2() {
+        return record2;
+    }
 
-	/**
-	 * Check if at least one of the records contain information
-	 *
-	 * @return <code>true</code> if at least one the records is not <code>null</code>; <code>false</code> otherwise
-	 */
-	public boolean containRecords() {
-		return !(record1 == null && record2 == null);
-	}
+    /**
+     * Check if at least one of the records contain information
+     *
+     * @return <code>true</code> if at least one the records is not <code>null</code>;
+     * <code>false</code> otherwise
+     */
+    public boolean containRecords() {
+        return !(record1 == null && record2 == null);
+    }
 
-	/**
-	 * Checks if the record contain both record1 and record2
-	 *
-	 * @return <code>true</code> if both records are not <code>null</code>; <code>false</code> otherwise
-	 */
-	public boolean isComplete() {
-		return record1 != null && record2 != null;
-	}
+    /**
+     * Checks if the record contain both record1 and record2
+     *
+     * @return <code>true</code> if both records are not <code>null</code>; <code>false</code>
+     * otherwise
+     */
+    public boolean isComplete() {
+        return record1 != null && record2 != null;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s\n%s", record1.toString(), record2.toString());
-	}
+    @Override
+    public String toString() {
+        return String.format("%s\n%s", record1.toString(), record2.toString());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		FastqPairedRecord other = (FastqPairedRecord) obj;
-		return record1.equals(other.record1) && record2.equals(other.record2);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        FastqPairedRecord other = (FastqPairedRecord) obj;
+        return record1.equals(other.record1) && record2.equals(other.record2);
+    }
 
-	@Override
-	public int hashCode() {
-		int result = record1 != null ? record1.hashCode() : 0;
-		result = 31 * result + (record2 != null ? record2.hashCode() : 0);
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        int result = record1 != null ? record1.hashCode() : 0;
+        result = 31 * result + (record2 != null ? record2.hashCode() : 0);
+        return result;
+    }
 }

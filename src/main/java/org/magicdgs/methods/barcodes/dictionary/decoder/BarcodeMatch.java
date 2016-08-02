@@ -29,58 +29,60 @@ package org.magicdgs.methods.barcodes.dictionary.decoder;
  */
 public class BarcodeMatch {
 
-	/**
-	 * The unknown tag for sample and barcode
-	 */
-	public static final String UNKNOWN_STRING = "UNKNOWN";
+    /**
+     * The unknown tag for sample and barcode
+     */
+    public static final String UNKNOWN_STRING = "UNKNOWN";
 
-	/**
-	 * The best barcode sequence or {@link #UNKNOWN_STRING} if there are no
-	 */
-	protected String barcode;
+    /**
+     * The best barcode sequence or {@link #UNKNOWN_STRING} if there are no
+     */
+    protected String barcode;
 
-	/**
-	 * The number of mismatches for the match
-	 */
-	protected int mismatches;
+    /**
+     * The number of mismatches for the match
+     */
+    protected int mismatches;
 
-	/**
-	 * The number of mismatches for the second best
-	 */
-	protected int mismatchesToSecondBest;
+    /**
+     * The number of mismatches for the second best
+     */
+    protected int mismatchesToSecondBest;
 
-	/**
-	 * The number of Ns in the barcode
-	 */
-	protected int numberOfNs;
+    /**
+     * The number of Ns in the barcode
+     */
+    protected int numberOfNs;
 
-	/**
-	 * Creates a unknown match with the number of mismatches being equal to the maximum number of mismatches
-	 *
-	 * @param maxMismatches the maximum number of mismatches (barcode length)
-	 */
-	public BarcodeMatch(int maxMismatches) {
-		barcode = UNKNOWN_STRING;
-		mismatches = maxMismatches;
-		mismatchesToSecondBest = maxMismatches;
-		numberOfNs = maxMismatches;
-	}
+    /**
+     * Creates a unknown match with the number of mismatches being equal to the maximum number of
+     * mismatches
+     *
+     * @param maxMismatches the maximum number of mismatches (barcode length)
+     */
+    public BarcodeMatch(int maxMismatches) {
+        barcode = UNKNOWN_STRING;
+        mismatches = maxMismatches;
+        mismatchesToSecondBest = maxMismatches;
+        numberOfNs = maxMismatches;
+    }
 
-	/**
-	 * Check if the barcode is matched
-	 *
-	 * @return <code>true</code> if it is match; <code>false</code> otherwise
-	 */
-	public boolean isMatch() {
-		return !barcode.equals(UNKNOWN_STRING);
-	}
+    /**
+     * Check if the barcode is matched
+     *
+     * @return <code>true</code> if it is match; <code>false</code> otherwise
+     */
+    public boolean isMatch() {
+        return !barcode.equals(UNKNOWN_STRING);
+    }
 
-	/**
-	 * Get the difference in absolute value between the number of mismatches for the best and the second best match
-	 *
-	 * @return the differences in absolute value
-	 */
-	public int getDifferenceWithSecond() {
-		return mismatchesToSecondBest - mismatches;
-	}
+    /**
+     * Get the difference in absolute value between the number of mismatches for the best and the
+     * second best match
+     *
+     * @return the differences in absolute value
+     */
+    public int getDifferenceWithSecond() {
+        return mismatchesToSecondBest - mismatches;
+    }
 }

@@ -38,37 +38,38 @@ import java.io.File;
 public class SamReaderImpl extends SamReaderAbstract {
 
 
-	public SamReaderImpl(File file, boolean allowHigherSangerQualitie) {
-		super(file, allowHigherSangerQualitie);
-	}
+    public SamReaderImpl(File file, boolean allowHigherSangerQualitie) {
+        super(file, allowHigherSangerQualitie);
+    }
 
-	public SamReaderImpl(File file, ValidationStringency stringency, boolean allowHigherSangerQualities) {
-		super(file, stringency, allowHigherSangerQualities);
-	}
+    public SamReaderImpl(File file, ValidationStringency stringency,
+            boolean allowHigherSangerQualities) {
+        super(file, stringency, allowHigherSangerQualities);
+    }
 
-	public SamReaderImpl(File file, SamReaderFactory factory, boolean allowHigherSangerQualities) {
-		super(file, factory, allowHigherSangerQualities);
-	}
+    public SamReaderImpl(File file, SamReaderFactory factory, boolean allowHigherSangerQualities) {
+        super(file, factory, allowHigherSangerQualities);
+    }
 
-	@Override
-	SAMRecordIterator toReturnIterator(SAMRecordIterator iterator) {
-		return SamRecordIteratorWithStandardizer.of(iterator, checker, false);
-	}
+    @Override
+    SAMRecordIterator toReturnIterator(SAMRecordIterator iterator) {
+        return SamRecordIteratorWithStandardizer.of(iterator, checker, false);
+    }
 
-	/**
-	 * Returns the original encoding
-	 *
-	 * @return the original encoding
-	 */
-	@Override
-	public FastqQualityFormat getFastqQuality() {
-		return getOriginalEncoding();
-	}
+    /**
+     * Returns the original encoding
+     *
+     * @return the original encoding
+     */
+    @Override
+    public FastqQualityFormat getFastqQuality() {
+        return getOriginalEncoding();
+    }
 
-	@Override
-	public SAMRecord queryMate(SAMRecord rec) {
-		SAMRecord toReturn = reader.queryMate(rec);
-		checker.checkMisencoded(toReturn);
-		return toReturn;
-	}
+    @Override
+    public SAMRecord queryMate(SAMRecord rec) {
+        SAMRecord toReturn = reader.queryMate(rec);
+        checker.checkMisencoded(toReturn);
+        return toReturn;
+    }
 }

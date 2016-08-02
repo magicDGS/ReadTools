@@ -22,60 +22,69 @@
  */
 package org.magicdgs.methods.trimming;
 
+import static org.magicdgs.methods.trimming.TrimmingMethods.trim3pNs;
+import static org.magicdgs.methods.trimming.TrimmingMethods.trim5pNs;
+import static org.magicdgs.methods.trimming.TrimmingMethods.trimNs;
+import static org.magicdgs.methods.trimming.TrimmingMethods.trimQualityMott;
+
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.junit.*;
-
-import static org.magicdgs.methods.trimming.TrimmingMethods.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class TrimmingMethodsTest {
 
-	// the default encoding for testing
-	private static FastqQualityFormat encoding;
+    // the default encoding for testing
+    private static FastqQualityFormat encoding;
 
-	private static FastqRecord createFakeRecord(String sequence, String quality) {
-		// the record will have always the same headers (important for comparison)
-		return new FastqRecord("Record1", sequence, "", quality);
-	}
+    private static FastqRecord createFakeRecord(String sequence, String quality) {
+        // the record will have always the same headers (important for comparison)
+        return new FastqRecord("Record1", sequence, "", quality);
+    }
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		// we will do the tests with Illumina encoding
-		encoding = FastqQualityFormat.Illumina;
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        // we will do the tests with Illumina encoding
+        encoding = FastqQualityFormat.Illumina;
+    }
 
-	@AfterClass
-	public static void tearDownAfterClass() {
-	}
+    @AfterClass
+    public static void tearDownAfterClass() {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-	}
+    @Before
+    public void setUp() throws Exception {
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
 
-	@Test
-	public void testTrimNs() throws Exception {
-		String withoutNs = "AAAAACCCC";
-		// create a record with 3 Ns in the edges
-		FastqRecord recordWithNs = new FastqRecord("Record1", "NNN" + withoutNs + "NNN", "", "BBB" + withoutNs + "BBB");
-		// check trimming 5', 3' all and if the boolean perform the same
-		Assert.assertEquals(withoutNs + "NNN", trim5pNs(recordWithNs).getReadString());
-		Assert.assertEquals("NNN" + withoutNs, trim3pNs(recordWithNs).getReadString());
-		Assert.assertEquals(withoutNs, trimNs(recordWithNs).getReadString());
-		Assert.assertEquals(trim3pNs(recordWithNs), trimNs(recordWithNs, true));
-	}
+    @Test
+    public void testTrimNs() throws Exception {
+        String withoutNs = "AAAAACCCC";
+        // create a record with 3 Ns in the edges
+        FastqRecord recordWithNs = new FastqRecord("Record1", "NNN" + withoutNs + "NNN", "",
+                "BBB" + withoutNs + "BBB");
+        // check trimming 5', 3' all and if the boolean perform the same
+        Assert.assertEquals(withoutNs + "NNN", trim5pNs(recordWithNs).getReadString());
+        Assert.assertEquals("NNN" + withoutNs, trim3pNs(recordWithNs).getReadString());
+        Assert.assertEquals(withoutNs, trimNs(recordWithNs).getReadString());
+        Assert.assertEquals(trim3pNs(recordWithNs), trimNs(recordWithNs, true));
+    }
 
-	@Test
-	public void testTrimQualityMott() throws Exception {
-		// no trimmed read with quality 19, trimmed with 20 to TT (only if 5' set) and null with 21
-		FastqRecord record = createFakeRecord("AAAATT", "TTTTUU");
-		Assert.assertEquals(record, trimQualityMott(record, encoding, 19));
-		Assert.assertEquals(createFakeRecord("TT", "UU"), trimQualityMott(record, encoding, 20));
-		Assert.assertEquals(record, trimQualityMott(record, encoding, 20, true));
-		Assert.assertNull(trimQualityMott(record, encoding, 21));
-		Assert.assertNull(trimQualityMott(record, encoding, 21, true));
-	}
+    @Test
+    public void testTrimQualityMott() throws Exception {
+        // no trimmed read with quality 19, trimmed with 20 to TT (only if 5' set) and null with 21
+        FastqRecord record = createFakeRecord("AAAATT", "TTTTUU");
+        Assert.assertEquals(record, trimQualityMott(record, encoding, 19));
+        Assert.assertEquals(createFakeRecord("TT", "UU"), trimQualityMott(record, encoding, 20));
+        Assert.assertEquals(record, trimQualityMott(record, encoding, 20, true));
+        Assert.assertNull(trimQualityMott(record, encoding, 21));
+        Assert.assertNull(trimQualityMott(record, encoding, 21, true));
+    }
 }

@@ -31,27 +31,27 @@ import htsjdk.samtools.metrics.Header;
  */
 public class PairEndTrimming implements Header {
 
-	/**
-	 * Read pairs trimmed in pairs
-	 */
-	public int IN_PAIR;
+    /**
+     * Read pairs trimmed in pairs
+     */
+    public int IN_PAIR;
 
-	/**
-	 * Read pairs trimmed as single
-	 */
-	public int AS_SINGLE;
+    /**
+     * Read pairs trimmed as single
+     */
+    public int AS_SINGLE;
 
-	@Override
-	public void parse(String in) {
-		String[] items = in.split("\t");
-		items[0] = items[0].replace("Trimmed in pairs: ", "");
-		items[1] = items[1].replace("Trimmed as singles: ", "");
-		IN_PAIR = Integer.parseInt(items[0]);
-		AS_SINGLE = Integer.parseInt(items[1]);
-	}
+    @Override
+    public void parse(String in) {
+        String[] items = in.split("\t");
+        items[0] = items[0].replace("Trimmed in pairs: ", "");
+        items[1] = items[1].replace("Trimmed as singles: ", "");
+        IN_PAIR = Integer.parseInt(items[0]);
+        AS_SINGLE = Integer.parseInt(items[1]);
+    }
 
-	@Override
-	public String toString() {
-		return String.format("Trimmed in pairs: %d\tTrimmed as singles: %d", IN_PAIR, AS_SINGLE);
-	}
+    @Override
+    public String toString() {
+        return String.format("Trimmed in pairs: %d\tTrimmed as singles: %d", IN_PAIR, AS_SINGLE);
+    }
 }

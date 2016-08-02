@@ -22,8 +22,9 @@
  */
 package org.magicdgs.tools.cmd;
 
-import org.apache.commons.cli.CommandLine;
 import org.magicdgs.tools.ToolNames;
+
+import org.apache.commons.cli.CommandLine;
 
 import java.util.Arrays;
 
@@ -34,80 +35,91 @@ import java.util.Arrays;
  */
 public class OptionUtils {
 
-	/**
-	 * Parse a single Integer option (only one value is allowed)
-	 *
-	 * @param cmd    the already parsed command line with the programParser
-	 * @param option the option to retrieve
-	 *
-	 * @return the value for that option; <code>null</code> if the option is not provided in the cmd
-	 * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one time
-	 */
-	public static int[] getIntArrayOptions(CommandLine cmd, String option) throws ToolNames.ToolException {
-		final String[] options = cmd.getOptionValues(option);
-		if (options == null) {
-			return null;
-		}
-		try {
-			return Arrays.stream(options).mapToInt(Integer::parseInt).toArray();
-		} catch (IllegalArgumentException e) {
-			throw new ToolNames.ToolException("Option --" + option + " should be an integer");
-		}
-	}
+    /**
+     * Parse a single Integer option (only one value is allowed)
+     *
+     * @param cmd    the already parsed command line with the programParser
+     * @param option the option to retrieve
+     *
+     * @return the value for that option; <code>null</code> if the option is not provided in the cmd
+     *
+     * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one
+     *                                                    time
+     */
+    public static int[] getIntArrayOptions(CommandLine cmd, String option)
+            throws ToolNames.ToolException {
+        final String[] options = cmd.getOptionValues(option);
+        if (options == null) {
+            return null;
+        }
+        try {
+            return Arrays.stream(options).mapToInt(Integer::parseInt).toArray();
+        } catch (IllegalArgumentException e) {
+            throw new ToolNames.ToolException("Option --" + option + " should be an integer");
+        }
+    }
 
-	/**
-	 * Parse a single Integer option (only one value is allowed)
-	 *
-	 * @param cmd          the already parsed command line with the programParser
-	 * @param option       the option to retrieve
-	 * @param defaultValue default value if the option is not provided in the cmd
-	 *
-	 * @return the value for that option; or defaultValue if the option is not provided in the cmd
-	 * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one time
-	 */
-	public static int[] getIntArrayOptions(CommandLine cmd, String option, int... defaultValue)
-		throws ToolNames.ToolException {
-		final int[] toReturn = getIntArrayOptions(cmd, option);
-		return (toReturn == null) ? defaultValue : toReturn;
-	}
+    /**
+     * Parse a single Integer option (only one value is allowed)
+     *
+     * @param cmd          the already parsed command line with the programParser
+     * @param option       the option to retrieve
+     * @param defaultValue default value if the option is not provided in the cmd
+     *
+     * @return the value for that option; or defaultValue if the option is not provided in the cmd
+     *
+     * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one
+     *                                                    time
+     */
+    public static int[] getIntArrayOptions(CommandLine cmd, String option, int... defaultValue)
+            throws ToolNames.ToolException {
+        final int[] toReturn = getIntArrayOptions(cmd, option);
+        return (toReturn == null) ? defaultValue : toReturn;
+    }
 
-	/**
-	 * Parse a single Integer option (only one value is allowed)
-	 *
-	 * @param cmd    the already parsed command line with the programParser
-	 * @param option the option to retrieve
-	 *
-	 * @return the value for that option; <code>null</code> if the option is not provided in the cmd
-	 * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one time
-	 */
-	public static Integer getUniqueIntOption(CommandLine cmd, String option) throws ToolNames.ToolException {
-		String value = getUniqueValue(cmd, option);
-		if (value == null) {
-			return null;
-		}
-		try {
-			return Integer.valueOf(value);
-		} catch (NumberFormatException e) {
-			throw new ToolNames.ToolException("Option --" + option + "should be an integer");
-		}
-	}
+    /**
+     * Parse a single Integer option (only one value is allowed)
+     *
+     * @param cmd    the already parsed command line with the programParser
+     * @param option the option to retrieve
+     *
+     * @return the value for that option; <code>null</code> if the option is not provided in the cmd
+     *
+     * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one
+     *                                                    time
+     */
+    public static Integer getUniqueIntOption(CommandLine cmd, String option)
+            throws ToolNames.ToolException {
+        String value = getUniqueValue(cmd, option);
+        if (value == null) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            throw new ToolNames.ToolException("Option --" + option + "should be an integer");
+        }
+    }
 
-	/**
-	 * Parse a single option (only one value is allowed)
-	 *
-	 * @param cmd    the already parsed command line with the programParser
-	 * @param option the option to retrieve
-	 *
-	 * @return the value for that option; <code>null</code> if the option is not provided in the cmd
-	 * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one time
-	 */
-	public static String getUniqueValue(CommandLine cmd, String option) throws ToolNames.ToolException {
-		String[] toReturn = cmd.getOptionValues(option);
-		if (toReturn == null) {
-			return null;
-		} else if (toReturn.length == 1) {
-			return toReturn[0];
-		}
-		throw new ToolNames.ToolException("Option --" + option + " provided more than one time");
-	}
+    /**
+     * Parse a single option (only one value is allowed)
+     *
+     * @param cmd    the already parsed command line with the programParser
+     * @param option the option to retrieve
+     *
+     * @return the value for that option; <code>null</code> if the option is not provided in the cmd
+     *
+     * @throws org.magicdgs.tools.ToolNames.ToolException if the argument was passed more than one
+     *                                                    time
+     */
+    public static String getUniqueValue(CommandLine cmd, String option)
+            throws ToolNames.ToolException {
+        String[] toReturn = cmd.getOptionValues(option);
+        if (toReturn == null) {
+            return null;
+        } else if (toReturn.length == 1) {
+            return toReturn[0];
+        }
+        throw new ToolNames.ToolException("Option --" + option + " provided more than one time");
+    }
 }

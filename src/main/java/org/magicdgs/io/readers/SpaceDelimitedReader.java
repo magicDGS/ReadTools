@@ -22,7 +22,11 @@
  */
 package org.magicdgs.io.readers;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -32,45 +36,46 @@ import java.util.Scanner;
  */
 public class SpaceDelimitedReader implements Closeable {
 
-	/**
-	 * The underlying scanner
-	 */
-	private final Scanner scanner;
+    /**
+     * The underlying scanner
+     */
+    private final Scanner scanner;
 
-	/**
-	 * Constructor for a file
-	 *
-	 * @param file the file
-	 */
-	public SpaceDelimitedReader(File file) throws FileNotFoundException {
-		scanner = new Scanner(new FileReader(file));
-	}
+    /**
+     * Constructor for a file
+     *
+     * @param file the file
+     */
+    public SpaceDelimitedReader(File file) throws FileNotFoundException {
+        scanner = new Scanner(new FileReader(file));
+    }
 
-	/**
-	 * Check if the file have a next line
-	 *
-	 * @return <code>true</code> if the file is not finished; <code>false</code> otherwise
-	 */
-	public boolean hasNext() {
-		return scanner.hasNextLine();
-	}
+    /**
+     * Check if the file have a next line
+     *
+     * @return <code>true</code> if the file is not finished; <code>false</code> otherwise
+     */
+    public boolean hasNext() {
+        return scanner.hasNextLine();
+    }
 
-	/**
-	 * Read the next line
-	 *
-	 * @return the tokens that are separated by tabs; <code>null</code> if no more lines
-	 * @throws IOException if there is an input error
-	 */
-	public String[] next() throws IOException {
-		if (hasNext()) {
-			String line = scanner.nextLine();
-			return line.split("\\s+");
-		}
-		return null;
-	}
+    /**
+     * Read the next line
+     *
+     * @return the tokens that are separated by tabs; <code>null</code> if no more lines
+     *
+     * @throws IOException if there is an input error
+     */
+    public String[] next() throws IOException {
+        if (hasNext()) {
+            String line = scanner.nextLine();
+            return line.split("\\s+");
+        }
+        return null;
+    }
 
-	@Override
-	public void close() throws IOException {
-		scanner.close();
-	}
+    @Override
+    public void close() throws IOException {
+        scanner.close();
+    }
 }

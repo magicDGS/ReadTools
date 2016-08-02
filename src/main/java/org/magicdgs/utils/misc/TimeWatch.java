@@ -31,63 +31,63 @@ import static org.magicdgs.utils.misc.Formats.timeFmt;
  */
 public class TimeWatch {
 
-	// value for store the starting time
-	private long start;
+    // value for store the starting time
+    private long start;
 
-	/**
-	 * Start a new TimeWatch
-	 *
-	 * @return a new TimeWatch from the current time
-	 */
-	public static TimeWatch start() {
-		return new TimeWatch();
-	}
+    /**
+     * Start a new TimeWatch
+     *
+     * @return a new TimeWatch from the current time
+     */
+    public static TimeWatch start() {
+        return new TimeWatch();
+    }
 
-	/**
-	 * Private constructor
-	 */
-	private TimeWatch() {
-		reset();
-	}
+    /**
+     * Private constructor
+     */
+    private TimeWatch() {
+        reset();
+    }
 
-	/**
-	 * Reset the TimeWatch and set the start to the current time
-	 */
-	public void reset() {
-		start = System.currentTimeMillis();
-	}
+    /**
+     * Reset the TimeWatch and set the start to the current time
+     */
+    public void reset() {
+        start = System.currentTimeMillis();
+    }
 
-	/**
-	 * Get the elapsed time from the call of start/reset
-	 *
-	 * @return the elapsed time
-	 */
-	public long time() {
-		long end = System.currentTimeMillis();
-		return end - start;
-	}
+    /**
+     * Get the elapsed time from the call of start/reset
+     *
+     * @return the elapsed time
+     */
+    public long time() {
+        long end = System.currentTimeMillis();
+        return end - start;
+    }
 
-	/**
-	 * Get the elapsed time (formatted)
-	 *
-	 * @return the elapsed time
-	 */
-	public String toString() {
-		return formatElapseTime(time() / 1000);
-	}
+    /**
+     * Get the elapsed time (formatted)
+     *
+     * @return the elapsed time
+     */
+    public String toString() {
+        return formatElapseTime(time() / 1000);
+    }
 
-	/**
-	 * Private formatter for the elapsed time in seconds
-	 *
-	 * @param seconds the time in seconds
-	 *
-	 * @return formatted time
-	 */
-	private String formatElapseTime(final long seconds) {
-		final long s = seconds % 60;
-		final long allMinutes = seconds / 60;
-		final long m = allMinutes % 60;
-		final long h = allMinutes / 60;
-		return String.format("%s:%s:%s", timeFmt.format(h), timeFmt.format(m), timeFmt.format(s));
-	}
+    /**
+     * Private formatter for the elapsed time in seconds
+     *
+     * @param seconds the time in seconds
+     *
+     * @return formatted time
+     */
+    private String formatElapseTime(final long seconds) {
+        final long s = seconds % 60;
+        final long allMinutes = seconds / 60;
+        final long m = allMinutes % 60;
+        final long h = allMinutes / 60;
+        return String.format("%s:%s:%s", timeFmt.format(h), timeFmt.format(m), timeFmt.format(s));
+    }
 }

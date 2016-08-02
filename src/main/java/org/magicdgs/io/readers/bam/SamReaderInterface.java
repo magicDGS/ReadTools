@@ -32,17 +32,17 @@ import htsjdk.samtools.util.FastqQualityFormat;
  */
 public interface SamReaderInterface extends SamReader {
 
-	/**
-	 * Get the FASTQ quality for the reads. All the records returned should be in this format
-	 *
-	 * @return the FastqQuality for this reader
-	 */
-	public FastqQualityFormat getFastqQuality();
+    /**
+     * Get the FASTQ quality for the reads. All the records returned should be in this format
+     *
+     * @return the FastqQuality for this reader
+     */
+    public FastqQualityFormat getFastqQuality();
 
-	/**
-	 * Get the original encoding for the file
-	 *
-	 * @return the original FastqQuality (in the file)
-	 */
-	public FastqQualityFormat getOriginalEncoding();
+    /**
+     * Get the original encoding for the file
+     *
+     * @return the original FastqQuality (in the file)
+     */
+    public FastqQualityFormat getOriginalEncoding();
 }

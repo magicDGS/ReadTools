@@ -31,36 +31,36 @@ import htsjdk.samtools.metrics.MetricBase;
  */
 public class BarcodeStat extends MetricBase {
 
-	/**
-	 * The barcode sequence
-	 */
-	public String SEQUENCE;
+    /**
+     * The barcode sequence
+     */
+    public String SEQUENCE;
 
-	/**
-	 * The number of barcodes that match
-	 */
-	public int MATCHED;
+    /**
+     * The number of barcodes that match
+     */
+    public int MATCHED;
 
-	/**
-	 * Average number of mismatches per matched barcode
-	 */
-	public double MEAN_MISMATCH;
+    /**
+     * Average number of mismatches per matched barcode
+     */
+    public double MEAN_MISMATCH;
 
-	/**
-	 * Average number of Ns in the sequence
-	 */
-	public double MEAN_N;
+    /**
+     * Average number of Ns in the sequence
+     */
+    public double MEAN_N;
 
-	/**
-	 * The number of barcodes discarded by the maximum number of mismatches
-	 */
-	public int DISCARDED;
+    /**
+     * The number of barcodes discarded by the maximum number of mismatches
+     */
+    public int DISCARDED;
 
-	public BarcodeStat(String sequence) {
-		this.SEQUENCE = sequence;
-		this.MATCHED = 0;
-		this.MEAN_MISMATCH = 0;
-		this.MEAN_N = 0;
-		this.DISCARDED = 0;
-	}
+    public BarcodeStat(String sequence) {
+        this.SEQUENCE = sequence;
+        this.MATCHED = 0;
+        this.MEAN_MISMATCH = 0;
+        this.MEAN_N = 0;
+        this.DISCARDED = 0;
+    }
 }

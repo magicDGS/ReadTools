@@ -22,11 +22,12 @@
  */
 package org.magicdgs.utils.loggers;
 
-import htsjdk.samtools.util.Log;
-import htsjdk.samtools.util.ProgressLogger;
+import static org.magicdgs.utils.misc.Formats.timeFmt;
+
 import org.magicdgs.utils.misc.Formats;
 
-import static org.magicdgs.utils.misc.Formats.timeFmt;
+import htsjdk.samtools.util.Log;
+import htsjdk.samtools.util.ProgressLogger;
 
 /**
  * Extension of {@link htsjdk.samtools.util.ProgressLogger}
@@ -35,55 +36,59 @@ import static org.magicdgs.utils.misc.Formats.timeFmt;
  */
 public class ProgressLoggerExtension extends ProgressLogger {
 
-	private final String verb;
-	private final String noun;
+    private final String verb;
+    private final String noun;
 
-	public ProgressLoggerExtension(final Log log, final int n, final String verb, final String noun) {
-		super(log, n, verb, noun);
-		this.verb = verb;
-		this.noun = noun;
-	}
+    public ProgressLoggerExtension(final Log log, final int n, final String verb,
+            final String noun) {
+        super(log, n, verb, noun);
+        this.verb = verb;
+        this.noun = noun;
+    }
 
-	public ProgressLoggerExtension(Log log, int n, String verb) {
-		this(log, n, verb, "records");
-	}
+    public ProgressLoggerExtension(Log log, int n, String verb) {
+        this(log, n, verb, "records");
+    }
 
-	public ProgressLoggerExtension(Log log, int n) {
-		this(log, n, "Processed");
-	}
+    public ProgressLoggerExtension(Log log, int n) {
+        this(log, n, "Processed");
+    }
 
-	public ProgressLoggerExtension(Log log) {
-		this(log, 1000000);
-	}
+    public ProgressLoggerExtension(Log log) {
+        this(log, 1000000);
+    }
 
-	/**
-	 * Formats a number of seconds into hours:minutes:seconds.
-	 *
-	 * @param seconds seconds to format
-	 */
-	private String formatElapseTime(final long seconds) {
-		final long s = seconds % 60;
-		final long allMinutes = seconds / 60;
-		final long m = allMinutes % 60;
-		final long h = allMinutes / 60;
-		return timeFmt.format(h) + ":" + timeFmt.format(m) + ":" + timeFmt.format(s);
-	}
+    /**
+     * Formats a number of seconds into hours:minutes:seconds.
+     *
+     * @param seconds seconds to format
+     */
+    private String formatElapseTime(final long seconds) {
+        final long s = seconds % 60;
+        final long allMinutes = seconds / 60;
+        final long m = allMinutes % 60;
+        final long h = allMinutes / 60;
+        return timeFmt.format(h) + ":" + timeFmt.format(m) + ":" + timeFmt.format(s);
+    }
 
-	/**
-	 * Get the total number of variants processed now and the elapsed time
-	 *
-	 * @return formatted String with the number of variants processed and the elapsed time for this logger
-	 */
-	public synchronized String numberOfVariantsProcessed() {
-		final long seconds = getElapsedSeconds();
-		final String elapsed = formatElapseTime(seconds);
-		return String.format("%s %s %s. Elapsed time: %s", verb, Formats.commaFmt.format(getCount()), noun, elapsed);
-	}
+    /**
+     * Get the total number of variants processed now and the elapsed time
+     *
+     * @return formatted String with the number of variants processed and the elapsed time for this
+     * logger
+     */
+    public synchronized String numberOfVariantsProcessed() {
+        final long seconds = getElapsedSeconds();
+        final String elapsed = formatElapseTime(seconds);
+        return String
+                .format("%s %s %s. Elapsed time: %s", verb, Formats.commaFmt.format(getCount()),
+                        noun, elapsed);
+    }
 
-	/**
-	 * Log the number of variants processed in this logger
-	 */
-	public synchronized void logNumberOfVariantsProcessed() {
-		log(numberOfVariantsProcessed());
-	}
+    /**
+     * Log the number of variants processed in this logger
+     */
+    public synchronized void logNumberOfVariantsProcessed() {
+        log(numberOfVariantsProcessed());
+    }
 }

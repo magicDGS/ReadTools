@@ -22,96 +22,100 @@
  */
 package org.magicdgs.io.readers.bam;
 
+import org.magicdgs.utils.fastq.StandardizerAndChecker;
+
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
-import org.magicdgs.utils.fastq.StandardizerAndChecker;
 
 /**
- * Class that back a {@link htsjdk.samtools.SAMRecordIterator} and either cheks or standardize the quality
+ * Class that back a {@link htsjdk.samtools.SAMRecordIterator} and either cheks or standardize the
+ * quality
  *
  * @author Daniel Gómez-Sánchez
  */
 public abstract class SamRecordIteratorWithStandardizer implements SAMRecordIterator {
 
-	protected SAMRecordIterator iterator;
+    protected SAMRecordIterator iterator;
 
-	protected final StandardizerAndChecker standardizer;
+    protected final StandardizerAndChecker standardizer;
 
-	/**
-	 * Construct an iterator with an underlying iterator
-	 *
-	 * @param iterator     the underlying iterator
-	 * @param standardizer the standardizer/checker to use
-	 */
-	private SamRecordIteratorWithStandardizer(SAMRecordIterator iterator, final StandardizerAndChecker standardizer) {
-		this.iterator = iterator;
-		this.standardizer = standardizer;
-	}
+    /**
+     * Construct an iterator with an underlying iterator
+     *
+     * @param iterator     the underlying iterator
+     * @param standardizer the standardizer/checker to use
+     */
+    private SamRecordIteratorWithStandardizer(SAMRecordIterator iterator,
+            final StandardizerAndChecker standardizer) {
+        this.iterator = iterator;
+        this.standardizer = standardizer;
+    }
 
-	@Override
-	public SAMRecordIterator assertSorted(SAMFileHeader.SortOrder sortOrder) {
-		iterator = iterator.assertSorted(sortOrder);
-		return this;
-	}
+    @Override
+    public SAMRecordIterator assertSorted(SAMFileHeader.SortOrder sortOrder) {
+        iterator = iterator.assertSorted(sortOrder);
+        return this;
+    }
 
-	@Override
-	public void close() {
-		iterator.close();
-	}
+    @Override
+    public void close() {
+        iterator.close();
+    }
 
-	@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
+    @Override
+    public boolean hasNext() {
+        return iterator.hasNext();
+    }
 
-	/**
-	 * Get a SAMRecord iterator for ReadTools
-	 *
-	 * @param iterator     the underlying iterator
-	 * @param standardizer the standardizer/checker to use
-	 * @param standardize  <code>true</code> for standardize; <code>false</code> for only checks
-	 *
-	 * @return
-	 */
-	public static SAMRecordIterator of(final SAMRecordIterator iterator, StandardizerAndChecker standardizer,
-		boolean standardize) {
-		if (standardize) {
-			return new SAMRecordSangerIterator(iterator, standardizer);
-		} else {
-			return new SAMRecordCheckIterator(iterator, standardizer);
-		}
-	}
+    /**
+     * Get a SAMRecord iterator for ReadTools
+     *
+     * @param iterator     the underlying iterator
+     * @param standardizer the standardizer/checker to use
+     * @param standardize  <code>true</code> for standardize; <code>false</code> for only checks
+     */
+    public static SAMRecordIterator of(final SAMRecordIterator iterator,
+            StandardizerAndChecker standardizer,
+            boolean standardize) {
+        if (standardize) {
+            return new SAMRecordSangerIterator(iterator, standardizer);
+        } else {
+            return new SAMRecordCheckIterator(iterator, standardizer);
+        }
+    }
 
-	/**
-	 * Only return Sanger encoded records
-	 */
-	private static class SAMRecordSangerIterator extends SamRecordIteratorWithStandardizer {
+    /**
+     * Only return Sanger encoded records
+     */
+    private static class SAMRecordSangerIterator extends SamRecordIteratorWithStandardizer {
 
-		private SAMRecordSangerIterator(SAMRecordIterator iterator, StandardizerAndChecker standardizer) {
-			super(iterator, standardizer);
-		}
+        private SAMRecordSangerIterator(SAMRecordIterator iterator,
+                StandardizerAndChecker standardizer) {
+            super(iterator, standardizer);
+        }
 
-		@Override
-		public SAMRecord next() {
-			return standardizer.standardize(iterator.next());
-		}
-	}
+        @Override
+        public SAMRecord next() {
+            return standardizer.standardize(iterator.next());
+        }
+    }
 
-	/**
-	 * Only checks for correctly encoded records
-	 */
-	private static class SAMRecordCheckIterator extends SamRecordIteratorWithStandardizer {
+    /**
+     * Only checks for correctly encoded records
+     */
+    private static class SAMRecordCheckIterator extends SamRecordIteratorWithStandardizer {
 
-		private SAMRecordCheckIterator(SAMRecordIterator iterator, StandardizerAndChecker standardizer) {
-			super(iterator, standardizer);
-		}
+        private SAMRecordCheckIterator(SAMRecordIterator iterator,
+                StandardizerAndChecker standardizer) {
+            super(iterator, standardizer);
+        }
 
-		@Override
-		public SAMRecord next() {
-			SAMRecord toReturn = iterator.next();
-			standardizer.checkMisencoded(toReturn);
-			return toReturn;
-		}
-	}
+        @Override
+        public SAMRecord next() {
+            SAMRecord toReturn = iterator.next();
+            standardizer.checkMisencoded(toReturn);
+            return toReturn;
+        }
+    }
 }

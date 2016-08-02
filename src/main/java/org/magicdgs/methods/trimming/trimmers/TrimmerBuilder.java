@@ -29,100 +29,102 @@ package org.magicdgs.methods.trimming.trimmers;
  */
 public class TrimmerBuilder {
 
-	private final boolean single;
+    private final boolean single;
 
-	private boolean trimQuality = false;
+    private boolean trimQuality = false;
 
-	private int qualThreshold = 0;
+    private int qualThreshold = 0;
 
-	private int minLength = 0;
+    private int minLength = 0;
 
-	private int maxLength = Integer.MAX_VALUE;
+    private int maxLength = Integer.MAX_VALUE;
 
-	private boolean discardRemainingNs = false;
+    private boolean discardRemainingNs = false;
 
-	private boolean no5ptrim = false;
+    private boolean no5ptrim = false;
 
-	/**
-	 * Construct a trimmer builder for single-end or paired-end data
-	 *
-	 * @param single <code>true</code> if single-end; <code>false</code> otherwise
-	 */
-	public TrimmerBuilder(final boolean single) {
-		this.single = single;
-	}
+    /**
+     * Construct a trimmer builder for single-end or paired-end data
+     *
+     * @param single <code>true</code> if single-end; <code>false</code> otherwise
+     */
+    public TrimmerBuilder(final boolean single) {
+        this.single = single;
+    }
 
-	/**
-	 *
-	 * @param trimQuality
-	 * @return
-	 */
-	public TrimmerBuilder setTrimQuality(final boolean trimQuality) {
-		this.trimQuality = trimQuality;
-		return this;
-	}
+    /**
+     *
+     * @param trimQuality
+     * @return
+     */
+    public TrimmerBuilder setTrimQuality(final boolean trimQuality) {
+        this.trimQuality = trimQuality;
+        return this;
+    }
 
-	/**
-	 *
-	 * @param qualThreshold
-	 * @return
-	 */
-	public TrimmerBuilder setQualityThreshold(final int qualThreshold) {
-		this.qualThreshold = qualThreshold;
-		return this;
-	}
+    /**
+     *
+     * @param qualThreshold
+     * @return
+     */
+    public TrimmerBuilder setQualityThreshold(final int qualThreshold) {
+        this.qualThreshold = qualThreshold;
+        return this;
+    }
 
-	/**
-	 *
-	 * @param minLength
-	 * @return
-	 */
-	public TrimmerBuilder setMinLength(final int minLength) {
-		this.minLength = minLength;
-		return this;
-	}
+    /**
+     *
+     * @param minLength
+     * @return
+     */
+    public TrimmerBuilder setMinLength(final int minLength) {
+        this.minLength = minLength;
+        return this;
+    }
 
-	/**
-	 *
-	 * @param maxLength
-	 * @return
-	 */
-	public TrimmerBuilder setMaxLength(final int maxLength) {
-		this.maxLength = maxLength;
-		return this;
-	}
+    /**
+     *
+     * @param maxLength
+     * @return
+     */
+    public TrimmerBuilder setMaxLength(final int maxLength) {
+        this.maxLength = maxLength;
+        return this;
+    }
 
-	/**
-	 *
-	 * @param discardRemainingNs
-	 * @return
-	 */
-	public TrimmerBuilder setDiscardRemainingNs(final boolean discardRemainingNs) {
-		this.discardRemainingNs = discardRemainingNs;
-		return this;
-	}
+    /**
+     *
+     * @param discardRemainingNs
+     * @return
+     */
+    public TrimmerBuilder setDiscardRemainingNs(final boolean discardRemainingNs) {
+        this.discardRemainingNs = discardRemainingNs;
+        return this;
+    }
 
-	/**
-	 *
-	 * @param no5ptrim
-	 * @return
-	 */
-	public TrimmerBuilder setNo5pTrimming(final boolean no5ptrim) {
-		this.no5ptrim = no5ptrim;
-		return this;
-	}
+    /**
+     *
+     * @param no5ptrim
+     * @return
+     */
+    public TrimmerBuilder setNo5pTrimming(final boolean no5ptrim) {
+        this.no5ptrim = no5ptrim;
+        return this;
+    }
 
-	/**
-	 * Build a trimmer
-	 *
-	 * @return the trimmer (either single or paired)
-	 */
-	public Trimmer build() {
-		if (single) {
-			return new TrimmerSingle(trimQuality, qualThreshold, minLength, maxLength, discardRemainingNs, no5ptrim);
-		} else {
-			return new TrimmerPaired(trimQuality, qualThreshold, minLength, maxLength, discardRemainingNs, no5ptrim);
-		}
-	}
+    /**
+     * Build a trimmer
+     *
+     * @return the trimmer (either single or paired)
+     */
+    public Trimmer build() {
+        if (single) {
+            return new TrimmerSingle(trimQuality, qualThreshold, minLength, maxLength,
+                    discardRemainingNs, no5ptrim);
+        } else {
+            return new TrimmerPaired(trimQuality, qualThreshold, minLength, maxLength,
+                    discardRemainingNs, no5ptrim);
+        }
+    }
 
 }

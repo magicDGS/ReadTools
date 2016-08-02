@@ -22,10 +22,11 @@
  */
 package org.magicdgs.io.readers.fastq.paired;
 
-import htsjdk.samtools.fastq.FastqReader;
-import htsjdk.samtools.util.FastqQualityFormat;
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.utils.fastq.QualityUtils;
+
+import htsjdk.samtools.fastq.FastqReader;
+import htsjdk.samtools.util.FastqQualityFormat;
 
 import java.io.File;
 
@@ -36,23 +37,25 @@ import java.io.File;
  */
 public class FastqReaderPairedImpl extends FastqReaderPairedAbstract {
 
-	public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2, boolean allowHighQualities) throws QualityUtils.QualityException {
-		super(reader1, reader2, allowHighQualities);
-	}
+    public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2,
+            boolean allowHighQualities) throws QualityUtils.QualityException {
+        super(reader1, reader2, allowHighQualities);
+    }
 
-	public FastqReaderPairedImpl(File reader1, File reader2, boolean allowHighQualities) throws QualityUtils.QualityException {
-		super(reader1, reader2, allowHighQualities);
-	}
+    public FastqReaderPairedImpl(File reader1, File reader2, boolean allowHighQualities)
+            throws QualityUtils.QualityException {
+        super(reader1, reader2, allowHighQualities);
+    }
 
-	@Override
-	public FastqQualityFormat getFastqQuality() {
-		return getOriginalEncoding();
-	}
+    @Override
+    public FastqQualityFormat getFastqQuality() {
+        return getOriginalEncoding();
+    }
 
-	@Override
-	public FastqPairedRecord next() {
-		final FastqPairedRecord toReturn = nextUnchangedRecord();
-		checker.checkMisencoded(toReturn);
-		return toReturn;
-	}
+    @Override
+    public FastqPairedRecord next() {
+        final FastqPairedRecord toReturn = nextUnchangedRecord();
+        checker.checkMisencoded(toReturn);
+        return toReturn;
+    }
 }

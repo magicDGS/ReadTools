@@ -23,101 +23,115 @@
 package org.magicdgs.utils.fastq;
 
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.Arrays;
 
 public class QualityUtilsTest {
 
-	/**
-	 * All the Sanger qualities (ASCII)
-	 */
-	public static final String sangerQuality = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI";
+    /**
+     * All the Sanger qualities (ASCII)
+     */
+    public static final String sangerQuality = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI";
 
-	/**
-	 * All the Illumina qualities (ASCII)
-	 */
-	public static final String illuminaQuality = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefgh";
+    /**
+     * All the Illumina qualities (ASCII)
+     */
+    public static final String illuminaQuality = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefgh";
 
-	/**
-	 * All the qualities in Phred equivalent to the ASCII code (both Illumina and Sanger)
-	 */
-	public static final byte[] quality = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-		19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40};
+    /**
+     * All the qualities in Phred equivalent to the ASCII code (both Illumina and Sanger)
+     */
+    public static final byte[] quality =
+            new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                    19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+                    39, 40};
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+    }
 
-	@AfterClass
-	public static void tearDownAfterClass() {
-	}
+    @AfterClass
+    public static void tearDownAfterClass() {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-	}
+    @Before
+    public void setUp() throws Exception {
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
 
-	@Test
-	public void testGetQuality() throws Exception {
-		for (int i = 0; i < quality.length; i++) {
-			Assert.assertEquals(quality[i],
-				QualityUtils.getQuality(sangerQuality.charAt(i), FastqQualityFormat.Standard));
-			Assert.assertEquals(quality[i],
-				QualityUtils.getQuality(illuminaQuality.charAt(i), FastqQualityFormat.Illumina));
-		}
-		// check the 41 quality for the sanger Illumina 1.8+
-		Assert.assertEquals(41, QualityUtils.getQuality('J', FastqQualityFormat.Standard));
-	}
+    @Test
+    public void testGetQuality() throws Exception {
+        for (int i = 0; i < quality.length; i++) {
+            Assert.assertEquals(quality[i],
+                    QualityUtils.getQuality(sangerQuality.charAt(i), FastqQualityFormat.Standard));
+            Assert.assertEquals(quality[i],
+                    QualityUtils
+                            .getQuality(illuminaQuality.charAt(i), FastqQualityFormat.Illumina));
+        }
+        // check the 41 quality for the sanger Illumina 1.8+
+        Assert.assertEquals(41, QualityUtils.getQuality('J', FastqQualityFormat.Standard));
+    }
 
-	@Test
-	public void testCheckEncoding() throws Exception {
-		// first check correct qualities
-		try {
-			for (byte b : sangerQuality.getBytes()) {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false);
-			}
-			for (byte b : illuminaQuality.getBytes()) {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false);
-			}
-		} catch (QualityUtils.QualityException e) {
-			Assert.fail(e.getMessage());
-		}
-		// now check if it does not raise an error in the not shared qualities
-		byte[] sangerBytesToTest = Arrays.copyOfRange(sangerQuality.getBytes(), 0, sangerQuality.length() - 10);
-		for (byte b : sangerBytesToTest) {
-			try {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false);
-				Assert.fail(
-					"QualityException is not thrown for quality " + b + " (" + (char) b + ") in Illumina encoding");
-			} catch (QualityUtils.QualityException e) {
-			}
-		}
-		byte[] illuminaBytesToTest = Arrays.copyOfRange(illuminaQuality.getBytes(), 11, illuminaQuality.length());
-		for (byte b : illuminaBytesToTest) {
-			try {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false);
-				Assert
-					.fail("QualityException is not thrown for quality " + b + " (" + (char) b + ") in Sanger encoding");
-			} catch (QualityUtils.QualityException e) {
-			}
-		}
-		// check if allow higher qualities is working
-		for (byte b : illuminaBytesToTest) {
-			try {
-				QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, true);
-			} catch (QualityUtils.QualityException e) {
-				Assert.fail("QualityException is thrown for quality " + b + " (" + (char) b + ") in Sanger encoding when allowing higher qualities");
-			}
-		}
-	}
+    @Test
+    public void testCheckEncoding() throws Exception {
+        // first check correct qualities
+        try {
+            for (byte b : sangerQuality.getBytes()) {
+                QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false);
+            }
+            for (byte b : illuminaQuality.getBytes()) {
+                QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false);
+            }
+        } catch (QualityUtils.QualityException e) {
+            Assert.fail(e.getMessage());
+        }
+        // now check if it does not raise an error in the not shared qualities
+        byte[] sangerBytesToTest =
+                Arrays.copyOfRange(sangerQuality.getBytes(), 0, sangerQuality.length() - 10);
+        for (byte b : sangerBytesToTest) {
+            try {
+                QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false);
+                Assert.fail(
+                        "QualityException is not thrown for quality " + b + " (" + (char) b
+                                + ") in Illumina encoding");
+            } catch (QualityUtils.QualityException e) {
+            }
+        }
+        byte[] illuminaBytesToTest =
+                Arrays.copyOfRange(illuminaQuality.getBytes(), 11, illuminaQuality.length());
+        for (byte b : illuminaBytesToTest) {
+            try {
+                QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false);
+                Assert
+                        .fail("QualityException is not thrown for quality " + b + " (" + (char) b
+                                + ") in Sanger encoding");
+            } catch (QualityUtils.QualityException e) {
+            }
+        }
+        // check if allow higher qualities is working
+        for (byte b : illuminaBytesToTest) {
+            try {
+                QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, true);
+            } catch (QualityUtils.QualityException e) {
+                Assert.fail("QualityException is thrown for quality " + b + " (" + (char) b
+                        + ") in Sanger encoding when allowing higher qualities");
+            }
+        }
+    }
 
-	@Ignore("We will need BAM/FASTQ files in resources for this test")
-	@Test
-	public void testGetEncoding() throws Exception {
-		// TODO: implement
-	}
+    @Ignore("We will need BAM/FASTQ files in resources for this test")
+    @Test
+    public void testGetEncoding() throws Exception {
+        // TODO: implement
+    }
 }

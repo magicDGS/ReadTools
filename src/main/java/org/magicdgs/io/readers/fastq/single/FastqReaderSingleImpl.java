@@ -36,40 +36,39 @@ import java.io.File;
 public class FastqReaderSingleImpl extends FastqReaderSingleAbstract {
 
 
-	public FastqReaderSingleImpl(File file, boolean allowHigherQualities) {
-		super(file, allowHigherQualities);
-	}
+    public FastqReaderSingleImpl(File file, boolean allowHigherQualities) {
+        super(file, allowHigherQualities);
+    }
 
-	public FastqReaderSingleImpl(File file, boolean skipBlankLines, boolean allowHigherQualities) {
-		super(file, skipBlankLines, allowHigherQualities);
-	}
+    public FastqReaderSingleImpl(File file, boolean skipBlankLines, boolean allowHigherQualities) {
+        super(file, skipBlankLines, allowHigherQualities);
+    }
 
-	public FastqReaderSingleImpl(BufferedReader reader, boolean allowHigherQualities) {
-		super(reader, allowHigherQualities);
-	}
+    public FastqReaderSingleImpl(BufferedReader reader, boolean allowHigherQualities) {
+        super(reader, allowHigherQualities);
+    }
 
-	public FastqReaderSingleImpl(File file, BufferedReader reader, boolean skipBlankLines, boolean allowHigherQualities) {
-		super(file, reader, skipBlankLines, allowHigherQualities);
-	}
+    public FastqReaderSingleImpl(File file, BufferedReader reader, boolean skipBlankLines,
+            boolean allowHigherQualities) {
+        super(file, reader, skipBlankLines, allowHigherQualities);
+    }
 
-	public FastqReaderSingleImpl(File file, BufferedReader reader, boolean allowHigherQualities) {
-		super(file, reader, allowHigherQualities);
-	}
+    public FastqReaderSingleImpl(File file, BufferedReader reader, boolean allowHigherQualities) {
+        super(file, reader, allowHigherQualities);
+    }
 
-	@Override
-	public FastqRecord next() {
-		FastqRecord toReturn = nextUnchangedRecord();
-		checker.checkMisencoded(toReturn);
-		return toReturn;
-	}
+    @Override
+    public FastqRecord next() {
+        FastqRecord toReturn = nextUnchangedRecord();
+        checker.checkMisencoded(toReturn);
+        return toReturn;
+    }
 
-	/**
-	 * Returns the same as the original encoding
-	 *
-	 * @return
-	 */
-	@Override
-	public FastqQualityFormat getFastqQuality() {
-		return getOriginalEncoding();
-	}
+    /**
+     * Returns the same as the original encoding
+     */
+    @Override
+    public FastqQualityFormat getFastqQuality() {
+        return getOriginalEncoding();
+    }
 }

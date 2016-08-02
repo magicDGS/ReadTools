@@ -22,16 +22,17 @@
  */
 package org.magicdgs.readtools;
 
-import htsjdk.samtools.util.Log;
-import htsjdk.samtools.util.StringUtil;
+import static org.magicdgs.tools.ToolNames.ToolException;
+
 import org.magicdgs.tools.Tool;
 import org.magicdgs.tools.ToolNames;
 import org.magicdgs.utils.misc.TimeWatch;
 
+import htsjdk.samtools.util.Log;
+import htsjdk.samtools.util.StringUtil;
+
 import java.io.PrintWriter;
 import java.util.Arrays;
-
-import static org.magicdgs.tools.ToolNames.ToolException;
 
 /**
  * Class that contain the caller for the main functions
@@ -40,103 +41,106 @@ import static org.magicdgs.tools.ToolNames.ToolException;
  */
 public class Main {
 
-	// the logger for this class
-	public static final Log logger = Log.getInstance(Main.class);
+    // the logger for this class
+    public static final Log logger = Log.getInstance(Main.class);
 
-	/**
-	 * Main method
-	 *
-	 * @param args the args for the command line
-	 */
-	public static void main(String[] args) {
-		if (args.length == 0) {
-			generalHelp("");
-		} else if (args[0].equals("--debug")) {
-			Log.setGlobalLogLevel(Log.LogLevel.DEBUG);
-			logger.debug("DEBUG mode on");
-			if (args.length == 1) {
-				logger.debug("Debug mode only works with a tool");
-				System.exit(1);
-			}
-			args = Arrays.copyOfRange(args, 1, args.length);
-		} else {
-			Log.setGlobalLogLevel(Log.LogLevel.INFO);
-		}
-		try {
-			Tool toRun = ToolNames.getTool(args[0]);
-			TimeWatch elapsed = TimeWatch.start();
-			int exitStatus = toRun.run(Arrays.copyOfRange(args, 1, args.length));
-			switch (exitStatus) {
-				case 0:
-					logger.info("Elapsed time for ", toRun.getClass().getSimpleName(), ": ", elapsed);
-					break;
-				case 1:
-					logger.info("Finishing with errors");
-					logger.debug("Elapsed time to error: ", elapsed);
-					break;
-				default:
-					logger.error("Unexpected error. Please contact with ", ProjectProperties.getContact());
-			}
-			System.exit(exitStatus);
-		} catch (ToolException e) {
-			logger.debug(e.getMessage());
-			logger.debug(e);
-			generalHelp("Tool '" + args[0] + "' does not exists");
-		}
-	}
+    /**
+     * Main method
+     *
+     * @param args the args for the command line
+     */
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            generalHelp("");
+        } else if (args[0].equals("--debug")) {
+            Log.setGlobalLogLevel(Log.LogLevel.DEBUG);
+            logger.debug("DEBUG mode on");
+            if (args.length == 1) {
+                logger.debug("Debug mode only works with a tool");
+                System.exit(1);
+            }
+            args = Arrays.copyOfRange(args, 1, args.length);
+        } else {
+            Log.setGlobalLogLevel(Log.LogLevel.INFO);
+        }
+        try {
+            Tool toRun = ToolNames.getTool(args[0]);
+            TimeWatch elapsed = TimeWatch.start();
+            int exitStatus = toRun.run(Arrays.copyOfRange(args, 1, args.length));
+            switch (exitStatus) {
+                case 0:
+                    logger.info("Elapsed time for ", toRun.getClass().getSimpleName(), ": ",
+                            elapsed);
+                    break;
+                case 1:
+                    logger.info("Finishing with errors");
+                    logger.debug("Elapsed time to error: ", elapsed);
+                    break;
+                default:
+                    logger.error("Unexpected error. Please contact with ",
+                            ProjectProperties.getContact());
+            }
+            System.exit(exitStatus);
+        } catch (ToolException e) {
+            logger.debug(e.getMessage());
+            logger.debug(e);
+            generalHelp("Tool '" + args[0] + "' does not exists");
+        }
+    }
 
-	/**
-	 * Print the program header to this print writer
-	 *
-	 * @param writer the writer to print out the program header
-	 */
-	public static void printProgramHeader(PrintWriter writer) {
-		String header = String.format("%s (compiled on %s)", ProjectProperties.getFormattedNameWithVersion(),
-			ProjectProperties.getTimestamp());
-		writer.println(header);
-		writer.println(StringUtil.repeatCharNTimes('=', header.length()));
-	}
+    /**
+     * Print the program header to this print writer
+     *
+     * @param writer the writer to print out the program header
+     */
+    public static void printProgramHeader(PrintWriter writer) {
+        String header = String.format("%s (compiled on %s)",
+                ProjectProperties.getFormattedNameWithVersion(),
+                ProjectProperties.getTimestamp());
+        writer.println(header);
+        writer.println(StringUtil.repeatCharNTimes('=', header.length()));
+    }
 
-	/**
-	 * Get the usage of the main jar
-	 *
-	 * @return formatted usage
-	 */
-	public static String usageMain() {
-		return String.format("java -jar %s.jar", ProjectProperties.getName());
-	}
+    /**
+     * Get the usage of the main jar
+     *
+     * @return formatted usage
+     */
+    public static String usageMain() {
+        return String.format("java -jar %s.jar", ProjectProperties.getName());
+    }
 
-	/**
-	 * Print the general help in the standard error
-	 *
-	 * @param error the standard error
-	 */
-	public static void generalHelp(String error) {
-		PrintWriter writer = new PrintWriter(System.err);
-		printProgramHeader(writer);
-		writer.println();
-		writer.print("Usage: ");
-		writer.print(usageMain());
-		writer.println(" <tool> [options]\n");
-		writer.println("Tools:");
-		for (ToolNames name : ToolNames.values()) {
-			writer.print("\t");
-			writer.print(name);
-			writer.print(":\t");
-			writer.println(name.shortDescription);
-		}
-		if (!error.equals("")) {
-			writer.println();
-			writer.print("error: ");
-			writer.println(error);
-		} else {
-			writer.println();
-			writer.print("* For specific help: ");
-			writer.print(usageMain());
-			writer.println(" <tool> --help");
-		}
-		writer.println();
-		writer.close();
-		System.exit(1);
-	}
+    /**
+     * Print the general help in the standard error
+     *
+     * @param error the standard error
+     */
+    public static void generalHelp(String error) {
+        PrintWriter writer = new PrintWriter(System.err);
+        printProgramHeader(writer);
+        writer.println();
+        writer.print("Usage: ");
+        writer.print(usageMain());
+        writer.println(" <tool> [options]\n");
+        writer.println("Tools:");
+        for (ToolNames name : ToolNames.values()) {
+            writer.print("\t");
+            writer.print(name);
+            writer.print(":\t");
+            writer.println(name.shortDescription);
+        }
+        if (!error.equals("")) {
+            writer.println();
+            writer.print("error: ");
+            writer.println(error);
+        } else {
+            writer.println();
+            writer.print("* For specific help: ");
+            writer.print(usageMain());
+            writer.println(" <tool> --help");
+        }
+        writer.println();
+        writer.close();
+        System.exit(1);
+    }
 }

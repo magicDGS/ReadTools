@@ -22,22 +22,24 @@
  */
 package org.magicdgs.io.writers.fastq;
 
-import htsjdk.samtools.fastq.FastqWriter;
 import org.magicdgs.io.FastqPairedRecord;
 
+import htsjdk.samtools.fastq.FastqWriter;
+
 /**
- * Interface for FastqWriter that allow use all teh classes implemented as FastqWriters in the same interface
+ * Interface for FastqWriter that allow use all teh classes implemented as FastqWriters in the same
+ * interface
  *
  * @author Daniel Gómez-Sánchez
  */
 public interface ReadToolsFastqWriter extends FastqWriter {
 
-	/**
-	 * Write a FastqPairedRecord in this writer
-	 *
-	 * @param rec the record to write
-	 *
-	 * @throws java.lang.UnsupportedOperationException if the writer is not pair-end
-	 */
-	void write(final FastqPairedRecord rec) throws UnsupportedOperationException;
+    /**
+     * Write a FastqPairedRecord in this writer
+     *
+     * @param rec the record to write
+     *
+     * @throws java.lang.UnsupportedOperationException if the writer is not pair-end
+     */
+    void write(final FastqPairedRecord rec) throws UnsupportedOperationException;
 }
