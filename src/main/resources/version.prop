@@ -1,6 +1,6 @@
-name=${program.name}
-version=${program.version}
+name=${name}
+version=${version}
 build=${buildNumber}
 timestamp=${timestamp}
-contact_person=${developer.main}
-contact_email=${developer.main.email}
+contact_person=${developer}
+contact_email=${contact}

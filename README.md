@@ -44,19 +44,17 @@ The current release includes the following tools:
 
 ### Installation from source
 
-To install this software you need [Maven](https://maven.apache.org/) installed in your computer. Master branch is guarantee to compile successfully and containing the later changes.
-
-To install the later release with the updated changes, you should run the following commands:
+Master branch is guarantee to compile successfully and containing the later changes. To install the later release with the updated changes, you should run the following commands:
 
 ```
 
 git clone https://github.com/magicDGS/ReadTools.git
 cd ReadTools
-mvn install
+./gradlew shadowJar
 
 ```
 
-The executable jar file will appear under the dist folder with the name _ReadTools.jar_. It could be copied to a different folder and the rest of the folder could be removed.
+The executable jar file will appear under the __build/libs/__ folder with the name _ReadTools.jar_. It could be copied to a different folder and the rest of the folder could be removed.
 
 ---
 

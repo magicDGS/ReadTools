@@ -1,0 +1,57 @@
+// JaCoCo task for output the test coverage when building
+apply plugin: 'jacoco'
+
+// JaCoCo version
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+}
+
+// JaCoCo task
+jacocoTestReport {
+    // depends on the test task
+    dependsOn test
+    reports {
+        // enabled for coverage report
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
+    }
+
+    doLast {
+    	def report = file(reports.xml.destination)
+
+    	def parser = new XmlParser()
+    	parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+		def results = parser.parse(report)
+
+		// function for get the covered percentage at different levels
+		// levels:  INSTRUCTION, BRANCH, LINE, COMPLEXITY, METHOD, CLASS
+		def percentage = { type ->
+			def covered = 0.0
+			def missed = 0.0
+			def per = 0.0
+			def tot = 0.0
+			results.package.each {
+				def fPkgCounter = it.counter.find { it.'@type'.equals(type) }
+				if (fPkgCounter != null) {
+
+					covered += fPkgCounter.'@covered' as Double
+					missed += fPkgCounter.'@missed' as Double
+				}
+			}
+			((covered / (covered + missed) * 100)).round(2)
+			
+		}
+		def instrictionCov = percentage("INSTRUCTION")
+		def branchCov = percentage("BRANCH")
+		def lineCov = percentage('LINE')
+		def methodCov = percentage("METHOD")
+		def classCov = percentage("CLASS")
+		logger.lifecycle("Instruction cov: ${instrictionCov}%")
+		logger.lifecycle("Branch cov:      ${branchCov}%")
+		logger.lifecycle("Line cov:        ${lineCov}%")
+		logger.lifecycle("Method cov:      ${methodCov}%")
+		logger.lifecycle("Class cov:       ${classCov}%")
+    }
+}

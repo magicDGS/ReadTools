@@ -3,6 +3,12 @@ language: java
 jdk:
     - oraclejdk8
 
+install:
+    - ./gradlew shadowJar
+
+script:
+    - ./gradlew jacocoTestReport
+
 after_success:
-    - mvn clean test jacoco:report coveralls:report
+    - ./gradlew coveralls
     - python <(curl -s https://raw.githubusercontent.com/TouK/sputnik-ci/master/sputnik-ci.py)
