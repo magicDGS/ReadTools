@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.2.2] - 2016-08-09
 ### Fixed
 - Option for allow higher qualities (`-ahq`) when standard encoding for solving (issue [#24](https://github.com/magicDGS/ReadTools/issues/24))
 - Fixed bug in discarded output from TaggedBamToFastq for pair-end data (issue [#34](https://github.com/magicDGS/ReadTools/issues/34))
@@ -65,6 +65,7 @@ All notable changes to this project will be documented in this file.
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.2.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.1
 [0.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.0
 [0.1.4]: https://github.com/magicDGS/ReadTools/releases/tag/0.1.4
