@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Fixed
 - Option for allow higher qualities (`-ahq`) when standard encoding for solving (issue [#24](https://github.com/magicDGS/ReadTools/issues/24))
+- Fixed bug in discarded output from TaggedBamToFastq for pair-end data (issue [#34](https://github.com/magicDGS/ReadTools/issues/34))
 
 ## Changed
 - Change from Maven to Gradle as build system (developer improvement)

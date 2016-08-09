@@ -183,8 +183,8 @@ public class TaggedBamToFastq extends AbstractTool {
                 best = BarcodeMatch.UNKNOWN_STRING;
             }
             if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
-                SAMRecordUtils.addBarcodeToName(record1, String.join("", barcodes));
-                SAMRecordUtils.addBarcodeToName(record2, String.join("", barcodes));
+                SAMRecordUtils.addBarcodeToName(record1, BarcodeMethods.joinBarcodes(barcodes));
+                SAMRecordUtils.addBarcodeToName(record2, BarcodeMethods.joinBarcodes(barcodes));
             } else {
                 SAMRecordUtils.addBarcodeToName(record1, best);
                 SAMRecordUtils.addBarcodeToName(record2, best);
