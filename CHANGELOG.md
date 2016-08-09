@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Option for allow higher qualities (`-ahq`) when standard encoding for solving (issue [#24](https://github.com/magicDGS/ReadTools/issues/24))
 
+## Changed
+- Change from Maven to Gradle as build system (developer improvement)
+
 ## [0.2.1] - 2016-04-19
 
 ### Fixed
