@@ -38,27 +38,44 @@ mainClassName = group + "." + rootProject.name.toLowerCase() + ".Main"
 
 repositories {
     mavenCentral()
-    // TODO: add artifactory when migration to GATK
-    // TODO: Broad Institute artifactory should be removed when GATK4 is in Maven Central
-    // maven {
-    //    url "https://artifactory.broadinstitute.org/artifactory/libs-snapshot/" 
-    // }
+    maven {
+        url "https://artifactory.broadinstitute.org/artifactory/libs-snapshot/"
+    }
 }
+// versions for the dependencies
+final gatkVersion = '4.alpha.2-61-gcdc484c-SNAPSHOT'
+final htsjdkVersion = '2.6.1-9-g88b6719-SNAPSHOT'
+final testngVersion = "6.9.10"
+
 
 dependencies {
     // TODO: remove cli when migration to gatk framework
+    // TODO: although GATK4 is added, it is not really used yet
     compile 'commons-cli:commons-cli:1.3.1'
-    // TODO: remove htsjdk when gatk migration
-    compile 'com.github.samtools:htsjdk:2.2.1'
-    // TODO: add the gatk framework for migration
     // TODO: they will do soon a master-SNAPSHOT, which we will use in the future (gatk/issue#1995)
-    // compile group: 'org.broadinstitute', name: 'gatk', version: '4.alpha.1-225-g796497f-SNAPSHOT'
-    testCompile 'org.testng:testng:6.9.10'
+    compile (group: 'org.broadinstitute', name: 'gatk', version: gatkVersion) {
+        exclude module: 'jgrapht' // this is not required
+        exclude module: 'htsjdk'
+        exclude module: 'testng'
+    }
+    compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
+    compile group: 'org.testng', name: 'testng', version: testngVersion
 }
 
 // for managing the wrapper task
 task wrapper(type: Wrapper) {
     gradleVersion = '2.13'
+}
+
+tasks.withType(Jar) {
+    def details = versionDetails()
+    def buildNumber = (gitVersion().contains("dirty")) ? details.gitHash + ".dirty" : details.gitHash;
+    def implementationVersion = project.version.replaceAll("-SNAPSHOT", "") + "_" +  buildNumber
+    manifest {
+        attributes 'Implementation-Title': rootProject.name,
+            'Implementation-Version': implementationVersion,
+            'Main-Class': project.mainClassName
+    }
 }
 
 // test task
