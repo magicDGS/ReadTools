@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/magicDGS/ReadTools.svg?branch=master)](https://travis-ci.org/magicDGS/ReadTools)
 [![Coverage Status](https://coveralls.io/repos/github/magicDGS/ReadTools/badge.svg?branch=master)](https://coveralls.io/github/magicDGS/ReadTools?branch=master)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/dd842750e7a74112870a5156a24a8cbf)](https://www.codacy.com/app/daniel-gomez-sanchez/ReadTools?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=magicDGS/ReadTools&amp;utm_campaign=Badge_Grade)
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -60,7 +61,7 @@ The executable jar file will appear under the __build/libs/__ folder with the na
 
 ### License and citing
 
-The software is provided with a copy of the [MIT License](http://opensource.org/licenses/MIT), but is build with several Java libraries that have different licenses. All the information for the libraries used in the sofware is available in the pom.xml file.
+The software is provided with a copy of the [MIT License](http://opensource.org/licenses/MIT), but is build with several Java libraries that have different licenses. Information for the libraries used in the software is available in the [build.gradle](https://github.com/magicDGS/ReadTools/blob/master/build.gradle) file.
 
 If you use this software, please add the citation as following (the version is printed in the header of the help):
 
