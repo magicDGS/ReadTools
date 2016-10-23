@@ -41,6 +41,7 @@ import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
@@ -132,7 +133,8 @@ public class StandardizeQuality extends AbstractTool {
             boolean multi, boolean allowHigherQualities)
             throws IOException {
         SamReader reader =
-                new SamReaderSanger(input, ValidationStringency.SILENT, allowHigherQualities);
+                new SamReaderSanger(input, SamReaderFactory.makeDefault()
+                        .validationStringency(ValidationStringency.SILENT), allowHigherQualities);
         final SAMFileHeader header = reader.getFileHeader();
         header.addProgramRecord(programInfo);
         SAMFileWriter writer =

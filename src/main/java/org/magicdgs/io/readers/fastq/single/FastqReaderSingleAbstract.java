@@ -29,7 +29,6 @@ import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 
-import java.io.BufferedReader;
 import java.io.File;
 
 /**
@@ -54,22 +53,6 @@ public abstract class FastqReaderSingleAbstract extends FastqReader
             final boolean allowHigherQualities) {
         super(file, skipBlankLines);
         init(allowHigherQualities);
-    }
-
-    public FastqReaderSingleAbstract(final BufferedReader reader,
-            final boolean allowHigherQualities) {
-        this(null, reader, allowHigherQualities);
-    }
-
-    public FastqReaderSingleAbstract(final File file, final BufferedReader reader,
-            final boolean skipBlankLines, final boolean allowHigherQualities) {
-        super(file, reader, skipBlankLines);
-        init(allowHigherQualities);
-    }
-
-    public FastqReaderSingleAbstract(final File file, final BufferedReader reader,
-            final boolean allowHigherQualities) {
-        this(file, reader, false, allowHigherQualities);
     }
 
     /**

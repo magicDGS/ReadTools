@@ -77,22 +77,25 @@ public class ReadToolsFastqWriterFactory {
     /**
      * Sets whether or not to use async io (i.e. a dedicated thread per writer.
      */
-    public void setUseAsyncIo(final boolean useAsyncIo) {
+    public ReadToolsFastqWriterFactory setUseAsyncIo(final boolean useAsyncIo) {
         FACTORY.setUseAsyncIo(useAsyncIo);
+        return this;
     }
 
     /**
      * If true, compute MD5 and write appropriately-named file when file is closed.
      */
-    public void setCreateMd5(final boolean createMd5) {
+    public ReadToolsFastqWriterFactory setCreateMd5(final boolean createMd5) {
         FACTORY.setCreateMd5(createMd5);
+        return this;
     }
 
     /**
      * If <code>true</code> the output generated from a prefix will be gzipped.
      */
-    public void setGzipOutput(final boolean gzip) {
+    public ReadToolsFastqWriterFactory setGzipOutput(final boolean gzip) {
         GZIP_OUTPUT = gzip;
+        return this;
     }
 
     /**
@@ -100,8 +103,9 @@ public class ReadToolsFastqWriterFactory {
      * overwritten if already
      * exists
      */
-    public void setCheckExistence(final boolean checkExistence) {
+    public ReadToolsFastqWriterFactory setCheckExistence(final boolean checkExistence) {
         CHECK_EXISTENCE = checkExistence;
+        return this;
     }
 
     /**
@@ -251,7 +255,8 @@ public class ReadToolsFastqWriterFactory {
 
     /**
      * Writer that split between assign/unknown barcodes; the mapping is "assign" and {@link
-     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. By default,
+     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. By
+     * default,
      * any record is correct
      * unless the unknown string is provided as identifier
      *

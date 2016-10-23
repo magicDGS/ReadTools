@@ -31,6 +31,7 @@ import org.magicdgs.io.readers.fastq.single.FastqReaderSingleImpl;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleSanger;
 
 import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 
 import java.io.File;
@@ -84,10 +85,12 @@ public class ToolsReadersFactory {
             boolean allowHigherQualities) {
         if (isMaintained) {
             // if the format is maintained, create a default sam reader
-            return new SamReaderImpl(input, ValidationStringency.SILENT, allowHigherQualities);
+            return new SamReaderImpl(input, SamReaderFactory.makeDefault()
+                    .validationStringency(ValidationStringency.SILENT), allowHigherQualities);
         } else {
             // if not, standardize
-            return new SamReaderSanger(input, ValidationStringency.SILENT, allowHigherQualities);
+            return new SamReaderSanger(input, SamReaderFactory.makeDefault()
+                    .validationStringency(ValidationStringency.SILENT), allowHigherQualities);
         }
     }
 }

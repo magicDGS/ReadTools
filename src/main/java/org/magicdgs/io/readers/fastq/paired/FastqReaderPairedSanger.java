@@ -25,7 +25,6 @@ package org.magicdgs.io.readers.fastq.paired;
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 
-import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
 
 import java.io.File;
@@ -36,12 +35,6 @@ import java.io.File;
  * @author Daniel Gómez-Sánchez
  */
 public class FastqReaderPairedSanger extends FastqReaderPairedAbstract {
-
-
-    public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2,
-            boolean allowHighQualities) throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
 
     public FastqReaderPairedSanger(File reader1, File reader2, boolean allowHighQualities)
             throws QualityUtils.QualityException {

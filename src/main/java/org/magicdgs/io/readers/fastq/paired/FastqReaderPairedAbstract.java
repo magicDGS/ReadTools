@@ -51,20 +51,14 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
 
     protected Log logger;
 
-    @Deprecated
-    public FastqReaderPairedAbstract(FastqReader reader1, FastqReader reader2)
-            throws QualityUtils.QualityException {
-        this(reader1, reader2, false);
-    }
-
     /**
      * Default constructor with two readers
      *
      * @param reader1 the first pair reader
      * @param reader2 the second pair reader
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if both files are encoding
-     *                                                                differently
+     * @throws QualityUtils.QualityException if both files are encoding
+     *                                       differently
      */
     public FastqReaderPairedAbstract(final FastqReader reader1, final FastqReader reader2,
             final boolean allowHighQualities) throws QualityUtils.QualityException {
@@ -87,18 +81,12 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
      * @param reader1 the first pair file
      * @param reader2 the second pair file
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if both files are encoding
-     *                                                                differently
+     * @throws QualityUtils.QualityException if both files are encoding
+     *                                       differently
      */
     public FastqReaderPairedAbstract(final File reader1, final File reader2,
             final boolean allowHighQualities) throws QualityUtils.QualityException {
         this(new FastqReader(reader1), new FastqReader(reader2), allowHighQualities);
-    }
-
-    @Deprecated
-    public FastqReaderPairedAbstract(File reader1, File reader2)
-            throws QualityUtils.QualityException {
-        this(new FastqReader(reader1), new FastqReader(reader2));
     }
 
     /**

@@ -19,6 +19,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package org.magicdgs.io.writers.bam;
 
@@ -425,7 +426,7 @@ public class ReadToolsSAMFileWriterFactory {
      * Check the existence of the file if the factory should do it and generate all the intermediate
      * directories
      */
-    private void checkExistenceAndCreateDirs(File outputFile) throws IOException {
+    private void checkExistenceAndCreateDirs(final File outputFile) throws IOException {
         if (CHECK_EXISTENCE) {
             IOUtils.exceptionIfExists(outputFile);
         }

@@ -25,7 +25,6 @@ package org.magicdgs.io.readers.fastq.single;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 
-import java.io.BufferedReader;
 import java.io.File;
 
 /**
@@ -38,24 +37,6 @@ public class FastqReaderSingleSanger extends FastqReaderSingleAbstract {
 
     public FastqReaderSingleSanger(File file, boolean allowHigherQualities) {
         super(file, allowHigherQualities);
-    }
-
-    public FastqReaderSingleSanger(File file, boolean skipBlankLines,
-            boolean allowHigherQualities) {
-        super(file, skipBlankLines, allowHigherQualities);
-    }
-
-    public FastqReaderSingleSanger(BufferedReader reader, boolean allowHigherQualities) {
-        super(reader, allowHigherQualities);
-    }
-
-    public FastqReaderSingleSanger(File file, BufferedReader reader, boolean skipBlankLines,
-            boolean allowHigherQualities) {
-        super(file, reader, skipBlankLines, allowHigherQualities);
-    }
-
-    public FastqReaderSingleSanger(File file, BufferedReader reader, boolean allowHigherQualities) {
-        super(file, reader, allowHigherQualities);
     }
 
     /**

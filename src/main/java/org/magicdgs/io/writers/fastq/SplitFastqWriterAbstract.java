@@ -27,7 +27,6 @@ import org.magicdgs.io.FastqPairedRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.NoSuchElementException;
 
@@ -55,7 +54,7 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
      *
      * @param mapping the mapping between the identifier and the FastqWriter
      */
-    protected SplitFastqWriterAbstract(Hashtable<String, ? extends FastqWriter> mapping) {
+    protected SplitFastqWriterAbstract(final Hashtable<String, ? extends FastqWriter> mapping) {
         this.mapping = mapping;
         this.counts = new Hashtable<>(mapping.size());
     }
@@ -71,22 +70,22 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
     }
 
     @Override
-    public void write(String identifier, FastqRecord record)
+    public void write(final String identifier, final FastqRecord record)
             throws NoSuchElementException, UnsupportedOperationException {
-        FastqWriter writer = this.mapping.get(identifier);
+        final FastqWriter writer = this.mapping.get(identifier);
         if (writer == null) {
             throw new NoSuchElementException(
                     "Identifier " + identifier + " is not included in this writer");
         }
         writer.write(record);
-        Integer c = counts.putIfAbsent(identifier, 1);
+        final Integer c = counts.putIfAbsent(identifier, 1);
         if (c != null) {
             counts.put(identifier, c + 1);
         }
     }
 
     @Override
-    public void write(String identifier, FastqPairedRecord record)
+    public void write(final String identifier, final FastqPairedRecord record)
             throws NoSuchElementException, UnsupportedOperationException {
         FastqWriter writer = this.mapping.get(identifier);
         if (writer == null) {
@@ -106,9 +105,6 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
 
     @Override
     public void close() {
-        HashSet<FastqWriter> writersSet = new HashSet<>(mapping.values());
-        for (FastqWriter writer : writersSet) {
-            writer.close();
-        }
+        mapping.values().stream().forEach(FastqWriter::close);
     }
 }
