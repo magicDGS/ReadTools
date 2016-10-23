@@ -2,8 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.2.2] - 2016-08-09
+
 ### Fixed
-- Option for allow higher qualities (`-ahq`) when standard encoding for solving (issue [#24](https://github.com/magicDGS/ReadTools/issues/24))
+- Option for allow higher qualities (`-ahq`) when standard encoding (issue [#24](https://github.com/magicDGS/ReadTools/issues/24))
 - Fixed bug in discarded output from TaggedBamToFastq for pair-end data (issue [#34](https://github.com/magicDGS/ReadTools/issues/34))
 
 ## Changed
@@ -15,7 +16,7 @@ All notable changes to this project will be documented in this file.
 - Fixed bug with standard qualities encoded withe the Illumina 1.8 protocol (issue [#21](https://github.com/magicDGS/ReadTools/issues/21))
 
 ### Added
-- Maximum length option for TrimFastq (--max)
+- Maximum length option for TrimFastq (`--max`)
 - More informative error when quality checking fails
 
 ## [0.2.0] - 2016-03-21
@@ -35,7 +36,7 @@ All notable changes to this project will be documented in this file.
 ## [0.1.4] - 2015-12-10
 
 ### Fixed
-- Fixed bug in (issue [#14](https://github.com/magicDGS/ReadTools/issues/14))
+- Fixed bug when splitting with BamBarcodeDetector (issue [#14](https://github.com/magicDGS/ReadTools/issues/14))
 
 ## [0.1.3] - 2015-12-09
 
