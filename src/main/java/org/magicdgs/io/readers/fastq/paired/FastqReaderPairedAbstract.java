@@ -23,8 +23,8 @@
 package org.magicdgs.io.readers.fastq.paired;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.utils.fastq.QualityUtils;
-import org.magicdgs.utils.fastq.StandardizerAndChecker;
+import org.magicdgs.readtools.utils.fastq.QualityUtils;
+import org.magicdgs.readtools.utils.fastq.StandardizerAndChecker;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqReader;
@@ -63,7 +63,7 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
      * @param reader1 the first pair reader
      * @param reader2 the second pair reader
      *
-     * @throws org.magicdgs.utils.fastq.QualityUtils.QualityException if both files are encoding
+     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if both files are encoding
      *                                                                differently
      */
     public FastqReaderPairedAbstract(final FastqReader reader1, final FastqReader reader2,
@@ -87,7 +87,7 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
      * @param reader1 the first pair file
      * @param reader2 the second pair file
      *
-     * @throws org.magicdgs.utils.fastq.QualityUtils.QualityException if both files are encoding
+     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if both files are encoding
      *                                                                differently
      */
     public FastqReaderPairedAbstract(final File reader1, final File reader2,

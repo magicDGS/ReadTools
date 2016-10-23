@@ -20,42 +20,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.magicdgs.io.readers.fastq.paired;
+package org.magicdgs.readtools.tools.trimming.trimmers.stats;
 
-import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.fastq.QualityUtils;
-
-import htsjdk.samtools.fastq.FastqReader;
-import htsjdk.samtools.util.FastqQualityFormat;
-
-import java.io.File;
+import htsjdk.samtools.metrics.StringHeader;
 
 /**
- * Implementation for pair-end reader with two files
+ * Header for single end trimming
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedImpl extends FastqReaderPairedAbstract {
+public class SingleEndTrimming extends StringHeader {
 
-    public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2,
-            boolean allowHighQualities) throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
-
-    public FastqReaderPairedImpl(File reader1, File reader2, boolean allowHighQualities)
-            throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
-
-    @Override
-    public FastqQualityFormat getFastqQuality() {
-        return getOriginalEncoding();
-    }
-
-    @Override
-    public FastqPairedRecord next() {
-        final FastqPairedRecord toReturn = nextUnchangedRecord();
-        checker.checkMisencoded(toReturn);
-        return toReturn;
+    public SingleEndTrimming() {
+        this.setValue("All reads trimmed as singles");
     }
 }

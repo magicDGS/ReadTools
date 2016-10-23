@@ -23,10 +23,10 @@
 package org.magicdgs.io.writers.bam;
 
 import org.magicdgs.io.IOdefault;
-import org.magicdgs.methods.barcodes.dictionary.BarcodeDictionary;
-import org.magicdgs.methods.barcodes.dictionary.BarcodeDictionaryFactory;
-import org.magicdgs.methods.barcodes.dictionary.decoder.BarcodeMatch;
-import org.magicdgs.utils.misc.IOUtils;
+import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
+import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
+import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.misc.IOUtils;
 
 import htsjdk.samtools.BamFileIoUtils;
 import htsjdk.samtools.CRAMFileWriter;
@@ -345,10 +345,10 @@ public class ReadToolsSAMFileWriterFactory {
 
     /**
      * Create a split writer between assign/unknown barcodes; the mapping is "assign" and {@link
-     * org.magicdgs.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. The add
+     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. The add
      * alignment checks for the
      * read group ID; if it is not found (<code>null</code> value for read group) or {@link
-     * org.magicdgs.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}, it goes to the
+     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}, it goes to the
      * unknown file,
      *
      * @param header     entire header. Sort order is determined by the sortOrder property of this

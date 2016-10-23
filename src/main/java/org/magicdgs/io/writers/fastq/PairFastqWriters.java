@@ -23,7 +23,7 @@
 package org.magicdgs.io.writers.fastq;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.utils.misc.Formats;
+import org.magicdgs.readtools.utils.misc.Formats;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;

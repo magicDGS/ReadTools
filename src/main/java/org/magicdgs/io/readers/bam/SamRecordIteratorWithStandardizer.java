@@ -22,7 +22,7 @@
  */
 package org.magicdgs.io.readers.bam;
 
-import org.magicdgs.utils.fastq.StandardizerAndChecker;
+import org.magicdgs.readtools.utils.fastq.StandardizerAndChecker;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;

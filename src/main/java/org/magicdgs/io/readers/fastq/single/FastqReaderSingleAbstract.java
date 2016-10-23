@@ -22,8 +22,8 @@
  */
 package org.magicdgs.io.readers.fastq.single;
 
-import org.magicdgs.utils.fastq.QualityUtils;
-import org.magicdgs.utils.fastq.StandardizerAndChecker;
+import org.magicdgs.readtools.utils.fastq.QualityUtils;
+import org.magicdgs.readtools.utils.fastq.StandardizerAndChecker;
 
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqRecord;

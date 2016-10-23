@@ -53,9 +53,7 @@ dependencies {
     // TODO: add the gatk framework for migration
     // TODO: they will do soon a master-SNAPSHOT, which we will use in the future (gatk/issue#1995)
     // compile group: 'org.broadinstitute', name: 'gatk', version: '4.alpha.1-225-g796497f-SNAPSHOT'
-    // TODO: add the testng framwwork when migration is done
-    // testCompile 'org.testng:testng:6.9.10'
-    testCompile 'junit:junit:4.12'
+    testCompile 'org.testng:testng:6.9.10'
 }
 
 // for managing the wrapper task
@@ -69,8 +67,7 @@ tasks.withType(Test) {
     // tests could be always re-run
     outputs.upToDateWhen { false }
 
-    // TODO: enable TestNG support (default is JUnit) when migration is done
-    // useTestNG()
+    useTestNG()
 
     // TODO: set a system property for the test JVM(s)
     // TODO: example -> systemProperty 'some.prop', 'value'

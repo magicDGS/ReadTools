@@ -20,46 +20,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.magicdgs.io.readers.fastq.paired;
+package org.magicdgs.readtools.tools.trimming.trimmers.stats;
 
-import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.fastq.QualityUtils;
-
-import htsjdk.samtools.fastq.FastqReader;
-import htsjdk.samtools.util.FastqQualityFormat;
-
-import java.io.File;
+import htsjdk.samtools.metrics.Header;
 
 /**
- * Implementation for pair-end reader with two files that always returns a Sanger encoded record
+ * Header for pair-end trimming
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedSanger extends FastqReaderPairedAbstract {
-
-
-    public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2,
-            boolean allowHighQualities) throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
-
-    public FastqReaderPairedSanger(File reader1, File reader2, boolean allowHighQualities)
-            throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
+public class PairEndTrimming implements Header {
 
     /**
-     * The returning format is always Sanger
-     *
-     * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+     * Read pairs trimmed in pairs
      */
+    public int IN_PAIR;
+
+    /**
+     * Read pairs trimmed as single
+     */
+    public int AS_SINGLE;
+
     @Override
-    public FastqQualityFormat getFastqQuality() {
-        return FastqQualityFormat.Standard;
+    public void parse(String in) {
+        String[] items = in.split("\t");
+        items[0] = items[0].replace("Trimmed in pairs: ", "");
+        items[1] = items[1].replace("Trimmed as singles: ", "");
+        IN_PAIR = Integer.parseInt(items[0]);
+        AS_SINGLE = Integer.parseInt(items[1]);
     }
 
     @Override
-    public FastqPairedRecord next() {
-        return checker.standardize(nextUnchangedRecord());
+    public String toString() {
+        return String.format("Trimmed in pairs: %d\tTrimmed as singles: %d", IN_PAIR, AS_SINGLE);
     }
 }

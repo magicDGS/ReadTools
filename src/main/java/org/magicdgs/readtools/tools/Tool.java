@@ -20,46 +20,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.magicdgs.io.readers.fastq.paired;
-
-import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.fastq.QualityUtils;
-
-import htsjdk.samtools.fastq.FastqReader;
-import htsjdk.samtools.util.FastqQualityFormat;
-
-import java.io.File;
+package org.magicdgs.readtools.tools;
 
 /**
- * Implementation for pair-end reader with two files that always returns a Sanger encoded record
+ * Interface for all the tools
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedSanger extends FastqReaderPairedAbstract {
-
-
-    public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2,
-            boolean allowHighQualities) throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
-
-    public FastqReaderPairedSanger(File reader1, File reader2, boolean allowHighQualities)
-            throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
+public interface Tool {
 
     /**
-     * The returning format is always Sanger
+     * Run this tool with the arguments provided (the tool name should be removed before)
      *
-     * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+     * @param args arguments that comes directly from the command line and need to be parsed
+     *
+     * @return the exit status for the tool
      */
-    @Override
-    public FastqQualityFormat getFastqQuality() {
-        return FastqQualityFormat.Standard;
-    }
-
-    @Override
-    public FastqPairedRecord next() {
-        return checker.standardize(nextUnchangedRecord());
-    }
+    public int run(String[] args);
 }

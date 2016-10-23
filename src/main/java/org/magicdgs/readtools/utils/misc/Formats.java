@@ -20,46 +20,43 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.magicdgs.io.readers.fastq.paired;
+package org.magicdgs.readtools.utils.misc;
 
-import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.fastq.QualityUtils;
-
-import htsjdk.samtools.fastq.FastqReader;
-import htsjdk.samtools.util.FastqQualityFormat;
-
-import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Collections;
 
 /**
- * Implementation for pair-end reader with two files that always returns a Sanger encoded record
+ * Static formats for output times and numbers
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedSanger extends FastqReaderPairedAbstract {
-
-
-    public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2,
-            boolean allowHighQualities) throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
-
-    public FastqReaderPairedSanger(File reader1, File reader2, boolean allowHighQualities)
-            throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
+public class Formats {
 
     /**
-     * The returning format is always Sanger
-     *
-     * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+     * Format for times
      */
-    @Override
-    public FastqQualityFormat getFastqQuality() {
-        return FastqQualityFormat.Standard;
-    }
+    public final static DecimalFormat timeFmt = new DecimalFormat("00");
 
-    @Override
-    public FastqPairedRecord next() {
-        return checker.standardize(nextUnchangedRecord());
+    /**
+     * Format for big numbers with commas each 3 numbers
+     */
+    public final static NumberFormat commaFmt = new DecimalFormat("#,###");
+
+    /**
+     * Format for decimal numbers rounded to 7
+     */
+    public final static DecimalFormat roundToSevenFmt = new DecimalFormat("#.#######");
+
+    /**
+     * Get a rounded format with certain number of significant digits
+     *
+     * @param digits the number of digits
+     *
+     * @return the number formatted as a String
+     */
+    public static DecimalFormat getRoundFormat(int digits) {
+        return new DecimalFormat(
+                String.format("#.%s", String.join("", Collections.nCopies(digits, "#"))));
     }
 }

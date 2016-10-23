@@ -20,46 +20,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.magicdgs.io.readers.fastq.paired;
+package org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats;
 
-import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.fastq.QualityUtils;
-
-import htsjdk.samtools.fastq.FastqReader;
-import htsjdk.samtools.util.FastqQualityFormat;
-
-import java.io.File;
+import htsjdk.samtools.metrics.MetricBase;
 
 /**
- * Implementation for pair-end reader with two files that always returns a Sanger encoded record
+ * Metrics for barcode detector
  *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedSanger extends FastqReaderPairedAbstract {
-
-
-    public FastqReaderPairedSanger(FastqReader reader1, FastqReader reader2,
-            boolean allowHighQualities) throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
-
-    public FastqReaderPairedSanger(File reader1, File reader2, boolean allowHighQualities)
-            throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
+public class BarcodeStat extends MetricBase {
 
     /**
-     * The returning format is always Sanger
-     *
-     * @return {@link htsjdk.samtools.util.FastqQualityFormat#Standard}
+     * The barcode sequence
      */
-    @Override
-    public FastqQualityFormat getFastqQuality() {
-        return FastqQualityFormat.Standard;
-    }
+    public String SEQUENCE;
 
-    @Override
-    public FastqPairedRecord next() {
-        return checker.standardize(nextUnchangedRecord());
+    /**
+     * The number of barcodes that match
+     */
+    public int MATCHED;
+
+    /**
+     * Average number of mismatches per matched barcode
+     */
+    public double MEAN_MISMATCH;
+
+    /**
+     * Average number of Ns in the sequence
+     */
+    public double MEAN_N;
+
+    /**
+     * The number of barcodes discarded by the maximum number of mismatches
+     */
+    public int DISCARDED;
+
+    public BarcodeStat(String sequence) {
+        this.SEQUENCE = sequence;
+        this.MATCHED = 0;
+        this.MEAN_MISMATCH = 0;
+        this.MEAN_N = 0;
+        this.DISCARDED = 0;
     }
 }

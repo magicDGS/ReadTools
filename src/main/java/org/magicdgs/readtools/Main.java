@@ -22,11 +22,11 @@
  */
 package org.magicdgs.readtools;
 
-import static org.magicdgs.tools.ToolNames.ToolException;
+import static org.magicdgs.readtools.tools.ToolNames.ToolException;
 
-import org.magicdgs.tools.Tool;
-import org.magicdgs.tools.ToolNames;
-import org.magicdgs.utils.misc.TimeWatch;
+import org.magicdgs.readtools.tools.Tool;
+import org.magicdgs.readtools.tools.ToolNames;
+import org.magicdgs.readtools.utils.misc.TimeWatch;
 
 import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.StringUtil;

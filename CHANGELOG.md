@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- Testing is done with TestNG (developer)
+
 ## [0.2.2] - 2016-08-09
 
 ### Fixed

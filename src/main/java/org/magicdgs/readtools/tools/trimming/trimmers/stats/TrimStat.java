@@ -20,42 +20,36 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  */
-package org.magicdgs.io.readers.fastq.paired;
+package org.magicdgs.readtools.tools.trimming.trimmers.stats;
 
-import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.fastq.QualityUtils;
-
-import htsjdk.samtools.fastq.FastqReader;
-import htsjdk.samtools.util.FastqQualityFormat;
-
-import java.io.File;
+import htsjdk.samtools.metrics.MetricBase;
 
 /**
- * Implementation for pair-end reader with two files
- *
  * @author Daniel Gómez-Sánchez
  */
-public class FastqReaderPairedImpl extends FastqReaderPairedAbstract {
+public class TrimStat extends MetricBase {
 
-    public FastqReaderPairedImpl(FastqReader reader1, FastqReader reader2,
-            boolean allowHighQualities) throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
+    public String PAIR;
 
-    public FastqReaderPairedImpl(File reader1, File reader2, boolean allowHighQualities)
-            throws QualityUtils.QualityException {
-        super(reader1, reader2, allowHighQualities);
-    }
+    public int TOTAL;
 
-    @Override
-    public FastqQualityFormat getFastqQuality() {
-        return getOriginalEncoding();
-    }
+    public int PASSED;
 
-    @Override
-    public FastqPairedRecord next() {
-        final FastqPairedRecord toReturn = nextUnchangedRecord();
-        checker.checkMisencoded(toReturn);
-        return toReturn;
+    public int POLY_N_TRIMMED;
+
+    public int INTERNAL_N_DISCARDED;
+
+    public int LENGTH_DISCARDED;
+
+    public int QUALITY_TRIMMED;
+
+    public TrimStat(String pair) {
+        PAIR = pair;
+        TOTAL = 0;
+        POLY_N_TRIMMED = 0;
+        INTERNAL_N_DISCARDED = 0;
+        QUALITY_TRIMMED = 0;
+        LENGTH_DISCARDED = 0;
+        PASSED = 0;
     }
 }

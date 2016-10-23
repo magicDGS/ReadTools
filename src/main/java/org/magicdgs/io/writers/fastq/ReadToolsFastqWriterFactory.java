@@ -24,10 +24,10 @@ package org.magicdgs.io.writers.fastq;
 
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.io.IOdefault;
-import org.magicdgs.methods.barcodes.dictionary.BarcodeDictionary;
-import org.magicdgs.methods.barcodes.dictionary.decoder.BarcodeMatch;
-import org.magicdgs.utils.misc.IOUtils;
-import org.magicdgs.utils.record.FastqRecordUtils;
+import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
+import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
@@ -251,7 +251,7 @@ public class ReadToolsFastqWriterFactory {
 
     /**
      * Writer that split between assign/unknown barcodes; the mapping is "assign" and {@link
-     * org.magicdgs.methods.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. By default,
+     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. By default,
      * any record is correct
      * unless the unknown string is provided as identifier
      *

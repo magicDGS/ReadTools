@@ -22,8 +22,8 @@
  */
 package org.magicdgs.io.readers.bam;
 
-import org.magicdgs.utils.fastq.QualityUtils;
-import org.magicdgs.utils.fastq.StandardizerAndChecker;
+import org.magicdgs.readtools.utils.fastq.QualityUtils;
+import org.magicdgs.readtools.utils.fastq.StandardizerAndChecker;
 
 import htsjdk.samtools.QueryInterval;
 import htsjdk.samtools.SAMFileHeader;
