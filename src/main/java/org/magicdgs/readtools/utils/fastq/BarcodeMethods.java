@@ -19,6 +19,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package org.magicdgs.readtools.utils.fastq;
 
@@ -69,8 +70,8 @@ public class BarcodeMethods {
      *
      * @return the barcode without pair information if found; <code>null</code> otherwise
      */
-    public static String getOnlyBarcodeFromName(String readName) {
-        Matcher matcher;
+    public static String getOnlyBarcodeFromName(final String readName) {
+        final Matcher matcher;
         if (readName.contains(READ_PAIR_SEPARATOR)) {
             matcher = BARCODE_WITH_READPAIR_PATTERN.matcher(readName);
         } else {
@@ -89,7 +90,7 @@ public class BarcodeMethods {
      *
      * @return the formatted barcode
      */
-    public static String joinBarcodes(String[] barcodes, String barcodeSeparator) {
+    public static String joinBarcodes(final String[] barcodes, final String barcodeSeparator) {
         return String.join(barcodeSeparator, barcodes);
     }
 
@@ -100,7 +101,7 @@ public class BarcodeMethods {
      *
      * @return the formatted barcode
      */
-    public static String joinBarcodes(String[] barcodes) {
+    public static String joinBarcodes(final String[] barcodes) {
         return joinBarcodes(barcodes, BARCODE_BARCODE_SEPARATOR);
     }
 
@@ -112,8 +113,9 @@ public class BarcodeMethods {
      *
      * @return the array with the barcodes
      */
-    public static String[] getSeveralBarcodesFromName(String readName, String barcodeSeparator) {
-        String combined = getOnlyBarcodeFromName(readName);
+    public static String[] getSeveralBarcodesFromName(final String readName,
+            final String barcodeSeparator) {
+        final String combined = getOnlyBarcodeFromName(readName);
         return (combined == null) ? null : combined.split(barcodeSeparator);
     }
 
@@ -126,7 +128,7 @@ public class BarcodeMethods {
      *
      * @return the array with the barcodes
      */
-    public static String[] getSeveralBarcodesFromName(String readName) {
+    public static String[] getSeveralBarcodesFromName(final String readName) {
         return getSeveralBarcodesFromName(readName, BARCODE_BARCODE_SEPARATOR);
     }
 
@@ -137,7 +139,7 @@ public class BarcodeMethods {
      *
      * @return the readName without the barcode information (if present)
      */
-    public static String getNameWithoutBarcode(String readName) {
+    public static String getNameWithoutBarcode(final String readName) {
         int index = readName.indexOf(NAME_BARCODE_SEPARATOR);
         if (index != -1) {
             return readName.substring(0, index);

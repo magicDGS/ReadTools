@@ -56,28 +56,28 @@ public class TrimmerSingle extends Trimmer {
      */
     private static final SingleEndTrimming header = new SingleEndTrimming();
 
-    TrimmerSingle(boolean trimQuality, int qualThreshold, int minLength, int maxLength,
-            boolean discardRemainingNs, boolean no5ptrim) {
+    TrimmerSingle(final boolean trimQuality, final int qualThreshold, final int minLength,
+            final int maxLength, final boolean discardRemainingNs, final boolean no5ptrim) {
         super(trimQuality, qualThreshold, minLength, maxLength, discardRemainingNs, no5ptrim);
         metric = new TrimStat("single");
         histogram = new Histogram<>("length", "count");
     }
 
     @Override
-    public FastqPairedRecord trimFastqPairedRecord(FastqPairedRecord record,
-            FastqQualityFormat format) {
+    public FastqPairedRecord trimFastqPairedRecord(final FastqPairedRecord record,
+            final FastqQualityFormat format) {
         FastqRecord record1 = trimFastqRecord(record.getRecord1(), format);
         FastqRecord record2 = trimFastqRecord(record.getRecord2(), format);
         return new FastqPairedRecord(record1, record2);
     }
 
     @Override
-    public FastqRecord trimFastqRecord(FastqRecord record, FastqQualityFormat format) {
+    public FastqRecord trimFastqRecord(final FastqRecord record, final FastqQualityFormat format) {
         return trimFastqRecord(record, format, metric, histogram);
     }
 
     @Override
-    public void printTrimmerMetrics(File metricsFile) {
+    public void printTrimmerMetrics(final File metricsFile) {
         final MetricsFile<TrimStat, Integer> metrics = new MetricsFile<>();
         metrics.addMetric(metric);
         metrics.addHistogram(histogram);

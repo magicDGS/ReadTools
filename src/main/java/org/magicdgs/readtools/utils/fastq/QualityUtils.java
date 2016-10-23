@@ -19,6 +19,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package org.magicdgs.readtools.utils.fastq;
 
@@ -43,7 +44,8 @@ import java.util.Set;
 public class QualityUtils {
 
     /**
-     * For all the tools that needs to detect the quality, iterate over 1M reads to be sure that the
+     * For all the tools that needs to detect the quality, iterate over 1M reads to be sure that
+     * the
      * quality is correct
      */
     public static final long DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY = 1_000_000;
@@ -82,11 +84,11 @@ public class QualityUtils {
         }
     }
 
-    public static int getIlluminaQuality(char qual) {
+    public static int getIlluminaQuality(final char qual) {
         return qual - 64;
     }
 
-    public static int getSangerQuality(char qual) {
+    public static int getSangerQuality(final char qual) {
         return qual - 33;
     }
 
@@ -98,7 +100,7 @@ public class QualityUtils {
      *
      * @return the integer value of the encoded quality (phred score)
      */
-    public static int getQuality(char qual, FastqQualityFormat format) {
+    public static int getQuality(final char qual, final FastqQualityFormat format) {
         if (format == FastqQualityFormat.Illumina) {
             return getIlluminaQuality(qual);
         }
@@ -115,10 +117,10 @@ public class QualityUtils {
      *
      * @return the quality encoding
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is not one of
-     *                                                                the supported
+     * @throws QualityUtils.QualityException if the quality is not one of
+     *                                       the supported
      */
-    public static FastqQualityFormat getFastqQualityFormat(File input) {
+    public static FastqQualityFormat getFastqQualityFormat(final File input) {
         return getFastqQualityFormat(input, DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY);
     }
 
@@ -130,10 +132,10 @@ public class QualityUtils {
      *
      * @return the quality encoding
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is not one of
-     *                                                                the supported
+     * @throws QualityUtils.QualityException if the quality is not one of
+     *                                       the supported
      */
-    public static FastqQualityFormat getFastqQualityFormat(File input, long maxReads) {
+    public static FastqQualityFormat getFastqQualityFormat(final File input, final long maxReads) {
         FastqQualityFormat encoding;
         if (IOUtils.isBamOrSam(input)) {
             SAMRecordIterator reader = SamReaderFactory.makeDefault().open(input).iterator();
@@ -158,8 +160,8 @@ public class QualityUtils {
      *
      * @return the quality encoding
      */
-    private static FastqQualityFormat getFastqQualityFormat(SAMRecordIterator bamReader,
-            long maxReads) {
+    private static FastqQualityFormat getFastqQualityFormat(final SAMRecordIterator bamReader,
+            final long maxReads) {
         return QualityEncodingDetector.detect(maxReads - 1, bamReader);
     }
 
@@ -171,8 +173,8 @@ public class QualityUtils {
      *
      * @return the quality encoding
      */
-    private static FastqQualityFormat getFastqQualityFormat(FastqReader fastqReader,
-            long maxReads) {
+    private static FastqQualityFormat getFastqQualityFormat(final FastqReader fastqReader,
+            final long maxReads) {
         return QualityEncodingDetector.detect(maxReads, fastqReader);
     }
 
@@ -183,7 +185,7 @@ public class QualityUtils {
      *
      * @return the byte representing the illumina quality
      */
-    public static byte byteToSanger(byte illuminaQual) {
+    public static byte byteToSanger(final byte illuminaQual) {
         return (byte) (illuminaQual - phredToSangerOffset);
     }
 
@@ -194,7 +196,7 @@ public class QualityUtils {
      *
      * @return <code>true</code> if is standard; <code>false</code> otherwise
      */
-    public static boolean isStandard(FastqQualityFormat encoding) {
+    public static boolean isStandard(final FastqQualityFormat encoding) {
         return encoding.equals(FastqQualityFormat.Standard);
     }
 
@@ -205,8 +207,8 @@ public class QualityUtils {
      * @param encoding                   the encoding
      * @param allowHigherQualitiesSanger allow higher qualities when sanger encoding
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is not well
-     *                                                                encoded
+     * @throws QualityUtils.QualityException if the quality is not well
+     *                                       encoded
      */
     public static void checkEncoding(final byte quality, final FastqQualityFormat encoding,
             final boolean allowHigherQualitiesSanger) {
@@ -225,7 +227,7 @@ public class QualityUtils {
                 break;
             case Standard:
                 // it is 74 and not 73 because of Illumina 1.8+
-                if (quality > 74 && !allowHigherQualitiesSanger) {
+                if (!allowHigherQualitiesSanger && quality > 74) {
                     throw new QualityException(
                             "Found " + quality + "(" + (char) quality + ") in Sanger encoded base");
                 }
@@ -233,34 +235,6 @@ public class QualityUtils {
             default:
                 throw new QualityException(encoding + " format not supported");
         }
-    }
-
-    /**
-     * Check if a base quality is well encoded (strict form)
-     *
-     * @param quality  the quality to check
-     * @param encoding the encoding
-     *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is not well
-     *                                                                encoded
-     * @deprecated use {@link #checkEncoding(byte, FastqQualityFormat, boolean)} instead to fine
-     * control
-     */
-    @Deprecated
-    public static void checkEncoding(final byte quality, final FastqQualityFormat encoding) {
-        checkEncoding(quality, encoding, false);
-    }
-
-    /**
-     * Check if a base quality is correctly standard encoded
-     *
-     * @param quality the quality to check
-     *
-     * @deprecated use {@link #checkStandardEncoding(byte, boolean)}
-     */
-    @Deprecated
-    public static void checkStandardEncoding(byte quality) {
-        checkEncoding(quality, FastqQualityFormat.Standard);
     }
 
     /**
@@ -277,29 +251,12 @@ public class QualityUtils {
     /**
      * Check if a several base qualities are well encoded
      *
-     * @param qualities the array of qualities to check
-     * @param encoding  the encoding
-     *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is not well
-     *                                                                encoded
-     * @deprecated use {@link #checkEncoding(byte, FastqQualityFormat, boolean)}
-     */
-    @Deprecated
-    public static void checkEncoding(byte[] qualities, FastqQualityFormat encoding) {
-        for (byte qual : qualities) {
-            checkEncoding(qual, encoding);
-        }
-    }
-
-    /**
-     * Check if a several base qualities are well encoded
-     *
      * @param qualities                  the array of qualities to check
      * @param encoding                   the encoding
      * @param allowHigherQualitiesSanger if it is sanger encoding
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is not well
-     *                                                                encoded
+     * @throws QualityUtils.QualityException if the quality is not well
+     *                                       encoded
      */
     public static void checkEncoding(final byte[] qualities, final FastqQualityFormat encoding,
             final boolean allowHigherQualitiesSanger) {
@@ -308,25 +265,4 @@ public class QualityUtils {
         }
     }
 
-    /**
-     * Check if a several base qualities are correctly standard encoded
-     *
-     * @param qualities the array of qualities to check
-     *
-     * @deprecated use {@link #checkStandardEncoding(byte[], boolean)}
-     */
-    @Deprecated
-    public static void checkStandardEncoding(byte[] qualities) {
-        checkEncoding(qualities, FastqQualityFormat.Standard);
-    }
-
-    /**
-     * Check if a several base qualities are correctly standard encoded
-     *
-     * @param qualities            the array of qualities to check
-     * @param allowHigherQualities allow higher qualities
-     */
-    public static void checkStandardEncoding(byte[] qualities, final boolean allowHigherQualities) {
-        checkEncoding(qualities, FastqQualityFormat.Standard, allowHigherQualities);
-    }
 }

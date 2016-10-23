@@ -173,8 +173,7 @@ public class BarcodeOptions {
         readGroupInfo.setPlatformUnit(getUniqueValue(cmd, platformUnit.getOpt()));
         String runID = getUniqueValue(cmd, run.getOpt());
         if (length == null) {
-            dictionary = BarcodeDictionaryFactory
-                    .createCombinedDictionary(runID, inputFile, readGroupInfo);
+            throw new IllegalArgumentException("length cannot be null");
         } else {
             dictionary = BarcodeDictionaryFactory
                     .createDefaultDictionary(runID, inputFile, readGroupInfo, length);

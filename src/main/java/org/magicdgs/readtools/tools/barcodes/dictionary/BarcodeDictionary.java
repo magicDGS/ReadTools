@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Classs for store a barcode dictionary
@@ -63,37 +64,20 @@ public class BarcodeDictionary {
     private final ArrayList<HashSet<String>> barcodesSets = new ArrayList<>();
 
     /**
-     * Protected constructor. For construct an instance, use {@link org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory}
+     * Protected constructor. For construct an instance, use {@link BarcodeDictionaryFactory}
      *
      * @param samples  the sample names
      * @param barcodes the barcodes
      */
-    protected BarcodeDictionary(ArrayList<SAMReadGroupRecord> samples,
-            ArrayList<ArrayList<String>> barcodes) {
+    protected BarcodeDictionary(final ArrayList<SAMReadGroupRecord> samples,
+            final ArrayList<ArrayList<String>> barcodes) {
         this.sampleRecord = samples;
         this.barcodes = barcodes;
     }
 
     /**
      * Protected constructor. For get an instance of a dictionary, use {@link
-     * org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory}
-     *
-     * @param samples       the sample names
-     * @param barcodes      the barcodes
-     * @param readGroupInfo the additional information for the read group
-     *
-     * @deprecated use {@link #BarcodeDictionary(String, ArrayList, ArrayList, ArrayList,
-     * SAMReadGroupRecord)} instead
-     */
-    @Deprecated
-    protected BarcodeDictionary(ArrayList<String> samples, ArrayList<ArrayList<String>> barcodes,
-            SAMReadGroupRecord readGroupInfo) {
-        this(null, samples, barcodes, null, readGroupInfo);
-    }
-
-    /**
-     * Protected constructor. For get an instance of a dictionary, use {@link
-     * org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory}
+     * BarcodeDictionaryFactory}
      *
      * @param run           the run name for the samples; if <code>null</code> it will be igonored
      * @param samples       the sample names
@@ -102,11 +86,10 @@ public class BarcodeDictionary {
      *                      samples_combinedBarcodes
      * @param readGroupInfo the additional information for the read group
      */
-    protected BarcodeDictionary(String run, ArrayList<String> samples,
-            ArrayList<ArrayList<String>> barcodes,
-            ArrayList<String> libraries, SAMReadGroupRecord readGroupInfo) {
-        this.barcodes = barcodes;
-        this.sampleRecord = new ArrayList<>(samples.size());
+    protected BarcodeDictionary(final String run, final ArrayList<String> samples,
+            final ArrayList<ArrayList<String>> barcodes, final ArrayList<String> libraries,
+            final SAMReadGroupRecord readGroupInfo) {
+        this(new ArrayList<>(samples.size()), barcodes);
         initReadGroups(run, samples, libraries, readGroupInfo);
     }
 
@@ -118,14 +101,15 @@ public class BarcodeDictionary {
      * this method
      *
      * @param run           the run name for the samples; if <code>null</code> it will be igonored
-     * @param libraries     the library for each barcode; if <code>null</code> or empty, the library
+     * @param libraries     the library for each barcode; if <code>null</code> or empty, the
+     *                      library
      *                      is the
      *                      samples_combinedBarcodes
      * @param samples       the sample name
      * @param readGroupInfo the read group information
      */
-    private void initReadGroups(String run, ArrayList<String> samples, ArrayList<String> libraries,
-            SAMReadGroupRecord readGroupInfo) {
+    private void initReadGroups(final String run, final ArrayList<String> samples,
+            final ArrayList<String> libraries, final SAMReadGroupRecord readGroupInfo) {
         for (int i = 0; i < samples.size(); i++) {
             final String sampleBarcode =
                     String.format("%s_%s", samples.get(i), getCombinedBarcodesFor(i));
@@ -167,11 +151,8 @@ public class BarcodeDictionary {
      * @return the sample names
      */
     public List<String> getSampleNames() {
-        ArrayList<String> toReturn = new ArrayList<>();
-        for (SAMReadGroupRecord s : sampleRecord) {
-            toReturn.add(s.getSample());
-        }
-        return toReturn;
+        return sampleRecord.stream().map(SAMReadGroupRecord::getSample)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -198,7 +179,7 @@ public class BarcodeDictionary {
      * @return the effective number of samples
      */
     public int numberOfUniqueSamples() {
-        // will it be better to store this value??
+        // will it be better to cache this value??
         return new HashSet<>(sampleRecord).size();
     }
 
@@ -209,12 +190,8 @@ public class BarcodeDictionary {
      *
      * @return the barcodes for the sample
      */
-    public String[] getBarcodesFor(int sampleIndex) {
-        String[] toReturn = new String[getNumberOfBarcodes()];
-        for (int i = 0; i < barcodes.size(); i++) {
-            toReturn[i] = barcodes.get(i).get(sampleIndex);
-        }
-        return toReturn;
+    public String[] getBarcodesFor(final int sampleIndex) {
+        return barcodes.stream().map(l -> l.get(sampleIndex)).toArray(String[]::new);
     }
 
     /**
@@ -224,16 +201,8 @@ public class BarcodeDictionary {
      *
      * @return the read group of the sample
      */
-    public SAMReadGroupRecord getReadGroupFor(int sampleIndex) {
+    public SAMReadGroupRecord getReadGroupFor(final int sampleIndex) {
         return sampleRecord.get(sampleIndex);
-    }
-
-    @Deprecated
-    protected Hashtable<String, SAMReadGroupRecord> getRGmap() {
-        if (barcodeRGmap.isEmpty()) {
-            initBarcodeRGmap();
-        }
-        return barcodeRGmap;
     }
 
     /**
@@ -241,10 +210,10 @@ public class BarcodeDictionary {
      *
      * @param combinedBarcode the combined barcode
      *
-     * @return the read group associated with that barcode; {@link org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
+     * @return the read group associated with that barcode; {@link BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
      * if not found
      */
-    public SAMReadGroupRecord getReadGroupFor(String combinedBarcode) {
+    public SAMReadGroupRecord getReadGroupFor(final String combinedBarcode) {
         if (barcodeRGmap.isEmpty()) {
             initBarcodeRGmap();
         }
@@ -260,9 +229,7 @@ public class BarcodeDictionary {
      *
      * @return the combined barcodes for the sample
      */
-    public String getCombinedBarcodesFor(int sampleIndex) {
-        // TODO: changed the combination method!!!!
-        // TODO: be sure that it is working!!!
+    public String getCombinedBarcodesFor(final int sampleIndex) {
         return BarcodeMethods.joinBarcodes(getBarcodesFor(sampleIndex));
     }
 
@@ -274,7 +241,7 @@ public class BarcodeDictionary {
      *
      * @return <code>true</code> if the barcode is unique; <code>false</code> otherwise
      */
-    public boolean isBarcodeUniqueInAt(String barcode, int index) {
+    public boolean isBarcodeUniqueInAt(final String barcode, final int index) {
         return Collections.frequency(barcodes.get(index), barcode) == 1;
     }
 
@@ -285,7 +252,7 @@ public class BarcodeDictionary {
      *
      * @return the list with the barcodes associated with each sample
      */
-    public ArrayList<String> getBarcodesFromIndex(int index) {
+    public ArrayList<String> getBarcodesFromIndex(final int index) {
         return barcodes.get(index);
     }
 
@@ -296,7 +263,7 @@ public class BarcodeDictionary {
      *
      * @return a set representation of the index barcodes
      */
-    public Set<String> getSetBarcodesFromIndex(int index) {
+    public Set<String> getSetBarcodesFromIndex(final int index) {
         if (barcodesSets.isEmpty()) {
             initSets();
         }
@@ -307,9 +274,7 @@ public class BarcodeDictionary {
      * Initialize the sets for the barcodes
      */
     private void initSets() {
-        for (ArrayList<String> l : barcodes) {
-            barcodesSets.add(new HashSet<>(l));
-        }
+        barcodes.forEach(l -> barcodesSets.add(new HashSet<>(l)));
     }
 
     /**

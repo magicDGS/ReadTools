@@ -63,8 +63,8 @@ public class TrimmerPaired extends Trimmer {
      */
     private final PairEndTrimming header;
 
-    TrimmerPaired(boolean trimQuality, int qualThreshold, int minLength, int maxLength,
-            boolean discardRemainingNs, boolean no5ptrim) {
+    TrimmerPaired(final boolean trimQuality, final int qualThreshold, final int minLength,
+            final int maxLength, final boolean discardRemainingNs, final boolean no5ptrim) {
         super(trimQuality, qualThreshold, minLength, maxLength, discardRemainingNs, no5ptrim);
         header = new PairEndTrimming();
         metricPair1 = new TrimStat("first");
@@ -74,13 +74,13 @@ public class TrimmerPaired extends Trimmer {
     }
 
     @Override
-    public FastqPairedRecord trimFastqPairedRecord(FastqPairedRecord record,
-            FastqQualityFormat format) {
-        FastqRecord record1 =
+    public FastqPairedRecord trimFastqPairedRecord(final FastqPairedRecord record,
+            final FastqQualityFormat format) {
+        final FastqRecord record1 =
                 trimFastqRecord(record.getRecord1(), format, metricPair1, histogramPair1);
-        FastqRecord record2 =
+        final FastqRecord record2 =
                 trimFastqRecord(record.getRecord2(), format, metricPair2, histogramPair2);
-        FastqPairedRecord toReturn = new FastqPairedRecord(record1, record2);
+        final FastqPairedRecord toReturn = new FastqPairedRecord(record1, record2);
         if (toReturn.isComplete()) {
             header.IN_PAIR++;
         } else if (toReturn.containRecords()) {
@@ -90,8 +90,8 @@ public class TrimmerPaired extends Trimmer {
     }
 
     @Override
-    public FastqRecord trimFastqRecord(FastqRecord record, FastqQualityFormat format) {
-        FastqRecord toReturn = trimFastqRecord(record, format, metricPair1, histogramPair2);
+    public FastqRecord trimFastqRecord(final FastqRecord record, final FastqQualityFormat format) {
+        final FastqRecord toReturn = trimFastqRecord(record, format, metricPair1, histogramPair2);
         if (toReturn != null) {
             header.AS_SINGLE++;
         }
@@ -99,7 +99,7 @@ public class TrimmerPaired extends Trimmer {
     }
 
     @Override
-    public void printTrimmerMetrics(File metricsFile) {
+    public void printTrimmerMetrics(final File metricsFile) {
         final MetricsFile<TrimStat, Integer> metrics = new MetricsFile<>();
         metrics.addMetric(metricPair1);
         metrics.addMetric(metricPair2);

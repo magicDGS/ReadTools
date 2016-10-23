@@ -19,6 +19,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package org.magicdgs.readtools.utils.fastq;
 
@@ -65,18 +66,6 @@ public class StandardizerAndChecker {
     }
 
     /**
-     * Constructor for strict checking ({@link #allowHighQualities} set to false)
-     *
-     * @param encoding the encoding associated with the detector
-     *
-     * @deprecated use {@link #StandardizerAndChecker(FastqQualityFormat, boolean)} instead
-     */
-    @Deprecated
-    public StandardizerAndChecker(final FastqQualityFormat encoding) {
-        this(encoding, false);
-    }
-
-    /**
      * Get the encoding for the checker
      *
      * @return the underlying encoding
@@ -90,8 +79,8 @@ public class StandardizerAndChecker {
      *
      * @param record the record to check
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is checked and
-     *                                                                misencoded
+     * @throws QualityUtils.QualityException if the quality is checked and
+     *                                       misencoded
      */
     public void checkMisencoded(final FastqRecord record) {
         try {
@@ -110,8 +99,8 @@ public class StandardizerAndChecker {
      *
      * @param record the record to check
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is checked and
-     *                                                                misencoded
+     * @throws QualityUtils.QualityException if the quality is checked and
+     *                                       misencoded
      */
     public void checkMisencoded(final FastqPairedRecord record) {
         try {
@@ -133,8 +122,8 @@ public class StandardizerAndChecker {
      *
      * @param record the record to check
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the quality is checked and
-     *                                                                misencoded
+     * @throws QualityUtils.QualityException if the quality is checked and
+     *                                       misencoded
      */
     public void checkMisencoded(final SAMRecord record) {
         try {
@@ -175,8 +164,8 @@ public class StandardizerAndChecker {
      * <code>null</code> if the
      * argument is null
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the conversion causes a
-     *                                                                misencoded quality
+     * @throws QualityUtils.QualityException if the conversion causes a
+     *                                       misencoded quality
      */
     public FastqRecord standardize(final FastqRecord record) {
         if (record == null) {
@@ -211,8 +200,8 @@ public class StandardizerAndChecker {
      * <code>null</code> if the
      * argument is null
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the conversion causes a
-     *                                                                misencoded quality
+     * @throws QualityUtils.QualityException if the conversion causes a
+     *                                       misencoded quality
      */
     public FastqPairedRecord standardize(final FastqPairedRecord record) {
         if (record == null) {
@@ -232,8 +221,8 @@ public class StandardizerAndChecker {
      * <code>null</code> if the
      * argument is null
      *
-     * @throws org.magicdgs.readtools.utils.fastq.QualityUtils.QualityException if the conversion causes a
-     *                                                                misencoded quality
+     * @throws QualityUtils.QualityException if the conversion causes a
+     *                                       misencoded quality
      */
     public SAMRecord standardize(final SAMRecord record) {
         if (record == null) {

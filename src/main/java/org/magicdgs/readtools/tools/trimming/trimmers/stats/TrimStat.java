@@ -43,7 +43,7 @@ public class TrimStat extends MetricBase {
 
     public int QUALITY_TRIMMED;
 
-    public TrimStat(String pair) {
+    public TrimStat(final String pair) {
         PAIR = pair;
         TOTAL = 0;
         POLY_N_TRIMMED = 0;

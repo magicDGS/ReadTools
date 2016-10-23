@@ -23,8 +23,8 @@
 package org.magicdgs.readtools.tools.trimming.trimmers;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.trimming.TrimmingMethods;
 import org.magicdgs.readtools.tools.trimming.trimmers.stats.TrimStat;
+import org.magicdgs.readtools.utils.trimming.TrimmingMethods;
 import org.magicdgs.readtools.utils.record.SequenceMatch;
 
 import htsjdk.samtools.fastq.FastqRecord;
@@ -66,40 +66,14 @@ public abstract class Trimmer {
      * @param discardRemainingNs should we discard reads with Ns in the middle?
      * @param no5ptrim           no trim the 5 prime end
      */
-    Trimmer(boolean trimQuality, int qualThreshold, int minLength, int maxLength,
-            boolean discardRemainingNs,
-            boolean no5ptrim) {
+    Trimmer(final boolean trimQuality, final int qualThreshold, final int minLength,
+            final int maxLength, final boolean discardRemainingNs, final boolean no5ptrim) {
         this.trimQuality = trimQuality;
         this.qualThreshold = qualThreshold;
         this.maxLength = maxLength;
         this.minLength = minLength;
         this.discardRemainingNs = discardRemainingNs;
         this.no5ptrim = no5ptrim;
-    }
-
-    /**
-     * Factory for get a single or pair end trimmer
-     *
-     * @param trimQuality        should the quality be trimmed?
-     * @param qualThreshold      quality threshold for the trimming
-     * @param minLength          minimum length for the trimming
-     * @param discardRemainingNs should we discard reads with Ns in the middle?
-     * @param no5ptrim           no trim the 5 prime end
-     * @param single             <code>true</code> if it is single; <code>false</code> otherwise
-     *
-     * @return the trimmer
-     *
-     * @deprecated use {@link org.magicdgs.readtools.tools.trimming.trimmers.TrimmerBuilder} instead
-     */
-    @Deprecated
-    public static Trimmer getTrimmer(boolean trimQuality, int qualThreshold, int minLength,
-            boolean discardRemainingNs,
-            boolean no5ptrim, boolean single) {
-        // TODO: change with trimmer builder
-        return new TrimmerBuilder(single).setTrimQuality(trimQuality)
-                .setQualityThreshold(qualThreshold)
-                .setMinLength(minLength).setDiscardRemainingNs(discardRemainingNs)
-                .setNo5pTrimming(no5ptrim).build();
     }
 
     /**
@@ -110,9 +84,8 @@ public abstract class Trimmer {
      *
      * @return the trimmed record or <code>null</code> if does not pass filters
      */
-    protected FastqRecord trimFastqRecord(FastqRecord record, FastqQualityFormat format,
-            TrimStat metric,
-            Histogram<Integer> histogram) {
+    protected FastqRecord trimFastqRecord(final FastqRecord record, final FastqQualityFormat format,
+            final TrimStat metric, final Histogram<Integer> histogram) {
         metric.TOTAL++;
         // the record that will be trimmed in sequence (it will change)
         FastqRecord toTrim = record;
@@ -171,8 +144,8 @@ public abstract class Trimmer {
      * @return the trimmed record or <code>null</code> if does not pass filters (one or both of
      * them)
      */
-    public abstract FastqPairedRecord trimFastqPairedRecord(FastqPairedRecord record,
-            FastqQualityFormat format);
+    public abstract FastqPairedRecord trimFastqPairedRecord(final FastqPairedRecord record,
+            final FastqQualityFormat format);
 
     /**
      * Trim the record with the provided settings in the Trimmer object
@@ -182,12 +155,13 @@ public abstract class Trimmer {
      *
      * @return the trimmed record or <code>null</code> if does not pass filters
      */
-    public abstract FastqRecord trimFastqRecord(FastqRecord record, FastqQualityFormat format);
+    public abstract FastqRecord trimFastqRecord(final FastqRecord record,
+            final FastqQualityFormat format);
 
     /**
      * Print the metrics for the trimmer
      *
      * @param metricsFile the file for the output
      */
-    public abstract void printTrimmerMetrics(File metricsFile);
+    public abstract void printTrimmerMetrics(final File metricsFile);
 }

@@ -19,7 +19,9 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
+
 package org.magicdgs.readtools.utils.trimming;
 
 import static org.magicdgs.readtools.utils.fastq.QualityUtils.getQuality;
@@ -47,7 +49,7 @@ public class TrimmingMethods {
      *
      * @return the trimmed record; <code>null</code> if the record is completely trimmed
      */
-    public static FastqRecord trimNs(FastqRecord record) {
+    public static FastqRecord trimNs(final FastqRecord record) {
         return trimNs(record, false);
     }
 
@@ -59,7 +61,7 @@ public class TrimmingMethods {
      *
      * @return the trimmed record; <code>null</code> if the record is completely trimmed
      */
-    public static FastqRecord trimNs(FastqRecord record, boolean no5ptrim) {
+    public static FastqRecord trimNs(final FastqRecord record, boolean no5ptrim) {
         if (record == null) {
             return null;
         }
@@ -87,7 +89,7 @@ public class TrimmingMethods {
      *
      * @return the trimmed record; <code>null</code> if the record is completely trimmed
      */
-    public static FastqRecord trim3pNs(FastqRecord record) {
+    public static FastqRecord trim3pNs(final FastqRecord record) {
         if (record == null) {
             return null;
         }
@@ -107,13 +109,13 @@ public class TrimmingMethods {
      *
      * @return the trimmed record; <code>null</code> if the record is completely trimmed
      */
-    public static FastqRecord trim5pNs(FastqRecord record) {
+    public static FastqRecord trim5pNs(final FastqRecord record) {
         if (record == null) {
             return null;
         }
-        String nucleotide = record.getReadString();
+        final String nucleotide = record.getReadString();
         int start = 0;
-        Matcher matchStart = startN.matcher(nucleotide);
+        final Matcher matchStart = startN.matcher(nucleotide);
         if (matchStart.find()) {
             start = matchStart.end();
         }
@@ -130,9 +132,8 @@ public class TrimmingMethods {
      *
      * @return the trimmed record, <code>null</code> if the read is completely trim
      */
-    public static FastqRecord trimQualityMott(FastqRecord record, FastqQualityFormat encoding,
-            int qualThreshold,
-            boolean no5ptrim) {
+    public static FastqRecord trimQualityMott(final FastqRecord record,
+            final FastqQualityFormat encoding, final int qualThreshold, final boolean no5ptrim) {
         return (no5ptrim) ?
                 trimQualityMott3p(record, encoding, qualThreshold) :
                 trimQualityMott(record, encoding, qualThreshold);
@@ -147,13 +148,13 @@ public class TrimmingMethods {
      *
      * @return the trimmed record, <code>null</code> if the read is completely trim
      */
-    public static FastqRecord trimQualityMott(FastqRecord record, FastqQualityFormat encoding,
-            int qualThreshold) {
+    public static FastqRecord trimQualityMott(final FastqRecord record,
+            final FastqQualityFormat encoding, final int qualThreshold) {
         if (record == null) {
             return null;
         }
-        char[] quals = record.getBaseQualityString().toCharArray();
-        TreeMap<Integer, StartEndTupple> hsps = new TreeMap<>();
+        final char[] quals = record.getBaseQualityString().toCharArray();
+        final TreeMap<Integer, StartEndTupple> hsps = new TreeMap<>();
         int highScore = 0, activeScore = 0, highScoreStart = -1, highScoreEnd = 0;
         for (int i = 0; i < quals.length; i++) {
             int toSub = getQuality(quals[i], encoding) - qualThreshold;
@@ -180,7 +181,7 @@ public class TrimmingMethods {
         if (hsps.isEmpty()) {
             return null;
         }
-        StartEndTupple maxScoreStartEnd = hsps.get(hsps.lastKey());
+        final StartEndTupple maxScoreStartEnd = hsps.get(hsps.lastKey());
         if (maxScoreStartEnd.getStart() == 0 && maxScoreStartEnd.getEnd() == quals.length) {
             return record;
         }
@@ -196,12 +197,12 @@ public class TrimmingMethods {
      *
      * @return the trimmed record, <code>null</code> if the read is completely trim
      */
-    public static FastqRecord trimQualityMott3p(FastqRecord record, FastqQualityFormat encoding,
-            int qualThreshold) {
+    public static FastqRecord trimQualityMott3p(final FastqRecord record,
+            final FastqQualityFormat encoding, final int qualThreshold) {
         if (record == null) {
             return null;
         }
-        char[] quals = record.getBaseQualityString().toCharArray();
+        final char[] quals = record.getBaseQualityString().toCharArray();
         int highScore = 0, activeScore = 0, highScoreEnd = -1;
         for (int i = 0; i < quals.length; i++) {
             int ts = getQuality(quals[i], encoding) - qualThreshold;
