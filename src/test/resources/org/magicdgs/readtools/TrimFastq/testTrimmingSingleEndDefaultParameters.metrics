@@ -1,0 +1,14 @@
+## org.magicdgs.readtools.tools.trimming.trimmers.stats.SingleEndTrimming
+# All reads trimmed as singles
+
+## METRICS CLASS	org.magicdgs.readtools.tools.trimming.trimmers.stats.TrimStat
+PAIR	TOTAL	PASSED	POLY_N_TRIMMED	INTERNAL_N_DISCARDED	LENGTH_DISCARDED	QUALITY_TRIMMED
+single	103	102	2	0	1	3
+
+## HISTOGRAM	java.lang.Integer
+length	count
+54	22
+69	1
+72	2
+76	77
+
