@@ -11,7 +11,6 @@ plugins {
     id "application"
     id "jacoco"
     id 'com.github.johnrengelman.shadow' version '1.2.3'
-    id "com.github.kt3k.coveralls" version "2.6.3"
     id 'com.palantir.git-version' version '0.5.2' // for the git version
 }
 
@@ -50,7 +49,6 @@ final testngVersion = "6.9.10"
 
 dependencies {
     // TODO: remove cli when migration to gatk framework
-    // TODO: although GATK4 is added, it is not really used yet
     compile 'commons-cli:commons-cli:1.3.1'
     // TODO: they will do soon a master-SNAPSHOT, which we will use in the future (gatk/issue#1995)
     compile (group: 'org.broadinstitute', name: 'gatk', version: gatkVersion) {

@@ -10,5 +10,5 @@ script:
     - ./gradlew jacocoTestReport
 
 after_success:
-    - ./gradlew coveralls
+    - bash <(curl -s https://codecov.io/bash) -X gcov -X coveragepy
     - python <(curl -s https://raw.githubusercontent.com/TouK/sputnik-ci/master/sputnik-ci.py)

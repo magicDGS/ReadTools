@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/magicDGS/ReadTools.svg?branch=master)](https://travis-ci.org/magicDGS/ReadTools)
-[![Coverage Status](https://coveralls.io/repos/github/magicDGS/ReadTools/badge.svg?branch=master)](https://coveralls.io/github/magicDGS/ReadTools?branch=master)
+[![codecov](https://codecov.io/gh/magicDGS/ReadTools/branch/master/graph/badge.svg)](https://codecov.io/gh/magicDGS/ReadTools)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dd842750e7a74112870a5156a24a8cbf)](https://www.codacy.com/app/daniel-gomez-sanchez/ReadTools?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=magicDGS/ReadTools&amp;utm_campaign=Badge_Grade)
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
