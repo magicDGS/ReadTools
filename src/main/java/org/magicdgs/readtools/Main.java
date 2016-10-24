@@ -28,8 +28,10 @@ import org.magicdgs.readtools.tools.Tool;
 import org.magicdgs.readtools.tools.ToolNames;
 import org.magicdgs.readtools.utils.misc.TimeWatch;
 
+import autovalue.shaded.org.apache.commons.lang.ArrayUtils;
 import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.StringUtil;
+import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -142,5 +144,26 @@ public class Main {
         writer.println();
         writer.close();
         System.exit(1);
+    }
+
+    /** Small modification to use the command line program tests. */
+    public Object instanceMain(String[] args) {
+        final Tool toRun = ToolNames.getTool(args[0]);
+        Object[] argsForTool = new String[0];
+        for (int i = 1; i < args.length; i++) {
+            final String arg = args[i];
+            if (arg.equalsIgnoreCase("--" + StandardArgumentDefinitions.VERBOSITY_NAME) || arg
+                    .equalsIgnoreCase("-" + StandardArgumentDefinitions.VERBOSITY_NAME)) {
+                i++;
+            } else {
+                argsForTool = ArrayUtils.add(argsForTool, arg);
+            }
+        }
+        final int exitStatus = toRun.run((String[]) argsForTool);
+        if (exitStatus != 0) {
+            throw new RuntimeException("Tool returned with errors");
+        }
+        // TODO: tools expected to return a value won't work
+        return null;
     }
 }

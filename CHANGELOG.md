@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Testing is done with TestNG (developer)
 
+### Added
+- Integration tests for the majority of the tools
+
 ## [0.2.2] - 2016-08-09
 
 ### Fixed

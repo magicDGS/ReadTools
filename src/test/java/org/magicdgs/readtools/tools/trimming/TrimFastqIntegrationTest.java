@@ -1,0 +1,93 @@
+package org.magicdgs.readtools.tools.trimming;
+
+import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+
+import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
+import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import java.io.File;
+
+/**
+ * @author Daniel Gomez-Sanchez (magicDGS)
+ */
+public class TrimFastqIntegrationTest extends CommandLineProgramTest {
+
+    // temp directory for all the tests
+    private final static File TEST_TEMP_DIR =
+            createTestTempDir(TrimFastqIntegrationTest.class.getSimpleName());
+
+    /** Returns an argument builder with the required arguments for all the tests. */
+    private static ArgumentsBuilder getRequiredArguments() {
+        return new ArgumentsBuilder().addArgument("input1", SMALL_FASTQ_1.getAbsolutePath());
+    }
+
+    @DataProvider(name = "TrimmingData")
+    public Object[][] getTrimmingData() throws Exception {
+        return new Object[][] {
+                // test default arguments, with both pair-end and single-end data
+                {"testTrimmingSingleEndDefaultParameters", getRequiredArguments(),
+                        false, false},
+                {"testTrimmingPairEndDefaultParameters", getRequiredArguments()
+                        .addArgument("input2", SMALL_FASTQ_2.getAbsolutePath()),
+                        true, false},
+                // test keep discarded
+                {"testTrimmingSingleEndDefaultParameters", getRequiredArguments(),
+                        false, true},
+                {"testTrimmingPairEndDefaultParameters", getRequiredArguments()
+                        .addArgument("input2", SMALL_FASTQ_2.getAbsolutePath()),
+                        true, true},
+                // test lower mapping quality
+                {"testTrimmingSingleEndLowQualityThreshold", getRequiredArguments()
+                        .addArgument("quality-threshold", "18"),
+                        false, true},
+                // test with length range
+                {"testTrimmingSingleEndLengthRange", getRequiredArguments()
+                        .addArgument("minimum-length", "60")
+                        .addArgument("maximum-length", "75"),
+                        false, true}
+        };
+    }
+
+    @Test(dataProvider = "TrimmingData")
+    public void testTrimFastq(final String testName, final ArgumentsBuilder builder,
+            final boolean pairEnd, final boolean keepDiscarded) throws Exception {
+        final String testOutputName = testName + ((keepDiscarded) ? "KeepDiscarded" : "");
+        log("Running " + testOutputName);
+        // gets the output prefix and add to command line
+        final File outputPrefix = new File(TEST_TEMP_DIR, testOutputName);
+        final ArgumentsBuilder args = builder
+                .addArgument("output", outputPrefix.getAbsolutePath());
+        // TODO: once in GATK4 command line, add to the arguments in-line wthout if
+        if (keepDiscarded) {
+            args.addBooleanArgument("keep-discarded", true);
+        }
+        // running the command line
+        runCommandLine(args);
+        // check the metrics file
+        checkFiles(testName, outputPrefix.getAbsolutePath(), ".metrics");
+        final String[] suffixes = (pairEnd)
+                ? new String[] {"_1.fq.gz", "_2.fq.gz", "_SE.fq.gz"}
+                : new String[] {".fq.gz"};
+        for (final String suffix : suffixes) {
+            checkFiles(testName, outputPrefix.getAbsolutePath(), suffix);
+            if (keepDiscarded) {
+                checkFiles(testName, outputPrefix.getAbsolutePath(), "_discarded" + suffix);
+            } else {
+                final File discardedFile =
+                        new File(outputPrefix.getAbsolutePath() + "_discarded" + suffix);
+                Assert.assertFalse(discardedFile.exists(),
+                        discardedFile + " exists for no keep-discarded");
+            }
+        }
+    }
+
+    private void checkFiles(final String testName, final String outPath, final String suffix)
+            throws Exception {
+        logger.debug("Checking output: {}{}", testName, suffix);
+        IntegrationTestSpec.assertEqualTextFiles(new File(outPath + suffix),
+                getToolTestFile(testName + suffix));
+    }
+}
