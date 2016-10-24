@@ -56,8 +56,8 @@ public class SequenceMatch {
      *
      * @return <code>true</code> if it starts with Ns; <code>false</code> otherwise
      */
-    public static boolean sequenceStartByN(String sequence) {
-        Matcher matchStart = startN.matcher(sequence);
+    public static boolean sequenceStartByN(final String sequence) {
+        final Matcher matchStart = startN.matcher(sequence);
         return matchStart.find();
     }
 
@@ -68,8 +68,8 @@ public class SequenceMatch {
      *
      * @return <code>true</code> if it ends with Ns; <code>false</code> otherwise
      */
-    public static boolean sequenceEndByNs(String sequence) {
-        Matcher matchEnd = endN.matcher(sequence);
+    public static boolean sequenceEndByNs(final String sequence) {
+        final Matcher matchEnd = endN.matcher(sequence);
         return matchEnd.find();
     }
 
@@ -80,8 +80,8 @@ public class SequenceMatch {
      *
      * @return <code>true</code> if it contains with Ns; <code>false</code> otherwise
      */
-    public static boolean sequenceContainNs(String sequence) {
-        Matcher ns = Ns.matcher(sequence);
+    public static boolean sequenceContainNs(final String sequence) {
+        final Matcher ns = Ns.matcher(sequence);
         return ns.find();
     }
 
@@ -92,9 +92,9 @@ public class SequenceMatch {
      *
      * @return the number of missing
      */
-    public static int missingCount(String sequence) {
+    public static int missingCount(final String sequence) {
         int count = 0;
-        for (char b : sequence.toCharArray()) {
+        for (final char b : sequence.toCharArray()) {
             if (SequenceUtil.isNoCall((byte) b)) {
                 count++;
             }
@@ -111,7 +111,7 @@ public class SequenceMatch {
      *
      * @return the number of mismatches between barcodes
      */
-    public static int mismatchesCount(String testSequence, String targetSequence) {
+    public static int mismatchesCount(final String testSequence, final String targetSequence) {
         return mismatchesCount(testSequence, targetSequence, true);
     }
 
@@ -126,8 +126,8 @@ public class SequenceMatch {
      *
      * @return the number of mismatches between barcodes
      */
-    public static int mismatchesCount(String testSequence, String targetSequence,
-            boolean nAsMismatch) {
+    public static int mismatchesCount(final String testSequence, final String targetSequence,
+            final boolean nAsMismatch) {
         // logger.debug("Testing ", testSequence, " against ", targetSequence);
         // if(testSequence.length() != barcode.length()) return testSequence.length();
         int mmCnt = 0;
@@ -135,9 +135,8 @@ public class SequenceMatch {
             final byte testBase = (byte) testSequence.charAt(i);
             final byte targetBase = (byte) targetSequence.charAt(i);
             // only count if n is a mismatch of none of the test/target bases is an N
-            final boolean shouldCount =
-                    nAsMismatch || !(SequenceUtil.isNoCall(testBase) || SequenceUtil
-                            .isNoCall(targetBase));
+            final boolean shouldCount = nAsMismatch
+                    || !(SequenceUtil.isNoCall(testBase) || SequenceUtil.isNoCall(targetBase));
             // case-insensitive mismatches count for N or not N
             if (shouldCount && !SequenceUtil.basesEqual(testBase, targetBase)) {
                 mmCnt++;

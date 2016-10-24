@@ -24,7 +24,6 @@ package org.magicdgs.readtools.utils.misc;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Collections;
 
 /**
  * Static formats for output times and numbers
@@ -43,20 +42,4 @@ public class Formats {
      */
     public final static NumberFormat commaFmt = new DecimalFormat("#,###");
 
-    /**
-     * Format for decimal numbers rounded to 7
-     */
-    public final static DecimalFormat roundToSevenFmt = new DecimalFormat("#.#######");
-
-    /**
-     * Get a rounded format with certain number of significant digits
-     *
-     * @param digits the number of digits
-     *
-     * @return the number formatted as a String
-     */
-    public static DecimalFormat getRoundFormat(int digits) {
-        return new DecimalFormat(
-                String.format("#.%s", String.join("", Collections.nCopies(digits, "#"))));
-    }
 }

@@ -47,15 +47,15 @@ public class FastqRecordUtils {
      *
      * @return the record if it still have bases; <code>null</code> otherwise
      */
-    public static FastqRecord cutRecord(FastqRecord record, int start, int end) {
+    public static FastqRecord cutRecord(final FastqRecord record, int start, int end) {
         if (start >= end) {
             return null;
         }
-        String nucleotide = record.getReadString().substring(start, end);
+        final String nucleotide = record.getReadString().substring(start, end);
         if (nucleotide.length() == 0) {
             return null;
         }
-        String quality = record.getBaseQualityString().substring(start, end);
+        final String quality = record.getBaseQualityString().substring(start, end);
         return new FastqRecord(record.getReadHeader(), nucleotide, record.getBaseQualityHeader(),
                 quality);
     }
@@ -67,7 +67,7 @@ public class FastqRecordUtils {
      *
      * @return the barcode without read information; <code>null</code> if no barcode is found
      */
-    public static String getBarcodeInName(FastqRecord record) {
+    public static String getBarcodeInName(final FastqRecord record) {
         return BarcodeMethods.getOnlyBarcodeFromName(record.getReadHeader());
     }
 
@@ -79,7 +79,7 @@ public class FastqRecordUtils {
      * @return an array with the barcode(s) without read information; <code>null</code> if no
      * barcode is found
      */
-    public static String[] getBarcodesInName(FastqRecord record) {
+    public static String[] getBarcodesInName(final FastqRecord record) {
         return BarcodeMethods.getSeveralBarcodesFromName(record.getReadHeader());
     }
 
@@ -92,7 +92,7 @@ public class FastqRecordUtils {
      * @return an array with the barcode(s) without read information; <code>null</code> if no
      * barcode is found
      */
-    public static String[] getBarcodesInName(FastqRecord record, String separator) {
+    public static String[] getBarcodesInName(final FastqRecord record, final String separator) {
         return BarcodeMethods.getSeveralBarcodesFromName(record.getReadHeader(), separator);
     }
 
@@ -108,9 +108,9 @@ public class FastqRecordUtils {
      *
      * @throws htsjdk.samtools.SAMException if both records have a barcode that do not match
      */
-    public static String getBarcodeInName(FastqPairedRecord record) throws SAMException {
-        String barcode1 = getBarcodeInName(record.getRecord1());
-        String barcode2 = getBarcodeInName(record.getRecord2());
+    public static String getBarcodeInName(final FastqPairedRecord record) throws SAMException {
+        final String barcode1 = getBarcodeInName(record.getRecord1());
+        final String barcode2 = getBarcodeInName(record.getRecord2());
         if (barcode1 == null) {
             return barcode2;
         }
@@ -129,7 +129,7 @@ public class FastqRecordUtils {
      * @return an array with the barcode(s) without read information; <code>null</code> if no
      * barcode is found
      */
-    public static String[] getBarcodesInName(FastqPairedRecord record) {
+    public static String[] getBarcodesInName(final FastqPairedRecord record) {
         return pairedBarcodesConsensus(getBarcodesInName(record.getRecord1()),
                 getBarcodesInName(record.getRecord2()));
     }
@@ -143,12 +143,14 @@ public class FastqRecordUtils {
      * @return an array with the barcode(s) without read information; <code>null</code> if no
      * barcode is found
      */
-    public static String[] getBarcodesInName(FastqPairedRecord record, String separator) {
+    public static String[] getBarcodesInName(final FastqPairedRecord record,
+            final String separator) {
         return pairedBarcodesConsensus(getBarcodesInName(record.getRecord1(), separator),
                 getBarcodesInName(record.getRecord2(), separator));
     }
 
-    private static String[] pairedBarcodesConsensus(String[] barcode1, String[] barcode2) {
+    private static String[] pairedBarcodesConsensus(final String[] barcode1,
+            final String[] barcode2) {
         if (barcode1 == null) {
             return barcode2;
         }
@@ -166,7 +168,7 @@ public class FastqRecordUtils {
      *
      * @return the read name without the barcode information
      */
-    public static String getReadNameWithoutBarcode(FastqRecord record) {
+    public static String getReadNameWithoutBarcode(final FastqRecord record) {
         return BarcodeMethods.getNameWithoutBarcode(record.getReadHeader());
     }
 
@@ -180,7 +182,7 @@ public class FastqRecordUtils {
      * @throws htsjdk.samtools.SAMException   if both record names do not match
      * @throws java.lang.NullPointerException if one of the names is null
      */
-    public static String getReadNameWithoutBarcode(FastqPairedRecord record) {
+    public static String getReadNameWithoutBarcode(final FastqPairedRecord record) {
         String name1 = getReadNameWithoutBarcode(record.getRecord1());
         String name2 = getReadNameWithoutBarcode(record.getRecord2());
         if (name1 == null || name2 == null) {
@@ -201,8 +203,8 @@ public class FastqRecordUtils {
      *
      * @return the updated record
      */
-    public static FastqRecord changeBarcode(FastqRecord record, String newBarcode,
-            int numberOfPair) {
+    public static FastqRecord changeBarcode(final FastqRecord record, final String newBarcode,
+            final int numberOfPair) {
         return new FastqRecord(String
                 .format("%s%s%s%s%s", getReadNameWithoutBarcode(record),
                         BarcodeMethods.NAME_BARCODE_SEPARATOR, newBarcode,
@@ -218,7 +220,8 @@ public class FastqRecordUtils {
      *
      * @return the updated record
      */
-    public static FastqRecord changeBarcodeInSingle(FastqRecord record, String newBarcode) {
+    public static FastqRecord changeBarcodeInSingle(final FastqRecord record,
+            final String newBarcode) {
         return changeBarcode(record, newBarcode, 0);
     }
 
@@ -231,8 +234,8 @@ public class FastqRecordUtils {
      *
      * @return the updated record
      */
-    public static FastqPairedRecord changeBarcodeInPaired(FastqPairedRecord record,
-            String newBarcode) {
+    public static FastqPairedRecord changeBarcodeInPaired(final FastqPairedRecord record,
+            final String newBarcode) {
         return new FastqPairedRecord(changeBarcode(record.getRecord1(), newBarcode, 1),
                 changeBarcode(record.getRecord2(), newBarcode, 2));
     }

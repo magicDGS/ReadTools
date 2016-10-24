@@ -25,7 +25,6 @@ package org.magicdgs.readtools.utils.record;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 
-import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMUtils;
 import htsjdk.samtools.fastq.FastqRecord;
@@ -48,7 +47,7 @@ public class SAMRecordUtils {
      *
      * @return the record converted into fastq
      */
-    public static FastqRecord toFastqRecord(SAMRecord record, Integer mateNumber) {
+    public static FastqRecord toFastqRecord(final SAMRecord record, final Integer mateNumber) {
         String seqName = (mateNumber == null) ?
                 record.getReadName() :
                 String.format("%s/%d", record.getReadName(), mateNumber);
@@ -62,21 +61,6 @@ public class SAMRecordUtils {
     }
 
     /**
-     * Check the flags for two records and assert that one of them have the first of pair and the
-     * other the second
-     *
-     * @param record1 one of the pairs
-     * @param record2 second of the pairs
-     */
-    public static void assertPairedMates(final SAMRecord record1, final SAMRecord record2) {
-        if (!(record1.getFirstOfPairFlag() && record2.getSecondOfPairFlag()
-                || record2.getFirstOfPairFlag() && record1
-                .getSecondOfPairFlag())) {
-            throw new SAMException("Illegal mate state: " + record1.getReadName());
-        }
-    }
-
-    /**
      * Add a barcode to a SAMRecord in the format recordName#barcode, but include previous barcodes
      * that are already in
      * recordName; use {@link #addBarcodeToNameIfAbsent} to check if it is present and don't
@@ -86,7 +70,7 @@ public class SAMRecordUtils {
      * @param record  the record to update
      * @param barcode the barcode
      */
-    public static void addBarcodeToName(SAMRecord record, String barcode) {
+    public static void addBarcodeToName(final SAMRecord record, final String barcode) {
         String recordName = String
                 .format("%s%s%s", record.getReadName(), BarcodeMethods.NAME_BARCODE_SEPARATOR,
                         barcode);
@@ -101,7 +85,7 @@ public class SAMRecordUtils {
      *
      * @return <code>true</code> if the barcode is changed; <code>false</code> otherwise
      */
-    public static boolean addBarcodeToNameIfAbsent(SAMRecord record, String barcode) {
+    public static boolean addBarcodeToNameIfAbsent(final SAMRecord record, final String barcode) {
         if (record.getReadName().contains(BarcodeMethods.NAME_BARCODE_SEPARATOR)) {
             return false;
         }
@@ -115,33 +99,9 @@ public class SAMRecordUtils {
      * @param record  the record to update
      * @param barcode the barcode
      */
-    public static void changeBarcodeInName(SAMRecord record, String barcode) {
+    public static void changeBarcodeInName(final SAMRecord record, final String barcode) {
         record.setReadName(getReadNameWithoutBarcode(record));
         addBarcodeToName(record, barcode);
-    }
-
-    /**
-     * Update the quality encoding for a record to sanger. Checks if the record is correctly
-     * formatted on the fly
-     *
-     * @param record the record to update
-     *
-     * @deprecated use {@link #toSanger(SAMRecord, boolean)} instead
-     */
-    public static void toSanger(final SAMRecord record) {
-        try {
-            // get the base qualities as ascii bytes
-            byte[] qualities = record.getBaseQualityString().getBytes();
-            byte[] newQualities = new byte[qualities.length];
-            for (int i = 0; i < qualities.length; i++) {
-                // it is suppose to be checked here
-                newQualities[i] = (byte) SAMUtils
-                        .fastqToPhred((char) QualityUtils.byteToSanger(qualities[i]));
-            }
-            record.setBaseQualities(newQualities);
-        } catch (IllegalArgumentException e) {
-            throw new QualityUtils.QualityException(e);
-        }
     }
 
     /**
@@ -173,7 +133,7 @@ public class SAMRecordUtils {
      *
      * @return the barcode without read information; <code>null</code> if no barcode is found
      */
-    public static String getBarcodeInName(SAMRecord record) {
+    public static String getBarcodeInName(final SAMRecord record) {
         return BarcodeMethods.getOnlyBarcodeFromName(record.getReadName());
     }
 
@@ -185,7 +145,7 @@ public class SAMRecordUtils {
      * @return an array with the barcode(s) without read information; <code>null</code> if no
      * barcode is found
      */
-    public static String[] getBarcodesInName(SAMRecord record) {
+    public static String[] getBarcodesInName(final SAMRecord record) {
         return BarcodeMethods.getSeveralBarcodesFromName(record.getReadName());
     }
 
@@ -198,7 +158,7 @@ public class SAMRecordUtils {
      * @return an array with the barcode(s) without read information; <code>null</code> if no
      * barcode is found
      */
-    public static String[] getBarcodesInName(SAMRecord record, String separator) {
+    public static String[] getBarcodesInName(final SAMRecord record, final String separator) {
         return BarcodeMethods.getSeveralBarcodesFromName(record.getReadName(), separator);
     }
 
@@ -209,7 +169,7 @@ public class SAMRecordUtils {
      *
      * @return the read name without the barcode information
      */
-    public static String getReadNameWithoutBarcode(SAMRecord record) {
+    public static String getReadNameWithoutBarcode(final SAMRecord record) {
         return BarcodeMethods.getNameWithoutBarcode(record.getReadName());
     }
 }

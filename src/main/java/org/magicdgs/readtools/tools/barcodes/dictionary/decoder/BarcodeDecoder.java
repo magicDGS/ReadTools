@@ -56,8 +56,6 @@ import java.util.Map;
  */
 public class BarcodeDecoder {
 
-    private static Log logger = Log.getInstance(BarcodeDecoder.class);
-
     /**
      * Default number of mismatches for BarcodeMethods
      */
@@ -133,7 +131,7 @@ public class BarcodeDecoder {
      *
      * @param dictionary the dictionary with the barcodes
      */
-    public BarcodeDecoder(BarcodeDictionary dictionary) {
+    public BarcodeDecoder(final BarcodeDictionary dictionary) {
         this(dictionary, DEFAULT_MAXIMUM_N, DEFAULT_N_AS_MISMATCHES, null, null);
     }
 
@@ -143,7 +141,7 @@ public class BarcodeDecoder {
      * @param dictionary    the dictionary with the barcodes
      * @param maxMismatches the maximum number of mismatches allowed (for each barcode)
      */
-    public BarcodeDecoder(BarcodeDictionary dictionary, int... maxMismatches) {
+    public BarcodeDecoder(final BarcodeDictionary dictionary, final int... maxMismatches) {
         this(dictionary, DEFAULT_MAXIMUM_N, DEFAULT_N_AS_MISMATCHES, maxMismatches, null);
     }
 
@@ -153,17 +151,17 @@ public class BarcodeDecoder {
      * @param dictionary              the dictionary with the barcodes
      * @param nAsMismatches           if <code>true</code> the Ns count as mismatches
      * @param maxMismatches           the maximum number of mismatches allowed (for each barcode)
-     * @param minDifferenceWithSecond the minimum difference in the number of mismatches between the
-     *                                first and the
-     *                                second best barcodes (for each barcode)
+     * @param minDifferenceWithSecond the minimum difference in the number of mismatches between
+     *                                the
+     *                                first and the second best barcodes (for each barcode)
      *
      * @throws java.lang.IllegalArgumentException if the thresholds are arrays with different
-     *                                            lengths than the number of
-     *                                            barcodes in the dictionary
+     *                                            lengths than the number of barcodes in the
+     *                                            dictionary
      */
-    public BarcodeDecoder(BarcodeDictionary dictionary, int maxN, boolean nAsMismatches,
-            int[] maxMismatches,
-            int[] minDifferenceWithSecond) {
+    public BarcodeDecoder(final BarcodeDictionary dictionary, final int maxN,
+            final boolean nAsMismatches, final int[] maxMismatches,
+            final int[] minDifferenceWithSecond) {
         this.dictionary = dictionary;
         this.maxN = maxN;
         this.nAsMismatches = nAsMismatches;
@@ -183,7 +181,7 @@ public class BarcodeDecoder {
      *
      * @return the int array formatted to use in the decoder
      */
-    private int[] setIntParameter(int defaultValue, int... parameter) {
+    private int[] setIntParameter(final int defaultValue, final int... parameter) {
         final int[] toReturn = new int[dictionary.getNumberOfBarcodes()];
         if (parameter == null) {
             Arrays.fill(toReturn, defaultValue);
@@ -193,7 +191,8 @@ public class BarcodeDecoder {
             return parameter;
         } else {
             throw new IllegalArgumentException(
-                    "Thresholds and dictionary should have the same length or be equals 1");
+                    "Thresholds and dictionary should have the same length or be equals 1. Found "
+                            + Arrays.toString(parameter));
         }
         return toReturn;
     }
@@ -204,7 +203,7 @@ public class BarcodeDecoder {
     private void initStats() {
         // get the statistics for the decoding
         stats = new Hashtable<>();
-        List<String> sampleNames = dictionary.getSampleNames();
+        final List<String> sampleNames = dictionary.getSampleNames();
         for (int i = 0; i < dictionary.numberOfSamples(); i++) {
             final String combined = dictionary.getCombinedBarcodesFor(i);
             stats.put(combined, new MatcherStat(combined, sampleNames.get(i)));
@@ -215,16 +214,16 @@ public class BarcodeDecoder {
         barcodeStats = new ArrayList<>();
         mismatchesHist = new ArrayList<>();
         nMean = new ArrayList<>();
-        String suffix;
+        final String suffix;
         if (dictionary.getNumberOfBarcodes() == 1) {
             suffix = null;
         } else {
             suffix = "_";
         }
         for (int j = 0; j < dictionary.getNumberOfBarcodes(); j++) {
-            Hashtable<String, BarcodeStat> bar = new Hashtable<>();
-            Hashtable<String, Histogram<Integer>> histM = new Hashtable<>();
-            Hashtable<String, MathUtils.RunningStat> mean = new Hashtable<>();
+            final Hashtable<String, BarcodeStat> bar = new Hashtable<>();
+            final Hashtable<String, Histogram<Integer>> histM = new Hashtable<>();
+            final Hashtable<String, MathUtils.RunningStat> mean = new Hashtable<>();
             for (String b : dictionary.getSetBarcodesFromIndex(j)) {
                 final BarcodeStat s =
                         new BarcodeStat((suffix == null) ? b : String.format("%s_%s", b, j + 1));
@@ -258,7 +257,7 @@ public class BarcodeDecoder {
      *                                  barcodes in the
      *                                  dictionary
      */
-    public String getBestBarcode(String... barcode) {
+    public String getBestBarcode(final String... barcode) {
         if (barcode.length != dictionary.getNumberOfBarcodes()) {
             throw new IllegalArgumentException(
                     "Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
@@ -274,7 +273,7 @@ public class BarcodeDecoder {
      * @return the best associated sample; {@link org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
      * if not found any
      */
-    public SAMReadGroupRecord getBestReadGroupRecord(String... barcode) {
+    public SAMReadGroupRecord getBestReadGroupRecord(final String... barcode) {
         return dictionary.getReadGroupFor(getBestBarcode(barcode));
     }
 
@@ -283,20 +282,18 @@ public class BarcodeDecoder {
      *
      * @param nAsMismatches           if <code>true</code> the Ns count as mismatches
      * @param maxMismatches           the maximum number of mismatches allowed (for each barcode)
-     * @param minDifferenceWithSecond the minimum difference in the number of mismatches between the
-     *                                first and the
-     *                                second best barcodes (for each barcode)
+     * @param minDifferenceWithSecond the minimum difference in the number of mismatches between
+     *                                the first and the second best barcodes (for each barcode)
      * @param barcode                 the array of barcodes to match
      *
      * @return the best real barcode in the dictionary (pasted in order if there are more than one)
      */
-    private String getBestBarcode(boolean nAsMismatches, int[] maxMismatches,
-            int[] minDifferenceWithSecond,
-            String... barcode) {
-        List<BarcodeMatch> bestMatchs = getBestBarcodeMatch(nAsMismatches, barcode);
+    private String getBestBarcode(final boolean nAsMismatches, final int[] maxMismatches,
+            final int[] minDifferenceWithSecond, final String... barcode) {
+        final List<BarcodeMatch> bestMatchs = getBestBarcodeMatch(nAsMismatches, barcode);
         // if only one barcode
         if (bestMatchs.size() == 1) {
-            BarcodeMatch match = bestMatchs.get(0);
+            final BarcodeMatch match = bestMatchs.get(0);
             if (updateMatchStatsAndPassFilters(0, match, maxMismatches[0],
                     minDifferenceWithSecond[0])) {
                 stats.get(match.barcode).RECORDS++;
@@ -306,13 +303,13 @@ public class BarcodeDecoder {
             }
         }
         // map sample indexes and number of times that it occurs
-        HashMap<Integer, Integer> samples = new HashMap<>();
+        final Map<Integer, Integer> samples = new HashMap<>();
         // for each barcode, check the quality
         for (int i = 0; i < bestMatchs.size(); i++) {
-            BarcodeMatch current = bestMatchs.get(i);
+            final BarcodeMatch current = bestMatchs.get(i);
             if (updateMatchStatsAndPassFilters(i, current, maxMismatches[i],
                     minDifferenceWithSecond[i])) {
-                ArrayList<String> allBarcodes = dictionary.getBarcodesFromIndex(i);
+                final List<String> allBarcodes = dictionary.getBarcodesFromIndex(i);
                 int sampleIndex = allBarcodes.indexOf(current.barcode);
                 // check if it is unique for this set
                 if (dictionary.isBarcodeUniqueInAt(current.barcode, i)) {
@@ -323,7 +320,7 @@ public class BarcodeDecoder {
                 } else {
                     for (; sampleIndex < allBarcodes.size(); sampleIndex++) {
                         if (allBarcodes.get(sampleIndex).equals(current.barcode)) {
-                            Integer count = samples.get(sampleIndex);
+                            final Integer count = samples.get(sampleIndex);
                             samples.put(sampleIndex, (count == null) ? 1 : count + 1);
                         }
                     }
@@ -335,13 +332,13 @@ public class BarcodeDecoder {
         }
         // if we reach this point, there are non unique barcode that identifies the sample
         // obtain the maximum count
-        int maxCount = Collections.max(samples.values());
+        final int maxCount = Collections.max(samples.values());
         // if there are more than one sample that could be associated with the barcode
         if (Collections.frequency(samples.values(), maxCount) != 1) {
             // it is not determined
             return addUnknownToMetricsAndReturnIt();
         } else {
-            for (Integer sampleIndex : samples.keySet()) {
+            for (final Integer sampleIndex : samples.keySet()) {
                 if (samples.get(sampleIndex) == maxCount) {
                     stats.get(dictionary.getCombinedBarcodesFor(sampleIndex)).RECORDS++;
                     return dictionary.getCombinedBarcodesFor(sampleIndex);
@@ -373,12 +370,11 @@ public class BarcodeDecoder {
      *
      * @return <code>true</code> if pass all the filters; <code>false</code> otherwise
      */
-    private boolean updateMatchStatsAndPassFilters(int index, BarcodeMatch match, int maxMismatches,
-            int minDifferenceWithSecond) {
-        BarcodeStat toUpdate;
+    private boolean updateMatchStatsAndPassFilters(final int index, final BarcodeMatch match,
+            final int maxMismatches, final int minDifferenceWithSecond) {
         // first check if it passing
         if (match.isMatch()) {
-            toUpdate = barcodeStats.get(index).get(match.barcode);
+            final BarcodeStat toUpdate = barcodeStats.get(index).get(match.barcode);
             mismatchesHist.get(index).get(match.barcode).increment(match.mismatches);
             nMean.get(index).get(match.barcode).push(match.numberOfNs);
             toUpdate.MATCHED++;
@@ -410,17 +406,18 @@ public class BarcodeDecoder {
      *
      * @return the best barcode matched
      */
-    private BarcodeMatch getBestBarcodeMatch(int index, boolean nAsMismatches, String barcode) {
-        BarcodeMatch best = new BarcodeMatch(barcode.length());
-        for (String b : dictionary.getSetBarcodesFromIndex(index)) {
-            String subBarcode;
+    private BarcodeMatch getBestBarcodeMatch(final int index, final boolean nAsMismatches,
+            final String barcode) {
+        final BarcodeMatch best = new BarcodeMatch(barcode.length());
+        for (final String b : dictionary.getSetBarcodesFromIndex(index)) {
+            final String subBarcode;
             if (barcode.length() > b.length()) {
                 // cut the barcode if it is longer
                 subBarcode = barcode.substring(0, b.length());
             } else {
                 subBarcode = barcode;
             }
-            int currentMismatch = mismatchesCount(subBarcode, b, nAsMismatches);
+            final int currentMismatch = mismatchesCount(subBarcode, b, nAsMismatches);
             if (currentMismatch < best.mismatches) {
                 // if the count of mismatches is better than the previous
                 best.mismatchesToSecondBest = best.mismatches;
@@ -443,15 +440,15 @@ public class BarcodeDecoder {
      * @return the list of matched barcodes
      *
      * @throws IllegalArgumentException if the length of the arrays does not match the number of
-     *                                  barcodes in the
-     *                                  dictionary
+     *                                  barcodes in the dictionary
      */
-    private List<BarcodeMatch> getBestBarcodeMatch(boolean nAsMismatches, String... barcode) {
+    private List<BarcodeMatch> getBestBarcodeMatch(final boolean nAsMismatches,
+            final String... barcode) {
         if (barcode.length != dictionary.getNumberOfBarcodes()) {
             throw new IllegalArgumentException(
                     "Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
         }
-        ArrayList<BarcodeMatch> toReturn = new ArrayList<>();
+        final List<BarcodeMatch> toReturn = new ArrayList<>();
         // only one barcode
         if (barcode.length == 1) {
             toReturn.add(getBestBarcodeMatch(0, nAsMismatches, barcode[0]));
@@ -470,7 +467,7 @@ public class BarcodeDecoder {
      *
      * @param log the log to use for logging
      */
-    public void logMatcherResult(Log log) {
+    public void logMatcherResult(final Log log) {
         for (MatcherStat s : stats.values()) {
             log.info("Found ", Formats.commaFmt.format(s.RECORDS), " records for ", s.SAMPLE, " (",
                     s.BARCODE, ")");
@@ -482,21 +479,22 @@ public class BarcodeDecoder {
      *
      * @param statsFile the file to output the statistics
      */
-    public void outputStats(File statsFile) throws IOException {
-        Writer statsWriter = new FileWriter(statsFile);
+    public void outputStats(final File statsFile) throws IOException {
+        final Writer statsWriter = new FileWriter(statsFile);
         // create the matcher stats
-        MetricsFile<MatcherStat, Integer> matcherStats = new MetricsFile<>();
+        final MetricsFile<MatcherStat, Integer> matcherStats = new MetricsFile<>();
         // add the header and the metrics
         matcherStats.addHeader(metricHeader);
         matcherStats.addAllMetrics(stats.values());
         // write matcher stats
         matcherStats.write(statsWriter);
         // create the barcode stats
-        MetricsFile<BarcodeStat, Integer> barcode = new MetricsFile<>();
+        final MetricsFile<BarcodeStat, Integer> barcode = new MetricsFile<>();
         for (int i = 0; i < dictionary.getNumberOfBarcodes(); i++) {
-            Hashtable<String, BarcodeStat> current = barcodeStats.get(i);
-            for (Map.Entry<String, Histogram<Integer>> entry : mismatchesHist.get(i).entrySet()) {
-                BarcodeStat s = current.get(entry.getKey());
+            final Hashtable<String, BarcodeStat> current = barcodeStats.get(i);
+            for (final Map.Entry<String, Histogram<Integer>> entry : mismatchesHist.get(i)
+                    .entrySet()) {
+                final BarcodeStat s = current.get(entry.getKey());
                 s.MEAN_MISMATCH = entry.getValue().getMean();
                 s.MEAN_N = nMean.get(i).get(entry.getKey()).mean();
                 barcode.addHistogram(entry.getValue());
