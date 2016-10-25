@@ -35,7 +35,7 @@ import org.magicdgs.readtools.tools.cmd.BarcodeOptions;
 import org.magicdgs.readtools.tools.cmd.CommonOptions;
 import org.magicdgs.readtools.tools.cmd.ToolWritersFactory;
 import org.magicdgs.readtools.tools.cmd.ToolsReadersFactory;
-import org.magicdgs.readtools.utils.loggers.ProgressLoggerExtension;
+import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.Formats;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.record.SAMRecordUtils;

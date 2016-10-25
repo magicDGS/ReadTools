@@ -36,7 +36,7 @@ import org.magicdgs.readtools.tools.cmd.BarcodeOptions;
 import org.magicdgs.readtools.tools.cmd.CommonOptions;
 import org.magicdgs.readtools.tools.cmd.ToolWritersFactory;
 import org.magicdgs.readtools.tools.cmd.ToolsReadersFactory;
-import org.magicdgs.readtools.utils.loggers.FastqLogger;
+import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 

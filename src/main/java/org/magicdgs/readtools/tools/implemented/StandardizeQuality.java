@@ -31,8 +31,8 @@ import org.magicdgs.io.writers.bam.ReadToolsSAMFileWriterFactory;
 import org.magicdgs.readtools.tools.AbstractTool;
 import org.magicdgs.readtools.tools.cmd.CommonOptions;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
-import org.magicdgs.readtools.utils.loggers.FastqLogger;
-import org.magicdgs.readtools.utils.loggers.ProgressLoggerExtension;
+import org.magicdgs.readtools.utils.logging.FastqLogger;
+import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 
 import htsjdk.samtools.SAMException;
