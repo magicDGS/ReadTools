@@ -41,10 +41,12 @@ public class QualityCheckerIntegrationTest extends CommandLineProgramTest {
     @DataProvider(name = "smallFiles")
     public Object[][] getTestFiles() {
         return new Object[][]{
-                // test a FASTQ file
+                // test FASTQ file
                 {SMALL_FASTQ_1, "Sanger"},
-                // test a SAM file
-                {PAIRED_BAM_FILE, "Sanger"}
+                {getInputDataFile("small.illumina.fq"), "Illumina"},
+                // test SAM files
+                {PAIRED_BAM_FILE, "Sanger"},
+                {getInputDataFile("small.illumina.sam"), "Illumina"}
         };
     }
 
