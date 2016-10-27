@@ -49,7 +49,7 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
 
     protected final StandardizerAndChecker checker;
 
-    protected Log logger;
+    protected final Log logger;
 
     /**
      * Default constructor with two readers

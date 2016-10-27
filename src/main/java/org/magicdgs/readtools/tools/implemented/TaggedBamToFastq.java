@@ -75,12 +75,12 @@ public class TaggedBamToFastq extends AbstractTool {
     /**
      * Default barcode tag for the first barcode
      */
-    private static String DEFAULT_BARCODE_TAG1 = "BC";
+    private static final String DEFAULT_BARCODE_TAG1 = "BC";
 
     /**
      * Default barcode tag for the second barcode
      */
-    private static String DEFAULT_BARCODE_TAG2 = "B2";
+    private static final String DEFAULT_BARCODE_TAG2 = "B2";
 
     @Override
     protected void runThrowingExceptions(CommandLine cmd) throws Exception {

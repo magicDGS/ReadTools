@@ -107,9 +107,4 @@ public class QualityUtilsTest {
             }
         }
     }
-    
-    @Test(enabled = false, description = "We will need a BAM/FASTQ file in resources for this test")
-    public void testGetEncoding() throws Exception {
-        // TODO: implement
-    }
 }

@@ -24,13 +24,12 @@ package org.magicdgs.readtools.tools.trimming.trimmers;
 
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.tools.trimming.trimmers.stats.TrimStat;
-import org.magicdgs.readtools.utils.trimming.TrimmingMethods;
 import org.magicdgs.readtools.utils.record.SequenceMatch;
+import org.magicdgs.readtools.utils.trimming.TrimmingMethods;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.Histogram;
-import htsjdk.samtools.util.Log;
 
 import java.io.File;
 
@@ -42,8 +41,6 @@ import java.io.File;
  * @author Daniel Gómez-Sánchez
  */
 public abstract class Trimmer {
-
-    protected static final Log logger = Log.getInstance(Trimmer.class);
 
     protected final boolean trimQuality;
 

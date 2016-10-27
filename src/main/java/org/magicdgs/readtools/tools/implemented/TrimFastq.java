@@ -54,16 +54,6 @@ import java.io.IOException;
  */
 public class TrimFastq extends AbstractTool {
 
-    /**
-     * The default quality score
-     */
-    private static final int DEFAULT_QUALTITY_SCORE = 20;
-
-    /**
-     * The default minimum length
-     */
-    private static final int DEFAULT_MINIMUM_LENGTH = 40;
-
     @Override
     protected void runThrowingExceptions(CommandLine cmd) throws Exception {
         // The input file
@@ -146,12 +136,9 @@ public class TrimFastq extends AbstractTool {
      * @param trimmer the algorithm with the provided settings
      * @param reader  the reader for the pairs
      * @param writer  the writer for the pairs (instance of PairFastqWriters)
-     *
-     * @throws IOException if there are problems with the files
      */
     private static void processPE(Trimmer trimmer, FastqReaderPairedInterface reader,
-            ReadToolsFastqWriter writer,
-            FastqLogger progress) throws IOException {
+            ReadToolsFastqWriter writer, FastqLogger progress) {
         boolean keep = (writer instanceof SplitFastqWriter);
         while (reader.hasNext()) {
             FastqPairedRecord record = reader.next();
@@ -188,12 +175,9 @@ public class TrimFastq extends AbstractTool {
      * @param trimmer the algorithm with the provided settings
      * @param reader  the reader for the single end file
      * @param writer  the writer for the single end file * @param metricsFile
-     *
-     * @throws IOException if there are problems with the files
      */
     private static void processSE(Trimmer trimmer, FastqReaderSingleInterface reader,
-            ReadToolsFastqWriter writer,
-            FastqLogger progress) throws IOException {
+            ReadToolsFastqWriter writer, FastqLogger progress) {
         boolean keep = (writer instanceof SplitFastqWriter);
         while (reader.hasNext()) {
             FastqRecord record = reader.next();

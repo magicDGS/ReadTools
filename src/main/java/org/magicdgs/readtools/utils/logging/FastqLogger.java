@@ -118,20 +118,6 @@ public class FastqLogger {
     }
 
     /**
-     * Returns the count of records processed.
-     */
-    public long getCount() {
-        return this.processed;
-    }
-
-    /**
-     * Returns the number of seconds since progress tracking began.
-     */
-    public long getElapsedSeconds() {
-        return (System.currentTimeMillis() - this.startTime) / 1000;
-    }
-
-    /**
      * Left pads a string until it is at least the given length.
      */
     private String pad(String in, final int length) {

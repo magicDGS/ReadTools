@@ -27,7 +27,6 @@ import org.magicdgs.readtools.utils.misc.Formats;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
-import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
 
 /**
@@ -36,8 +35,6 @@ import htsjdk.samtools.util.Lazy;
  * @author Daniel Gómez-Sánchez
  */
 public class PairFastqWriters implements ReadToolsFastqWriter {
-
-    private final static FastqWriterFactory DEFAULT_FACTORY = new FastqWriterFactory();
 
     // Pairs are always initializer; single is not
     private final FastqWriter first, second;

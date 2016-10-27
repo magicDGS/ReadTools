@@ -124,12 +124,9 @@ public class FastqBarcodeDetector extends AbstractTool {
      * @param reader  the reader
      * @param writer  the writer
      * @param decoder the barcode decoder instance
-     *
-     * @throws IOException if there are some problems with the files
      */
     private void runSingle(FastqReaderSingleInterface reader, SplitFastqWriter writer,
-            BarcodeDecoder decoder,
-            FastqLogger progress) throws IOException {
+            BarcodeDecoder decoder, FastqLogger progress) {
         Iterator<FastqRecord> it = reader.iterator();
         while (it.hasNext()) {
             FastqRecord record = it.next();
@@ -152,12 +149,9 @@ public class FastqBarcodeDetector extends AbstractTool {
      * @param reader  the reader
      * @param writer  the writer
      * @param decoder the barcode decoder instance
-     *
-     * @throws IOException if there are some problems with the files
      */
     private void runPaired(FastqReaderPairedInterface reader, SplitFastqWriter writer,
-            BarcodeDecoder decoder,
-            FastqLogger progress) throws IOException {
+            BarcodeDecoder decoder, FastqLogger progress) {
         Iterator<FastqPairedRecord> it = reader.iterator();
         while (it.hasNext()) {
             FastqPairedRecord record = it.next();

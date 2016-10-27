@@ -52,8 +52,6 @@ public class QualityUtils {
 
     private static final byte phredToSangerOffset = (byte) 31;
 
-    private static final byte asciiToSangerOffset = (byte) 64;
-
     /**
      * Supported quality formats for this program
      */

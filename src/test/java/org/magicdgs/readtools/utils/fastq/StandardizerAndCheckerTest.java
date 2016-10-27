@@ -30,7 +30,6 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.testng.Assert;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -64,10 +63,6 @@ public class StandardizerAndCheckerTest {
                 .createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality);
         sangerSAM = SAMRecordUtilsTest
                 .createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.sangerQuality);
-    }
-
-    @AfterTest
-    public void tearDown() throws Exception {
     }
 
     @Test

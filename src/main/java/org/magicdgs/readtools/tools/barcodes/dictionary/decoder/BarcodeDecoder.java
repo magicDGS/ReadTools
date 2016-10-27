@@ -127,25 +127,6 @@ public class BarcodeDecoder {
     private ArrayList<Hashtable<String, MathUtils.RunningStat>> nMean;
 
     /**
-     * Initialize the object with a dictionary and default parameters
-     *
-     * @param dictionary the dictionary with the barcodes
-     */
-    public BarcodeDecoder(final BarcodeDictionary dictionary) {
-        this(dictionary, DEFAULT_MAXIMUM_N, DEFAULT_N_AS_MISMATCHES, null, null);
-    }
-
-    /**
-     * Initialize the object with a dictionary, maximum number of mismatches and default parameters
-     *
-     * @param dictionary    the dictionary with the barcodes
-     * @param maxMismatches the maximum number of mismatches allowed (for each barcode)
-     */
-    public BarcodeDecoder(final BarcodeDictionary dictionary, final int... maxMismatches) {
-        this(dictionary, DEFAULT_MAXIMUM_N, DEFAULT_N_AS_MISMATCHES, maxMismatches, null);
-    }
-
-    /**
      * Default constructor with all the parameters
      *
      * @param dictionary              the dictionary with the barcodes
@@ -352,7 +333,7 @@ public class BarcodeDecoder {
     /**
      * Add a record count to the unknown barcode and return the unknown string
      *
-     * @return {@link org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}
+     * @return {@link BarcodeMatch#UNKNOWN_STRING}
      */
     private String addUnknownToMetricsAndReturnIt() {
         stats.get(BarcodeMatch.UNKNOWN_STRING).RECORDS++;

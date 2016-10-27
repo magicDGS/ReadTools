@@ -31,6 +31,8 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BarcodeDictionaryTest {
 
@@ -43,12 +45,6 @@ public class BarcodeDictionaryTest {
     private static final ArrayList<ArrayList<String>> barcodesDouble = new ArrayList<>(2);
 
     private static final String[] barcodes = new String[] {"AAAA", "CCCC", "TTTT", "GGGG"};
-
-    private static String getBarcode(char base) {
-        char[] bases = new char[10];
-        Arrays.fill(bases, base);
-        return new String(bases);
-    }
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -87,10 +83,8 @@ public class BarcodeDictionaryTest {
 
     @Test
     public void testGetSampleNames() throws Exception {
-        final ArrayList<String> sampleNames = new ArrayList<>();
-        for (final SAMReadGroupRecord sample : samples) {
-            sampleNames.add(sample.getSample());
-        }
+        final List<String> sampleNames = samples.stream().map(SAMReadGroupRecord::getSample)
+                .collect(Collectors.toList());
         Assert.assertEquals(dictionarySingle.getSampleNames(), sampleNames);
         Assert.assertEquals(dictionaryDouble.getSampleNames(), sampleNames);
     }
@@ -105,11 +99,6 @@ public class BarcodeDictionaryTest {
     public void testNumberOfSamples() throws Exception {
         Assert.assertEquals(dictionarySingle.numberOfSamples(), barcodes.length);
         Assert.assertEquals(dictionaryDouble.numberOfSamples(), barcodes.length);
-    }
-
-    @Test(enabled = false, description = "Not implemented")
-    public void testNumberOfUniqueSamples() throws Exception {
-        // TODO: create a dictionary with repeated samples
     }
 
     @Test
@@ -132,22 +121,5 @@ public class BarcodeDictionaryTest {
             final String combinedBarcode = dictionaryDouble.getCombinedBarcodesFor(i);
             Assert.assertEquals(dictionaryDouble.getReadGroupFor(combinedBarcode), samples.get(i));
         }
-    }
-
-    @Test(enabled = false, description = "Not implemented")
-    public void testGetCombinedBarcodesFor() throws Exception {
-        // TODO: make test with new implementation
-    }
-
-    @Test(enabled = false, description = "Not implemented")
-    public void testIsBarcodeUniqueInAt() throws Exception {
-    }
-
-    @Test(enabled = false, description = "Not implemented")
-    public void testGetBarcodesFromIndex() throws Exception {
-    }
-
-    @Test(enabled = false, description = "Not implemented")
-    public void testGetSetBarcodesFromIndex() throws Exception {
     }
 }

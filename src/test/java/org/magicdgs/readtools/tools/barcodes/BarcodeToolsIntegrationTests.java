@@ -46,9 +46,9 @@ public class BarcodeToolsIntegrationTests extends CommandLineProgramTest {
             getCommonTestFile("BarcodeTools").getAbsolutePath() + "/";
 
     /** Example barcode file for one barcode index. */
-    protected static File UNIQUE_BARCODE_FILE = getInputDataFile("unique.barcodes");
+    protected static final File UNIQUE_BARCODE_FILE = getInputDataFile("unique.barcodes");
     /** Example barcode file for two barcode indexes. */
-    protected static File DUAL_BARCODE_FILE = getInputDataFile("dual.barcodes");
+    protected static final File DUAL_BARCODE_FILE = getInputDataFile("dual.barcodes");
 
     /** Sample name for test files. */
     protected final static String[] SAMPLE_NAMES = IntStream.range(1, 10)
@@ -56,14 +56,6 @@ public class BarcodeToolsIntegrationTests extends CommandLineProgramTest {
 
     /** Temp directory for the class. */
     protected final File classTempDirectory = createTestTempDir(this.getClass().getSimpleName());
-
-    /**
-     * Gets expected large data shared between several tools for barcodes.
-     */
-    @Deprecated
-    protected final File getBarcodeToolExpectedLargeData(final String fileName) {
-        return new File(EXPECTED_SHARED_LARGE_DIRECTORY, fileName);
-    }
 
     /**Gets the expected file shared between several tools for barcodes. */
     protected static final File getBarcodeToolsExpectedData(final String fileName) {

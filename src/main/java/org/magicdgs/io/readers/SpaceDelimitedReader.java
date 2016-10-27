@@ -63,10 +63,8 @@ public class SpaceDelimitedReader implements Closeable {
      * Read the next line
      *
      * @return the tokens that are separated by tabs; <code>null</code> if no more lines
-     *
-     * @throws IOException if there is an input error
      */
-    public String[] next() throws IOException {
+    public String[] next() {
         if (hasNext()) {
             String line = scanner.nextLine();
             return line.split("\\s+");

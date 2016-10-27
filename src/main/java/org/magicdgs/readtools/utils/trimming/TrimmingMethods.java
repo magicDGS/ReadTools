@@ -155,7 +155,10 @@ public class TrimmingMethods {
         }
         final char[] quals = record.getBaseQualityString().toCharArray();
         final TreeMap<Integer, StartEndTupple> hsps = new TreeMap<>();
-        int highScore = 0, activeScore = 0, highScoreStart = -1, highScoreEnd = 0;
+        int highScore = 0;
+        int activeScore = 0;
+        int highScoreStart = -1;
+        int highScoreEnd = 0;
         for (int i = 0; i < quals.length; i++) {
             int toSub = getQuality(quals[i], encoding) - qualThreshold;
             activeScore += toSub;
@@ -203,7 +206,9 @@ public class TrimmingMethods {
             return null;
         }
         final char[] quals = record.getBaseQualityString().toCharArray();
-        int highScore = 0, activeScore = 0, highScoreEnd = -1;
+        int highScore = 0;
+        int activeScore = 0;
+        int highScoreEnd = -1;
         for (int i = 0; i < quals.length; i++) {
             int ts = getQuality(quals[i], encoding) - qualThreshold;
             activeScore += ts;

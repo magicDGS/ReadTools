@@ -143,13 +143,7 @@ public class ReadToolsFastqWriterFactory {
         final String seOutputName =
                 IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT);
         final File seOutput = IOUtils.newOutputFile(seOutputName, CHECK_EXISTENCE);
-        Lazy<FastqWriter> single = new Lazy<>(new Lazy.LazyInitializer<FastqWriter>() {
-
-            @Override
-            public FastqWriter make() {
-                return FACTORY.newWriter(seOutput);
-            }
-        });
+        Lazy<FastqWriter> single = new Lazy<>(() -> FACTORY.newWriter(seOutput));
         return new PairFastqWriters(pair1, pair2, single);
     }
 

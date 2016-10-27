@@ -67,8 +67,6 @@ public abstract class SplitSAMFileWriterAbstract implements SplitSAMFileWriter {
 
     @Override
     public void close() {
-        for (SAMFileWriter w : mapping.values()) {
-            w.close();
-        }
+        mapping.values().forEach(SAMFileWriter::close);
     }
 }
