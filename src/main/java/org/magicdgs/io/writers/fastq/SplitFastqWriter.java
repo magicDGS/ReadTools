@@ -38,29 +38,6 @@ import java.util.NoSuchElementException;
 public interface SplitFastqWriter extends ReadToolsFastqWriter {
 
     /**
-     * The mapping between the identifier and the corresponding FastqWriter. Several identifiers
-     * could be associated
-     * with the same writer
-     *
-     * @return the mapping identifier-writer
-     */
-    public Hashtable<String, ? extends FastqWriter> getMapping();
-
-    /**
-     * Get the number of times that each of the identifiers' writers was used
-     *
-     * @return the map between the identifier and the current report
-     */
-    public Hashtable<String, Integer> getCurrentCount();
-
-    /**
-     * Get the report for each identifier (the report could be whatever object
-     *
-     * @return the map between the identifier and the current report
-     */
-    public Hashtable<String, Object> getCurrentReport();
-
-    /**
      * Write a FastqRecord into the split fastq writer
      *
      * @param identifier the identifier for the record

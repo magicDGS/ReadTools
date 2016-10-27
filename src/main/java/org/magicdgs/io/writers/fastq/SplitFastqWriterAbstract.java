@@ -43,30 +43,12 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
     protected final Hashtable<String, ? extends FastqWriter> mapping;
 
     /**
-     * Hashtable mapping the identifier and how many times you perform a write on it with the
-     * methods implemented in
-     * this class
-     */
-    protected final Hashtable<String, Integer> counts;
-
-    /**
      * All instances for the class will be performed by {@link ReadToolsFastqWriterFactory}
      *
      * @param mapping the mapping between the identifier and the FastqWriter
      */
     protected SplitFastqWriterAbstract(final Hashtable<String, ? extends FastqWriter> mapping) {
         this.mapping = mapping;
-        this.counts = new Hashtable<>(mapping.size());
-    }
-
-    @Override
-    public Hashtable<String, ? extends FastqWriter> getMapping() {
-        return mapping;
-    }
-
-    @Override
-    public Hashtable<String, Integer> getCurrentCount() {
-        return counts;
     }
 
     @Override
@@ -78,10 +60,6 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
                     "Identifier " + identifier + " is not included in this writer");
         }
         writer.write(record);
-        final Integer c = counts.putIfAbsent(identifier, 1);
-        if (c != null) {
-            counts.put(identifier, c + 1);
-        }
     }
 
     @Override
@@ -93,10 +71,6 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
                     "Identifier " + identifier + " is not included in this writer");
         } else if (writer instanceof PairFastqWriters) {
             ((PairFastqWriters) writer).write(record);
-            Integer c = counts.putIfAbsent(identifier, 1);
-            if (c != null) {
-                counts.put(identifier, c + 1);
-            }
         } else {
             throw new UnsupportedOperationException(
                     "This writer does not allow writing of FastqPairedRecords");

@@ -49,11 +49,6 @@ public abstract class SplitSAMFileWriterAbstract implements SplitSAMFileWriter {
     }
 
     @Override
-    public Hashtable<String, ? extends SAMFileWriter> getMapping() {
-        return mapping;
-    }
-
-    @Override
     public void addAlignment(String identifier, SAMRecord alignment) throws NoSuchElementException {
         mapping.get(identifier).addAlignment(alignment);
     }

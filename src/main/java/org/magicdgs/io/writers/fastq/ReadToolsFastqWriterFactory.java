@@ -190,19 +190,6 @@ public class ReadToolsFastqWriterFactory {
             private final boolean p = paired;
 
             @Override
-            public Hashtable<String, Object> getCurrentReport() {
-                if (!p) {
-                    return new Hashtable<>(counts);
-                } else {
-                    Hashtable<String, Object> report = new Hashtable<>();
-                    for (Map.Entry<String, ? extends FastqWriter> entry : mapping.entrySet()) {
-                        report.put(entry.getKey(), entry.getValue().toString());
-                    }
-                    return report;
-                }
-            }
-
-            @Override
             public void write(FastqRecord record) {
                 String barcode = FastqRecordUtils.getBarcodeInName(record);
                 write(getUnknownIfNoMapping(barcode), record);
@@ -223,34 +210,6 @@ public class ReadToolsFastqWriterFactory {
                 return (mapping.contains(barcode)) ? barcode : BarcodeMatch.UNKNOWN_STRING;
             }
         };
-    }
-
-    /**
-     * Create a single-end split writer by barcode
-     *
-     * @param prefix     the prefix for the files
-     * @param dictionary the barcode dictionary with the barcodes
-     *
-     * @return a new instance of the writer
-     */
-    public SplitFastqWriter newSplitByBarcodeWriterSingle(String prefix,
-            BarcodeDictionary dictionary)
-            throws IOException {
-        return newSplitByBarcodeWriter(prefix, dictionary, false);
-    }
-
-    /**
-     * Create a pair-end split writer by barcode
-     *
-     * @param prefix     the prefix for the files
-     * @param dictionary the barcode dictionary with the barcodes
-     *
-     * @return a new instance of the writer
-     */
-    public SplitFastqWriter newSplitByBarcodeWriterPaired(String prefix,
-            BarcodeDictionary dictionary)
-            throws IOException {
-        return newSplitByBarcodeWriter(prefix, dictionary, true);
     }
 
     /**
@@ -278,19 +237,6 @@ public class ReadToolsFastqWriterFactory {
         return new SplitFastqWriterAbstract(mapping) {
 
             private final boolean p = paired;
-
-            @Override
-            public Hashtable<String, Object> getCurrentReport() {
-                if (!p) {
-                    return new Hashtable<>(counts);
-                } else {
-                    Hashtable<String, Object> report = new Hashtable<>();
-                    for (Map.Entry<String, ? extends FastqWriter> entry : mapping.entrySet()) {
-                        report.put(entry.getKey(), entry.getValue().toString());
-                    }
-                    return report;
-                }
-            }
 
             /**
              * By default, any record is correct
@@ -330,29 +276,5 @@ public class ReadToolsFastqWriterFactory {
                 }
             }
         };
-    }
-
-    /**
-     * Writer that split between assign/unknown barcodes for single-end
-     *
-     * @param prefix the prefix for the files
-     *
-     * @return a new instance of the writer
-     */
-    public SplitFastqWriter newSplitAssignUnknownBarcodeWriterSingle(String prefix)
-            throws IOException {
-        return newSplitAssignUnknownBarcodeWriter(prefix, false);
-    }
-
-    /**
-     * Writer that split between assign/unknown barcodes for single-end
-     *
-     * @param prefix the prefix for the files
-     *
-     * @return a new instance of the writer
-     */
-    public SplitFastqWriter newSplitAssignUnknownBarcodeWriterPaired(String prefix)
-            throws IOException {
-        return newSplitAssignUnknownBarcodeWriter(prefix, true);
     }
 }

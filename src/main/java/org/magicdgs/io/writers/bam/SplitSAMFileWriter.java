@@ -36,15 +36,6 @@ import java.util.NoSuchElementException;
 public interface SplitSAMFileWriter extends SAMFileWriter {
 
     /**
-     * The mapping between the identifier and the corresponding FastqWriter. Several identifiers
-     * could be associated
-     * with the same writer
-     *
-     * @return the mapping identifier-writer
-     */
-    public Hashtable<String, ? extends SAMFileWriter> getMapping();
-
-    /**
      * Write a SAMRecord that includes some information for the identifier, or in the default writer
      * depending on the
      * implementation
