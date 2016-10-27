@@ -22,18 +22,17 @@
  */
 package org.magicdgs.readtools.tools.implemented;
 
-import static org.magicdgs.readtools.tools.cmd.OptionUtils.getUniqueValue;
-
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.io.readers.fastq.FastqReaderInterface;
 import org.magicdgs.io.readers.fastq.paired.FastqReaderPairedInterface;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
+import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
+import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
+import org.magicdgs.readtools.tools.AbstractTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
-import org.magicdgs.readtools.tools.AbstractTool;
-import org.magicdgs.readtools.tools.cmd.BarcodeOptions;
-import org.magicdgs.readtools.tools.cmd.CommonOptions;
+import org.magicdgs.readtools.tools.cmd.OptionUtils;
 import org.magicdgs.readtools.tools.cmd.ToolWritersFactory;
 import org.magicdgs.readtools.tools.cmd.ToolsReadersFactory;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
@@ -59,24 +58,31 @@ public class FastqBarcodeDetector extends AbstractTool {
     @Override
     protected void runThrowingExceptions(CommandLine cmd) throws Exception {
         // PARSING THE COMMAND LINE
-        File input1 = new File(getUniqueValue(cmd, "input1"));
+        File input1 = new File(
+                OptionUtils.getUniqueValue(cmd,
+                        ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "1"));
         // input file 2
-        String input2string = getUniqueValue(cmd, "input2");
+        String input2string = OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "2");
         File input2 = (input2string == null) ? null : new File(input2string);
-        String outputPrefix = getUniqueValue(cmd, "output");
-        int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+        String outputPrefix = OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME);
+        int nThreads = ReadToolsLegacyArgumentDefinitions.numberOfThreads(logger, cmd);
         boolean multi = nThreads != 1;
         // logging command line
         logCmdLine(cmd);
         // open the decoder
-        BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
+        BarcodeDecoder decoder = BarcodeArgumentCollection
+                .getBarcodeDecoderFromOption(logger, cmd, -1);
         // create the reader and the writer
         FastqReaderInterface reader = ToolsReadersFactory
-                .getFastqReaderFromInputs(input1, input2, CommonOptions.isMaintained(logger, cmd),
-                        CommonOptions.allowHigherQualities(logger, cmd));
+                .getFastqReaderFromInputs(input1, input2, ReadToolsLegacyArgumentDefinitions
+                                .isMaintained(logger, cmd),
+                        ReadToolsLegacyArgumentDefinitions.allowHigherQualities(logger, cmd));
         SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix,
-                BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
-                cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi, input2 == null);
+                BarcodeArgumentCollection.isSplit(logger, cmd) ? decoder.getDictionary() : null,
+                cmd.hasOption(ReadToolsLegacyArgumentDefinitions.disableZippedOutput.getOpt()),
+                multi, input2 == null);
         // run the method
         run(reader, writer, IOUtils.makeMetricsFile(outputPrefix), decoder);
     }
@@ -170,49 +176,38 @@ public class FastqBarcodeDetector extends AbstractTool {
 
     @Override
     protected Options programOptions() {
-        Option input1 = Option.builder("i1").longOpt("input1")
+        Option input1 = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME + "1")
+                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "1")
                 .desc("The input file, or the input file of the first read, in FASTQ format")
                 .hasArg()
                 .numberOfArgs(1).argName("input_1.fq").required(true).build();
-        Option input2 = Option.builder("i2").longOpt("input2").desc(
-                "The FASTQ input file of the second read. In case this file is provided the software will switch to paired read mode instead of single read mode")
+        Option input2 = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME + "2")
+                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "2")
+                .desc(
+                        "The FASTQ input file of the second read. In case this file is provided the software will switch to paired read mode instead of single read mode")
                 .hasArg().numberOfArgs(1).argName("input_2.fq").optionalArg(true).build();
         Option output =
-                Option.builder("o").longOpt("output").desc("The output file prefix").hasArg()
+                Option.builder(ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME)
+                        .longOpt(ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME)
+                        .desc("The output file prefix").hasArg()
                         .numberOfArgs(1)
                         .argName("output_prefix").required(true).build();
-        // TODO: change for the default when updated to the combination with the separator between barcodes
-        // Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-        //	"Maximum number of mismatches allowed for a matched barcode.  [Default="
-        //		+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
-        //				   .required(false).build();
-        // TODO: change for the default when updated to the combination with the separator between barcodes
-        // Option dist = Option.builder("d").longOpt("minimum-distance").desc(
-        //	"Minimum distance between the best match and the second to consider a match. [Default="
-        //		+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
-        //					.required(false).build();
         // create the options
         Options options = new Options();
         // add the options
         options.addOption(input1);
         options.addOption(input2);
         options.addOption(output);
-        // TODO: change for adding all when implemented combined barcode with "_"
-        // options.addOption(max);
-        // options.addOption(dist);
         // add options for barcode programs
-        BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
-        // TODO: remove following lines
-        // options.addOption(BarcodeOptions.barcodes);
-        // options.addOption(BarcodeOptions.nNoMismatch);
-        // options.addOption(BarcodeOptions.split);
-        // options.addOption(BarcodeOptions.maxN);
+        BarcodeArgumentCollection.addAllBarcodeCommonOptionsTo(options);
         // default options
         // add common options
-        options.addOption(CommonOptions.maintainFormat); // maintain the format
-        options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
-        options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
-        options.addOption(CommonOptions.parallel); // allow parallel output
+        options.addOption(ReadToolsLegacyArgumentDefinitions.maintainFormat); // maintain the format
+        options.addOption(
+                ReadToolsLegacyArgumentDefinitions.allowHigherSangerQualities); // allow higher qualities
+        options.addOption(
+                ReadToolsLegacyArgumentDefinitions.disableZippedOutput); // disable zipped output
+        options.addOption(ReadToolsLegacyArgumentDefinitions.parallel); // allow parallel output
         return options;
     }
 }

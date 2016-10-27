@@ -22,14 +22,13 @@
  */
 package org.magicdgs.readtools.tools.implemented;
 
-import static org.magicdgs.readtools.tools.cmd.OptionUtils.getUniqueValue;
-
 import org.magicdgs.io.readers.bam.SamReaderSanger;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleSanger;
 import org.magicdgs.io.writers.bam.ReadToolsSAMFileWriterFactory;
+import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.tools.AbstractTool;
-import org.magicdgs.readtools.tools.cmd.CommonOptions;
+import org.magicdgs.readtools.tools.cmd.OptionUtils;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
@@ -62,12 +61,15 @@ public class StandardizeQuality extends AbstractTool {
 
     @Override
     protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-        File input = new File(getUniqueValue(cmd, "i"));
-        File output = new File(getUniqueValue(cmd, "o"));
+        File input = new File(OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME));
+        File output = new File(OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME));
         boolean index = cmd.hasOption("ind");
-        int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+        int nThreads = ReadToolsLegacyArgumentDefinitions.numberOfThreads(logger, cmd);
         boolean multi = nThreads != 1;
-        boolean allowHigherQualities = CommonOptions.allowHigherQualities(logger, cmd);
+        boolean allowHigherQualities = ReadToolsLegacyArgumentDefinitions
+                .allowHigherQualities(logger, cmd);
         logCmdLine(cmd);
         // first check the quality
         switch (QualityUtils.getFastqQualityFormat(input)) {
@@ -168,8 +170,9 @@ public class StandardizeQuality extends AbstractTool {
         options.addOption(output);
         options.addOption(index);
         // common options
-        options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
-        options.addOption(CommonOptions.parallel);
+        options.addOption(
+                ReadToolsLegacyArgumentDefinitions.allowHigherSangerQualities); // allow higher qualities
+        options.addOption(ReadToolsLegacyArgumentDefinitions.parallel);
         return options;
     }
 }

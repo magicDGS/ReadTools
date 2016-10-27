@@ -22,16 +22,14 @@
  */
 package org.magicdgs.readtools.tools.implemented;
 
-import static org.magicdgs.readtools.tools.cmd.BarcodeOptions.addAllReadGroupCommonOptionsTo;
-import static org.magicdgs.readtools.tools.cmd.OptionUtils.getUniqueValue;
-
 import org.magicdgs.io.writers.bam.SplitSAMFileWriter;
+import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
+import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
+import org.magicdgs.readtools.tools.AbstractTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
-import org.magicdgs.readtools.tools.AbstractTool;
-import org.magicdgs.readtools.tools.cmd.BarcodeOptions;
-import org.magicdgs.readtools.tools.cmd.CommonOptions;
+import org.magicdgs.readtools.tools.cmd.OptionUtils;
 import org.magicdgs.readtools.tools.cmd.ToolWritersFactory;
 import org.magicdgs.readtools.tools.cmd.ToolsReadersFactory;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
@@ -61,20 +59,24 @@ public class BamBarcodeDetector extends AbstractTool {
     @Override
     protected void runThrowingExceptions(CommandLine cmd) throws Exception {
         // PARSING THE COMMAND LINE
-        File input = new File(getUniqueValue(cmd, "input"));
-        String outputPrefix = getUniqueValue(cmd, "output");
+        File input = new File(OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME));
+        String outputPrefix = OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME);
         boolean bamFormat = !cmd.hasOption("s");
         boolean index = cmd.hasOption("ind");
-        int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+        int nThreads = ReadToolsLegacyArgumentDefinitions.numberOfThreads(logger, cmd);
         boolean multi = nThreads != 1;
         // logging command line
         logCmdLine(cmd);
         // open the decoder with its corresponding dictionary
-        BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
+        BarcodeDecoder decoder = BarcodeArgumentCollection
+                .getBarcodeDecoderFromOption(logger, cmd, -1);
         // open the reader
         SamReader reader = ToolsReadersFactory
-                .getSamReaderFromInput(input, CommonOptions.isMaintained(logger, cmd),
-                        CommonOptions.allowHigherQualities(logger, cmd));
+                .getSamReaderFromInput(input, ReadToolsLegacyArgumentDefinitions
+                                .isMaintained(logger, cmd),
+                        ReadToolsLegacyArgumentDefinitions.allowHigherQualities(logger, cmd));
         // create the new header adding the read groups
         SAMFileHeader header = reader.getFileHeader();
         addReadGroupToHeader(header, decoder.getDictionary());
@@ -82,7 +84,8 @@ public class BamBarcodeDetector extends AbstractTool {
         // create the BAM writer
         SplitSAMFileWriter writer =
                 ToolWritersFactory.getBamWriterOrSplitWriterFromInput(outputPrefix, header,
-                        BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
+                        BarcodeArgumentCollection.isSplit(logger, cmd) ? decoder.getDictionary()
+                                : null,
                         bamFormat, index, multi);
         addReadGroupByBarcode(reader, writer, IOUtils.makeMetricsFile(outputPrefix), decoder);
     }
@@ -143,23 +146,16 @@ public class BamBarcodeDetector extends AbstractTool {
 
     @Override
     protected Options programOptions() {
-        Option input1 = Option.builder("i").longOpt("input")
+        Option input1 = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME)
+                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME)
                 .desc("The input BAM file with barcodes in the read name")
                 .hasArg().numberOfArgs(1).argName("input.bam").required(true).build();
         Option output =
-                Option.builder("o").longOpt("output").desc("The output file prefix").hasArg()
+                Option.builder(ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME)
+                        .longOpt(ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME)
+                        .desc("The output file prefix").hasArg()
                         .numberOfArgs(1)
                         .argName("output_prefix").required(true).build();
-        // TODO: change for the default when updated to the combination with the separator between barcodes
-        // Option max = Option.builder("m").longOpt("maximum-mismatches").desc(
-        //	"Maximum number of mismatches allowed for a matched barcode.  [Default="
-        //		+ BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "]").hasArg().numberOfArgs(1).argName("INT")
-        //				   .required(false).build();
-        // TODO: change for the default when updated to the combination with the separator between barcodes
-        // Option dist = Option.builder("d").longOpt("minimum-distance").desc(
-        //	"Minimum distance between the best match and the second to consider a match. [Default="
-        //		+ BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "]").hasArg().numberOfArgs(1).argName("INT")
-        //					.required(false).build();
         Option samFormat = Option.builder("s").longOpt("sam")
                 .desc("Output will be in sam format instead of bam")
                 .hasArg(false).required(false).build();
@@ -173,23 +169,17 @@ public class BamBarcodeDetector extends AbstractTool {
         options.addOption(output);
         options.addOption(samFormat);
         options.addOption(index);
-        // TODO: change for adding all when implemented combined barcode with "_"
-        // options.addOption(max);
-        // options.addOption(dist);
         // add options for read groups
-        addAllReadGroupCommonOptionsTo(options);
+        BarcodeArgumentCollection.addAllReadGroupCommonOptionsTo(options);
         // add options for barcode programs
-        BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
-        // TODO: remove following lines
-        // options.addOption(BarcodeOptions.barcodes);
-        // options.addOption(BarcodeOptions.nNoMismatch);
-        // options.addOption(BarcodeOptions.split);
-        // options.addOption(BarcodeOptions.maxN);
+        BarcodeArgumentCollection.addAllBarcodeCommonOptionsTo(options);
         // add common options
-        options.addOption(CommonOptions.maintainFormat); // maintain the format
-        options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
-        options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
-        options.addOption(CommonOptions.parallel); // allow parallel output
+        options.addOption(ReadToolsLegacyArgumentDefinitions.maintainFormat); // maintain the format
+        options.addOption(
+                ReadToolsLegacyArgumentDefinitions.allowHigherSangerQualities); // allow higher qualities
+        options.addOption(
+                ReadToolsLegacyArgumentDefinitions.disableZippedOutput); // disable zipped output
+        options.addOption(ReadToolsLegacyArgumentDefinitions.parallel); // allow parallel output
         return options;
     }
 }

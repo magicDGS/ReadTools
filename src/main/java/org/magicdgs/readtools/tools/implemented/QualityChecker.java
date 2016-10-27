@@ -23,9 +23,10 @@
 package org.magicdgs.readtools.tools.implemented;
 
 import static org.magicdgs.readtools.tools.ToolNames.ToolException;
-import static org.magicdgs.readtools.tools.cmd.OptionUtils.getUniqueValue;
 
+import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.tools.AbstractTool;
+import org.magicdgs.readtools.tools.cmd.OptionUtils;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -45,10 +46,11 @@ public class QualityChecker extends AbstractTool {
     @Override
     protected void runThrowingExceptions(CommandLine cmd) throws Exception {
         // TODO: check the qualities for the reader completely
-        File input = new File(getUniqueValue(cmd, "i"));
+        File input = new File(OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME));
         long recordsToIterate;
         try {
-            String toIterate = getUniqueValue(cmd, "m");
+            String toIterate = OptionUtils.getUniqueValue(cmd, "m");
             recordsToIterate = (toIterate == null) ?
                     QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY :
                     Long.parseLong(toIterate);
@@ -66,7 +68,8 @@ public class QualityChecker extends AbstractTool {
 
     @Override
     protected Options programOptions() {
-        Option input = Option.builder("i").longOpt("input")
+        Option input = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME)
+                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME)
                 .desc("Input BAM/FASTQ to determine the quality").hasArg()
                 .numberOfArgs(1).argName("INPUT").required().build();
         Option max = Option.builder("m").longOpt("maximum-reads").desc(

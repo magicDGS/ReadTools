@@ -22,19 +22,18 @@
  */
 package org.magicdgs.readtools.tools.implemented;
 
-import static org.magicdgs.readtools.tools.cmd.OptionUtils.getUniqueValue;
-
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
-import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
+import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
 import org.magicdgs.readtools.tools.AbstractTool;
 import org.magicdgs.readtools.tools.ToolNames;
-import org.magicdgs.readtools.tools.cmd.BarcodeOptions;
-import org.magicdgs.readtools.tools.cmd.CommonOptions;
+import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
+import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.tools.cmd.OptionUtils;
 import org.magicdgs.readtools.tools.cmd.ToolWritersFactory;
 import org.magicdgs.readtools.tools.cmd.ToolsReadersFactory;
+import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.Formats;
 import org.magicdgs.readtools.utils.misc.IOUtils;
@@ -86,15 +85,18 @@ public class TaggedBamToFastq extends AbstractTool {
     @Override
     protected void runThrowingExceptions(CommandLine cmd) throws Exception {
         // parsing command line
-        String inputString = getUniqueValue(cmd, "i");
-        String outputPrefix = getUniqueValue(cmd, "o");
+        String inputString =
+                OptionUtils.getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME);
+        String outputPrefix = OptionUtils
+                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME);
         String[] tags = cmd.getOptionValues("t");
-        int nThreads = CommonOptions.numberOfThreads(logger, cmd);
+        int nThreads = ReadToolsLegacyArgumentDefinitions.numberOfThreads(logger, cmd);
         boolean multi = nThreads != 1;
         // FINISH PARSING: log the command line (not longer in the param file)
         logCmdLine(cmd);
         // open the decoder
-        BarcodeDecoder decoder = BarcodeOptions.getBarcodeDecoderFromOption(logger, cmd, -1);
+        BarcodeDecoder decoder = BarcodeArgumentCollection
+                .getBarcodeDecoderFromOption(logger, cmd, -1);
         if (tags == null) {
             tags = (decoder.getDictionary().getNumberOfBarcodes() == 1) ?
                     new String[] {DEFAULT_BARCODE_TAG1} :
@@ -107,12 +109,13 @@ public class TaggedBamToFastq extends AbstractTool {
         // open the bam file
         SamReader input = ToolsReadersFactory
                 .getSamReaderFromInput(new File(inputString),
-                        CommonOptions.isMaintained(logger, cmd),
-                        CommonOptions.allowHigherQualities(logger, cmd));
+                        ReadToolsLegacyArgumentDefinitions.isMaintained(logger, cmd),
+                        ReadToolsLegacyArgumentDefinitions.allowHigherQualities(logger, cmd));
         // Create the writer factory
         SplitFastqWriter writer = ToolWritersFactory.getFastqSplitWritersFromInput(outputPrefix,
-                BarcodeOptions.isSplit(logger, cmd) ? decoder.getDictionary() : null,
-                cmd.hasOption(CommonOptions.disableZippedOutput.getOpt()), multi,
+                BarcodeArgumentCollection.isSplit(logger, cmd) ? decoder.getDictionary() : null,
+                cmd.hasOption(ReadToolsLegacyArgumentDefinitions.disableZippedOutput.getOpt()),
+                multi,
                 cmd.hasOption("s"));
         // create the metrics file
         File metrics = IOUtils.makeMetricsFile(outputPrefix);
@@ -267,10 +270,13 @@ public class TaggedBamToFastq extends AbstractTool {
 
     @Override
     protected Options programOptions() {
-        Option input = Option.builder("i").longOpt("input")
+        Option input = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME)
+                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME)
                 .desc("Input BAM/SAM file. If pair-end, it should be interleaved").hasArg()
                 .argName("INPUT.bam").numberOfArgs(1).required().build();
-        Option output = Option.builder("o").longOpt("output").desc("FASTQ output prefix").hasArg()
+        Option output = Option.builder(ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME)
+                .longOpt(ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME)
+                .desc("FASTQ output prefix").hasArg()
                 .argName("OUTPUT_PREFIX").numberOfArgs(1).required().build();
         Option tag = Option.builder("t").longOpt("tag").desc(
                 "Tag in the BAM file for the stored barcodes. It should be provided the same number of times as barcodes provided in the file. Default: "
@@ -286,12 +292,14 @@ public class TaggedBamToFastq extends AbstractTool {
         options.addOption(output);
         options.addOption(input);
         // add options for barcode programs
-        BarcodeOptions.addAllBarcodeCommonOptionsTo(options);
+        BarcodeArgumentCollection.addAllBarcodeCommonOptionsTo(options);
         // add common options
-        options.addOption(CommonOptions.maintainFormat); // maintain the format
-        options.addOption(CommonOptions.allowHigherSangerQualities); // allow higher qualities
-        options.addOption(CommonOptions.disableZippedOutput); // disable zipped output
-        options.addOption(CommonOptions.parallel);
+        options.addOption(ReadToolsLegacyArgumentDefinitions.maintainFormat); // maintain the format
+        options.addOption(
+                ReadToolsLegacyArgumentDefinitions.allowHigherSangerQualities); // allow higher qualities
+        options.addOption(
+                ReadToolsLegacyArgumentDefinitions.disableZippedOutput); // disable zipped output
+        options.addOption(ReadToolsLegacyArgumentDefinitions.parallel);
         return options;
     }
 }
