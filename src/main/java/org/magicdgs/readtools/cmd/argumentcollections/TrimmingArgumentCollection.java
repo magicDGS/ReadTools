@@ -24,56 +24,66 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.tools.ToolNames;
-import org.magicdgs.readtools.tools.cmd.OptionUtils;
 import org.magicdgs.readtools.tools.trimming.trimmers.Trimmer;
 import org.magicdgs.readtools.tools.trimming.trimmers.TrimmerBuilder;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
 /**
- * Arguments for trimming algorithm
+ * Argument collection for trimming algorithm
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmingArgumentCollection {
-
-    /** The default quality score. */
-    public static final int DEFAULT_QUALTITY_SCORE = 20;
-
-    /** The default minimum length. */
-    private static final int DEFAULT_MINIMUM_LENGTH = 40;
+public class TrimmingArgumentCollection implements ArgumentCollectionDefinition {
 
     private static final String QUALITY_THRESHOLD_LONG_NAME = "quality-threshold";
     private static final String QUALITY_THRESHOLD_SHORT_NAME = "q";
     private static final String QUALITY_THRESHOLD_DOC =
             "Minimum average quality. A modified Mott algorithm is used for trimming, and the threshold is used for calculating a score: quality_at_base - threshold.";
 
+    @Argument(fullName = QUALITY_THRESHOLD_LONG_NAME, shortName = QUALITY_THRESHOLD_SHORT_NAME, optional = true, doc = QUALITY_THRESHOLD_DOC)
+    public Integer qualThreshold = 20;
+
     private static final String DISCARD_INTERNAL_N_LONG_NAME = "discard-internal-N";
     private static final String DISCARD_INTERNAL_N_SHORT_NAME = "N";
     private static final String DISCARD_INTERNAL_N_DOC =
             "If set reads having internal Ns will be discarded";
+
+    @Argument(fullName = DISCARD_INTERNAL_N_LONG_NAME, shortName = DISCARD_INTERNAL_N_SHORT_NAME, optional = true, doc = DISCARD_INTERNAL_N_DOC)
+    public Boolean discardRemainingNs = false;
 
     private static final String MINIMUM_LENGTH_LONG_NAME = "minimum-length";
     private static final String MINIMUM_LENGTH_SHORT_NAME = "m";
     private static final String MINIMUM_LENGTH_DOC =
             "The minimum length of the read after trimming.";
 
+    @Argument(fullName = MINIMUM_LENGTH_LONG_NAME, shortName = MINIMUM_LENGTH_SHORT_NAME, optional = true, doc = MINIMUM_LENGTH_DOC)
+    public Integer minLength = 40;
+
     private static final String MAXIMUM_LENGTH_LONG_NAME = "maximum-length";
     private static final String MAXIMUM_LENGTH_SHORT_NAME = "max";
     private static final String MAXIMUM_LENGTH_DOC =
-            "The maximum length of the read after trimming.";
+            "The maximum length of the read after trimming. If null, no threshold will be applied";
+
+    @Argument(fullName = MAXIMUM_LENGTH_LONG_NAME, shortName = MAXIMUM_LENGTH_SHORT_NAME, optional = true, doc = MAXIMUM_LENGTH_DOC)
+    public Integer maxLength = null;
 
     private static final String NO_TRIM_QUALITY_LONG_NAME = "no-trim-quality";
     private static final String NO_TRIM_QUALITY_SHORT_NAME = "nq";
     private static final String NO_TRIM_QUALITY_DOC = "Switch off quality trimming";
 
+    @Argument(fullName = NO_TRIM_QUALITY_LONG_NAME, shortName = NO_TRIM_QUALITY_SHORT_NAME, optional = true, doc = NO_TRIM_QUALITY_DOC)
+    public Boolean dontTrimQuality = false;
+
     private static final String NO_TRIM_5P_LONG_NAME = "no-5p-trim";
     private static final String NO_TRIM_5P_SHORT_NAME = "n5p";
     private static final String NO_TRIM_5P_DOC =
             "Disable 5'-trimming (quality and 'N'); May be useful for the identification of duplicates when using trimming of reads. Duplicates are usually identified by the 5' mapping position which should thus not be modified by trimming";
+
+    @Argument(fullName = NO_TRIM_5P_LONG_NAME, shortName = NO_TRIM_5P_SHORT_NAME, optional = true, doc = NO_TRIM_5P_DOC)
+    public Boolean no5ptrim = false;
 
     // TODO: this options does not belong to here, I guess....
     private static final String KEEP_DISCARDED_LONG_NAME = "keep-discarded";
@@ -81,98 +91,48 @@ public class TrimmingArgumentCollection {
     private static final String KEEP_DISCARDED_DOC =
             "Keep the reads completely trimmed or that does not pass the thresholds in a discarded file (original reads stored). May be useful for quality control.";
 
+    @Argument(fullName = KEEP_DISCARDED_LONG_NAME, shortName = KEEP_DISCARDED_SHORT_NAME, optional = true, doc = KEEP_DISCARDED_DOC)
+    public Boolean keepDiscard = false;
+
     /**
-     * Get the trimmer from the parameters
+     * Gets the trimmer from the parameters.
      *
-     * @param single {@code true} if single-end; {@code false} otherwise
+     * @param single {@code true} if single-end; {@code false} otherwise.
      */
-    public static Trimmer getTrimmer(final CommandLine cmd, final boolean single) {
-        int qualThreshold;
-        try {
-            String qualOpt = OptionUtils.getUniqueValue(cmd, "quality-threshold");
-            qualThreshold = (qualOpt == null) ? TrimmingArgumentCollection.DEFAULT_QUALTITY_SCORE
-                    : Integer.parseInt(qualOpt);
-            if (qualThreshold < 0) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            throw new ToolNames.ToolException("Quality threshold should be a positive integer");
-        }
-        // minimum length
-        int minLength;
-        try {
-            String minOpt = OptionUtils.getUniqueValue(cmd, "m");
-            minLength = (minOpt == null) ? DEFAULT_MINIMUM_LENGTH : Integer.parseInt(minOpt);
-            if (minLength < 1) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            throw new ToolNames.ToolException("Minimum length should be a positive integer");
-        }
-        // maximum length
-        int maxLength;
-        try {
-            String maxOpt = OptionUtils.getUniqueValue(cmd, "max");
-            maxLength = (maxOpt == null) ? Integer.MAX_VALUE : Integer.parseInt(maxOpt);
-            if (maxLength < 1) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            throw new ToolNames.ToolException("Maximum length should be a positive integer");
-        }
-        boolean discardRemainingNs = cmd.hasOption("discard-internal-N");
-        boolean dontTrimQuality = cmd.hasOption("no-trim-quality");
-        boolean no5ptrim = cmd.hasOption("no-5p-trim");
+    public Trimmer getTrimmer(final boolean single) {
         return new TrimmerBuilder(single)
                 .setTrimQuality(!dontTrimQuality)
                 .setQualityThreshold(qualThreshold)
                 .setMinLength(minLength)
-                .setMaxLength(maxLength)
+                .setMaxLength(maxLength == null ? Integer.MAX_VALUE : maxLength)
                 .setDiscardRemainingNs(discardRemainingNs)
                 .setNo5pTrimming(no5ptrim)
                 .build();
     }
 
-    public static void addTrimmingArguments(final Options options) {
-        Option quality_threshold = Option.builder(QUALITY_THRESHOLD_SHORT_NAME)
-                .longOpt(QUALITY_THRESHOLD_LONG_NAME)
-                .desc(QUALITY_THRESHOLD_DOC + " [Default=" + DEFAULT_QUALTITY_SCORE + "]")
-                .hasArg().numberOfArgs(1).argName("INT")
-                .optionalArg(true).build();
-        Option discard_internal_N = Option.builder(DISCARD_INTERNAL_N_SHORT_NAME)
-                .longOpt(DISCARD_INTERNAL_N_LONG_NAME)
-                .desc(DISCARD_INTERNAL_N_DOC).hasArg(false)
-                .optionalArg(true).build();
-        Option min_length = Option.builder(MINIMUM_LENGTH_SHORT_NAME)
-                .longOpt(MINIMUM_LENGTH_LONG_NAME)
-                .desc(MINIMUM_LENGTH_DOC + " [Default=" + DEFAULT_MINIMUM_LENGTH + "]")
-                .hasArg()
-                .numberOfArgs(1).argName("INT").optionalArg(true).build();
-        Option max_length = Option.builder(MAXIMUM_LENGTH_SHORT_NAME)
-                .longOpt(MAXIMUM_LENGTH_LONG_NAME)
-                .desc(MAXIMUM_LENGTH_DOC + " [Default=" + Integer.MAX_VALUE + "]")
-                .hasArg()
-                .numberOfArgs(1).argName("INT").optionalArg(true).build();
-        Option no_trim_qual = Option.builder(NO_TRIM_QUALITY_SHORT_NAME)
-                .longOpt(NO_TRIM_QUALITY_LONG_NAME)
-                .desc(NO_TRIM_QUALITY_DOC)
-                .hasArg(false).optionalArg(false).build();
-        Option no_5p_trim = Option.builder(NO_TRIM_5P_SHORT_NAME)
-                .longOpt(NO_TRIM_5P_LONG_NAME)
-                .desc(NO_TRIM_5P_DOC)
-                .hasArg(false).optionalArg(true).build();
-        Option keep_discard = Option.builder(KEEP_DISCARDED_SHORT_NAME)
-                .longOpt(KEEP_DISCARDED_LONG_NAME)
-                .desc(KEEP_DISCARDED_DOC)
-                .hasArg(false).optionalArg(true).build();
-
-        options.addOption(keep_discard);
-        options.addOption(no_5p_trim);
-        options.addOption(no_trim_qual);
-        options.addOption(min_length);
-        options.addOption(max_length);
-        options.addOption(discard_internal_N);
-        options.addOption(quality_threshold);
+    /**
+     * Validates that the arguments are in the correct range.
+     *
+     * @throws UserException.BadArgumentValue if found a wrong provided value.
+     */
+    public void validateArguments() {
+        if (qualThreshold < 0) {
+            throw new UserException.BadArgumentValue(QUALITY_THRESHOLD_LONG_NAME,
+                    qualThreshold.toString(), "cannot be a negative value");
+        }
+        if (minLength < 1) {
+            throw new UserException.BadArgumentValue(MINIMUM_LENGTH_LONG_NAME,
+                    minLength.toString(), "should be a positive integer");
+        }
+        if (maxLength != null && maxLength < 1) {
+            throw new UserException.BadArgumentValue(MAXIMUM_LENGTH_LONG_NAME,
+                    minLength.toString(), "should be a positive integer");
+        }
+        if (maxLength != null && minLength > maxLength) {
+            throw new UserException.BadArgumentValue(String.format(
+                    "--%s (%s) should be smaller or equal than --%s (%s)",
+                    MINIMUM_LENGTH_LONG_NAME, MAXIMUM_LENGTH_LONG_NAME,
+                    minLength, maxLength));
+        }
     }
-
 }

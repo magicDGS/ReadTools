@@ -19,23 +19,24 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package org.magicdgs.readtools.utils.logging;
 
 import static org.magicdgs.readtools.utils.misc.Formats.commaFmt;
 import static org.magicdgs.readtools.utils.misc.Formats.timeFmt;
 
-import htsjdk.samtools.util.Log;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Logger for Fastq files, similar to {@link htsjdk.samtools.util.ProgressLogger} but without the
- * need of input a read
+ * Logger for FASTQ files, similar to {@link htsjdk.samtools.util.ProgressLogger} but without the
+ * need of input a read.
  *
- * @author Daniel Gómez Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class FastqLogger {
 
-    private final Log log;
+    private final Logger log;
 
     private final int n;
 
@@ -58,7 +59,7 @@ public class FastqLogger {
      * @param verb the verb to log, e.g. "Processed, Read, Written".
      * @param noun the noun to use when logging, e.g. "Records, Variants, Loci"
      */
-    public FastqLogger(final Log log, final int n, final String verb, final String noun) {
+    public FastqLogger(final Logger log, final int n, final String verb, final String noun) {
         this.log = log;
         this.n = n;
         this.verb = verb;
@@ -72,7 +73,7 @@ public class FastqLogger {
      * @param n    the frequency with which to output (i.e. every N records)
      * @param verb the verb to log, e.g. "Processed, Read, Written".
      */
-    public FastqLogger(final Log log, final int n, final String verb) {
+    public FastqLogger(final Logger log, final int n, final String verb) {
         this(log, n, verb, "reads");
     }
 
@@ -82,7 +83,7 @@ public class FastqLogger {
      * @param log the Log object to write outputs to
      * @param n   the frequency with which to output (i.e. every N records)
      */
-    public FastqLogger(final Log log, final int n) {
+    public FastqLogger(final Logger log, final int n) {
         this(log, n, "Processed");
     }
 
@@ -92,7 +93,7 @@ public class FastqLogger {
      *
      * @param log the Log object to write outputs to
      */
-    public FastqLogger(final Log log) {
+    public FastqLogger(final Logger log) {
         this(log, 1000000);
     }
 
@@ -108,9 +109,8 @@ public class FastqLogger {
             final String elapsed = formatElapseTime(seconds);
             final String period = pad(commaFmt.format(lastPeriodSeconds), 4);
             final String processed = pad(commaFmt.format(this.processed), 13);
-            log.info(this.verb, " ", processed, " " + noun + ".  Elapsed time: ", elapsed,
-                    "s.  Time for last ",
-                    commaFmt.format(this.n), ": ", period, "s.");
+            log.info("{} {} {}.  Elapsed time: {}s.  Time for last {}: s.",
+                    this.verb, processed, noun, elapsed, commaFmt.format(this.n), period);
             return true;
         } else {
             return false;
@@ -159,4 +159,3 @@ public class FastqLogger {
         log.info(numberOfVariantsProcessed());
     }
 }
-

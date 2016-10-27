@@ -34,8 +34,8 @@ import org.magicdgs.readtools.utils.misc.Formats;
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.metrics.MetricsFile;
 import htsjdk.samtools.util.Histogram;
-import htsjdk.samtools.util.Log;
 import htsjdk.tribble.util.MathUtils;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -65,16 +65,6 @@ public class BarcodeDecoder {
      * Default minimum number of differences between the best barcode and the second
      */
     public static final int DEFAULT_MIN_DIFFERENCE_WITH_SECOND = 1;
-
-    /**
-     * Default N as mismatches
-     */
-    public static final boolean DEFAULT_N_AS_MISMATCHES = true;
-
-    /**
-     * Default number of Ns in the barcode to call as a no match
-     */
-    public static final int DEFAULT_MAXIMUM_N = Integer.MAX_VALUE;
 
     /**
      * The barcode dictionary
@@ -131,10 +121,10 @@ public class BarcodeDecoder {
      *
      * @param dictionary              the dictionary with the barcodes
      * @param nAsMismatches           if <code>true</code> the Ns count as mismatches
-     * @param maxMismatches           the maximum number of mismatches allowed (for each barcode)
+     * @param maxMismatches           the maximum number of mismatches allowed (for each barcode);
+     *                                if {@code null}, it will use the maximum value available
      * @param minDifferenceWithSecond the minimum difference in the number of mismatches between
-     *                                the
-     *                                first and the second best barcodes (for each barcode)
+     *                                the  first and the second best barcodes (for each barcode)
      *
      * @throws java.lang.IllegalArgumentException if the thresholds are arrays with different
      *                                            lengths than the number of barcodes in the
@@ -164,7 +154,7 @@ public class BarcodeDecoder {
      */
     private int[] setIntParameter(final int defaultValue, final int... parameter) {
         final int[] toReturn = new int[dictionary.getNumberOfBarcodes()];
-        if (parameter == null) {
+        if (parameter == null || parameter.length == 0) {
             Arrays.fill(toReturn, defaultValue);
         } else if (parameter.length == 1) {
             Arrays.fill(toReturn, parameter[0]);
@@ -448,10 +438,10 @@ public class BarcodeDecoder {
      *
      * @param log the log to use for logging
      */
-    public void logMatcherResult(final Log log) {
+    public void logMatcherResult(final Logger log) {
         for (MatcherStat s : stats.values()) {
-            log.info("Found ", Formats.commaFmt.format(s.RECORDS), " records for ", s.SAMPLE, " (",
-                    s.BARCODE, ")");
+            log.info("Found {} records for {} ({}).", Formats.commaFmt.format(s.RECORDS), s.SAMPLE,
+                    s.BARCODE);
         }
     }
 

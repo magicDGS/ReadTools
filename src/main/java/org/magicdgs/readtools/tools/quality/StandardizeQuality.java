@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package org.magicdgs.readtools.tools.quality;
 
 import org.magicdgs.io.readers.bam.SamReaderSanger;
@@ -28,152 +29,134 @@ import org.magicdgs.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleSanger;
 import org.magicdgs.io.writers.bam.ReadToolsSAMFileWriterFactory;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.tools.AbstractTool;
-import org.magicdgs.readtools.tools.cmd.OptionUtils;
+import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 
-import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
-import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import htsjdk.samtools.util.CloserUtil;
+import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
+import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
 /**
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class StandardizeQuality extends AbstractTool {
+@CommandLineProgramProperties(oneLineSummary = "Convert an Illumina BAM/FASTQ file into a Sanger.",
+        summary =
+                "The standard encoding for a BAM file is Sanger and this tool is provided to standardize both BAM/FASTQ files "
+                        + "for latter analysis. It does not support mixed qualities.",
+        programGroup = QCProgramGroup.class)
+public final class StandardizeQuality extends ReadToolsBaseTool {
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME, optional = false,
+            doc = "Input BAM/FASTQ to determine the quality.")
+    public File input = null;
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME, optional = false,
+            doc = "Output for the converted file. The extension determine the format SAM/BAM or FASTQ/GZIP.")
+    public File output = null;
+
+    private Closeable reader;
+    private Closeable writer;
 
     @Override
-    protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-        File input = new File(OptionUtils
-                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME));
-        File output = new File(OptionUtils
-                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME));
-        boolean index = cmd.hasOption("ind");
-        int nThreads = ReadToolsLegacyArgumentDefinitions.numberOfThreads(logger, cmd);
-        boolean multi = nThreads != 1;
-        boolean allowHigherQualities = ReadToolsLegacyArgumentDefinitions
-                .allowHigherQualities(logger, cmd);
-        logCmdLine(cmd);
-        // first check the quality
-        switch (QualityUtils.getFastqQualityFormat(input)) {
-            case Standard:
-                throw new SAMException(
-                        "File is already in Sanger formatting. No conversion will be performed");
-            default:
-                break;
+    protected String[] customCommandLineValidation() {
+        if (maintainFormat) {
+            throw new UserException.BadArgumentValue(
+                    ReadToolsLegacyArgumentDefinitions.MAINTAIN_FORMAT_SHORT_NAME);
         }
-        if (IOUtils.isBamOrSam(input)) {
-            SAMProgramRecord programRecord = getToolProgramRecord(cmd);
-            runBam(input, output, programRecord, index, multi, allowHigherQualities);
-        } else {
-            if (index) {
-                logger.warn("Index could not be performed for FASTQ file");
-            }
-            runFastq(input, output, multi, allowHigherQualities);
+        if (QualityUtils.getFastqQualityFormat(input) == FastqQualityFormat.Standard) {
+            throw new UserException.BadInput(
+                    String.format("%s already in Sanger formatting", input));
         }
+        return super.customCommandLineValidation();
     }
+
+    @Override
+    protected Object doWork() {
+        if (IOUtils.isBamOrSam(input)) {
+            runBam();
+        } else {
+            if (CREATE_INDEX) {
+                logger.warn("Index won't be performed for FASTQ output file.");
+            }
+            runFastq();
+        }
+        return null;
+    }
+
 
     /**
      * Change the format in a Fastq file
-     *
-     * @param input  the input file
-     * @param output the output file
-     * @param multi  <code>true</code> if multi-thread output
-     *
-     * @throws IOException if there is some problem with the files
      */
-    private void runFastq(File input, File output, boolean multi, boolean allowHigherQualities)
-            throws IOException {
+    private void runFastq() {
         // open reader (directly converting)
-        FastqReaderSingleInterface reader =
-                new FastqReaderSingleSanger(input, allowHigherQualities);
+        final FastqReaderSingleInterface reader =
+                new FastqReaderSingleSanger(input, allowHigherSangerQualities);
         // open factory for writer
-        FastqWriterFactory factory = new FastqWriterFactory();
-        factory.setUseAsyncIo(multi);
+        final FastqWriterFactory factory = new FastqWriterFactory();
+        factory.setUseAsyncIo(nThreads != 1);
         // open writer
-        FastqWriter writer = factory.newWriter(output);
+        final FastqWriter writer = factory.newWriter(output);
         // start iterations
-        FastqLogger progress = new FastqLogger(logger);
-        for (FastqRecord record : reader) {
+        final FastqLogger progress = new FastqLogger(logger);
+        for (final FastqRecord record : reader) {
             writer.write(record);
             progress.add();
         }
         progress.logNumberOfVariantsProcessed();
-        reader.close();
-        writer.close();
+        this.reader = reader;
+        this.writer = writer;
     }
 
     /**
      * Change the format in a BAM file
-     *
-     * @param input       the input file
-     * @param output      the output file
-     * @param programInfo the information for the program to include in the header
-     * @param index       <code>true</code> if index on the fly is requested
-     * @param multi       <code>true</code> if multi-thread output
-     *
-     * @throws IOException if there is some problem with the files
      */
-    private void runBam(File input, File output, SAMProgramRecord programInfo, boolean index,
-            boolean multi, boolean allowHigherQualities)
-            throws IOException {
-        SamReader reader =
-                new SamReaderSanger(input, SamReaderFactory.makeDefault()
-                        .validationStringency(ValidationStringency.SILENT), allowHigherQualities);
+    private void runBam() {
+        final SamReader reader =
+                new SamReaderSanger(input, SamReaderFactory.make(), allowHigherSangerQualities);
         final SAMFileHeader header = reader.getFileHeader();
-        header.addProgramRecord(programInfo);
-        SAMFileWriter writer =
-                new ReadToolsSAMFileWriterFactory().setCreateIndex(index).setUseAsyncIo(multi)
-                        .makeSAMOrBAMWriter(header, true, output);
+        header.addProgramRecord(getToolProgramRecord());
+        final SAMFileWriter writer;
+        try {
+            writer = new ReadToolsSAMFileWriterFactory().setCreateIndex(CREATE_INDEX)
+                    .setUseAsyncIo(nThreads != 1)
+                    .makeSAMOrBAMWriter(header, true, output);
+        } catch (IOException e) {
+            throw new UserException(e.getMessage(), e);
+        }
         // start iterations
-        ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
-        for (SAMRecord record : reader) {
+        final ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
+        for (final SAMRecord record : reader) {
             writer.addAlignment(record);
             progress.record(record);
         }
         progress.logNumberOfVariantsProcessed();
-        reader.close();
-        writer.close();
+        this.reader = reader;
+        this.writer = writer;
     }
 
     @Override
-    protected Options programOptions() {
-        Option input = Option.builder("i").longOpt("input")
-                .desc("Input BAM/FASTQ to standardize the quality").hasArg()
-                .numberOfArgs(1).argName("INPUT").required().build();
-        Option output = Option.builder("o").longOpt("output").desc(
-                "Output for the converted file. The extension determine the format SAM/BAM or FASTQ/GZIP")
-                .hasArg()
-                .numberOfArgs(1).argName("OUTPUT").required().build();
-        Option index =
-                Option.builder("ind").longOpt("index").desc("If the output is a BAM file, index it")
-                        .hasArg(false).required(false).build();
-        Options options = new Options();
-        options.addOption(input);
-        options.addOption(output);
-        options.addOption(index);
-        // common options
-        options.addOption(
-                ReadToolsLegacyArgumentDefinitions.allowHigherSangerQualities); // allow higher qualities
-        options.addOption(ReadToolsLegacyArgumentDefinitions.parallel);
-        return options;
+    protected void onShutdown() {
+        CloserUtil.close(writer);
+        CloserUtil.close(reader);
     }
 }

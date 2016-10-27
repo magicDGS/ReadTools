@@ -3,11 +3,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Validation stringency parameter (solves issue [#35](https://github.com/magicDGS/ReadTools/issues/35))
+
 ### Changed
 - Testing is done with TestNG (developer)
+- Code cleaning and refactoring using [GATK4](https://github.com/broadinstitute/gatk) (developer improvement).
 
 ### Added
-- Integration tests for the majority of the tools
+- Integration tests for the all the tools
+- Support for CRAM files reading (requires reference sequence). This support is not tested and relies on [HTSJDK](https://samtools.github.io/htsjdk) implementation
+- Option for create MD5 digest files from outputs (FATSQ/BAM/SAM/CRAM)
 
 ## [0.2.2] - 2016-08-09
 

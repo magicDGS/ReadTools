@@ -19,153 +19,87 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
+
 package org.magicdgs.readtools;
 
-import static org.magicdgs.readtools.tools.ToolNames.ToolException;
-
-import org.magicdgs.readtools.tools.Tool;
-import org.magicdgs.readtools.tools.ToolNames;
-import org.magicdgs.readtools.utils.misc.TimeWatch;
-
-import autovalue.shaded.org.apache.commons.lang.ArrayUtils;
 import htsjdk.samtools.util.Log;
-import htsjdk.samtools.util.StringUtil;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
-import org.broadinstitute.hellbender.exceptions.GATKException;
+import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
-import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Class that contain the caller for the main functions
- *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class Main {
+public class Main extends org.broadinstitute.hellbender.Main {
 
-    // the logger for this class
-    public static final Log logger = Log.getInstance(Main.class);
+    /** Only includes the org.magicdgs.readtools.tools package */
+    protected List<String> getPackageList() {
+        final List<String> packageList = new ArrayList<>();
+        packageList.add("org.magicdgs.readtools.tools");
+        return packageList;
+    }
+
+    /** Note: currently no single class is included. */
+    protected List<Class<? extends CommandLineProgram>> getClassList() {
+        // TODO: explore other tools from the GATK4 framework that may be useful for our toolkit
+        return Collections.emptyList();
+    }
 
     /**
-     * Main method
+     * Entry point for ReadTools.
      *
-     * @param args the args for the command line
+     * Note: several things change from the GATK4 framework main method.
+     * 1) The returned result is printed without anything else (if QUIET, only the
+     * `Object.toString()` method will be used.
+     * 2) No stack-trace is printed for UserExceptions.
+     * 3) If a no UserException is found, output a short notice to contact the developer.
      */
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            generalHelp("");
-        } else if (args[0].equals("--debug")) {
-            Log.setGlobalLogLevel(Log.LogLevel.DEBUG);
-            logger.debug("DEBUG mode on");
-            if (args.length == 1) {
-                logger.debug("Debug mode only works with a tool");
-                System.exit(1);
-            }
-            args = Arrays.copyOfRange(args, 1, args.length);
-        } else {
-            Log.setGlobalLogLevel(Log.LogLevel.INFO);
-        }
+    public static void main(final String[] args) {
         try {
-            Tool toRun = ToolNames.getTool(args[0]);
-            TimeWatch elapsed = TimeWatch.start();
-            int exitStatus = toRun.run(Arrays.copyOfRange(args, 1, args.length));
-            switch (exitStatus) {
-                case 0:
-                    logger.info("Elapsed time for ", toRun.getClass().getSimpleName(), ": ",
-                            elapsed);
-                    break;
-                case 1:
-                    logger.info("Finishing with errors");
-                    logger.debug("Elapsed time to error: ", elapsed);
-                    break;
-                default:
-                    logger.error("Unexpected error. Please contact with ",
-                            ProjectProperties.getContact());
-                    break;
+            Object result = new Main().instanceMain(args);
+            if (result != null) {
+                // TODO: print something else apart of the result
+                System.out.println(result);
             }
-            System.exit(exitStatus);
-        } catch (ToolException e) {
-            logger.debug(e.getMessage());
-            logger.debug(e);
-            generalHelp("Tool '" + args[0] + "' does not exists");
+        } catch (final UserException.CommandLineException e) {
+            // the GATK framework should prints the error already
+            System.exit(1);
+        } catch (final UserException e) {
+            // this prints the error for user exceptions
+            CommandLineProgram.printDecoratedUserExceptionMessage(System.err, e);
+            System.exit(2);
+        } catch (final Exception e) {
+            printUnexpectedError(e);
+            System.exit(3);
         }
     }
 
     /**
-     * Print the program header to this print writer
-     *
-     * @param writer the writer to print out the program header
+     * Run the Main class from the GATK4 framework using our custom packages and classes.
      */
-    public static void printProgramHeader(PrintWriter writer) {
-        String header = String.format("%s (compiled on %s)",
-                ProjectProperties.getFormattedNameWithVersion(),
-                ProjectProperties.getTimestamp());
-        writer.println(header);
-        writer.println(StringUtil.repeatCharNTimes('=', header.length()));
+    public Object instanceMain(final String[] args) {
+        return instanceMain(args, getPackageList(), getClassList(), "java -jar ReadTools.jar");
     }
 
-    /**
-     * Get the usage of the main jar
-     *
-     * @return formatted usage
-     */
-    public static String usageMain() {
-        return String.format("java -jar %s.jar", ProjectProperties.getName());
+    /** Prints in {@link System#err} log information for unexpected error. */
+    private static void printUnexpectedError(final Exception e) {
+        System.err
+                .println("***********************************************************************");
+        System.err.println();
+        System.err.println("UNEXPECTED ERROR: " + e.getMessage());
+        System.err.println("Please, contact " + ProjectProperties.getContact());
+        System.err.println();
+        System.err
+                .println("***********************************************************************");
+        // only log the stack-trace for DEBUG mode
+        if (Log.isEnabled(Log.LogLevel.DEBUG)) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Print the general help in the standard error
-     *
-     * @param error the standard error
-     */
-    public static void generalHelp(String error) {
-        PrintWriter writer = new PrintWriter(System.err);
-        printProgramHeader(writer);
-        writer.println();
-        writer.print("Usage: ");
-        writer.print(usageMain());
-        writer.println(" <tool> [options]\n");
-        writer.println("Tools:");
-        for (ToolNames name : ToolNames.values()) {
-            writer.print("\t");
-            writer.print(name);
-            writer.print(":\t");
-            writer.println(name.shortDescription);
-        }
-        if (!error.equals("")) {
-            writer.println();
-            writer.print("error: ");
-            writer.println(error);
-        } else {
-            writer.println();
-            writer.print("* For specific help: ");
-            writer.print(usageMain());
-            writer.println(" <tool> --help");
-        }
-        writer.println();
-        writer.close();
-        System.exit(1);
-    }
-
-    /** Small modification to use the command line program tests. */
-    public Object instanceMain(String[] args) {
-        final Tool toRun = ToolNames.getTool(args[0]);
-        Object[] argsForTool = new String[0];
-        for (int i = 1; i < args.length; i++) {
-            final String arg = args[i];
-            if (arg.equalsIgnoreCase("--" + StandardArgumentDefinitions.VERBOSITY_NAME) || arg
-                    .equalsIgnoreCase("-" + StandardArgumentDefinitions.VERBOSITY_NAME)) {
-                i++;
-            } else {
-                argsForTool = ArrayUtils.add(argsForTool, arg);
-            }
-        }
-        final int exitStatus = toRun.run((String[]) argsForTool);
-        if (exitStatus != 0) {
-            throw new GATKException("Tool returned with errors");
-        }
-        // TODO: tools expected to return a value won't work
-        return null;
-    }
 }

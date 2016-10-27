@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package org.magicdgs.readtools.tools.trimming;
 
 import org.magicdgs.io.FastqPairedRecord;
@@ -31,19 +32,19 @@ import org.magicdgs.io.writers.fastq.ReadToolsFastqWriter;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.TrimmingArgumentCollection;
-import org.magicdgs.readtools.tools.AbstractTool;
+import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
+import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
-import org.magicdgs.readtools.tools.cmd.OptionUtils;
-import org.magicdgs.readtools.tools.cmd.ToolWritersFactory;
-import org.magicdgs.readtools.tools.cmd.ToolsReadersFactory;
 import org.magicdgs.readtools.tools.trimming.trimmers.Trimmer;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import htsjdk.samtools.util.CloserUtil;
+import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.hellbender.cmdline.ArgumentCollection;
+import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,72 +52,71 @@ import java.io.IOException;
 /**
  * Class that implements the trimming algorithm from Kofler et al. 2011
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimFastq extends AbstractTool {
+@CommandLineProgramProperties(oneLineSummary = "Implementation of the trimming algorithm from Kofler et al. (2011).",
+        summary =  "The program removes 'N' - characters at the beginning and the end of the provided reads. If any remaining 'N' "
+                + "characters are found the read is discarded. Quality removal is done using a modified Mott-algorithm: for "
+                + "each base a score is calculated (score_base = quality_base - threshold). While scanning along the read "
+                + "a running sum of this score is calculated; If the score drops below zero the score is set to zero; The "
+                + "highest scoring region of the read is finally reported.\n\nCitation of the method: Kofler et al. (2011), "
+                + "PLoS ONE 6(1), e15925, doi:10.1371/journal.pone.0015925",
+        programGroup = RawDataProgramGroup.class)
+public final class TrimFastq extends ReadToolsBaseTool {
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "1", shortName =
+            ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME + "1", optional = false,
+            doc = "The input file, or the input file of the first read, in FASTQ format.")
+    public File input1 = null;
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "2", shortName =
+            ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME + "2", optional = true,
+            doc = "The FASTQ input file of the second read. In case this file is provided the software will switch to paired read mode instead of single read mode.")
+    public File input2 = null;
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME, optional = false,
+            doc = "The output file prefix")
+    public String outputPrefix = null;
+
+    @ArgumentCollection(doc = "Trimming parameters")
+    public TrimmingArgumentCollection trimmingArgumentCollection = new TrimmingArgumentCollection();
+
+    private FastqReaderInterface reader;
+    private ReadToolsFastqWriter writer;
+    private Trimmer trimmer;
 
     @Override
-    protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-        // The input file
-        File input1 = new File(
-                OptionUtils.getUniqueValue(cmd,
-                        ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "1"));
-        // input file 2
-        String input2string = OptionUtils
-                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "2");
-        File input2 = (input2string == null) ? null : new File(input2string);
-        // The output prefix
-        String output_prefix = OptionUtils.getUniqueValue(cmd, "output");
-        // multi-thread?
-        int nThreads = ReadToolsLegacyArgumentDefinitions.numberOfThreads(logger, cmd);
-        boolean multi = (nThreads != 1);
-        // FINISH PARSING: log the command line (not longer in the param file)
-        logCmdLine(cmd);
-        // save the gzip option
-        boolean dgzip = ReadToolsLegacyArgumentDefinitions.isZipDisable(cmd);
-        // save the keep_discard option
-        boolean keepDiscard = cmd.hasOption("k");
-        // save the maintained format option
-        boolean isMaintained = ReadToolsLegacyArgumentDefinitions.isMaintained(logger, cmd);
-        // open the reader
-        FastqReaderInterface reader = ToolsReadersFactory
-                .getFastqReaderFromInputs(input1, input2, isMaintained,
-                        ReadToolsLegacyArgumentDefinitions.allowHigherQualities(logger, cmd));
-        boolean single = !(reader instanceof FastqReaderPairedInterface);
-        // open the writer
-        ReadToolsFastqWriter writer = (keepDiscard) ?
-                ToolWritersFactory
-                        .getFastqSplitWritersFromInput(output_prefix, null, dgzip, multi, single) :
-                ToolWritersFactory.getSingleOrPairWriter(output_prefix, dgzip, multi, single);
-        // create the trimmer
-        // create the MottAlgorithm
-        Trimmer trimmer = TrimmingArgumentCollection.getTrimmer(cmd, single);
-        // run it!
-        process(trimmer, reader, writer, IOUtils.makeMetricsFile(output_prefix));
+    protected String[] customCommandLineValidation() {
+        trimmingArgumentCollection.validateArguments();
+        return super.customCommandLineValidation();
     }
 
-    /**
-     * Process the data depending on the reader status (if it is for single or pair-end
-     *
-     * @param trimmer     the algorithm with the provided settings
-     * @param reader      the reader, either for pairs or single end
-     * @param writer      the writer for the pairs
-     * @param metricsFile the file to output the metrics for the trimming
-     *
-     * @throws IOException if there are problems with the files
-     */
-    private void process(Trimmer trimmer, FastqReaderInterface reader, ReadToolsFastqWriter writer,
-            File metricsFile)
-            throws IOException {
-        FastqLogger progress;
+    @Override
+    protected void onStartup() {
+        super.onStartup();
+        reader = getFastqReaderFromInputs(input1, input2);
+        final boolean single = !(reader instanceof FastqReaderPairedInterface);
+        try {
+            writer = (trimmingArgumentCollection.keepDiscard)
+                    ? getFastqSplitWritersFromInput(outputPrefix, null, single)
+                    : getSingleOrPairWriter(outputPrefix, single);
+        } catch (IOException e) {
+            throw new UserException(e.getMessage(), e);
+        }
+        trimmer = trimmingArgumentCollection.getTrimmer(single);
+    }
+
+    @Override
+    protected Object doWork() {
+        final FastqLogger progress;
         if (reader instanceof FastqReaderSingleInterface) {
             logger.debug("Running single end");
             progress = new FastqLogger(logger, 1000000, "Processed", "read-pairs");
-            processSE(trimmer, (FastqReaderSingleInterface) reader, writer, progress);
+            processSE(progress);
         } else if (reader instanceof FastqReaderPairedInterface) {
             logger.debug("Running paired end");
             progress = new FastqLogger(logger);
-            processPE(trimmer, (FastqReaderPairedInterface) reader, writer, progress);
+            processPE(progress);
         } else {
             logger.debug(
                     "ERROR: FastqReaderInterface is not an instance of Single or Paired interfaces");
@@ -125,46 +125,31 @@ public class TrimFastq extends AbstractTool {
         // final line of progress
         progress.logNumberOfVariantsProcessed();
         // print the metrics file
-        trimmer.printTrimmerMetrics(metricsFile);
-        // close the readers
-        reader.close();
-        writer.close();
+        trimmer.printTrimmerMetrics(IOUtils.makeMetricsFile(outputPrefix));
+        return null;
     }
 
     /**
      * Process the files in pair-end mode
-     *
-     * @param trimmer the algorithm with the provided settings
-     * @param reader  the reader for the pairs
-     * @param writer  the writer for the pairs (instance of PairFastqWriters)
      */
-    private static void processPE(Trimmer trimmer, FastqReaderPairedInterface reader,
-            ReadToolsFastqWriter writer, FastqLogger progress) {
-        boolean keep = (writer instanceof SplitFastqWriter);
+    private void processPE(final FastqLogger progress) {
+        final FastqReaderPairedInterface reader = (FastqReaderPairedInterface) this.reader;
         while (reader.hasNext()) {
-            FastqPairedRecord record = reader.next();
-            FastqPairedRecord newRecord =
+            final FastqPairedRecord record = reader.next();
+            final FastqPairedRecord newRecord =
                     trimmer.trimFastqPairedRecord(record, reader.getFastqQuality());
             if (newRecord.isComplete()) {
                 writer.write(newRecord);
             } else if (newRecord.containRecords()) {
                 if (newRecord.getRecord1() == null) {
                     writer.write(newRecord.getRecord2());
-                    if (keep) {
-                        ((SplitFastqWriter) writer)
-                                .write(BarcodeMatch.UNKNOWN_STRING, record.getRecord1());
-                    }
+                    maybeWriteUnknown(record.getRecord1());
                 } else {
                     writer.write(newRecord.getRecord1());
-                    if (keep) {
-                        ((SplitFastqWriter) writer)
-                                .write(BarcodeMatch.UNKNOWN_STRING, record.getRecord2());
-                    }
+                    maybeWriteUnknown(record.getRecord2());
                 }
             } else {
-                if (keep) {
-                    ((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, record);
-                }
+                maybeWriteUnknown(record);
             }
             progress.add();
         }
@@ -172,55 +157,43 @@ public class TrimFastq extends AbstractTool {
 
     /**
      * Process the files in single-end mode
-     *
-     * @param trimmer the algorithm with the provided settings
-     * @param reader  the reader for the single end file
-     * @param writer  the writer for the single end file * @param metricsFile
      */
-    private static void processSE(Trimmer trimmer, FastqReaderSingleInterface reader,
-            ReadToolsFastqWriter writer, FastqLogger progress) {
-        boolean keep = (writer instanceof SplitFastqWriter);
+    private void processSE(final FastqLogger progress) {
+        final FastqReaderSingleInterface reader = (FastqReaderSingleInterface) this.reader;
         while (reader.hasNext()) {
-            FastqRecord record = reader.next();
-            FastqRecord newRecord = trimmer.trimFastqRecord(record, reader.getFastqQuality());
+            final FastqRecord record = reader.next();
+            final FastqRecord newRecord = trimmer.trimFastqRecord(record, reader.getFastqQuality());
             if (newRecord != null) {
                 writer.write(newRecord);
             } else {
-                if (keep) {
-                    ((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, record);
-                }
+                maybeWriteUnknown(record);
             }
             progress.add();
         }
     }
 
-    @Override
-    protected Options programOptions() {
-        // Creating each options
-        Option input1 = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME + "1")
-                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "1")
-                .desc("The FASTQ input file, or the input file of the first read").hasArg()
-                .numberOfArgs(1).argName("input_1.fq").required(true).build();
-        Option input2 = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME + "2")
-                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "2").desc(
-                        "The FASTQ input file of the second read. In case this file is provided the software will switch to paired read mode instead of single read mode")
-                .hasArg().numberOfArgs(1).argName("input_2.fq").optionalArg(true).build();
-        Option output = Option.builder(ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME)
-                .longOpt(ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME)
-                .desc("The output file prefix. Will be in fastq. Mandatory parameter").hasArg()
-                .numberOfArgs(1).argName("output_prefix").required(true).build();
-        Options options = new Options();
-        TrimmingArgumentCollection.addTrimmingArguments(options);
-        options.addOption(output);
-        options.addOption(input2);
-        options.addOption(input1);
-        // adding common options
-        options.addOption(ReadToolsLegacyArgumentDefinitions.maintainFormat); // maintain the format
-        options.addOption(
-                ReadToolsLegacyArgumentDefinitions.allowHigherSangerQualities); // allow higher qualities
-        options.addOption(
-                ReadToolsLegacyArgumentDefinitions.disableZippedOutput); // disable the zipped output
-        options.addOption(ReadToolsLegacyArgumentDefinitions.parallel); // parallelization allowed
-        return options;
+    /**
+     * Writes the record in the unknown barcode if keep them.
+     */
+    private void maybeWriteUnknown(final FastqRecord unassignedRecord) {
+        if (trimmingArgumentCollection.keepDiscard) {
+            ((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, unassignedRecord);
+        }
     }
+
+    /**
+     * Writes the record in the unknown barcode if keep them.
+     */
+    private void maybeWriteUnknown(final FastqPairedRecord unassignedRecord) {
+        if (trimmingArgumentCollection.keepDiscard) {
+            ((SplitFastqWriter) writer).write(BarcodeMatch.UNKNOWN_STRING, unassignedRecord);
+        }
+    }
+
+    @Override
+    protected void onShutdown() {
+        CloserUtil.close(writer);
+        CloserUtil.close(reader);
+    }
+
 }

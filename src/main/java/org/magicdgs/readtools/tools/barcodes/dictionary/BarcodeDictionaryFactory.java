@@ -27,7 +27,9 @@ import org.magicdgs.readtools.ProjectProperties;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 
 import htsjdk.samtools.SAMReadGroupRecord;
-import htsjdk.samtools.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +47,7 @@ import java.util.Arrays;
  */
 public class BarcodeDictionaryFactory {
 
-    private static final Log logger = Log.getInstance(BarcodeDictionaryFactory.class);
+    private static final Logger logger = LogManager.getLogger(BarcodeDictionaryFactory.class);
 
     /**
      * The read group information for default tags
@@ -122,8 +124,8 @@ public class BarcodeDictionaryFactory {
         return new BarcodeDictionary(run, samples, barcodes, libraries, readGroupInfo);
     }
 
-    private static void throwWrongFormatException(File barcodeFile) throws IOException {
-        throw new IOException("Wrong barcode format for " + barcodeFile.getAbsoluteFile()
-                + ". Each line should have two first columns (for the sample and the library) and the same number of barcodes after them.");
+    private static void throwWrongFormatException(File barcodeFile) {
+        throw new UserException.MalformedFile(barcodeFile,
+                "wrong barcode file format: Each line should have two first columns (for the sample and the library) and the same number of barcodes after them.");
     }
 }

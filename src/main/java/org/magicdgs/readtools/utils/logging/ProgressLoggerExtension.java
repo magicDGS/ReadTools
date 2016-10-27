@@ -19,6 +19,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package org.magicdgs.readtools.utils.logging;
 
@@ -26,11 +27,12 @@ import static org.magicdgs.readtools.utils.misc.Formats.timeFmt;
 
 import org.magicdgs.readtools.utils.misc.Formats;
 
-import htsjdk.samtools.util.Log;
-import htsjdk.samtools.util.ProgressLogger;
+import org.apache.logging.log4j.Logger;
+import org.broadinstitute.hellbender.utils.runtime.ProgressLogger;
+
 
 /**
- * Extension of {@link htsjdk.samtools.util.ProgressLogger}
+ * Extension of {@link ProgressLogger}
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -39,22 +41,22 @@ public class ProgressLoggerExtension extends ProgressLogger {
     private final String verb;
     private final String noun;
 
-    public ProgressLoggerExtension(final Log log, final int n, final String verb,
+    public ProgressLoggerExtension(final Logger log, final int n, final String verb,
             final String noun) {
         super(log, n, verb, noun);
         this.verb = verb;
         this.noun = noun;
     }
 
-    public ProgressLoggerExtension(Log log, int n, String verb) {
+    public ProgressLoggerExtension(final Logger log, final int n, final String verb) {
         this(log, n, verb, "records");
     }
 
-    public ProgressLoggerExtension(Log log, int n) {
+    public ProgressLoggerExtension(final Logger log, final int n) {
         this(log, n, "Processed");
     }
 
-    public ProgressLoggerExtension(Log log) {
+    public ProgressLoggerExtension(final Logger log) {
         this(log, 1000000);
     }
 

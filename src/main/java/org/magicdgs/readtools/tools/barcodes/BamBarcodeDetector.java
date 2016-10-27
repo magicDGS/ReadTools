@@ -21,102 +21,126 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package org.magicdgs.readtools.tools.barcodes;
+
 
 import org.magicdgs.io.writers.bam.SplitSAMFileWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
-import org.magicdgs.readtools.tools.AbstractTool;
+import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupLegacyArgumentCollection;
+import org.magicdgs.readtools.cmd.programgroups.MappedDataProgramGroup;
+import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
-import org.magicdgs.readtools.tools.cmd.OptionUtils;
-import org.magicdgs.readtools.tools.cmd.ToolWritersFactory;
-import org.magicdgs.readtools.tools.cmd.ToolsReadersFactory;
+import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.record.SAMRecordUtils;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMReadGroupRecord;
-import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamReader;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import htsjdk.samtools.util.CloserUtil;
+import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.hellbender.cmdline.ArgumentCollection;
+import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 
 /**
- * Tool for split by barcode (in the read name) for BAM files
+ * Tool for split by barcode (in the read name) for BAM files.
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BamBarcodeDetector extends AbstractTool {
+@CommandLineProgramProperties(oneLineSummary = "Identify barcodes in the read name for a BAM file and assign to the ones used on the library",
+        summary = "Detect barcodes in the header of the read name (based on the marker "
+                + BarcodeMethods.NAME_BARCODE_SEPARATOR
+                + ") and assign to a sample based on a provided dictionary. Barcodes in the input file that are larger than the used ones are cut in the last bases.",
+        programGroup = MappedDataProgramGroup.class)
+public final class BamBarcodeDetector extends ReadToolsBaseTool {
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME, optional = false,
+            doc = "The input BAM file with barcodes in the read name.")
+    public File input = null;
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME, optional = false,
+            doc = "The output file prefix")
+    public String outputPrefix = null;
+
+    @Argument(fullName = "sam", shortName = "s", optional = true, doc = "Output should be in SAM format instead of BAM")
+    public Boolean samFormat = false;
+
+    @ArgumentCollection
+    public BarcodeArgumentCollection barcodeArguments = new BarcodeArgumentCollection();
+
+
+    @ArgumentCollection(doc = "Arguments for RG information for output BAM/SAM")
+    public ReadGroupLegacyArgumentCollection readGroupArgumentCollection =
+            new ReadGroupLegacyArgumentCollection();
+
+    // the reader that we use for processing
+    private SamReader reader;
+    private SplitSAMFileWriter writer;
+    private BarcodeDecoder decoder;
 
     @Override
-    protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-        // PARSING THE COMMAND LINE
-        File input = new File(OptionUtils
-                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME));
-        String outputPrefix = OptionUtils
-                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME);
-        boolean bamFormat = !cmd.hasOption("s");
-        boolean index = cmd.hasOption("ind");
-        int nThreads = ReadToolsLegacyArgumentDefinitions.numberOfThreads(logger, cmd);
-        boolean multi = nThreads != 1;
-        // logging command line
-        logCmdLine(cmd);
-        // open the decoder with its corresponding dictionary
-        BarcodeDecoder decoder = BarcodeArgumentCollection
-                .getBarcodeDecoderFromOption(logger, cmd, -1);
-        // open the reader
-        SamReader reader = ToolsReadersFactory
-                .getSamReaderFromInput(input, ReadToolsLegacyArgumentDefinitions
-                                .isMaintained(logger, cmd),
-                        ReadToolsLegacyArgumentDefinitions.allowHigherQualities(logger, cmd));
-        // create the new header adding the read groups
-        SAMFileHeader header = reader.getFileHeader();
-        addReadGroupToHeader(header, decoder.getDictionary());
-        header.addProgramRecord(getToolProgramRecord(cmd));
-        // create the BAM writer
-        SplitSAMFileWriter writer =
-                ToolWritersFactory.getBamWriterOrSplitWriterFromInput(outputPrefix, header,
-                        BarcodeArgumentCollection.isSplit(logger, cmd) ? decoder.getDictionary()
-                                : null,
-                        bamFormat, index, multi);
-        addReadGroupByBarcode(reader, writer, IOUtils.makeMetricsFile(outputPrefix), decoder);
+    protected void onStartup() {
+        super.onStartup();
+        try {
+            // open the decoder with its corresponding dictionary
+            decoder = barcodeArguments
+                    .getBarcodeDecoderFromArguments(logger, readGroupArgumentCollection);
+            // open the reader
+            reader = getSamReaderFromInput(input);
+            // create the new header adding the read groups
+            final SAMFileHeader header = reader.getFileHeader();
+            addReadGroupToHeader(header, decoder.getDictionary());
+            header.addProgramRecord(getToolProgramRecord());
+            // create the BAM writer
+            writer = getBamWriterOrSplitWriterFromInput(outputPrefix, header,
+                    barcodeArguments.split ? decoder.getDictionary() : null,
+                    !samFormat);
+        } catch (IOException e) {
+            throw new UserException(e.getMessage(), e);
+        }
     }
 
-    /**
-     * Run the program
-     */
-    private void addReadGroupByBarcode(SamReader reader, SplitSAMFileWriter writer, File metrics,
-            BarcodeDecoder decoder) throws IOException {
-        ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
-        SAMRecordIterator it = reader.iterator();
-        while (it.hasNext()) {
-            SAMRecord record = it.next();
-            // TODO: test if the new method is working properly
-            // String barcode = SAMRecordUtils.getBarcodeInName(record);
-            String[] barcode = SAMRecordUtils.getBarcodesInName(record);
-            String best = decoder.getBestBarcode(barcode);
-            SAMReadGroupRecord rg = decoder.getDictionary().getReadGroupFor(best);
+    @Override
+    protected Object doWork() {
+        final ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
+        final SAMRecordIterator it = reader.iterator();
+        it.stream().forEach(record -> {
+            final String[] barcode = SAMRecordUtils.getBarcodesInName(record);
+            final String best = decoder.getBestBarcode(barcode);
+            final SAMReadGroupRecord rg = decoder.getDictionary().getReadGroupFor(best);
             if (!rg.equals(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO)) {
                 SAMRecordUtils.changeBarcodeInName(record, best);
+
             }
             record.setAttribute("RG", rg.getId());
             writer.addAlignment(record);
             progress.record(record);
-        }
+        });
         progress.logNumberOfVariantsProcessed();
         decoder.logMatcherResult(logger);
-        decoder.outputStats(metrics);
-        writer.close();
-        reader.close();
+        try {
+            decoder.outputStats(IOUtils.makeMetricsFile(outputPrefix));
+        } catch (IOException e) {
+            throw new UserException(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    @Override
+    protected void onShutdown() {
+        CloserUtil.close(writer);
+        CloserUtil.close(reader);
     }
 
     /**
@@ -128,59 +152,23 @@ public class BamBarcodeDetector extends AbstractTool {
      *
      * @return a mapping with the sample and the SAMReadGroupRecord
      */
-    private void addReadGroupToHeader(SAMFileHeader header, BarcodeDictionary dictionary) {
-        HashSet<SAMReadGroupRecord> sampleSet = new HashSet<>(dictionary.getSampleReadGroups());
-        for (SAMReadGroupRecord sample : sampleSet) {
+    private void addReadGroupToHeader(final SAMFileHeader header,
+            final BarcodeDictionary dictionary) {
+        final HashSet<SAMReadGroupRecord> sampleSet =
+                new HashSet<>(dictionary.getSampleReadGroups());
+        for (final SAMReadGroupRecord sample : sampleSet) {
             // catch the error and output a warning if the barcode already exists
             try {
                 header.addReadGroup(sample);
             } catch (IllegalArgumentException e) {
-                logger.warn("Read Group ", sample.getId(),
-                        " found in original file: previous tags will be removed");
+                logger.warn("Read Group {} found in original file: previous tags will be removed",
+                        sample.getId());
                 final SAMReadGroupRecord rg = header.getReadGroup(sample.getId());
-                for (String tag : SAMReadGroupRecord.STANDARD_TAGS) {
+                for (final String tag : SAMReadGroupRecord.STANDARD_TAGS) {
                     rg.setAttribute(tag, sample.getAttribute(tag));
                 }
             }
         }
     }
 
-    @Override
-    protected Options programOptions() {
-        Option input1 = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME)
-                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME)
-                .desc("The input BAM file with barcodes in the read name")
-                .hasArg().numberOfArgs(1).argName("input.bam").required(true).build();
-        Option output =
-                Option.builder(ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME)
-                        .longOpt(ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME)
-                        .desc("The output file prefix").hasArg()
-                        .numberOfArgs(1)
-                        .argName("output_prefix").required(true).build();
-        Option samFormat = Option.builder("s").longOpt("sam")
-                .desc("Output will be in sam format instead of bam")
-                .hasArg(false).required(false).build();
-        Option index =
-                Option.builder("ind").longOpt("index").desc("Index the output file").hasArg(false)
-                        .required(false).build();
-        // create the options
-        Options options = new Options();
-        // add the options
-        options.addOption(input1);
-        options.addOption(output);
-        options.addOption(samFormat);
-        options.addOption(index);
-        // add options for read groups
-        BarcodeArgumentCollection.addAllReadGroupCommonOptionsTo(options);
-        // add options for barcode programs
-        BarcodeArgumentCollection.addAllBarcodeCommonOptionsTo(options);
-        // add common options
-        options.addOption(ReadToolsLegacyArgumentDefinitions.maintainFormat); // maintain the format
-        options.addOption(
-                ReadToolsLegacyArgumentDefinitions.allowHigherSangerQualities); // allow higher qualities
-        options.addOption(
-                ReadToolsLegacyArgumentDefinitions.disableZippedOutput); // disable zipped output
-        options.addOption(ReadToolsLegacyArgumentDefinitions.parallel); // allow parallel output
-        return options;
-    }
 }

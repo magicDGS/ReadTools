@@ -34,9 +34,8 @@ import htsjdk.samtools.util.Histogram;
 import java.io.File;
 
 /**
- * Contains the pipeline for trimming implemented in Kofler et al 2011 with some set thresholds,
- * using the algorithms in
- * {@link TrimmingMethods}
+ * Contains the pipeline for trimming quality in Kofler et al 2011 with some set thresholds,
+ * using the algorithms in {@link TrimmingMethods}.
  *
  * @author Daniel Gómez-Sánchez
  */

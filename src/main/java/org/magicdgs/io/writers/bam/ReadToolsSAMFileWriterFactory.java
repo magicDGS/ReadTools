@@ -36,7 +36,8 @@ import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,7 @@ import java.util.Map;
  */
 public class ReadToolsSAMFileWriterFactory {
 
-    private final Log logger = Log.getInstance(ReadToolsSAMFileWriterFactory.class);
+    private final Logger logger = LogManager.getLogger(ReadToolsSAMFileWriterFactory.class);
 
     /**
      * The underlying factory

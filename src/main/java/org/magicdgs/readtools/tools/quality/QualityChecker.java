@@ -21,65 +21,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package org.magicdgs.readtools.tools.quality;
 
-import static org.magicdgs.readtools.tools.ToolNames.ToolException;
-
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.tools.AbstractTool;
-import org.magicdgs.readtools.tools.cmd.OptionUtils;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
+import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
+import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 
 /**
  * Tool for check the quality in both FASTQ and BAM files
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class QualityChecker extends AbstractTool {
+@CommandLineProgramProperties(oneLineSummary = "Get the quality encoding for a BAM/FASTQ file",
+        summary = "Check the quality encoding for a BAM/FASTQ file and output in the STDOUT the encoding",
+        programGroup = QCProgramGroup.class)
+public final class QualityChecker extends CommandLineProgram {
+
+    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME, optional = false,
+            doc = "Input BAM/FASTQ to determine the quality.")
+    public File input;
+
+    @Argument(fullName = "maximum-reads", optional = true, doc = "Maximum number of read to use to iterate.")
+    public Long recordsToIterate = QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY;
 
     @Override
-    protected void runThrowingExceptions(CommandLine cmd) throws Exception {
-        // TODO: check the qualities for the reader completely
-        File input = new File(OptionUtils
-                .getUniqueValue(cmd, ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME));
-        long recordsToIterate;
-        try {
-            String toIterate = OptionUtils.getUniqueValue(cmd, "m");
-            recordsToIterate = (toIterate == null) ?
-                    QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY :
-                    Long.parseLong(toIterate);
-            if (recordsToIterate < 0) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            throw new ToolException("Number of reads should be a positive long");
+    protected String[] customCommandLineValidation() {
+        if (recordsToIterate <= 0) {
+            throw new UserException.BadArgumentValue("maximum-reads",
+                    recordsToIterate.toString(), "should be a positive integer");
         }
-        logCmdLine(cmd);
-        FastqQualityFormat format = QualityUtils.getFastqQualityFormat(input, recordsToIterate);
-        String toConsole = (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
-        System.out.println(toConsole);
+        return super.customCommandLineValidation();
     }
 
     @Override
-    protected Options programOptions() {
-        Option input = Option.builder(ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME)
-                .longOpt(ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME)
-                .desc("Input BAM/FASTQ to determine the quality").hasArg()
-                .numberOfArgs(1).argName("INPUT").required().build();
-        Option max = Option.builder("m").longOpt("maximum-reads").desc(
-                "Maximum number of read to use to iterate. [Default="
-                        + QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY
-                        + "]").hasArg().numberOfArgs(1).argName("LONG").required(false).build();
-        Options options = new Options();
-        options.addOption(input);
-        options.addOption(max);
-        return options;
+    protected Object doWork() {
+        final FastqQualityFormat format =
+                QualityUtils.getFastqQualityFormat(input, recordsToIterate);
+        // TODO: change if we support Solexa
+        return (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
     }
 }

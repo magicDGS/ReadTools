@@ -239,7 +239,7 @@ public class StandardizerAndChecker {
             SAMRecordUtils.toSanger(newRecord, allowHighQualities);
             return newRecord;
         } catch (CloneNotSupportedException e) {
-            // This should not happen, because it is suppose to be implemented
+            // This should not happen, because it is suppose to be quality
             throw new GATKException.ShouldNeverReachHereException(e);
         } catch (QualityUtils.QualityException e) {
             throw new SAMException("Wrongly formatted quality string for " +

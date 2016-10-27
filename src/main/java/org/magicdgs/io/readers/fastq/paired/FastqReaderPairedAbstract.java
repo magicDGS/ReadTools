@@ -29,7 +29,8 @@ import org.magicdgs.readtools.utils.fastq.StandardizerAndChecker;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
-import htsjdk.samtools.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
 
     protected final StandardizerAndChecker checker;
 
-    protected final Log logger;
+    protected final Logger logger;
 
     /**
      * Default constructor with two readers
@@ -62,7 +63,7 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
      */
     public FastqReaderPairedAbstract(final FastqReader reader1, final FastqReader reader2,
             final boolean allowHighQualities) throws QualityUtils.QualityException {
-        logger = Log.getInstance(this.getClass());
+        logger = LogManager.getLogger(this.getClass());
         this.reader1 = reader1;
         this.reader2 = reader2;
         this.checker =
@@ -72,7 +73,7 @@ public abstract class FastqReaderPairedAbstract implements FastqReaderPairedInte
             throw new QualityUtils.QualityException(
                     "Pair-end encoding is different for both read pairs");
         }
-        logger.debug("Encoding for the original FASTQ reader: ", checker.getEncoding());
+        logger.debug("Encoding for the original FASTQ reader: {}", checker.getEncoding());
     }
 
     /**

@@ -2,6 +2,7 @@ package org.magicdgs.readtools.tools.trimming;
 
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.Assert;
@@ -22,6 +23,26 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
     /** Returns an argument builder with the required arguments for all the tests. */
     private static ArgumentsBuilder getRequiredArguments() {
         return new ArgumentsBuilder().addArgument("input1", SMALL_FASTQ_1.getAbsolutePath());
+    }
+
+    @DataProvider(name = "barArguments")
+    public Object[][] getBadArguments() {
+        return new Object[][] {
+                {"badQual", getRequiredArguments().addArgument("quality-threshold", "-1")},
+                {"batMinLength", getRequiredArguments().addArgument("minimum-length", "-1")},
+                {"badMaxLength", getRequiredArguments().addArgument("maximum-length", "-1")},
+                {"badLengthRange", getRequiredArguments().addArgument("minimum-length", "80")
+                        .addArgument("maximum-length", "10")}
+
+        };
+    }
+
+    @Test(dataProvider = "barArguments", expectedExceptions = UserException.BadArgumentValue.class)
+    public void testBadArguments(final String testName, final ArgumentsBuilder builder)
+            throws Exception {
+        builder.addArgument("output", new File(TEST_TEMP_DIR, testName).getAbsolutePath());
+        runCommandLine(builder);
+        log("Exception not thrown for " + testName);
     }
 
     @DataProvider(name = "TrimmingData")
@@ -59,11 +80,8 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
         // gets the output prefix and add to command line
         final File outputPrefix = new File(TEST_TEMP_DIR, testOutputName);
         final ArgumentsBuilder args = builder
-                .addArgument("output", outputPrefix.getAbsolutePath());
-        // TODO: once in GATK4 command line, add to the arguments in-line wthout if
-        if (keepDiscarded) {
-            args.addBooleanArgument("keep-discarded", true);
-        }
+                .addArgument("output", outputPrefix.getAbsolutePath())
+                .addBooleanArgument("keep-discarded", keepDiscarded);
         // running the command line
         runCommandLine(args);
         // check the metrics file
@@ -90,4 +108,5 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
         IntegrationTestSpec.assertEqualTextFiles(new File(outPath + suffix),
                 getToolTestFile(testName + suffix));
     }
+
 }

@@ -33,7 +33,8 @@ import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
-import htsjdk.samtools.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +48,7 @@ import java.util.Hashtable;
  */
 public class ReadToolsFastqWriterFactory {
 
-    private final Log logger = Log.getInstance(ReadToolsFastqWriterFactory.class);
+    private final Logger logger = LogManager.getLogger(ReadToolsFastqWriterFactory.class);
 
     /**
      * The underlying factory
@@ -160,8 +161,8 @@ public class ReadToolsFastqWriterFactory {
     public SplitFastqWriter newSplitByBarcodeWriter(String prefix, BarcodeDictionary dictionary,
             final boolean paired)
             throws IOException {
-        logger.debug("Creating new SplitByBarcode barcode for ", (paired) ? "paired" : "single",
-                "-end");
+        logger.debug("Creating new SplitByBarcode barcode for {}-end",
+                (paired) ? "paired" : "single");
         final Hashtable<String, FastqWriter> mapping = new Hashtable<>();
         HashMap<String, FastqWriter> sampleNames = new HashMap<>();
         for (int i = 0; i < dictionary.numberOfSamples(); i++) {
@@ -220,8 +221,8 @@ public class ReadToolsFastqWriterFactory {
      */
     public SplitFastqWriter newSplitAssignUnknownBarcodeWriter(String prefix, boolean paired)
             throws IOException {
-        logger.debug("Creating new Assign-Unknown barcode for ", (paired) ? "paired" : "single",
-                "-end");
+        logger.debug("Creating new Assign-Unknown barcode for {}-end",
+                (paired) ? "paired" : "single");
         final Hashtable<String, FastqWriter> mapping = new Hashtable<>(2);
         mapping.put("assign", (paired) ? newPairWriter(prefix) : newWriter(prefix));
         mapping.put(BarcodeMatch.UNKNOWN_STRING, (paired) ?

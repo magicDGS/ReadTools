@@ -26,6 +26,7 @@ package org.magicdgs.readtools.tools.quality;
 
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -40,7 +41,7 @@ public class QualityCheckerIntegrationTest extends CommandLineProgramTest {
 
     @DataProvider(name = "smallFiles")
     public Object[][] getTestFiles() {
-        return new Object[][]{
+        return new Object[][] {
                 // test FASTQ file
                 {SMALL_FASTQ_1, "Sanger"},
                 {getInputDataFile("small.illumina.fq"), "Illumina"},
@@ -50,8 +51,13 @@ public class QualityCheckerIntegrationTest extends CommandLineProgramTest {
         };
     }
 
-    // TODO: not enabled beause the format is not returned in the previous ReadTools
-    @Test(enabled = false, dataProvider = "smallFiles")
+    @Test(expectedExceptions = UserException.BadArgumentValue.class)
+    public void testBadArgument() throws Exception {
+        runCommandLine(
+                Arrays.asList("-i", SMALL_FASTQ_1.getAbsolutePath(), "--maximum-reads", "-1"));
+    }
+
+    @Test(dataProvider = "smallFiles")
     public void testQualityChecker(final File file, final String expectedFormat) {
         final Object format = runCommandLine(Arrays.asList("-i", file.getAbsolutePath()));
         Assert.assertEquals(format, expectedFormat);

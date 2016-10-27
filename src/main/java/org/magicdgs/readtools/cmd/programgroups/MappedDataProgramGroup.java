@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Daniel Gómez-Sánchez
+ * Copyright (c) 2016 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,22 +19,27 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-package org.magicdgs.readtools.tools;
+
+package org.magicdgs.readtools.cmd.programgroups;
+
+import org.broadinstitute.hellbender.cmdline.CommandLineProgramGroup;
 
 /**
- * Interface for all the tools
+ * Tools for use with mapped data.
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public interface Tool {
+public class MappedDataProgramGroup implements CommandLineProgramGroup {
 
-    /**
-     * Run this tool with the arguments provided (the tool name should be removed before)
-     *
-     * @param args arguments that comes directly from the command line and need to be parsed
-     *
-     * @return the exit status for the tool
-     */
-    public int run(String[] args);
+    @Override
+    public String getName() {
+        return "Mapped Data";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Tools for working with already mapped datasets (BAM format)";
+    }
 }

@@ -36,7 +36,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 
 /**
- * Different trimming algorithms for FastqRecords implemented as static methods
+ * Different trimming algorithms for FastqRecords quality as static methods
  *
  * @author Daniel Gómez-Sánchez
  */

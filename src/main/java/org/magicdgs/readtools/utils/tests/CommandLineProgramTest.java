@@ -34,8 +34,7 @@ public abstract class CommandLineProgramTest implements CommandLineProgramTester
     /** Root file directory for common files. */
     public static final String COMMON_TEST_FILE_DIRECTORY =
             new File(TEST_ROOT_FILE_DIRECTORY, "org/magicdgs/readtools").getAbsolutePath() + "/";
-
-    // TODO: this two files should have barcodes in their names
+    
     /** Test FASTQ file (pair 1). */
     public static final File SMALL_FASTQ_1 = getInputDataFile("SRR1931701_1.fq");
     /** Test FASTQ file (pair 2). */

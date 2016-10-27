@@ -32,11 +32,13 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqRecord;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -45,6 +47,20 @@ public class StandardizeQualityIntegrationTest extends CommandLineProgramTest {
 
     private final static File TEST_TEMP_DIR =
             createTestTempDir(StandardizeQualityIntegrationTest.class.getSimpleName());
+
+    @Test(expectedExceptions = UserException.BadArgumentValue.class)
+    public void testBadArgument() throws Exception {
+        runCommandLine(new ArgumentsBuilder()
+                .addArgument("input", getInputDataFile("small.illumina.sam").getAbsolutePath())
+                .addArgument("output", "bad.fastq")
+                .addBooleanArgument("non-standardize-output", true));
+    }
+
+    @Test(expectedExceptions = UserException.BadInput.class)
+    public void testBadFile() throws Exception {
+        runCommandLine(
+                Arrays.asList("-i", SMALL_FASTQ_1.getAbsolutePath(), "-o", "bad.fastq"));
+    }
 
     @Test
     public void testStandardizeQualityBam() throws Exception {
@@ -61,7 +77,8 @@ public class StandardizeQualityIntegrationTest extends CommandLineProgramTest {
         for (final SAMRecord record : actual) {
             final SAMRecord expectedRecord = expected.next();
             // check just the read names and qualities
-            Assert.assertEquals(record.getReadName(), expectedRecord.getReadName(), "broken test files");
+            Assert.assertEquals(record.getReadName(), expectedRecord.getReadName(),
+                    "broken test files");
             Assert.assertEquals(record.getBaseQualities(), expectedRecord.getBaseQualities());
         }
         actual.close();
