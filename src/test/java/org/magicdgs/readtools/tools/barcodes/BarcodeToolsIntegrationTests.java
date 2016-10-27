@@ -39,9 +39,6 @@ import java.util.stream.IntStream;
  */
 public class BarcodeToolsIntegrationTests extends CommandLineProgramTest {
 
-    private final static String EXPECTED_SHARED_LARGE_DIRECTORY =
-            getLargeTestFile("barcodes/expected_data").getAbsolutePath() + "/";
-
     private final static String EXPECTED_SHARED_DIRECTORY =
             getCommonTestFile("BarcodeTools").getAbsolutePath() + "/";
 
@@ -57,9 +54,9 @@ public class BarcodeToolsIntegrationTests extends CommandLineProgramTest {
     /** Temp directory for the class. */
     protected final File classTempDirectory = createTestTempDir(this.getClass().getSimpleName());
 
-    /**Gets the expected file shared between several tools for barcodes. */
+    /** Gets the expected file shared between several tools for barcodes. */
     protected static final File getBarcodeToolsExpectedData(final String fileName) {
-       return new File(EXPECTED_SHARED_DIRECTORY, fileName);
+        return new File(EXPECTED_SHARED_DIRECTORY, fileName);
     }
 
     /**

@@ -31,15 +31,15 @@ import org.testng.annotations.Test;
 
 public class BarcodeMethodsTest {
 
-    static final String basename = "Record1";
+    private static final String basename = "Record1";
 
-    static final String barcode = "AAATTT";
+    private static final String barcode = "AAATTT";
 
-    String nameWithBarcode;
+    private String nameWithBarcode;
 
-    String nameWithBarcodeAndSeparator;
+    private String nameWithBarcodeAndSeparator;
 
-    String nameWithoutBarcode;
+    private String nameWithoutBarcode;
 
     @BeforeMethod
     public void setUp() throws Exception {

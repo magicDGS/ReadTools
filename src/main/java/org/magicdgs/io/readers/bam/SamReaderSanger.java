@@ -42,7 +42,7 @@ public class SamReaderSanger extends SamReaderAbstract {
         super(file, factory, allowHigherSangerQualities);
     }
 
-    SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator) {
+    protected SAMRecordIterator toReturnIterator(final SAMRecordIterator iterator) {
         return SamRecordIteratorWithStandardizer.of(iterator, checker, true);
     }
 

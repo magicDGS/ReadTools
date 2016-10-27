@@ -41,7 +41,7 @@ public class SamReaderImpl extends SamReaderAbstract {
     }
 
     @Override
-    SAMRecordIterator toReturnIterator(SAMRecordIterator iterator) {
+    protected SAMRecordIterator toReturnIterator(SAMRecordIterator iterator) {
         return SamRecordIteratorWithStandardizer.of(iterator, checker, false);
     }
 

@@ -35,10 +35,6 @@ public abstract class CommandLineProgramTest implements CommandLineProgramTester
     public static final String COMMON_TEST_FILE_DIRECTORY =
             new File(TEST_ROOT_FILE_DIRECTORY, "org/magicdgs/readtools").getAbsolutePath() + "/";
 
-    /** Root file directory for large test resources. */
-    public static final String LARGE_TEST_FILE_DIRECTORY =
-            new File(COMMON_TEST_FILE_DIRECTORY, "large").getAbsolutePath() + "/";
-
     // TODO: this two files should have barcodes in their names
     /** Test FASTQ file (pair 1). */
     public static final File SMALL_FASTQ_1 = getInputDataFile("SRR1931701_1.fq");
@@ -64,13 +60,6 @@ public abstract class CommandLineProgramTest implements CommandLineProgramTester
     /** Gets input data in the test directory. */
     public static File getInputDataFile(final String fileName) {
         return getCommonTestFile("data/" + fileName);
-    }
-
-    /**
-     * Gets a large test file in the large directory.
-     */
-    public static File getLargeTestFile(final String fileName) {
-        return new File(LARGE_TEST_FILE_DIRECTORY, fileName);
     }
 
     /**

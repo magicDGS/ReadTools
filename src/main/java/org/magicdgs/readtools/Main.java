@@ -32,6 +32,7 @@ import autovalue.shaded.org.apache.commons.lang.ArrayUtils;
 import htsjdk.samtools.util.Log;
 import htsjdk.samtools.util.StringUtil;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
+import org.broadinstitute.hellbender.exceptions.GATKException;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -81,6 +82,7 @@ public class Main {
                 default:
                     logger.error("Unexpected error. Please contact with ",
                             ProjectProperties.getContact());
+                    break;
             }
             System.exit(exitStatus);
         } catch (ToolException e) {
@@ -161,7 +163,7 @@ public class Main {
         }
         final int exitStatus = toRun.run((String[]) argsForTool);
         if (exitStatus != 0) {
-            throw new RuntimeException("Tool returned with errors");
+            throw new GATKException("Tool returned with errors");
         }
         // TODO: tools expected to return a value won't work
         return null;

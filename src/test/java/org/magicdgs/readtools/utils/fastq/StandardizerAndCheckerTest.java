@@ -29,19 +29,20 @@ import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class StandardizerAndCheckerTest {
 
-    FastqRecord illuminaFASTQ;
+    private FastqRecord illuminaFASTQ;
 
-    FastqRecord sangerFASTQ;
+    private FastqRecord sangerFASTQ;
 
-    SAMRecord illuminaSAM;
+    private SAMRecord illuminaSAM;
 
-    SAMRecord sangerSAM;
+    private SAMRecord sangerSAM;
 
     private static final StandardizerAndChecker sangerChecker =
             new StandardizerAndChecker(FastqQualityFormat.Standard, false);
@@ -94,7 +95,7 @@ public class StandardizerAndCheckerTest {
                 checker = illuminaChecker;
                 break;
             default:
-                throw new RuntimeException("Unreachable code");
+                throw new GATKException("Unreachable code");
         }
         try {
             checker.checkMisencoded(read);

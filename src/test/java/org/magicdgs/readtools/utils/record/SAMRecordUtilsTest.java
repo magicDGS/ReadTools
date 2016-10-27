@@ -38,11 +38,11 @@ import java.util.Arrays;
  */
 public class SAMRecordUtilsTest {
 
-    SAMRecord illuminaRecord;
+    private SAMRecord illuminaRecord;
 
-    SAMRecord sangerRecord;
+    private SAMRecord sangerRecord;
 
-    static final SAMFileHeader emptyHeader = new SAMFileHeader();
+    private static final SAMFileHeader emptyHeader = new SAMFileHeader();
 
     public static SAMRecord createSamRecord(String readName, byte base, String quality) {
         SAMRecord record = new SAMRecord(emptyHeader);

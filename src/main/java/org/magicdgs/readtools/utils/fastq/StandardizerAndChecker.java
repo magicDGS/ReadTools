@@ -30,6 +30,7 @@ import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.exceptions.GATKException;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -239,7 +240,7 @@ public class StandardizerAndChecker {
             return newRecord;
         } catch (CloneNotSupportedException e) {
             // This should not happen, because it is suppose to be implemented
-            throw new RuntimeException("Unreachable code: " + e.getMessage());
+            throw new GATKException.ShouldNeverReachHereException(e);
         } catch (QualityUtils.QualityException e) {
             throw new SAMException("Wrongly formatted quality string for " +
                     record.getReadName() + ": " + record.getBaseQualityString());

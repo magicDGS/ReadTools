@@ -37,15 +37,15 @@ import java.util.Arrays;
  */
 public class FastqRecordUtilsTest {
 
-    FastqRecord illumina1;
+    private FastqRecord illumina1;
 
-    FastqRecord sanger1;
+    private FastqRecord sanger1;
 
-    FastqRecord illumina2;
+    private FastqRecord illumina2;
 
-    FastqRecord sanger2;
+    private FastqRecord sanger2;
 
-    FastqPairedRecord illuminaPaired;
+    private FastqPairedRecord illuminaPaired;
 
 
     @BeforeMethod
