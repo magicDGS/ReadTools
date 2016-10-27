@@ -25,7 +25,6 @@ package org.magicdgs.io.writers.bam;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMRecord;
 
-import java.util.Hashtable;
 import java.util.NoSuchElementException;
 
 /**

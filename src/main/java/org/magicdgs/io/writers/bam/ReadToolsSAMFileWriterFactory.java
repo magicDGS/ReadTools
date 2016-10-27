@@ -47,9 +47,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * SAMFileWriterFactory for ReadTools, that allow the checking of the output file and generating all
- * intermediate
- * directories
+ * SAMFileWriterFactory for ReadTools, that allow the checking of the output file and generating
+ * all intermediate directories
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -161,9 +160,8 @@ public class ReadToolsSAMFileWriterFactory {
      *
      * @param header     entire header. Sort order is determined by the sortOrder property of this
      *                   arg.
-     * @param presorted  if true, SAMRecords must be added to the SAMFileWriter in order that agrees
-     *                   with
-     *                   header.sortOrder.
+     * @param presorted  if true, SAMRecords must be added to the SAMFileWriter in order that
+     *                   agrees with header.sortOrder.
      * @param outputFile where to write the output.
      */
     public SAMFileWriter makeBAMWriter(final SAMFileHeader header, final boolean presorted,

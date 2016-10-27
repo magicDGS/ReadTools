@@ -34,7 +34,6 @@ import java.io.File;
  */
 public class FastqReaderSingleSanger extends FastqReaderSingleAbstract {
 
-
     public FastqReaderSingleSanger(File file, boolean allowHigherQualities) {
         super(file, allowHigherQualities);
     }

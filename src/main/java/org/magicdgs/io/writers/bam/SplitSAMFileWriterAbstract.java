@@ -38,7 +38,7 @@ public abstract class SplitSAMFileWriterAbstract implements SplitSAMFileWriter {
     /**
      * Hashtable mapping the identifier and the writer
      */
-    protected final Hashtable<String, ? extends SAMFileWriter> mapping;
+    private final Hashtable<String, ? extends SAMFileWriter> mapping;
 
     protected final SAMFileHeader header;
 

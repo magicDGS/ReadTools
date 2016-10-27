@@ -25,9 +25,7 @@ package org.magicdgs.io.writers.fastq;
 import org.magicdgs.io.FastqPairedRecord;
 
 import htsjdk.samtools.fastq.FastqRecord;
-import htsjdk.samtools.fastq.FastqWriter;
 
-import java.util.Hashtable;
 import java.util.NoSuchElementException;
 
 /**
