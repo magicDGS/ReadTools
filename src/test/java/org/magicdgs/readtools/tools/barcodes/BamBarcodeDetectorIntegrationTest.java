@@ -38,17 +38,36 @@ import java.io.File;
  */
 public class BamBarcodeDetectorIntegrationTest extends BarcodeToolsIntegrationTests {
 
+    private static ArgumentsBuilder getArgumentsForTests(final File outputPath) {
+        return new ArgumentsBuilder()
+                .addArgument("barcodes", UNIQUE_BARCODE_FILE.getAbsolutePath())
+                .addArgument("input", getInputDataFile("example.mapped.sam").getAbsolutePath())
+                .addArgument("output", outputPath.getAbsolutePath());
+    }
+
     @Test
     public void testBamBarcodeDetector() throws Exception {
         final String testName = "testBamBarcodeDetector";
         final File outputPath = new File(classTempDirectory, testName);
-        final ArgumentsBuilder args = new ArgumentsBuilder()
-                .addArgument("barcodes", UNIQUE_BARCODE_FILE.getAbsolutePath())
-                .addArgument("input", getInputDataFile("example.mapped.sam").getAbsolutePath())
-                .addArgument("output", outputPath.getAbsolutePath());
+        final ArgumentsBuilder args = getArgumentsForTests(outputPath);
         runCommandLine(args);
         checkExpectedSharedFiles(testName, outputPath.getAbsolutePath(), ".metrics");
         checkBamFile(testName, outputPath.getAbsolutePath(), ".bam");
+        checkBamFile(testName, outputPath.getAbsolutePath(), "_discarded.bam");
+    }
+
+    @Test
+    public void testBamBarcodeDetectorSplit() throws Exception {
+        final String testName = "testBamBarcodeDetectorSplit";
+        final File outputPath = new File(classTempDirectory, testName);
+        final ArgumentsBuilder args = getArgumentsForTests(outputPath)
+                .add("--split");
+        runCommandLine(args);
+        checkExpectedSharedFiles(testName, outputPath.getAbsolutePath(), ".metrics");
+        for (final String sample: SAMPLE_NAMES) {
+            // checks each file
+            checkBamFile(testName, outputPath.getAbsolutePath(), "_" + sample +".bam");
+        }
         checkBamFile(testName, outputPath.getAbsolutePath(), "_discarded.bam");
     }
 
