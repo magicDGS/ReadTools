@@ -23,12 +23,12 @@
 package org.magicdgs.readtools.tools;
 
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
-import org.magicdgs.readtools.tools.implemented.BamBarcodeDetector;
-import org.magicdgs.readtools.tools.implemented.FastqBarcodeDetector;
-import org.magicdgs.readtools.tools.implemented.QualityChecker;
-import org.magicdgs.readtools.tools.implemented.StandardizeQuality;
-import org.magicdgs.readtools.tools.implemented.TaggedBamToFastq;
-import org.magicdgs.readtools.tools.implemented.TrimFastq;
+import org.magicdgs.readtools.tools.barcodes.BamBarcodeDetector;
+import org.magicdgs.readtools.tools.barcodes.FastqBarcodeDetector;
+import org.magicdgs.readtools.tools.quality.QualityChecker;
+import org.magicdgs.readtools.tools.quality.StandardizeQuality;
+import org.magicdgs.readtools.tools.barcodes.TaggedBamToFastq;
+import org.magicdgs.readtools.tools.trimming.TrimFastq;
 
 /**
  * Enum with all the tools already developed
