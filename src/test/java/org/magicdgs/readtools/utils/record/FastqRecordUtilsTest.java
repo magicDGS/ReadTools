@@ -41,10 +41,6 @@ public class FastqRecordUtilsTest {
 
     private FastqRecord sanger1;
 
-    private FastqRecord illumina2;
-
-    private FastqRecord sanger2;
-
     private FastqPairedRecord illuminaPaired;
 
 
@@ -53,13 +49,10 @@ public class FastqRecordUtilsTest {
         illumina1 =
                 new FastqRecord("Record1#ACGT/1", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "",
                         QualityUtilsTest.illuminaQuality);
-        illumina2 =
+        illuminaPaired = new FastqPairedRecord(illumina1,
                 new FastqRecord("Record1#ACGT/2", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", "",
-                        QualityUtilsTest.illuminaQuality);
-        illuminaPaired = new FastqPairedRecord(illumina1, illumina2);
+                        QualityUtilsTest.illuminaQuality));
         sanger1 = new FastqRecord("Record1#ACGT/1", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "",
-                QualityUtilsTest.sangerQuality);
-        sanger2 = new FastqRecord("Record1#ACGT/2", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", "",
                 QualityUtilsTest.sangerQuality);
     }
 
