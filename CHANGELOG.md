@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Validation stringency parameter (solves issue [#35](https://github.com/magicDGS/ReadTools/issues/35))
+- Option `--forceOverwrite` for force overwrite output (solves issue [#39](https://github.com/magicDGS/ReadTools/issues/39))
+- Advance option `--readNameBarcodeSeparator` (solves issue [#48](https://github.com/magicDGS/ReadTools/issues/48))
 
 ### Changed
 - Testing is done with TestNG (developer)
@@ -14,7 +16,6 @@ All notable changes to this project will be documented in this file.
 - Integration tests for the all the tools
 - Support for CRAM files reading (requires reference sequence). This support is not tested and relies on [HTSJDK](https://samtools.github.io/htsjdk) implementation
 - Option for create MD5 digest files from outputs (FATSQ/BAM/SAM/CRAM)
-- Option `--forceOverwrite` for force overwrite output (solves #39)
 
 ## [0.2.2] - 2016-08-09
 

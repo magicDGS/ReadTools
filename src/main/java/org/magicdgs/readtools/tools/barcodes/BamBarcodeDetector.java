@@ -29,6 +29,7 @@ import org.magicdgs.io.writers.bam.SplitSAMFileWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupLegacyArgumentCollection;
+import org.magicdgs.readtools.cmd.argumentcollections.ReadNameBarcodeArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.MappedDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
@@ -79,6 +80,9 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
     @ArgumentCollection
     public BarcodeArgumentCollection barcodeArguments = new BarcodeArgumentCollection();
 
+    @ArgumentCollection
+    public ReadNameBarcodeArgumentCollection readNameBarcodeArguments =
+            new ReadNameBarcodeArgumentCollection();
 
     @ArgumentCollection(doc = "Arguments for RG information for output BAM/SAM")
     public ReadGroupLegacyArgumentCollection readGroupArgumentCollection =
@@ -116,12 +120,13 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
         final ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
         final SAMRecordIterator it = reader.iterator();
         it.stream().forEach(record -> {
-            final String[] barcode = SAMRecordUtils.getBarcodesInName(record);
+            final String[] barcode = readNameBarcodeArguments
+                    .getBarcodesInReadName(record.getReadName());
             final String best = decoder.getBestBarcode(barcode);
             final SAMReadGroupRecord rg = decoder.getDictionary().getReadGroupFor(best);
             if (!rg.equals(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO)) {
-                SAMRecordUtils.changeBarcodeInName(record, best);
-
+                record.setReadName(readNameBarcodeArguments
+                        .changeBarcodeToStandard(record.getReadName(), best));
             }
             record.setAttribute("RG", rg.getId());
             writer.addAlignment(record);
