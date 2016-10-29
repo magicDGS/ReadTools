@@ -70,7 +70,16 @@ public class ReadToolsSAMFileWriterFactory {
      * Should we check the existence of the file. Default value is {@link
      * org.magicdgs.io.IOdefault#DEFAULT_CHECK_EXISTENCE}
      */
-    private boolean CHECK_EXISTENCE = IOdefault.DEFAULT_CHECK_EXISTENCE;
+    private boolean checkExistence = IOdefault.DEFAULT_CHECK_EXISTENCE;
+
+    /**
+     * If <code>true</code> the output will be checked for existence, otherwise if will be
+     * overwritten if already exists.
+     */
+    public ReadToolsSAMFileWriterFactory setCheckExistence(final boolean checkExistence) {
+        this.checkExistence = checkExistence;
+        return this;
+    }
 
     /**
      * Sets whether to create md5Files for BAMs from this factory.
@@ -426,7 +435,7 @@ public class ReadToolsSAMFileWriterFactory {
      * directories
      */
     private void checkExistenceAndCreateDirs(final File outputFile) throws IOException {
-        if (CHECK_EXISTENCE) {
+        if (checkExistence) {
             IOUtils.exceptionIfExists(outputFile);
         }
         IOUtils.createDirectoriesForOutput(outputFile);

@@ -65,7 +65,7 @@ public class ReadToolsFastqWriterFactory {
      * Should we check the existence of the file. Default value is {@link
      * org.magicdgs.io.IOdefault#DEFAULT_CHECK_EXISTENCE}
      */
-    private boolean CHECK_EXISTENCE = IOdefault.DEFAULT_CHECK_EXISTENCE;
+    private boolean checkExistence = IOdefault.DEFAULT_CHECK_EXISTENCE;
 
     /**
      * Initialize a new factory
@@ -100,11 +100,10 @@ public class ReadToolsFastqWriterFactory {
 
     /**
      * If <code>true</code> the output will be checked for existence, otherwise if will be
-     * overwritten if already
-     * exists
+     * overwritten if already exists.
      */
     public ReadToolsFastqWriterFactory setCheckExistence(final boolean checkExistence) {
-        CHECK_EXISTENCE = checkExistence;
+        this.checkExistence = checkExistence;
         return this;
     }
 
@@ -128,7 +127,7 @@ public class ReadToolsFastqWriterFactory {
      */
     public ReadToolsFastqWriter newWriter(String prefix) throws IOException {
         final String outputName = IOUtils.makeOutputNameFastqWithDefaults(prefix, GZIP_OUTPUT);
-        return newWriterDefault(IOUtils.newOutputFile(outputName, CHECK_EXISTENCE));
+        return newWriterDefault(IOUtils.newOutputFile(outputName, checkExistence));
     }
 
     /**
@@ -143,7 +142,7 @@ public class ReadToolsFastqWriterFactory {
         final FastqWriter pair2 = newWriter(prefix + "_2");
         final String seOutputName =
                 IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT);
-        final File seOutput = IOUtils.newOutputFile(seOutputName, CHECK_EXISTENCE);
+        final File seOutput = IOUtils.newOutputFile(seOutputName, checkExistence);
         Lazy<FastqWriter> single = new Lazy<>(() -> FACTORY.newWriter(seOutput));
         return new PairFastqWriters(pair1, pair2, single);
     }

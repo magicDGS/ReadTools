@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - Integration tests for the all the tools
 - Support for CRAM files reading (requires reference sequence). This support is not tested and relies on [HTSJDK](https://samtools.github.io/htsjdk) implementation
 - Option for create MD5 digest files from outputs (FATSQ/BAM/SAM/CRAM)
+- Option `--forceOverwrite` for force overwrite output (solves #39)
 
 ## [0.2.2] - 2016-08-09
 

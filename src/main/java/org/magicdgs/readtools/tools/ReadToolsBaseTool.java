@@ -37,6 +37,7 @@ import org.magicdgs.io.writers.fastq.ReadToolsFastqWriter;
 import org.magicdgs.io.writers.fastq.ReadToolsFastqWriterFactory;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.ProjectProperties;
+import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 
@@ -78,6 +79,10 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
     @Argument(fullName = ReadToolsLegacyArgumentDefinitions.DISABLE_ZIPPED_OUTPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.DISABLE_ZIPPED_OUTPUT_SHORT_NAME, optional = true,
             doc = ReadToolsLegacyArgumentDefinitions.DISABLE_ZIPPED_OUTPUT_DOC)
     public Boolean disableZippedOutput = false;
+
+    // this option does not have a short name because it's usage is discouraged
+    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", optional = true)
+    public Boolean forceOverwrite = false;
 
     /** Default implementation returns an error message if the number of threads is negative. */
     @Override
@@ -152,8 +157,8 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
 
     private ReadToolsFastqWriterFactory getFastqFactoryFromCommandLine() {
         if (fastqWriterFactory == null) {
-            // TODO: create and add an option to force output
             fastqWriterFactory = new ReadToolsFastqWriterFactory()
+                    .setCheckExistence(!forceOverwrite)
                     .setGzipOutput(!disableZippedOutput)
                     .setUseAsyncIo(nThreads != 1)
                     .setCreateMd5(CREATE_MD5_FILE);
@@ -164,8 +169,8 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
     private ReadToolsSAMFileWriterFactory getSamFactoryFromCommandLine() {
         if (samFileWriterFactory == null) {
             // Picard is taking care of setting the index creation, md5 digest, max records in ram
-            // TODO: create and add an option to force output
             samFileWriterFactory = new ReadToolsSAMFileWriterFactory()
+                    .setCheckExistence(!forceOverwrite)
                     .setUseAsyncIo(nThreads != 1);
         }
         return samFileWriterFactory;
