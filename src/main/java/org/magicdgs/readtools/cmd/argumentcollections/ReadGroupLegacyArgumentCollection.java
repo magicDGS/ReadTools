@@ -38,6 +38,7 @@ import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class ReadGroupLegacyArgumentCollection implements ArgumentCollectionDefinition {
+    private static final long serialVersionUID = 1L;
 
     /** Run ID in read groups. */
     @Argument(fullName = ReadToolsLegacyArgumentDefinitions.RG_ID_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.RG_ID_SHORT_NAME, optional = true, doc = ReadToolsLegacyArgumentDefinitions.RG_ID_DOC)

@@ -45,6 +45,7 @@ import java.util.List;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class BarcodeArgumentCollection implements ArgumentCollectionDefinition {
+    private static final long serialVersionUID = 1L;
 
     public static final String BARCODES_LONG_NAME = "barcodes";
     public static final String BARCODES_SHORT_NAME = "bc";

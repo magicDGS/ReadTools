@@ -37,6 +37,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class TrimmingArgumentCollection implements ArgumentCollectionDefinition {
+    private static final long serialVersionUID = 1L;
 
     private static final String QUALITY_THRESHOLD_LONG_NAME = "quality-threshold";
     private static final String QUALITY_THRESHOLD_SHORT_NAME = "q";
