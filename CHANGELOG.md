@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Validation stringency parameter (solves issue [#35](https://github.com/magicDGS/ReadTools/issues/35))
 - Option `--forceOverwrite` for force overwrite output (solves issue [#39](https://github.com/magicDGS/ReadTools/issues/39))
-- Advance option `--readNameBarcodeSeparator` (solves issue [#48](https://github.com/magicDGS/ReadTools/issues/48))
+- Option `--readNameEncoding` for Illumina/Casava read name formats (solves issue [#48](https://github.com/magicDGS/ReadTools/issues/48))
 
 ### Changed
 - Testing is done with TestNG (developer)

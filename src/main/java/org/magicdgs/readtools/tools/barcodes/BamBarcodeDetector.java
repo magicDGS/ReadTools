@@ -24,12 +24,10 @@
 
 package org.magicdgs.readtools.tools.barcodes;
 
-
 import org.magicdgs.io.writers.bam.SplitSAMFileWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupLegacyArgumentCollection;
-import org.magicdgs.readtools.cmd.argumentcollections.ReadNameBarcodeArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.MappedDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
@@ -38,6 +36,7 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.record.SAMRecordUtils;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -79,10 +78,6 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
     @ArgumentCollection
     public BarcodeArgumentCollection barcodeArguments = new BarcodeArgumentCollection();
 
-    @ArgumentCollection
-    public ReadNameBarcodeArgumentCollection readNameBarcodeArguments =
-            new ReadNameBarcodeArgumentCollection();
-
     @ArgumentCollection(doc = "Arguments for RG information for output BAM/SAM")
     public ReadGroupLegacyArgumentCollection readGroupArgumentCollection =
             new ReadGroupLegacyArgumentCollection();
@@ -119,13 +114,11 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
         final ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
         final SAMRecordIterator it = reader.iterator();
         it.stream().forEach(record -> {
-            final String[] barcode = readNameBarcodeArguments
-                    .getBarcodesInReadName(record.getReadName());
+            final String[] barcode = SAMRecordUtils.getBarcodesInName(record);
             final String best = decoder.getBestBarcode(barcode);
             final SAMReadGroupRecord rg = decoder.getDictionary().getReadGroupFor(best);
             if (!rg.equals(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO)) {
-                record.setReadName(readNameBarcodeArguments
-                        .changeBarcodeToStandard(record.getReadName(), best));
+                SAMRecordUtils.changeBarcodeInName(record, best);
             }
             record.setAttribute("RG", rg.getId());
             writer.addAlignment(record);

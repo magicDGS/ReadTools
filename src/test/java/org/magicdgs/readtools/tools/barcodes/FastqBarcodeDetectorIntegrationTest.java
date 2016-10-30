@@ -29,7 +29,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.Arrays;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -96,21 +95,24 @@ public class FastqBarcodeDetectorIntegrationTest extends BarcodeToolsIntegration
     }
 
     @Test
-    public void testSingleEndDefaultParameterUniqueBarcodeWithSpecifiedSeparator() throws Exception {
+    public void testSingleEndDefaultParameterUniqueBarcodeWithSpecifiedSeparator()
+            throws Exception {
         final String testName = "testSingleEndDefaultParameterUniqueBarcodeWithSpecifiedSeparator";
         log("Running " + testName);
         final File outputPrefix = new File(classTempDirectory, testName);
+        final ArgumentsBuilder args = new ArgumentsBuilder()
+                .addArgument("readNameEncoding", "CASAVA")
+                .addArgument("barcodes", UNIQUE_BARCODE_FILE.getAbsolutePath())
+                .addArgument("input1",
+                        getInputDataFile("SRR1931701.separator.single.fq").getAbsolutePath())
+                .addArgument("output", outputPrefix.getAbsolutePath());
         // running command line
-        runCommandLine(Arrays.asList("--readNameBarcodeSeparator", " 1:N:0:",
-                "--barcodes", UNIQUE_BARCODE_FILE.getAbsolutePath(),
-                "--input1", getInputDataFile("SRR1931701.separator.single.fq").getAbsolutePath(),
-                "--output", outputPrefix.getAbsolutePath()));
+        runCommandLine(args);
         // check the metrics file
         checkExpectedSharedFiles("testSingleEndDefaultParameterUniqueBarcode",
                 outputPrefix.getAbsolutePath(), ".metrics");
         // check discarded
-        // TODO: change for the normal output once this is solved
-        checkExpectedSharedFiles(testName,
+        checkExpectedSharedFiles("testSingleEndDefaultParameterUniqueBarcode",
                 outputPrefix.getAbsolutePath(), "_discarded.fq.gz");
         // check the non-discarded file
         checkExpectedSharedFiles("testSingleEndDefaultParameterUniqueBarcode",

@@ -24,9 +24,11 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
+import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 
-import org.broadinstitute.hellbender.cmdline.Advanced;
+import com.google.common.annotations.VisibleForTesting;
+import htsjdk.samtools.fastq.FastqRecord;
 import org.broadinstitute.hellbender.cmdline.Argument;
 import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -44,65 +46,59 @@ import java.util.regex.Pattern;
 public class ReadNameBarcodeArgumentCollection implements ArgumentCollectionDefinition {
     private static final long serialVersionUID = 1L;
 
-    public static final String READNAME_BARCODE_SEPARATOR_NAME = "readNameBarcodeSeparator";
+    public static final String READNAME_ENCODING_NAME = "readNameEncoding";
 
-    /** Separator between read name and barcode. */
-    @Advanced
-    @Argument(fullName = READNAME_BARCODE_SEPARATOR_NAME, optional = true, doc = "String separation between the read name and the actual barcode. Default value should be suitable for most of the inputs.")
-    public String barcodeSeparator = BarcodeMethods.NAME_BARCODE_SEPARATOR;
+    @Argument(fullName = READNAME_ENCODING_NAME, optional = true, doc = "Encoding for the read name.")
+    public ReadNameEncoding readNameEncoding = ReadNameEncoding.ILLUMINA;
 
-    private Pattern barcodeCompletePattern = null;
-    private Pattern barcodeWithReadPairPattern = null;
-
-    private Pattern getBarcodeCompletePattern() {
-        if (barcodeCompletePattern == null) {
-            barcodeCompletePattern = Pattern.compile(barcodeSeparator + "(.+)");
-        }
-        return barcodeCompletePattern;
+    /** Normalize the record name using the provided encoding. */
+    public FastqRecord normalizeRecordName(final FastqRecord record) {
+        return new FastqRecord(
+                readNameEncoding.normalizeReadName(record.getReadHeader()), record.getReadString(),
+                record.getBaseQualityHeader(), record.getBaseQualityString());
     }
 
-    private Pattern getBarcodeWithReadPairPattern() {
-        if (barcodeWithReadPairPattern == null) {
-            barcodeWithReadPairPattern =
-                    Pattern.compile(barcodeSeparator + "(.+)" + BarcodeMethods.READ_PAIR_SEPARATOR);
-        }
-        return barcodeWithReadPairPattern;
+    /** Normalize the record name using the provided encoding. */
+    public FastqPairedRecord normalizeRecordName(final FastqPairedRecord record) {
+        return new FastqPairedRecord(normalizeRecordName(record.getRecord1()),
+                normalizeRecordName(record.getRecord2()));
     }
 
-    /**
-     * Gets the barcode (1 or 2) in the read name using the parameters specified in the command
-     * line.
-     *
-     * @return the barcode set; {@code null} if not found.
-     */
-    public String[] getBarcodesInReadName(final String readName) {
-        final Matcher matcher;
-        if (readName.contains(BarcodeMethods.READ_PAIR_SEPARATOR)) {
-            matcher = getBarcodeWithReadPairPattern().matcher(readName);
-        } else {
-            matcher = getBarcodeCompletePattern().matcher(readName);
-        }
-        if (matcher.find()) {
-            return matcher.group(1).split(BarcodeMethods.BARCODE_BARCODE_SEPARATOR);
-        }
-        throw new UserException.BadInput("Read name does not contains a barcode: " + readName);
-    }
+    public static enum ReadNameEncoding {
+        ILLUMINA("([^#]+)#([^/]+)/?([012]?).?", 3, 2),
+        CASAVA("([\\S]+)\\s+([012]):[YN]:[0-9]+:([ATCGN]+).?", 2, 3);
 
-    /** Gets the read name without the barcode using the parameters specified in the command line. */
-    public String getReadNameWithoutBarcode(final String readName) {
-        int index = readName.indexOf(barcodeSeparator);
-        if (index != -1) {
-            return readName.substring(0, index);
-        }
-        return readName;
-    }
+        private final Pattern pattern;
+        private final int pairInfoGroup;
+        private final int barcodeGroup;
 
-    /** Change the barcode in the read name and format as the standard. */
-    public final String changeBarcodeToStandard(final String readName, final String newBarcode) {
-        return new StringBuilder(getReadNameWithoutBarcode(readName))
-                .append(BarcodeMethods.NAME_BARCODE_SEPARATOR)
-                .append(newBarcode)
-                .toString();
+        ReadNameEncoding(final String pattern, final int pairInfoGroup, final int barcodeGroup) {
+            this.pattern = Pattern.compile(pattern);
+            this.pairInfoGroup = pairInfoGroup;
+            this.barcodeGroup = barcodeGroup;
+        }
+
+        /**
+         * Normalize the read name.
+         */
+        @VisibleForTesting
+        String normalizeReadName(final String readName) {
+            final Matcher matcher = pattern.matcher(readName);
+            if (!matcher.find()) {
+                throw new UserException.BadInput(
+                        "Wrongly encoded read name in " + name() + " format: " + readName);
+            }
+            final StringBuilder normalizedName = new StringBuilder(matcher.group(1));
+            normalizedName.append(BarcodeMethods.NAME_BARCODE_SEPARATOR);
+            normalizedName.append(matcher.group(barcodeGroup));
+            // TODO: add the /0 for single end?
+            if (matcher.groupCount() >= pairInfoGroup) {
+                normalizedName.append(BarcodeMethods.READ_PAIR_SEPARATOR)
+                        .append(matcher.group(pairInfoGroup));
+            }
+            return normalizedName.toString();
+        }
+
     }
 
 }

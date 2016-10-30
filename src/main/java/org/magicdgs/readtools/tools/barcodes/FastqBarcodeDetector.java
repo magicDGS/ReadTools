@@ -39,6 +39,7 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.CloserUtil;
@@ -50,7 +51,6 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -137,28 +137,17 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
     private void runSingle(final FastqLogger progress) {
         final Iterator<FastqRecord> it = ((FastqReaderSingleInterface) reader).iterator();
         while (it.hasNext()) {
-            final FastqRecord record = it.next();
-            final String[] barcode = readNameBarcodeArguments
-                    .getBarcodesInReadName(record.getReadHeader());
+            final FastqRecord record = readNameBarcodeArguments.normalizeRecordName(it.next());
+            final String[] barcode = FastqRecordUtils.getBarcodesInName(record);
             final String best = decoder.getBestBarcode(barcode);
             if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
                 // TODO: get the standard
                 writer.write(best, record);
             } else {
-                writer.write(best, changeBarcode(record, best, 0));
+                writer.write(best, FastqRecordUtils.changeBarcodeInSingle(record, best));
             }
             progress.add();
         }
-    }
-
-    /** Changes the barcode name using the argument collection. */
-    private FastqRecord changeBarcode(final FastqRecord record, final String barcode,
-            final int number) {
-        final String newName = readNameBarcodeArguments
-                .changeBarcodeToStandard(record.getReadHeader(), barcode)
-                + BarcodeMethods.READ_PAIR_SEPARATOR + number;
-        return new FastqRecord(newName, record.getReadString(),
-                record.getBaseQualityHeader(), record.getBaseQualityString());
     }
 
     /**
@@ -167,36 +156,18 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
     private void runPaired(final FastqLogger progress) {
         final Iterator<FastqPairedRecord> it = ((FastqReaderPairedInterface) reader).iterator();
         while (it.hasNext()) {
-            final FastqPairedRecord record = it.next();
-            final String[] barcode = pairedBarcodes(record);
+            final FastqPairedRecord record =
+                    readNameBarcodeArguments.normalizeRecordName(it.next());
+            final String[] barcode = FastqRecordUtils.getBarcodesInName(record);
             final String best = decoder.getBestBarcode(barcode);
             if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
                 // TODO: get the standard
                 writer.write(best, record);
             } else {
-                writer.write(best, new FastqPairedRecord(
-                        changeBarcode(record.getRecord1(), best, 1),
-                        changeBarcode(record.getRecord2(), best, 2)));
+                writer.write(best, FastqRecordUtils.changeBarcodeInPaired(record, best));
             }
             progress.add();
         }
-    }
-
-    /** Gets the barcodes for both paired records, and if they do not agree throws an expection */
-    private final String[] pairedBarcodes(final FastqPairedRecord record) {
-        final String[] barcode1 = readNameBarcodeArguments
-                .getBarcodesInReadName(record.getRecord1().getReadHeader());
-        final String[] barcode2 = readNameBarcodeArguments
-                .getBarcodesInReadName(record.getRecord2().getReadHeader());
-        if (barcode1 == null) {
-            return barcode2;
-        }
-        if (Arrays.equals(barcode1, barcode2)) {
-            return barcode1;
-        }
-        throw new UserException.BadInput(
-                "Malformed paired FASTQ: barcodes in read name does not match: "
-                        + Arrays.toString(barcode1) + "-" + Arrays.toString(barcode2));
     }
 
     @Override
