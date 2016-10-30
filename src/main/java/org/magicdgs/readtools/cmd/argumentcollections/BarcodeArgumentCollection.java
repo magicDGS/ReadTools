@@ -145,7 +145,7 @@ public class BarcodeArgumentCollection implements ArgumentCollectionDefinition {
             final BarcodeDictionary dictionary;
             final SAMReadGroupRecord readGroupInfo = rgac.getUnknownBasicReadGroup();
             dictionary = BarcodeDictionaryFactory
-                    .createDefaultDictionary(rgac.runId, inputFile, readGroupInfo, -1);
+                    .createDefaultDictionary(rgac.runId, inputFile, readGroupInfo);
             logger.info("Loaded barcode file for {} samples with {} different barcode sets",
                     dictionary.numberOfUniqueSamples(), dictionary.numberOfSamples());
             return dictionary;

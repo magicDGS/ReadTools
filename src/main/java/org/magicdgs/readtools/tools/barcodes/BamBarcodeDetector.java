@@ -38,7 +38,6 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.IOUtils;
-import org.magicdgs.readtools.utils.record.SAMRecordUtils;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMReadGroupRecord;

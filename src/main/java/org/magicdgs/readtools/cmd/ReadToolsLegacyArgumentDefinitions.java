@@ -23,10 +23,6 @@
  */
 package org.magicdgs.readtools.cmd;
 
-import htsjdk.samtools.util.Log;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-
 /**
  * Legacy argument definitions for ReadTools pre-releases.
  *

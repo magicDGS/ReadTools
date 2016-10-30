@@ -39,7 +39,6 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.misc.IOUtils;
-import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.CloserUtil;
@@ -153,7 +152,8 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
     }
 
     /** Changes the barcode name using the argument collection. */
-    private FastqRecord changeBarcode(final FastqRecord record, final String barcode, final int number) {
+    private FastqRecord changeBarcode(final FastqRecord record, final String barcode,
+            final int number) {
         final String newName = readNameBarcodeArguments
                 .changeBarcodeToStandard(record.getReadHeader(), barcode)
                 + BarcodeMethods.READ_PAIR_SEPARATOR + number;

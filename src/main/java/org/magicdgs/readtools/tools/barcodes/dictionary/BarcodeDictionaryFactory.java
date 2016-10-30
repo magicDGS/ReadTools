@@ -39,10 +39,8 @@ import java.util.List;
 
 /**
  * Class to create different combined/not combined dictionaries from a barcode file. Barcode files
- * have the following
- * columns: sampleName, library, and several barcodes. They are space delimited (tabs or other
- * white
- * spaces)
+ * have the following columns: sampleName, library, and several barcodes. They are space delimited
+ * (tabs or other white spaces).
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -67,35 +65,28 @@ public class BarcodeDictionaryFactory {
      * subsequent the barcodes.
      * Each of the barcodes is stored independently
      *
-     * @param run              the run name; <code>null</code> is allowed
-     * @param barcodeFile      the file
-     * @param readGroupInfo    read group record where tags for other barcodes will be used (except
-     *                         ID and SN)
-     * @param numberOfBarcodes the expected number of barcodes; if < 0, it is computed for the
-     *                         first
-     *                         line in the file
+     * @param run           the run name; <code>null</code> is allowed
+     * @param barcodeFile   the file
+     * @param readGroupInfo read group record where tags for other barcodes will be used (except
+     *                      ID and SN)
      *
      * @return the barcode dictionary
      *
      * @throws java.io.IOException if the file have some problem
      */
     public static BarcodeDictionary createDefaultDictionary(final String run,
-            final File barcodeFile, final SAMReadGroupRecord readGroupInfo,
-            int numberOfBarcodes) throws IOException {
+            final File barcodeFile, final SAMReadGroupRecord readGroupInfo) throws IOException {
         final SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile);
         // read the first line
         String[] nextLine = reader.next();
         if (nextLine == null) {
             throwWrongFormatException(barcodeFile);
         }
-        // check the number of barcodes
-        if (numberOfBarcodes < 1) {
-            numberOfBarcodes = nextLine.length - 2;
-            logger.debug("Detected {} barcodes.", numberOfBarcodes);
-        }
+        final int numberOfBarcodes = nextLine.length - 2;
         if (numberOfBarcodes < 1) {
             throwWrongFormatException(barcodeFile);
         }
+        logger.debug("Detected {} barcodes.", numberOfBarcodes);
         // at this point, we know the number of barcodes
         final List<List<String>> barcodes = new ArrayList<>(numberOfBarcodes);
         // initialize all the barcodes

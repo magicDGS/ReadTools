@@ -352,15 +352,15 @@ public class BarcodeDecoder {
             metricHeader.DISCARDED_NO_MATCH++;
             return false;
         }
-        if (!(match.numberOfNs <= maxN)) {
+        if (match.numberOfNs > maxN) {
             metricHeader.DISCARDED_BY_N++;
             return false;
         }
-        if (!(match.mismatches <= maxMismatches)) {
+        if (match.mismatches > maxMismatches) {
             metricHeader.DISCARDED_BY_MISMATCH++;
             return false;
         }
-        if (!(match.getDifferenceWithSecond() >= minDifferenceWithSecond)) {
+        if (match.getDifferenceWithSecond() < minDifferenceWithSecond) {
             metricHeader.DISCARDED_BY_DISTANCE++;
             return false;
         }
