@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,24 +45,24 @@ public class BarcodeDictionary {
     /**
      * New name for the samples
      */
-    private final ArrayList<SAMReadGroupRecord> sampleRecord;
+    private final List<SAMReadGroupRecord> sampleRecord;
 
     /**
      * Array which contains the barcodes. The lenght is the number of barcodes used, and the
      * internal array contain the
      * associated barcode for each sample
      */
-    private final ArrayList<ArrayList<String>> barcodes;
+    private final List<List<String>> barcodes;
 
     /**
      * Cached map between combined barcodes and read groups
      */
-    private final Hashtable<String, SAMReadGroupRecord> barcodeRGmap = new Hashtable<>();
+    private final Map<String, SAMReadGroupRecord> barcodeRGmap = new Hashtable<>();
 
     /**
      * Cached barcode set(s) for fast access
      */
-    private final ArrayList<HashSet<String>> barcodesSets = new ArrayList<>();
+    private final List<Set<String>> barcodesSets = new ArrayList<>();
 
     /**
      * Protected constructor. For construct an instance, use {@link BarcodeDictionaryFactory}
@@ -69,8 +70,8 @@ public class BarcodeDictionary {
      * @param samples  the sample names
      * @param barcodes the barcodes
      */
-    protected BarcodeDictionary(final ArrayList<SAMReadGroupRecord> samples,
-            final ArrayList<ArrayList<String>> barcodes) {
+    protected BarcodeDictionary(final List<SAMReadGroupRecord> samples,
+            final List<List<String>> barcodes) {
         this.sampleRecord = samples;
         this.barcodes = barcodes;
     }
@@ -86,8 +87,8 @@ public class BarcodeDictionary {
      *                      samples_combinedBarcodes
      * @param readGroupInfo the additional information for the read group
      */
-    protected BarcodeDictionary(final String run, final ArrayList<String> samples,
-            final ArrayList<ArrayList<String>> barcodes, final ArrayList<String> libraries,
+    protected BarcodeDictionary(final String run, final List<String> samples,
+            final List<List<String>> barcodes, final List<String> libraries,
             final SAMReadGroupRecord readGroupInfo) {
         this(new ArrayList<>(samples.size()), barcodes);
         initReadGroups(run, samples, libraries, readGroupInfo);
@@ -108,8 +109,8 @@ public class BarcodeDictionary {
      * @param samples       the sample name
      * @param readGroupInfo the read group information
      */
-    private void initReadGroups(final String run, final ArrayList<String> samples,
-            final ArrayList<String> libraries, final SAMReadGroupRecord readGroupInfo) {
+    private void initReadGroups(final String run, final List<String> samples,
+            final List<String> libraries, final SAMReadGroupRecord readGroupInfo) {
         for (int i = 0; i < samples.size(); i++) {
             final String sampleBarcode =
                     String.format("%s_%s", samples.get(i), getCombinedBarcodesFor(i));
@@ -252,7 +253,7 @@ public class BarcodeDictionary {
      *
      * @return the list with the barcodes associated with each sample
      */
-    public ArrayList<String> getBarcodesFromIndex(final int index) {
+    public List<String> getBarcodesFromIndex(final int index) {
         return barcodes.get(index);
     }
 

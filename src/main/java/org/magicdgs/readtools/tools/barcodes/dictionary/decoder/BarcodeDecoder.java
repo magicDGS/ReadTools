@@ -44,7 +44,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -99,22 +98,22 @@ public class BarcodeDecoder {
     /**
      * Statistics for each combined barcode
      */
-    private Hashtable<String, MatcherStat> stats;
+    private Map<String, MatcherStat> stats;
 
     /**
      * Statistics for the barcode
      */
-    private ArrayList<Hashtable<String, BarcodeStat>> barcodeStats;
+    private List<Map<String, BarcodeStat>> barcodeStats;
 
     /**
      * Create the mismatches histogram
      */
-    private ArrayList<Hashtable<String, Histogram<Integer>>> mismatchesHist;
+    private List<Map<String, Histogram<Integer>>> mismatchesHist;
 
     /**
      * Create the mismatches histogram
      */
-    private ArrayList<Hashtable<String, MathUtils.RunningStat>> nMean;
+    private List<Map<String, MathUtils.RunningStat>> nMean;
 
     /**
      * Default constructor with all the parameters
@@ -192,10 +191,10 @@ public class BarcodeDecoder {
             suffix = "_";
         }
         for (int j = 0; j < dictionary.getNumberOfBarcodes(); j++) {
-            final Hashtable<String, BarcodeStat> bar = new Hashtable<>();
-            final Hashtable<String, Histogram<Integer>> histM = new Hashtable<>();
-            final Hashtable<String, MathUtils.RunningStat> mean = new Hashtable<>();
-            for (String b : dictionary.getSetBarcodesFromIndex(j)) {
+            final Map<String, BarcodeStat> bar = new Hashtable<>();
+            final Map<String, Histogram<Integer>> histM = new Hashtable<>();
+            final Map<String, MathUtils.RunningStat> mean = new Hashtable<>();
+            for (final String b : dictionary.getSetBarcodesFromIndex(j)) {
                 final BarcodeStat s =
                         new BarcodeStat((suffix == null) ? b : String.format("%s_%s", b, j + 1));
                 bar.put(b, s);
@@ -274,7 +273,7 @@ public class BarcodeDecoder {
             }
         }
         // map sample indexes and number of times that it occurs
-        final Map<Integer, Integer> samples = new HashMap<>();
+        final Map<Integer, Integer> samples = new Hashtable<>();
         // for each barcode, check the quality
         for (int i = 0; i < bestMatchs.size(); i++) {
             final BarcodeMatch current = bestMatchs.get(i);
@@ -462,7 +461,7 @@ public class BarcodeDecoder {
         // create the barcode stats
         final MetricsFile<BarcodeStat, Integer> barcode = new MetricsFile<>();
         for (int i = 0; i < dictionary.getNumberOfBarcodes(); i++) {
-            final Hashtable<String, BarcodeStat> current = barcodeStats.get(i);
+            final Map<String, BarcodeStat> current = barcodeStats.get(i);
             for (final Map.Entry<String, Histogram<Integer>> entry : mismatchesHist.get(i)
                     .entrySet()) {
                 final BarcodeStat s = current.get(entry.getKey());

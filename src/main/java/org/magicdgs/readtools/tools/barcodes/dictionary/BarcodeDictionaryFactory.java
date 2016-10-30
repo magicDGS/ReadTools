@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class to create different combined/not combined dictionaries from a barcode file. Barcode files
@@ -96,7 +97,7 @@ public class BarcodeDictionaryFactory {
             throwWrongFormatException(barcodeFile);
         }
         // at this point, we know the number of barcodes
-        final ArrayList<ArrayList<String>> barcodes = new ArrayList<>(numberOfBarcodes);
+        final List<List<String>> barcodes = new ArrayList<>(numberOfBarcodes);
         // initialize all the barcodes
         for (int i = 0; i < numberOfBarcodes; i++) {
             barcodes.add(new ArrayList<>());

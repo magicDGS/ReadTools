@@ -38,11 +38,11 @@ public class BarcodeDictionaryTest {
 
     private static BarcodeDictionary dictionarySingle, dictionaryDouble;
 
-    private static final ArrayList<SAMReadGroupRecord> samples = new ArrayList<>();
+    private static final List<SAMReadGroupRecord> samples = new ArrayList<>();
 
-    private static final ArrayList<ArrayList<String>> barcodesSingle = new ArrayList<>(1);
+    private static final List<List<String>> barcodesSingle = new ArrayList<>(1);
 
-    private static final ArrayList<ArrayList<String>> barcodesDouble = new ArrayList<>(2);
+    private static final List<List<String>> barcodesDouble = new ArrayList<>(2);
 
     private static final String[] barcodes = new String[] {"AAAA", "CCCC", "TTTT", "GGGG"};
 
