@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.2.3] - 2016-11-01
 
 ### Fixed
 - Validation stringency parameter (solves issue [#35](https://github.com/magicDGS/ReadTools/issues/35))
@@ -82,6 +82,7 @@ All notable changes to this project will be documented in this file.
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.2.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.2.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.1
 [0.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.0
