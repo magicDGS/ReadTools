@@ -26,6 +26,7 @@ package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
+import org.magicdgs.readtools.utils.fastq.FastqReadNameEncoding;
 
 import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.fastq.FastqRecord;
@@ -49,56 +50,24 @@ public class ReadNameBarcodeArgumentCollection implements ArgumentCollectionDefi
     public static final String READNAME_ENCODING_NAME = "readNameEncoding";
 
     @Argument(fullName = READNAME_ENCODING_NAME, optional = true, doc = "Encoding for the read name.")
-    public ReadNameEncoding readNameEncoding = ReadNameEncoding.ILLUMINA;
+    public FastqReadNameEncoding readNameEncoding = FastqReadNameEncoding.ILLUMINA;
 
     /** Normalize the record name using the provided encoding. */
     public FastqRecord normalizeRecordName(final FastqRecord record) {
-        return new FastqRecord(
-                readNameEncoding.normalizeReadName(record.getReadHeader()), record.getReadString(),
-                record.getBaseQualityHeader(), record.getBaseQualityString());
+        try {
+            return new FastqRecord(
+                    readNameEncoding.normalizeReadName(record.getReadHeader()),
+                    record.getReadString(),
+                    record.getBaseQualityHeader(), record.getBaseQualityString());
+        } catch (IllegalArgumentException e) {
+            throw new UserException.BadInput(e.getMessage());
+        }
     }
 
     /** Normalize the record name using the provided encoding. */
     public FastqPairedRecord normalizeRecordName(final FastqPairedRecord record) {
         return new FastqPairedRecord(normalizeRecordName(record.getRecord1()),
                 normalizeRecordName(record.getRecord2()));
-    }
-
-    public static enum ReadNameEncoding {
-        ILLUMINA("([^#]+)#([^/]+)/?([012]?).?", 3, 2),
-        CASAVA("([\\S]+)\\s+([012]):[YN]:[0-9]+:([ATCGN]+).?", 2, 3);
-
-        private final Pattern pattern;
-        private final int pairInfoGroup;
-        private final int barcodeGroup;
-
-        ReadNameEncoding(final String pattern, final int pairInfoGroup, final int barcodeGroup) {
-            this.pattern = Pattern.compile(pattern);
-            this.pairInfoGroup = pairInfoGroup;
-            this.barcodeGroup = barcodeGroup;
-        }
-
-        /**
-         * Normalize the read name.
-         */
-        @VisibleForTesting
-        String normalizeReadName(final String readName) {
-            final Matcher matcher = pattern.matcher(readName);
-            if (!matcher.find()) {
-                throw new UserException.BadInput(
-                        "Wrongly encoded read name in " + name() + " format: " + readName);
-            }
-            final StringBuilder normalizedName = new StringBuilder(matcher.group(1));
-            normalizedName.append(BarcodeMethods.NAME_BARCODE_SEPARATOR);
-            normalizedName.append(matcher.group(barcodeGroup));
-            // TODO: add the /0 for single end?
-            if (matcher.groupCount() >= pairInfoGroup) {
-                normalizedName.append(BarcodeMethods.READ_PAIR_SEPARATOR)
-                        .append(matcher.group(pairInfoGroup));
-            }
-            return normalizedName.toString();
-        }
-
     }
 
 }
