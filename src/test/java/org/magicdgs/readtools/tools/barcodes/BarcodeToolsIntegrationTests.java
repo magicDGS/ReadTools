@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.barcodes;
 
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.utils.tests.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
@@ -40,7 +41,8 @@ import java.util.stream.IntStream;
 public class BarcodeToolsIntegrationTests extends CommandLineProgramTest {
 
     private final static String EXPECTED_SHARED_DIRECTORY =
-            getCommonTestFile("BarcodeTools").getAbsolutePath() + "/";
+            TestResourcesUtils.getReadToolsTestResource("org/magicdgs/readtools/BarcodeTools")
+                    .getAbsolutePath() + "/";
 
     /** Example barcode file for one barcode index. */
     protected static final File UNIQUE_BARCODE_FILE = getInputDataFile("unique.barcodes");

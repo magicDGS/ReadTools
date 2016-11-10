@@ -23,13 +23,15 @@
  */
 package org.magicdgs.readtools.utils.fastq;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
-public class QualityUtilsTest {
+public class QualityUtilsTest extends BaseTest {
 
     /**
      * All the Sanger qualities (ASCII)

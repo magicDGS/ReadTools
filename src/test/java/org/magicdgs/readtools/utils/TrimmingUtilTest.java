@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
 
 import htsjdk.samtools.SAMUtils;
@@ -33,7 +34,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmingUtilTest {
+public class TrimmingUtilTest extends BaseTest {
 
     @Test
     public void trimPointsMott() throws Exception {

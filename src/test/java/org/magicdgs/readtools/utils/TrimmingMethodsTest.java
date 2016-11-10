@@ -28,13 +28,15 @@ import static org.magicdgs.readtools.utils.trimming.TrimmingMethods.trim5pNs;
 import static org.magicdgs.readtools.utils.trimming.TrimmingMethods.trimNs;
 import static org.magicdgs.readtools.utils.trimming.TrimmingMethods.trimQualityMott;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class TrimmingMethodsTest {
+public class TrimmingMethodsTest extends BaseTest {
 
     // the default encoding for testing
     private static FastqQualityFormat encoding;

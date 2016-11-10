@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools.utils.read;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
 import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.fastq.FastqRecord;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -39,7 +41,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FastqGATKReadUnitTest {
+public class FastqGATKReadUnitTest extends BaseTest {
 
     @DataProvider(name = "fastqRecordData")
     public Iterator<Object[]> fastqRecordDataProvider() {

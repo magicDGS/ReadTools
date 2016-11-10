@@ -23,6 +23,7 @@
 package org.magicdgs.readtools.utils.record;
 
 import org.magicdgs.readtools.utils.fastq.QualityUtilsTest;
+import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
@@ -36,7 +37,7 @@ import java.util.Arrays;
 /**
  * @author Daniel Gomez-Sanchez
  */
-public class SAMRecordUtilsTest {
+public class SAMRecordUtilsTest extends BaseTest {
 
     private SAMRecord illuminaRecord;
 

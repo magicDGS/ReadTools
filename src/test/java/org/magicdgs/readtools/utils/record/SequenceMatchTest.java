@@ -28,10 +28,12 @@ import static org.magicdgs.readtools.utils.record.SequenceMatch.sequenceContainN
 import static org.magicdgs.readtools.utils.record.SequenceMatch.sequenceEndByNs;
 import static org.magicdgs.readtools.utils.record.SequenceMatch.sequenceStartByN;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class SequenceMatchTest {
+public class SequenceMatchTest extends BaseTest {
 
     @Test
     public void testSequenceStartByN() throws Exception {

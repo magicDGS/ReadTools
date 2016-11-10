@@ -24,6 +24,7 @@
 package org.magicdgs.readtools.utils.fastq;
 
 import org.magicdgs.readtools.utils.record.SAMRecordUtilsTest;
+import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
@@ -34,7 +35,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class StandardizerAndCheckerTest {
+public class StandardizerAndCheckerTest extends BaseTest {
 
     private FastqRecord illuminaFASTQ;
 

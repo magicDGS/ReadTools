@@ -22,6 +22,8 @@
  */
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -34,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BarcodeDictionaryTest {
+public class BarcodeDictionaryTest extends BaseTest {
 
     private static BarcodeDictionary dictionarySingle, dictionaryDouble;
 

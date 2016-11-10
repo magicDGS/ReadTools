@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.LoggingUtils;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.test.CommandLineProgramTester;
-import org.testng.Reporter;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
@@ -19,22 +18,11 @@ import java.util.List;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public abstract class CommandLineProgramTest implements CommandLineProgramTester {
-
-    // current directory for the tests
-    private static final String CURRENT_DIRECTORY = System.getProperty("user.dir");
+public abstract class CommandLineProgramTest extends BaseTest implements CommandLineProgramTester {
 
     /** Logger for the PAToK package for the tests. */
     public static final Logger logger = LogManager.getLogger("org.magicdgs.readtools");
 
-    /** Root file directory for test resources. */
-    private static final String TEST_ROOT_FILE_DIRECTORY =
-            new File(CURRENT_DIRECTORY, "src/test/resources/").getAbsolutePath() + "/";
-
-    /** Root file directory for common files. */
-    public static final String COMMON_TEST_FILE_DIRECTORY =
-            new File(TEST_ROOT_FILE_DIRECTORY, "org/magicdgs/readtools").getAbsolutePath() + "/";
-    
     /** Test FASTQ file (pair 1). */
     public static final File SMALL_FASTQ_1 = getInputDataFile("SRR1931701_1.fq");
     /** Test FASTQ file (pair 2). */
@@ -44,21 +32,14 @@ public abstract class CommandLineProgramTest implements CommandLineProgramTester
     /** Test BAM file (single). */
     public static final File SINGLE_BAM_FILE = getInputDataFile("SRR1931701.single.tagged.sam");
 
-    /** Log this message so that it shows up inline during output as well as in html reports. */
-    public static void log(final String message) {
-        Reporter.log(message, true);
-    }
-
     /**
-     * Gets a common test file in the resources directory.
+     * Gets input data in the test directory.
+     *
+     * @deprecated use directly {@link TestResourcesUtils#getReadToolsTestResource(String)}.
      */
-    public static File getCommonTestFile(final String fileName) {
-        return new File(COMMON_TEST_FILE_DIRECTORY, fileName);
-    }
-
-    /** Gets input data in the test directory. */
+    @Deprecated
     public static File getInputDataFile(final String fileName) {
-        return getCommonTestFile("data/" + fileName);
+        return TestResourcesUtils.getReadToolsTestResource("org/magicdgs/readtools/data/" + fileName);
     }
 
     /**
@@ -80,21 +61,10 @@ public abstract class CommandLineProgramTest implements CommandLineProgramTester
         LoggingUtils.setLoggingLevel(Log.LogLevel.DEBUG);
     }
 
-    /**
-     * The tested tool name should is included in the class name by default, using the format
-     * "NameIntegrationTest"
-     */
+    /** @return {@link #getTestedClassName()} */
     @Override
     public String getTestedToolName() {
-        return getClass().getSimpleName().replaceAll("IntegrationTest$", "");
-    }
-
-    /**
-     * Gets the test file sited in the default testing directory for tools ({@link
-     * #COMMON_TEST_FILE_DIRECTORY}/ToolName/fileName).
-     */
-    public File getToolTestFile(final String fileName) {
-        return new File(COMMON_TEST_FILE_DIRECTORY, getTestedToolName() + "/" + fileName);
+        return getTestedClassName();
     }
 
     /** Use our main class. */

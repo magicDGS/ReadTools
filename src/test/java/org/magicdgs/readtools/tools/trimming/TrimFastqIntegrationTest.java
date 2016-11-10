@@ -1,6 +1,7 @@
 package org.magicdgs.readtools.tools.trimming;
 
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.utils.tests.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
@@ -106,7 +107,8 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
             throws Exception {
         logger.debug("Checking output: {}{}", testName, suffix);
         IntegrationTestSpec.assertEqualTextFiles(new File(outPath + suffix),
-                getToolTestFile(testName + suffix));
+                new File(TestResourcesUtils.getReadToolsTestResource("org/magicdgs/readtools/"
+                        + getTestedClassName()), testName + suffix));
     }
 
 }

@@ -24,6 +24,7 @@ package org.magicdgs.readtools.utils.record;
 
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.utils.fastq.QualityUtilsTest;
+import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import org.testng.Assert;
@@ -35,7 +36,7 @@ import java.util.Arrays;
 /**
  * @author Daniel Gomez-Sanchez
  */
-public class FastqRecordUtilsTest {
+public class FastqRecordUtilsTest extends BaseTest {
 
     private FastqRecord illumina1;
 

@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools.utils.iterators;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
 import htsjdk.samtools.CigarOperator;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -39,7 +41,7 @@ import java.util.function.Predicate;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadTransformerIteratorUnitTest {
+public class ReadTransformerIteratorUnitTest extends BaseTest {
 
     private Iterator<GATKRead> makeReadsIterator() {
         return Arrays.asList(

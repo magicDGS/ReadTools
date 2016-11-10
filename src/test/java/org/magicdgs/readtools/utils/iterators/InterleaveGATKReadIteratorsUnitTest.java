@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools.utils.iterators;
 
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
 import htsjdk.samtools.TextCigarCodec;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -38,7 +40,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class InterleaveGATKReadIteratorsUnitTest {
+public class InterleaveGATKReadIteratorsUnitTest extends BaseTest {
 
     private Iterator<GATKRead> makeReadsIterator(final String name) {
         return Arrays.asList(
