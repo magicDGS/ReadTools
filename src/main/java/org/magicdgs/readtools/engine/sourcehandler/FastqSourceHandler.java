@@ -31,9 +31,11 @@ import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.QualityEncodingDetector;
 import org.broadinstitute.hellbender.exceptions.GATKException;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Source handler for FASTQ files.
@@ -58,12 +60,23 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
         return new SAMFileHeader();
     }
 
+    @Override
+    public Iterator<GATKRead> toIntervalIterator(final List<SimpleInterval> locs) {
+        throw new UnsupportedOperationException("FASTQ files does not support querying intervals");
+    }
+
     protected FastqReader getFreshReader() {
         return new FastqReader(path.toFile());
     }
 
     @Override
     protected SAMFileHeader getReaderHeader(final FastqReader reader) {
+        throw new GATKException.ShouldNeverReachHereException("This method should not be called");
+    }
+
+    @Override
+    protected Iterator<GATKRead> getReaderIntervalIterator(FastqReader reader,
+            List<SimpleInterval> locs) {
         throw new GATKException.ShouldNeverReachHereException("This method should not be called");
     }
 

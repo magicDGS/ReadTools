@@ -27,6 +27,7 @@ package org.magicdgs.readtools.engine.sourcehandler;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
@@ -78,6 +79,10 @@ abstract class FileSourceHandler<T extends Closeable> extends ReadsSourceHandler
     /** Returns an iterator for this reader. */
     protected abstract Iterator<GATKRead> getReaderIterator(final T reader);
 
+    /** Returns an iterator over the locations for this reader. */
+    protected abstract Iterator<GATKRead> getReaderIntervalIterator(final T reader,
+            final List<SimpleInterval> locs);
+
     @Override
     public FastqQualityFormat getQualityEncoding(long maxNumberOfReads) {
         return readAndClose(r -> getReaderQualityEncoding(r, maxNumberOfReads));
@@ -112,6 +117,19 @@ abstract class FileSourceHandler<T extends Closeable> extends ReadsSourceHandler
         final T reader = getFreshReader();
         openReaders.add(reader);
         return getReaderIterator(reader);
+    }
+
+    /**
+     * Default implementation open a fresh reader, add it to the open readers (to close when {@link
+     * #close()} is call, and return the iterator.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public Iterator<GATKRead> toIntervalIterator(final List<SimpleInterval> locs) {
+        final T reader = getFreshReader();
+        openReaders.add(reader);
+        return getReaderIntervalIterator(reader, locs);
     }
 
     @Override

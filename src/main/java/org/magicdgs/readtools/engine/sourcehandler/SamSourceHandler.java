@@ -24,15 +24,20 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.QualityEncodingDetector;
+import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.iterators.SAMRecordToReadIterator;
+import org.broadinstitute.hellbender.utils.iterators.SamReaderQueryingIterator;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Handler for SAM/BAM/CRAM files, which uses the default factory provided.
@@ -62,6 +67,17 @@ public final class SamSourceHandler extends FileSourceHandler<SamReader> {
     public SamSourceHandler(final String source, final SamReaderFactory factory) {
         super(source);
         this.factory = factory;
+    }
+
+    /** Gets the interval iterator from a fresh reader, including unmapped reads. */
+    @Override
+    protected Iterator<GATKRead> getReaderIntervalIterator(final SamReader reader,
+            final List<SimpleInterval> locs) {
+        try {
+            return new SAMRecordToReadIterator(new SamReaderQueryingIterator(reader, locs, false));
+        } catch (SAMException | UserException e) {
+            throw new UnsupportedOperationException(e.getMessage(), e);
+        }
     }
 
     protected SamReader getFreshReader() {

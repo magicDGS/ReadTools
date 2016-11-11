@@ -30,6 +30,8 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -37,6 +39,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,7 +48,13 @@ import java.util.List;
  */
 public class ReadsSourceHandlerUnitTest extends BaseTest {
 
+    private final static SimpleInterval INTERVAL_TO_QUERY = new SimpleInterval("2L");
+
     protected final File sourcesFolder = getClassTestDirectory().getParentFile();
+
+    // this is the factory for tests, including reference sequence for CRAM
+    private final SamReaderFactory FACTORY_FOR_TEST = SamReaderFactory.makeDefault()
+            .referenceSequence(new File(sourcesFolder, "2L.fragment.fa"));
 
     @DataProvider(name = "fastqSources")
     public Object[][] fastqDataSources() {
@@ -58,10 +67,9 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
         };
     }
 
-    @DataProvider(name = "samSources")
+    @DataProvider(name = "samSourcesNoIndex")
     public Iterator<Object[]> samDataSources() {
         final List<Object[]> data = new ArrayList<>();
-        // TODO: include BAM and CRAM to check if it is working
         // mapped files
         final String[] mapped =
                 new String[] {"small.mapped.sam", "small.mapped.bam", "small.mapped.cram"};
@@ -81,8 +89,23 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
         return data.iterator();
     }
 
-    private final static SAMFileHeader getHeaderForFile(final File file) {
-        try (SamReader reader = SamReaderFactory.makeDefault().open(file)) {
+    @DataProvider(name = "samSourcesIndexed")
+    public Iterator<Object[]> samDataSourcesIndexed() {
+        final List<Object[]> data = new ArrayList<>();
+        // mapped files
+        final String[] fileNames =
+                new String[] {"small.mapped.sort.bam", "small.mapped.sort.cram"};
+        // all the files comes from the same
+        for (final String files : fileNames) {
+            final File file = new File(sourcesFolder, files);
+            data.add(new Object[] {file.getAbsolutePath(), FastqQualityFormat.Standard,
+                    getHeaderForFile(file), 206, 118});
+        }
+        return data.iterator();
+    }
+
+    private final SAMFileHeader getHeaderForFile(final File file) {
+        try (SamReader reader = FACTORY_FOR_TEST.open(file)) {
             return reader.getFileHeader();
         } catch (IOException e) {
             // do nothing
@@ -96,14 +119,37 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
         final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(source);
         Assert.assertEquals(handler.getClass(), FastqSourceHandler.class);
         testHandler(handler, format, header, length);
+        // fastq files could not be iterated
+        Assert.assertThrows(UnsupportedOperationException.class,
+                () -> handler.toIntervalIterator(Arrays.asList(INTERVAL_TO_QUERY)));
     }
 
-    @Test(dataProvider = "samSources")
-    public void testSamSources(final String source, final FastqQualityFormat format,
+    @Test(dataProvider = "samSourcesNoIndex")
+    public void testSamSourcesWithoutIndex(final String source, final FastqQualityFormat format,
             final SAMFileHeader header, final int length) throws Exception {
         final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(source);
         Assert.assertEquals(handler.getClass(), SamSourceHandler.class);
         testHandler(handler, format, header, length);
+        // sources without index could not be iterated with interval iteration
+        Assert.assertThrows(UnsupportedOperationException.class,
+                () -> handler.toIntervalIterator(Arrays.asList(INTERVAL_TO_QUERY)));
+    }
+
+    @Test(dataProvider = "samSourcesIndexed")
+    public void testSamSourcesWithIndex(final String source, final FastqQualityFormat format,
+            final SAMFileHeader header, final int length, final int length2L) throws Exception {
+        final ReadsSourceHandler handler = new SamSourceHandler(source, FACTORY_FOR_TEST);
+        Assert.assertEquals(handler.getClass(), SamSourceHandler.class);
+        testHandler(handler, format, header, length);
+        // sources with index should be tested
+        final Iterator<GATKRead> itInterval =
+                handler.toIntervalIterator(Arrays.asList(INTERVAL_TO_QUERY));
+        int n = 0;
+        while (itInterval.hasNext()) {
+            n++;
+            itInterval.next();
+        }
+        Assert.assertEquals(n, length2L);
     }
 
     private static void testHandler(final ReadsSourceHandler handler,

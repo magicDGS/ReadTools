@@ -27,13 +27,14 @@ package org.magicdgs.readtools.engine.sourcehandler;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.fastq.FastqConstants;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.io.Closeable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -73,11 +74,19 @@ public abstract class ReadsSourceHandler implements Closeable {
     public abstract SAMFileHeader getHeader();
 
     /**
-     * Converts a source into an iterator. It always starts for the begining of the file, so
-     * multiple
-     * iterations does not affect the rest of the open iterations.
+     * Converts a source into an iterator. It always starts for the beginning of the file, so
+     * multiple iterations does not affect the rest of the open iterations.
      */
     public abstract Iterator<GATKRead> toIterator();
+
+    /**
+     * Converts a source into an iterator which overlaps with the provided intervals. It always
+     * starts for the beginning of the file, so multiple iterations does not affect the rest of the
+     * open iterations.
+     *
+     * Note: unmapped reads will not be returned by this iterator.
+     */
+    public abstract Iterator<GATKRead> toIntervalIterator(final List<SimpleInterval> locs);
 
     /** Returns an ordered stream for the reads. */
     public Stream<GATKRead> toStream() {
@@ -102,16 +111,7 @@ public abstract class ReadsSourceHandler implements Closeable {
         } else if (IOUtils.isFastq(source)) {
             return new FastqSourceHandler(source);
         }
-        // TODO: support other sources?
         throw new UserException("Impossible to handle source of reads: "
                 + source + ": not recognized extension");
     }
-
-    // TODO -> extract to an utils method?
-    private static boolean isFastq(final String source) {
-        return Stream.of(FastqConstants.FastqExtensions.values())
-                .map(FastqConstants.FastqExtensions::getExtension)
-                .anyMatch(source::endsWith);
-    }
-
 }
