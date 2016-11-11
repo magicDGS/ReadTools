@@ -145,7 +145,7 @@ public class QualityUtils {
             reader.close();
         }
         if (!SUPPORTED_FORMATS.contains(encoding)) {
-            throw new QualityException(encoding + " format not supported");
+            throw new QualityException(encoding + " format not supported for this tool");
         }
         return encoding;
     }
