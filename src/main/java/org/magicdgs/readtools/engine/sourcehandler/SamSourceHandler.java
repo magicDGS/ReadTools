@@ -32,7 +32,6 @@ import htsjdk.samtools.util.QualityEncodingDetector;
 import org.broadinstitute.hellbender.utils.iterators.SAMRecordToReadIterator;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -49,10 +48,8 @@ public final class SamSourceHandler extends FileSourceHandler<SamReader> {
      * Constructor using the {@link SamReaderFactory#DEFAULT}.
      *
      * @param source the source of reads (SAM/BAM/CRAM).
-     *
-     * @throws IOException if there is an IO error.
      */
-    public SamSourceHandler(final String source) throws IOException {
+    public SamSourceHandler(final String source) {
         this(source, SamReaderFactory.makeDefault());
     }
 
@@ -61,11 +58,8 @@ public final class SamSourceHandler extends FileSourceHandler<SamReader> {
      *
      * @param source  the source of reads (SAM/BAM/CRAM).
      * @param factory the factory to create the readers from.
-     *
-     * @throws IOException if there is an IO error.
      */
-    public SamSourceHandler(final String source, final SamReaderFactory factory)
-            throws IOException {
+    public SamSourceHandler(final String source, final SamReaderFactory factory) {
         super(source);
         this.factory = factory;
     }

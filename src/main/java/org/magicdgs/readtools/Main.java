@@ -37,7 +37,8 @@ import java.util.List;
  */
 public class Main extends org.broadinstitute.hellbender.Main {
 
-    /** Only includes the org.magicdgs.readtools.tools package */
+    /** Only includes the org.magicdgs.readtools.tools package. */
+    @Override
     protected List<String> getPackageList() {
         final List<String> packageList = new ArrayList<>();
         packageList.add("org.magicdgs.readtools.tools");
@@ -45,27 +46,28 @@ public class Main extends org.broadinstitute.hellbender.Main {
     }
 
     /** Note: currently no single class is included. */
+    @Override
     protected List<Class<? extends CommandLineProgram>> getClassList() {
         // TODO: explore other tools from the GATK4 framework that may be useful for our toolkit
         return Collections.emptyList();
+    }
+
+    /** Returns the command line that will appear in the usage. */
+    protected String getCommandLineName() {
+        return "java -jar ReadTools.jar";
     }
 
     /**
      * Entry point for ReadTools.
      *
      * Note: several things change from the GATK4 framework main method.
-     * 1) The returned result is printed without anything else (if QUIET, only the
-     * `Object.toString()` method will be used.
-     * 2) No stack-trace is printed for UserExceptions.
-     * 3) If a no UserException is found, output a short notice to contact the developer.
+     * 1) No stack-trace is printed for UserExceptions.
+     * 2) If a no UserException is found, output a short notice to contact the developer.
      */
-    public static void main(final String[] args) {
+    public void mainReadTools(final String[] args) {
         try {
-            Object result = new Main().instanceMain(args);
-            if (result != null) {
-                // TODO: print something else apart of the result
-                System.out.println(result);
-            }
+            Object result = instanceMain(args);
+            handleResult(result);
         } catch (final UserException.CommandLineException e) {
             // the GATK framework should prints the error already
             System.exit(1);
@@ -74,20 +76,29 @@ public class Main extends org.broadinstitute.hellbender.Main {
             CommandLineProgram.printDecoratedUserExceptionMessage(System.err, e);
             System.exit(2);
         } catch (final Exception e) {
-            printUnexpectedError(e);
+            handleNonUserException(e);
             System.exit(3);
         }
     }
 
-    /**
-     * Run the Main class from the GATK4 framework using our custom packages and classes.
-     */
-    public Object instanceMain(final String[] args) {
-        return instanceMain(args, getPackageList(), getClassList(), "java -jar ReadTools.jar");
+    /** Command line entry point. */
+    public static void main(final String[] args) {
+        // TODO: change for calling mainEntry(args) from GATK4
+        new Main().mainReadTools(args);
+    }
+
+    /** Prints the result to the standard output directly.*/
+    @Override
+    protected void handleResult(final Object result) {
+        // TODO: print something else and/or handle metrics?
+        if (result != null) {
+            System.out.println(result);
+        }
     }
 
     /** Prints in {@link System#err} log information for unexpected error. */
-    private static void printUnexpectedError(final Exception e) {
+    // TODO: port to GATK4 framework!
+    protected static void handleNonUserException(final Exception e) {
         System.err
                 .println("***********************************************************************");
         System.err.println();

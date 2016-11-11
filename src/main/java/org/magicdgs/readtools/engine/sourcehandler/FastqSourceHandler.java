@@ -33,7 +33,6 @@ import htsjdk.samtools.util.QualityEncodingDetector;
 import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -47,10 +46,8 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
      * Constructor froma a source.
      *
      * @param source the source of reads (FASTQ).
-     *
-     * @throws IOException if there is a IO problem.
      */
-    public FastqSourceHandler(final String source) throws IOException {
+    public FastqSourceHandler(final String source) {
         super(source);
     }
 

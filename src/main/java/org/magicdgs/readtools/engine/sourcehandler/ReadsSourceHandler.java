@@ -30,7 +30,6 @@ import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -54,10 +53,8 @@ public abstract class ReadsSourceHandler implements Closeable {
     /**
      * Protected constructor. Use {@link #getHandler(String)} for detect the handler or a concrete
      * implementation.
-     *
-     * @throws IOException if there is an IO problem.
      */
-    protected ReadsSourceHandler(final String source) throws IOException {
+    protected ReadsSourceHandler(final String source) {
         this.source = source;
     }
 
@@ -76,8 +73,6 @@ public abstract class ReadsSourceHandler implements Closeable {
      * Converts a source into an iterator. It always starts for the begining of the file, so
      * multiple
      * iterations does not affect the rest of the open iterations.
-     *
-     * @throws IOException if there is an IO problem.
      */
     public abstract Iterator<GATKRead> toIterator();
 
@@ -96,10 +91,8 @@ public abstract class ReadsSourceHandler implements Closeable {
      * @param source the source string.
      *
      * @return the source handler.
-     *
-     * @throws IOException if there is an IO problem.
      */
-    public static ReadsSourceHandler getHandler(final String source) throws IOException {
+    public static ReadsSourceHandler getHandler(final String source) {
         // first checks if it is a FASTQ file
         if (isFastq(source)) {
             return new FastqSourceHandler(source);

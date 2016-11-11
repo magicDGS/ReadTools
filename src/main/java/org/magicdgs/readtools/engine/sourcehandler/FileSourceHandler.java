@@ -56,7 +56,7 @@ abstract class FileSourceHandler<T extends Closeable> extends ReadsSourceHandler
     /**
      * Protected constructor. Use {@link #getHandler(String)} for detect the handler.
      */
-    protected FileSourceHandler(String source) throws IOException {
+    protected FileSourceHandler(String source) {
         super(source);
         this.path = IOUtils.getPath(source);
     }
