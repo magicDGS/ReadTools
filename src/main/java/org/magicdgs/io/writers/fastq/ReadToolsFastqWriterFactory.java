@@ -23,7 +23,7 @@
 package org.magicdgs.io.writers.fastq;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.io.IOdefault;
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.misc.IOUtils;
@@ -62,10 +62,10 @@ public class ReadToolsFastqWriterFactory {
     private boolean GZIP_OUTPUT = true;
 
     /**
-     * Should we check the existence of the file. Default value is {@link
-     * org.magicdgs.io.IOdefault#DEFAULT_CHECK_EXISTENCE}
+     * Should we check the existence of the file. Default value is the negation of
+     * {@link RTDefaults#FORCE_OVERWRITE}
      */
-    private boolean checkExistence = IOdefault.DEFAULT_CHECK_EXISTENCE;
+    private boolean checkExistence = !RTDefaults.FORCE_OVERWRITE;
 
     /**
      * Initialize a new factory
@@ -176,8 +176,8 @@ public class ReadToolsFastqWriterFactory {
         }
         // add a unknown barcode
         mapping.put(BarcodeMatch.UNKNOWN_STRING, (paired) ?
-                newPairWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX) :
-                newWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX));
+                newPairWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX) :
+                newWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX));
         return new SplitFastqWriterAbstract(mapping) {
 
             private final boolean p = paired;
@@ -225,8 +225,8 @@ public class ReadToolsFastqWriterFactory {
         final Hashtable<String, FastqWriter> mapping = new Hashtable<>(2);
         mapping.put("assign", (paired) ? newPairWriter(prefix) : newWriter(prefix));
         mapping.put(BarcodeMatch.UNKNOWN_STRING, (paired) ?
-                newPairWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX) :
-                newWriter(prefix + "_" + IOdefault.DISCARDED_SUFFIX));
+                newPairWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX) :
+                newWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX));
         return new SplitFastqWriterAbstract(mapping) {
 
             private final boolean p = paired;

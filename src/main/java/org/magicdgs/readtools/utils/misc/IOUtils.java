@@ -38,9 +38,14 @@ import java.nio.file.Paths;
  */
 public class IOUtils {
 
+    /** Default extension for recognize sam files. */
     public static final String DEFAULT_SAM_EXTENSION = ".sam";
 
+    /** Default extension for metric files. */
     public static final String DEFAULT_METRICS_EXTENSION = ".metrics";
+
+    /** Suffix for discarded output. */
+    public static final String DISCARDED_SUFFIX = "discarded";
 
     /**
      * Check if the file is BAM or SAM formatted
@@ -91,7 +96,8 @@ public class IOUtils {
      *
      * @throws IOException if the file already exists or an IO error occurs
      */
-    public static File newOutputFile(final String output, final boolean checkIfExists) throws IOException {
+    public static File newOutputFile(final String output, final boolean checkIfExists)
+            throws IOException {
         final File file = new File(output);
         // first check if the file already exists
         if (checkIfExists) {

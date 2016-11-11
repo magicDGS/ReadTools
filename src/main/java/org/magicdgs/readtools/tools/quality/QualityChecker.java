@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.tools.quality;
 
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 
@@ -51,7 +52,7 @@ public final class QualityChecker extends CommandLineProgram {
     public File input;
 
     @Argument(fullName = "maximum-reads", optional = true, doc = "Maximum number of read to use to iterate.")
-    public Long recordsToIterate = QualityUtils.DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY;
+    public Long recordsToIterate = RTDefaults.MAX_RECORDS_FOR_QUALITY;
 
     @Override
     protected String[] customCommandLineValidation() {

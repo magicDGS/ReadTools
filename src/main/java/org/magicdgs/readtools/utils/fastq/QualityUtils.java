@@ -23,6 +23,7 @@
  */
 package org.magicdgs.readtools.utils.fastq;
 
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 
 import htsjdk.samtools.SAMRecordIterator;
@@ -42,13 +43,6 @@ import java.util.Set;
  * @author Daniel Gómez Sánchez
  */
 public class QualityUtils {
-
-    /**
-     * For all the tools that needs to detect the quality, iterate over 1M reads to be sure that
-     * the
-     * quality is correct
-     */
-    public static final long DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY = 1_000_000;
 
     private static final byte phredToSangerOffset = (byte) 31;
 
@@ -119,7 +113,7 @@ public class QualityUtils {
      *                                       the supported
      */
     public static FastqQualityFormat getFastqQualityFormat(final File input) {
-        return getFastqQualityFormat(input, DEFAULT_MAX_RECORDS_TO_DETECT_QUALITY);
+        return getFastqQualityFormat(input, RTDefaults.MAX_RECORDS_FOR_QUALITY);
     }
 
     /**

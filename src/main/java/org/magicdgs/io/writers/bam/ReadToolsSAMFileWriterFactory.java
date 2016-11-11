@@ -23,7 +23,7 @@
  */
 package org.magicdgs.io.writers.bam;
 
-import org.magicdgs.io.IOdefault;
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
@@ -67,10 +67,10 @@ public class ReadToolsSAMFileWriterFactory {
     }
 
     /**
-     * Should we check the existence of the file. Default value is {@link
-     * org.magicdgs.io.IOdefault#DEFAULT_CHECK_EXISTENCE}
+     * Should we check the existence of the file. Default value is the reverse of
+     * {@link RTDefaults#FORCE_OVERWRITE}
      */
-    private boolean checkExistence = IOdefault.DEFAULT_CHECK_EXISTENCE;
+    private boolean checkExistence = !RTDefaults.FORCE_OVERWRITE;
 
     /**
      * If <code>true</code> the output will be checked for existence, otherwise if will be
@@ -206,7 +206,8 @@ public class ReadToolsSAMFileWriterFactory {
      *
      * @param header     entire header. Sort order is determined by the sortOrder property of this
      *                   arg.
-     * @param presorted  if true, SAMRecords must be added to the SAMFileWriter in order that agrees
+     * @param presorted  if true, SAMRecords must be added to the SAMFileWriter in order that
+     *                   agrees
      *                   with
      *                   header.sortOrder.
      * @param outputFile where to write the output.
@@ -336,7 +337,7 @@ public class ReadToolsSAMFileWriterFactory {
         // add a unknown barcode
         mapping.put(BarcodeMatch.UNKNOWN_STRING,
                 this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
-                        new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX,
+                        new File(String.format("%s_%s%s", filePrefix, IOUtils.DISCARDED_SUFFIX,
                                 extension))));
         return new SplitSAMFileWriterAbstract(header, mapping) {
 
@@ -354,10 +355,12 @@ public class ReadToolsSAMFileWriterFactory {
 
     /**
      * Create a split writer between assign/unknown barcodes; the mapping is "assign" and {@link
-     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. The add
+     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}. The
+     * add
      * alignment checks for the
      * read group ID; if it is not found (<code>null</code> value for read group) or {@link
-     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}, it goes to the
+     * org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch#UNKNOWN_STRING}, it
+     * goes to the
      * unknown file,
      *
      * @param header     entire header. Sort order is determined by the sortOrder property of this
@@ -380,7 +383,7 @@ public class ReadToolsSAMFileWriterFactory {
         // add a unknown barcode
         mapping.put(BarcodeMatch.UNKNOWN_STRING,
                 this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
-                        new File(String.format("%s_%s%s", filePrefix, IOdefault.DISCARDED_SUFFIX,
+                        new File(String.format("%s_%s%s", filePrefix, IOUtils.DISCARDED_SUFFIX,
                                 extension))));
         return new SplitSAMFileWriterAbstract(header, mapping) {
 
