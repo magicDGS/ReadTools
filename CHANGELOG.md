@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- Metrics from barcode detection ordered as the input file (samples and barcodes)
+
 ## [0.2.3] - 2016-11-01
 
 ### Fixed

@@ -29,7 +29,8 @@ import htsjdk.samtools.SAMReadGroupRecord;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class BarcodeDictionary {
     /**
      * Cached map between combined barcodes and read groups
      */
-    private final Map<String, SAMReadGroupRecord> barcodeRGmap = new Hashtable<>();
+    private final Map<String, SAMReadGroupRecord> barcodeRGmap = new LinkedHashMap<>();
 
     /**
      * Cached barcode set(s) for fast access
@@ -275,7 +276,7 @@ public class BarcodeDictionary {
      * Initialize the sets for the barcodes
      */
     private void initSets() {
-        barcodes.forEach(l -> barcodesSets.add(new HashSet<>(l)));
+        barcodes.forEach(l -> barcodesSets.add(new LinkedHashSet<>(l)));
     }
 
     /**

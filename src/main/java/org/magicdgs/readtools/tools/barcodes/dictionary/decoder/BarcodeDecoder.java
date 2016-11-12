@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -172,7 +174,7 @@ public class BarcodeDecoder {
      */
     private void initStats() {
         // get the statistics for the decoding
-        stats = new Hashtable<>();
+        stats = new LinkedHashMap<>();
         final List<String> sampleNames = dictionary.getSampleNames();
         for (int i = 0; i < dictionary.numberOfSamples(); i++) {
             final String combined = dictionary.getCombinedBarcodesFor(i);
@@ -181,9 +183,9 @@ public class BarcodeDecoder {
         stats.put(BarcodeMatch.UNKNOWN_STRING,
                 new MatcherStat(BarcodeMatch.UNKNOWN_STRING, BarcodeMatch.UNKNOWN_STRING));
         // get the statistics for the barcode
-        barcodeStats = new ArrayList<>();
-        mismatchesHist = new ArrayList<>();
-        nMean = new ArrayList<>();
+        barcodeStats = new LinkedList<>();
+        mismatchesHist = new LinkedList<>();
+        nMean = new LinkedList<>();
         final String suffix;
         if (dictionary.getNumberOfBarcodes() == 1) {
             suffix = null;
@@ -191,9 +193,9 @@ public class BarcodeDecoder {
             suffix = "_";
         }
         for (int j = 0; j < dictionary.getNumberOfBarcodes(); j++) {
-            final Map<String, BarcodeStat> bar = new Hashtable<>();
-            final Map<String, Histogram<Integer>> histM = new Hashtable<>();
-            final Map<String, MathUtils.RunningStat> mean = new Hashtable<>();
+            final Map<String, BarcodeStat> bar = new LinkedHashMap<>();
+            final Map<String, Histogram<Integer>> histM = new LinkedHashMap<>();
+            final Map<String, MathUtils.RunningStat> mean = new LinkedHashMap<>();
             for (final String b : dictionary.getSetBarcodesFromIndex(j)) {
                 final BarcodeStat s =
                         new BarcodeStat((suffix == null) ? b : String.format("%s_%s", b, j + 1));

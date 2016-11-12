@@ -94,8 +94,8 @@ public class BarcodeDictionaryFactory {
             barcodes.add(new ArrayList<>());
         }
         // create the lists with samples and libraries
-        final ArrayList<String> samples = new ArrayList<>();
-        final ArrayList<String> libraries = new ArrayList<>();
+        final List<String> samples = new ArrayList<>();
+        final List<String> libraries = new ArrayList<>();
         // reading the rest of the lines
         while (nextLine != null) {
             logger.debug(Arrays.toString(nextLine));
