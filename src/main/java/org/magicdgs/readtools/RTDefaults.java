@@ -43,11 +43,15 @@ public final class RTDefaults {
     /** Maximum number of record used to guess the quality of a file. Default=1000000. */
     public static final long MAX_RECORDS_FOR_QUALITY;
 
+    /** Read sampling frequency to check if the quality is really Standard. Default=1000. */
+    public static final int SAMPLING_QUALITY_CHECKING_FREQUENCY;
+
     /** Force overwrite of output files. Default=false. */
     public static final boolean FORCE_OVERWRITE;
 
     static {
         MAX_RECORDS_FOR_QUALITY = (long) getIntProperty("max_record_for_quality", 1000000);
+        SAMPLING_QUALITY_CHECKING_FREQUENCY = getIntProperty("sampling_quality_checking_frequency", 1000);
         FORCE_OVERWRITE = getBooleanProperty("force_overwrite", false);
     }
 

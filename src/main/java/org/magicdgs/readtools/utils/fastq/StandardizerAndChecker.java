@@ -24,6 +24,7 @@
 package org.magicdgs.readtools.utils.fastq;
 
 import org.magicdgs.io.FastqPairedRecord;
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.record.SAMRecordUtils;
 
 import htsjdk.samtools.SAMException;
@@ -42,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class StandardizerAndChecker {
 
     // each 1000 reads the quality will be checked
-    protected static final int frequency = 1000;
+    protected static final int frequency = RTDefaults.SAMPLING_QUALITY_CHECKING_FREQUENCY;
 
     // The encoding for this checker
     private final FastqQualityFormat encoding;
