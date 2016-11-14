@@ -116,16 +116,10 @@ public enum FastqReadNameEncoding {
     @Deprecated
     public String normalizeReadName(final String readName) {
         String normalizedName = getIlluminaReadNameWithoutComment(readName);
-        if (pairInfoGroup == -1) {
-            return normalizedName;
-        }
-        final Matcher matcher = pattern.matcher(readName);
-        if (matcher.find()) {
-            final String pairInfo = matcher.group(pairInfoGroup);
-            if (pairInfo != null) {
-                normalizedName = new StringBuilder(normalizedName)
-                        .append("/").append(matcher.group(pairInfoGroup)).toString();
-            }
+        final String pairInfo = getPairedState(readName);
+        if (!"0".equals(pairInfo)) {
+            normalizedName = new StringBuilder(normalizedName)
+                    .append("/").append(pairInfo).toString();
         }
         return normalizedName;
     }
@@ -150,6 +144,25 @@ public enum FastqReadNameEncoding {
     }
 
     /**
+     * Returns the paired state for this read (0, 1 or 2).
+     *
+     * @param readName the read name to extract the pair state.
+     *
+     * @return the pair state 1 or 2; 0 if not information.
+     */
+    public String getPairedState(final String readName) {
+        if (pairInfoGroup == -1) {
+            return "0";
+        }
+        final Matcher matcher = pattern.matcher(readName);
+        String pairInfo = null;
+        if (matcher.find()) {
+            pairInfo = matcher.group(pairInfoGroup);
+        }
+        return pairInfo == null ? "0" : pairInfo;
+    }
+
+    /**
      * Returns the second of pair status of the read.
      *
      * Note: {@code false} does not mean that the read is not paired or have the '1' mark.
@@ -159,18 +172,27 @@ public enum FastqReadNameEncoding {
      * @return {@code true} if the read have the '2' mark; {@code false} otherwise.
      */
     public boolean isSecondOfPair(final String readName) {
-        final Matcher matcher = pattern.matcher(readName);
-        String secondInfo = null;
-        if (matcher.find()) {
-            secondInfo = matcher.group(pairInfoGroup);
-        }
-        return secondInfo != null && secondInfo.equals("2");
+        return getPairedState(readName).equals("2");
+    }
+
+    /**
+     * Returns the first of pair status of the read.
+     *
+     * Note: {@code false} does not mean that the read is not paired or have the '1' mark.
+     *
+     * @param readName the read name to extract the information.
+     *
+     * @return {@code true} if the read have the '2' mark; {@code false} otherwise.
+     */
+    public boolean isFirstOfPair(final String readName) {
+        return getPairedState(readName).equals("1");
     }
 
     /**
      * Detects the format for the read name, and update the read with the following information:
      *
-     * - Read name according to SAM specs (Illumina-like read name with barcode but without pair information).
+     * - Read name according to SAM specs (Illumina-like read name with barcode but without pair
+     * information).
      * - Second of pair information detected with {@link #isSecondOfPair(String)}
      * - PF information if {@link #isPF(String)}
      *
@@ -187,8 +209,20 @@ public enum FastqReadNameEncoding {
         } else {
             logger.debug("Detected encoding: {}", encoding);
             read.setName(encoding.getIlluminaReadNameWithoutComment(readName));
-            if (encoding.isSecondOfPair(readName)) {
-                read.setIsSecondOfPair();
+            final String pairState = encoding.getPairedState(readName);
+            switch (pairState) {
+                case "0":
+                    read.setIsPaired(false);
+                    break;
+                case "1":
+                    read.setIsFirstOfPair();
+                    break;
+                case "2":
+                    read.setIsSecondOfPair();
+                    break;
+                default:
+                    throw new GATKException.ShouldNeverReachHereException(
+                            "Incorrect detection of pair-state: " + pairState);
             }
             read.setFailsVendorQualityCheck(encoding.isPF(readName));
         }
