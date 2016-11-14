@@ -129,7 +129,7 @@ public class QualityUtils {
      */
     public static FastqQualityFormat getFastqQualityFormat(final File input, final long maxReads) {
         FastqQualityFormat encoding;
-        if (IOUtils.isBamOrSam(input)) {
+        if (IOUtils.isSamBamOrCram(input.toPath())) {
             SAMRecordIterator reader = SamReaderFactory.makeDefault().open(input).iterator();
             encoding = getFastqQualityFormat(reader, maxReads);
             reader.close();

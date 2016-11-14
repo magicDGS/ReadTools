@@ -22,17 +22,16 @@
  */
 package org.magicdgs.readtools.utils.misc;
 
-import htsjdk.samtools.BamFileIoUtils;
 import htsjdk.samtools.fastq.FastqConstants;
+import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 /**
- * Utils for the inputs FASTQ and BAM/SAM files
+ * Utils for the inputs FASTQ and BAM/SAM files.
  *
  * @author Daniel Gómez-Sánchez
  */
@@ -48,19 +47,51 @@ public class IOUtils {
     public static final String DISCARDED_SUFFIX = "discarded";
 
     /**
-     * Check if the file is BAM or SAM formatted
+     * Checks if the extension of the path represents a SAM/BAM/CRAM formatted input.
      *
-     * @param input the input file
+     * @param input the path to check.
      *
-     * @return <code>true</code> if it is a BAM/SAM; <code>false</code> otherwise
+     * @return {@code true} if is is SAM/BAM/CRAM; {@code false} otherwise.
      */
-    public static boolean isBamOrSam(final File input) {
-        return BamFileIoUtils.isBamFile(input) || input.getName().endsWith(DEFAULT_SAM_EXTENSION);
+    public static boolean isSamBamOrCram(final Path input) {
+        return isSamBamOrCram(input.toString());
     }
 
     /**
-     * Make an output FASTQ with the default extensions {@link FastqConstants.FastqExtensions#FQ_GZ}
-     * or {@link FastqConstants.FastqExtensions#FQ_GZ} if gzip is requested
+     * Checks if the file is SAM/BAM/CRAM formatted by extension.
+     *
+     * @param sourceName the name of the file.
+     *
+     * @return {@code true} if the file ends with the extension for this format; {@code false}
+     * otherwise.
+     */
+    public static boolean isSamBamOrCram(final String sourceName) {
+        return org.broadinstitute.hellbender.utils.io.IOUtils.isBamFileName(sourceName)
+                || org.broadinstitute.hellbender.utils.io.IOUtils.isCramFileName(sourceName)
+                || DEFAULT_SAM_EXTENSION
+                .equalsIgnoreCase("." + FilenameUtils.getExtension(sourceName));
+    }
+
+    /**
+     * Checks if the file is a FASTQ formatted used the extensions in
+     * {@link FastqConstants.FastqExtensions}.
+     *
+     * @param sourceName the name of the file.
+     *
+     * @return {@code true} if the file ends with the extension for this format; {@code false}
+     * otherwise.
+     */
+    public static boolean isFastq(final String sourceName) {
+        // assume that the constants in FastqExtensions are lower case
+        final String lowerCase = sourceName.toLowerCase();
+        return Stream.of(FastqConstants.FastqExtensions.values())
+                .map(FastqConstants.FastqExtensions::getExtension)
+                .anyMatch(lowerCase::endsWith);
+    }
+
+    /**
+     * Makes an output FASTQ with the default extensions {@link FastqConstants.FastqExtensions#FQ_GZ}
+     * or {@link FastqConstants.FastqExtensions#FQ_GZ} if gzip is requested.
      *
      * @param prefix the prefix for the file
      * @param gzip   {@code true} indicates that the output will be gzipped
@@ -73,64 +104,62 @@ public class IOUtils {
     }
 
     /**
-     * Create a default metrics file without checking
+     * Creates a default metrics output without checking for the existence.
      *
-     * @param prefix the prefix for the file
+     * @param prefix the prefix for the output path.
      *
-     * @return the metrics file
+     * @return the metrics path.
      */
-    public static File makeMetricsFile(final String prefix) {
-        return new File(String.format("%s%s", prefix, DEFAULT_METRICS_EXTENSION));
+    public static Path makeMetricsFile(final String prefix) {
+        return org.broadinstitute.hellbender.utils.io.IOUtils
+                .getPath(prefix + DEFAULT_METRICS_EXTENSION);
     }
 
     /**
-     * Create a new output file, generating all the sub-directories and checking for the existence
-     * of the file if
-     * requested
+     * Creates a new output file, generating all the sub-directories and checking for the existence
+     * of the file if requested.
      *
-     * @param output        the output file
-     * @param checkIfExists <code>true</code> if the file should be check, <code>false</code>
-     *                      otherwise
+     * @param output        the output file name.
+     * @param checkIfExists if {@code true} it will throw an IOException if the file exists.
      *
-     * @return the file object
+     * @return the path object.
      *
-     * @throws IOException if the file already exists or an IO error occurs
+     * @throws IOException if the file already exists or an IO error occurs.
      */
-    public static File newOutputFile(final String output, final boolean checkIfExists)
+    public static Path newOutputFile(final String output, final boolean checkIfExists)
             throws IOException {
-        final File file = new File(output);
+        final Path path = org.broadinstitute.hellbender.utils.io.IOUtils.getPath(output);
         // first check if the file already exists
         if (checkIfExists) {
-            exceptionIfExists(file);
+            exceptionIfExists(path);
         }
         // if not, create all the directories
-        createDirectoriesForOutput(file);
+        createDirectoriesForOutput(path);
         // return the file
-        return file;
+        return path;
     }
 
     /**
-     * Create all the directories from an output file
+     * Create all the directories for an output path.
      *
-     * @param output the output file
+     * @param output the output path.
      *
-     * @throws IOException if IO errors occur
+     * @throws IOException if IO errors occur.
      */
-    public static void createDirectoriesForOutput(final File output) throws IOException {
-        final Path parentDirectory = Paths.get(output.getAbsolutePath()).getParent();
-        Files.createDirectories(parentDirectory);
+    public static void createDirectoriesForOutput(final Path output) throws IOException {
+        Files.createDirectories(output.getParent());
     }
 
     /**
-     * Check if the file exists and throw an exception if so
+     * Check if the path exists and throw an exception if so.
      *
-     * @param file the file to check
+     * @param path the path to check.
      *
-     * @throws IOException if the file exists
+     * @throws IOException if the file exists.
      */
-    public static void exceptionIfExists(final File file) throws IOException {
-        if (file.isFile()) {
-            throw new IOException("File " + file.getAbsolutePath() + " already exists");
+    public static void exceptionIfExists(final Path path) throws IOException {
+        if (Files.exists(path)) {
+            throw new IOException("File " + path.toString() + " already exists");
         }
     }
 }

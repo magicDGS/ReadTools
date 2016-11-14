@@ -125,7 +125,7 @@ public final class TrimFastq extends ReadToolsBaseTool {
         // final line of progress
         progress.logNumberOfVariantsProcessed();
         // print the metrics file
-        trimmer.printTrimmerMetrics(IOUtils.makeMetricsFile(outputPrefix));
+        trimmer.printTrimmerMetrics(IOUtils.makeMetricsFile(outputPrefix).toFile());
         return null;
     }
 

@@ -439,8 +439,8 @@ public class ReadToolsSAMFileWriterFactory {
      */
     private void checkExistenceAndCreateDirs(final File outputFile) throws IOException {
         if (checkExistence) {
-            IOUtils.exceptionIfExists(outputFile);
+            IOUtils.exceptionIfExists(outputFile.toPath());
         }
-        IOUtils.createDirectoriesForOutput(outputFile);
+        IOUtils.createDirectoriesForOutput(outputFile.toPath());
     }
 }

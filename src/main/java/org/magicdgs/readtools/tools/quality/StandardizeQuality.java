@@ -92,7 +92,7 @@ public final class StandardizeQuality extends ReadToolsBaseTool {
 
     @Override
     protected Object doWork() {
-        if (IOUtils.isBamOrSam(input)) {
+        if (IOUtils.isSamBamOrCram(input.toPath())) {
             runBam();
         } else {
             if (CREATE_INDEX) {

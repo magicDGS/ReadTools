@@ -127,7 +127,7 @@ public class ReadToolsFastqWriterFactory {
      */
     public ReadToolsFastqWriter newWriter(String prefix) throws IOException {
         final String outputName = IOUtils.makeOutputNameFastqWithDefaults(prefix, GZIP_OUTPUT);
-        return newWriterDefault(IOUtils.newOutputFile(outputName, checkExistence));
+        return newWriterDefault(IOUtils.newOutputFile(outputName, checkExistence).toFile());
     }
 
     /**
@@ -142,7 +142,7 @@ public class ReadToolsFastqWriterFactory {
         final FastqWriter pair2 = newWriter(prefix + "_2");
         final String seOutputName =
                 IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT);
-        final File seOutput = IOUtils.newOutputFile(seOutputName, checkExistence);
+        final File seOutput = IOUtils.newOutputFile(seOutputName, checkExistence).toFile();
         Lazy<FastqWriter> single = new Lazy<>(() -> FACTORY.newWriter(seOutput));
         return new PairFastqWriters(pair1, pair2, single);
     }

@@ -146,7 +146,7 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
         }
         decoder.logMatcherResult(logger);
         try {
-            decoder.outputStats(IOUtils.makeMetricsFile(outputPrefix));
+            decoder.outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
         } catch (IOException e) {
             throw new UserException(e.getMessage(), e);
         }

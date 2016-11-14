@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Fixed issue for CRAM files detection by extension
+
 ### Changed
 - Metrics from barcode detection ordered as the input file (samples and barcodes)
 

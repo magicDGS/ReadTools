@@ -24,9 +24,12 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import org.magicdgs.readtools.utils.misc.IOUtils;
+
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.fastq.FastqConstants;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.io.Closeable;
@@ -93,13 +96,15 @@ public abstract class ReadsSourceHandler implements Closeable {
      * @return the source handler.
      */
     public static ReadsSourceHandler getHandler(final String source) {
-        // first checks if it is a FASTQ file
-        if (isFastq(source)) {
+        // first check if it is a SAM/BAM/CRAM format
+        if (IOUtils.isSamBamOrCram(source)) {
+            return new SamSourceHandler(source);
+        } else if (IOUtils.isFastq(source)) {
             return new FastqSourceHandler(source);
         }
-        // TODO: support SRA?
-        // if it is not a FASTQ file, it should create a SamSourceHandler
-        return new SamSourceHandler(source);
+        // TODO: support other sources?
+        throw new UserException("Impossible to handle source of reads: "
+                + source + ": not recognized extension");
     }
 
     // TODO -> extract to an utils method?
