@@ -26,13 +26,20 @@ package org.magicdgs.readtools;
 
 import htsjdk.samtools.util.Log;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
-import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
+ * Main class for ReadTools, with several differences from GATK4:
+ *
+ * - Only includes tools in org.magicdgs.readtools.tools package.
+ * - Command line for help shows "java -jar ReadTools.jar".
+ * - Result for tools are printed directly, without decoration.
+ * - If a non-user exception occurs, the program prints an unexpected error to contact developer
+ * (and the stack trace if DEBUG is enabled).
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class Main extends org.broadinstitute.hellbender.Main {
@@ -57,37 +64,12 @@ public class Main extends org.broadinstitute.hellbender.Main {
         return "java -jar ReadTools.jar";
     }
 
-    /**
-     * Entry point for ReadTools.
-     *
-     * Note: several things change from the GATK4 framework main method.
-     * 1) No stack-trace is printed for UserExceptions.
-     * 2) If a no UserException is found, output a short notice to contact the developer.
-     */
-    public void mainReadTools(final String[] args) {
-        try {
-            Object result = instanceMain(args);
-            handleResult(result);
-        } catch (final UserException.CommandLineException e) {
-            // the GATK framework should prints the error already
-            System.exit(1);
-        } catch (final UserException e) {
-            // this prints the error for user exceptions
-            CommandLineProgram.printDecoratedUserExceptionMessage(System.err, e);
-            System.exit(2);
-        } catch (final Exception e) {
-            handleNonUserException(e);
-            System.exit(3);
-        }
-    }
-
     /** Command line entry point. */
     public static void main(final String[] args) {
-        // TODO: change for calling mainEntry(args) from GATK4
-        new Main().mainReadTools(args);
+        new Main().mainEntry(args);
     }
 
-    /** Prints the result to the standard output directly.*/
+    /** Prints the result to the standard output directly. */
     @Override
     protected void handleResult(final Object result) {
         // TODO: print something else and/or handle metrics?
@@ -97,8 +79,8 @@ public class Main extends org.broadinstitute.hellbender.Main {
     }
 
     /** Prints in {@link System#err} log information for unexpected error. */
-    // TODO: port to GATK4 framework!
-    protected static void handleNonUserException(final Exception e) {
+    @Override
+    protected void handleNonUserException(final Exception e) {
         System.err
                 .println("***********************************************************************");
         System.err.println();
