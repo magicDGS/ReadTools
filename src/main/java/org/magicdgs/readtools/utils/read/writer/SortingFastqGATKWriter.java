@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.writer;
+package org.magicdgs.readtools.utils.read.writer;
 
 import htsjdk.samtools.BAMRecordCodec;
 import htsjdk.samtools.SAMFileHeader;
@@ -55,9 +55,9 @@ import java.nio.file.Path;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FastqGATKWriter implements GATKReadWriter {
+public class SortingFastqGATKWriter implements GATKReadWriter {
 
-    private static final Logger logger = LogManager.getLogger(FastqGATKWriter.class);
+    private static final Logger logger = LogManager.getLogger(SortingFastqGATKWriter.class);
 
     // TODO: this will be in HTSJDK FastqConstants after https://github.com/samtools/htsjdk/pull/572
     public static final String FIRST_OF_PAIR = "/1";
@@ -88,7 +88,7 @@ public class FastqGATKWriter implements GATKReadWriter {
      * @param sortOrder the order of the output file.
      * @param header    the header for use in sorting. May be null.
      */
-    public FastqGATKWriter(final Path path, final FastqWriterFactory factory,
+    public SortingFastqGATKWriter(final Path path, final FastqWriterFactory factory,
             final SAMFileHeader.SortOrder sortOrder, final SAMFileHeader header) {
         this.writer = factory.newWriter(path.toFile());
         this.header = header;
@@ -128,7 +128,7 @@ public class FastqGATKWriter implements GATKReadWriter {
      *
      * @param path the path to write the file in.
      */
-    public FastqGATKWriter(final Path path) {
+    public SortingFastqGATKWriter(final Path path) {
         this(path, new FastqWriterFactory(), SAMFileHeader.SortOrder.unsorted, null);
     }
 
