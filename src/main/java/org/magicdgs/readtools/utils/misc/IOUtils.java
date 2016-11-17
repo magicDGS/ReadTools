@@ -24,6 +24,7 @@ package org.magicdgs.readtools.utils.misc;
 
 import htsjdk.samtools.fastq.FastqConstants;
 import org.apache.commons.io.FilenameUtils;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -124,30 +125,23 @@ public class IOUtils {
      *
      * @return the path object.
      *
-     * @throws IOException if the file already exists or an IO error occurs.
+     * @throws UserException if the file already exists or an I/O error occurs.
      */
-    public static Path newOutputFile(final String output, final boolean checkIfExists)
-            throws IOException {
-        final Path path = org.broadinstitute.hellbender.utils.io.IOUtils.getPath(output);
-        // first check if the file already exists
-        if (checkIfExists) {
-            exceptionIfExists(path);
+    public static Path newOutputFile(final String output, final boolean checkIfExists) {
+        try {
+            final Path path = org.broadinstitute.hellbender.utils.io.IOUtils.getPath(output);
+            // first check if the file already exists
+            if (checkIfExists) {
+                exceptionIfExists(path);
+            }
+            // if not, create all the directories
+            Files.createDirectories(path.getParent());
+            // return the file
+            return path;
+        } catch (IOException e) {
+            // we catch the user exception in
+            throw new UserException.CouldNotCreateOutputFile(output, e.getMessage(), e);
         }
-        // if not, create all the directories
-        createDirectoriesForOutput(path);
-        // return the file
-        return path;
-    }
-
-    /**
-     * Create all the directories for an output path.
-     *
-     * @param output the output path.
-     *
-     * @throws IOException if IO errors occur.
-     */
-    public static void createDirectoriesForOutput(final Path output) throws IOException {
-        Files.createDirectories(output.getParent());
     }
 
     /**

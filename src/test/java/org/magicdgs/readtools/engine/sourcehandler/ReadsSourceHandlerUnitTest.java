@@ -24,11 +24,11 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -53,8 +53,8 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
     protected final File sourcesFolder = getClassTestDirectory().getParentFile();
 
     // this is the factory for tests, including reference sequence for CRAM
-    private final SamReaderFactory FACTORY_FOR_TEST = SamReaderFactory.makeDefault()
-            .referenceSequence(new File(sourcesFolder, "2L.fragment.fa"));
+    private final ReadReaderFactory FACTORY_FOR_TEST = new ReadReaderFactory()
+            .setReferenceSequence(new File(sourcesFolder, "2L.fragment.fa"));
 
     @DataProvider(name = "fastqSources")
     public Object[][] fastqDataSources() {
@@ -105,7 +105,7 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
     }
 
     private final SAMFileHeader getHeaderForFile(final File file) {
-        try (SamReader reader = FACTORY_FOR_TEST.open(file)) {
+        try (final SamReader reader = FACTORY_FOR_TEST.openSamReader(file)) {
             return reader.getFileHeader();
         } catch (IOException e) {
             // do nothing
@@ -116,7 +116,7 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
     @Test(dataProvider = "fastqSources")
     public void testFastqSources(final String source, final FastqQualityFormat format,
             final SAMFileHeader header, final int length) throws Exception {
-        final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(source);
+        final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(source, FACTORY_FOR_TEST);
         Assert.assertEquals(handler.getClass(), FastqSourceHandler.class);
         testHandler(handler, format, header, length);
         // fastq files could not be iterated
@@ -127,7 +127,7 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
     @Test(dataProvider = "samSourcesNoIndex")
     public void testSamSourcesWithoutIndex(final String source, final FastqQualityFormat format,
             final SAMFileHeader header, final int length) throws Exception {
-        final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(source);
+        final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(source, FACTORY_FOR_TEST);
         Assert.assertEquals(handler.getClass(), SamSourceHandler.class);
         testHandler(handler, format, header, length);
         // sources without index could not be iterated with interval iteration

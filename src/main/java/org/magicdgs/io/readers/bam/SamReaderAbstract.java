@@ -24,12 +24,12 @@ package org.magicdgs.io.readers.bam;
 
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 import org.magicdgs.readtools.utils.fastq.StandardizerAndChecker;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.QueryInterval;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 
 import java.io.File;
@@ -58,9 +58,9 @@ public abstract class SamReaderAbstract implements SamReaderInterface {
      * @param file    the file
      * @param factory the factory
      */
-    public SamReaderAbstract(final File file, final SamReaderFactory factory,
+    public SamReaderAbstract(final File file, final ReadReaderFactory factory,
             final boolean allowHigherSangerQualities) {
-        this.reader = factory.open(file);
+        this.reader = factory.openSamReader(file);
         this.checker = new StandardizerAndChecker(QualityUtils.getFastqQualityFormat(file),
                 allowHigherSangerQualities);
     }

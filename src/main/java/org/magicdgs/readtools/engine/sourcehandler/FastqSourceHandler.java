@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.engine.sourcehandler;
 
 import org.magicdgs.readtools.utils.iterators.FastqToReadIterator;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.fastq.FastqReader;
@@ -49,8 +50,8 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
      *
      * @param source the source of reads (FASTQ).
      */
-    public FastqSourceHandler(final String source) {
-        super(source);
+    public FastqSourceHandler(final String source, final ReadReaderFactory factory) {
+        super(source, factory);
     }
 
     /** Returns an empty header. */
@@ -66,7 +67,7 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
     }
 
     protected FastqReader getFreshReader() {
-        return new FastqReader(path.toFile());
+        return factory.openFastqReader(path);
     }
 
     @Override

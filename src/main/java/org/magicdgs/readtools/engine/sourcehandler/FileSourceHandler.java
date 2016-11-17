@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
+
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -54,12 +56,16 @@ abstract class FileSourceHandler<T extends Closeable> extends ReadsSourceHandler
     /** The path to handle. */
     protected final Path path;
 
+    protected final ReadReaderFactory factory;
+
     /**
-     * Protected constructor. Use {@link #getHandler(String)} for detect the handler.
+     * Protected constructor. Use {@link #getHandler(String, ReadReaderFactory)} for detect the
+     * handler.
      */
-    protected FileSourceHandler(String source) {
+    protected FileSourceHandler(final String source, final ReadReaderFactory factory) {
         super(source);
         this.path = IOUtils.getPath(source);
+        this.factory = factory;
     }
 
     /**

@@ -23,17 +23,15 @@
  */
 package org.magicdgs.io.writers.bam;
 
-import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.BamFileIoUtils;
-import htsjdk.samtools.CRAMFileWriter;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.SAMRecord;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +39,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -52,7 +49,9 @@ import java.util.Map;
  * all intermediate directories
  *
  * @author Daniel Gómez-Sánchez
+ * @deprecated for create writers, use {@link ReadWriterFactory}.
  */
+@Deprecated
 public class ReadToolsSAMFileWriterFactory {
 
     private final Logger logger = LogManager.getLogger(ReadToolsSAMFileWriterFactory.class);
@@ -60,24 +59,18 @@ public class ReadToolsSAMFileWriterFactory {
     /**
      * The underlying factory
      */
-    private final SAMFileWriterFactory FACTORY;
+    private final ReadWriterFactory FACTORY;
 
     public ReadToolsSAMFileWriterFactory() {
-        FACTORY = new SAMFileWriterFactory();
+        FACTORY = new ReadWriterFactory();
     }
 
     /**
-     * Should we check the existence of the file. Default value is the reverse of
-     * {@link RTDefaults#FORCE_OVERWRITE}
+     * If {@code true} the output will be overwritten, otherwise it will check for the existence of
+     * the output.
      */
-    private boolean checkExistence = !RTDefaults.FORCE_OVERWRITE;
-
-    /**
-     * If <code>true</code> the output will be checked for existence, otherwise if will be
-     * overwritten if already exists.
-     */
-    public ReadToolsSAMFileWriterFactory setCheckExistence(final boolean checkExistence) {
-        this.checkExistence = checkExistence;
+    public ReadToolsSAMFileWriterFactory setForceOverwrite(final boolean forceOverwrite) {
+        FACTORY.setForceOverwrite(forceOverwrite);
         return this;
     }
 
@@ -91,7 +84,8 @@ public class ReadToolsSAMFileWriterFactory {
 
     /**
      * Convenience method allowing newSAMFileWriterFactory().setCreateIndex(true); Equivalent to
-     * SAMFileWriterFactory.setDefaultCreateIndexWhileWriting(true); newSAMFileWriterFactory(); If a
+     * SAMFileWriterFactory.setDefaultCreateIndexWhileWriting(true); newSAMFileWriterFactory(); If
+     * a
      * BAM (not SAM) file
      * is created, the setting is true, and the file header specifies coordinate order, then a BAM
      * index file will be
@@ -128,7 +122,8 @@ public class ReadToolsSAMFileWriterFactory {
     }
 
     /**
-     * Turn on or off the use of asynchronous IO for writing output SAM and BAM files.  If true then
+     * Turn on or off the use of asynchronous IO for writing output SAM and BAM files.  If true
+     * then
      * each SAMFileWriter
      * creates a dedicated thread which is used for compression and IO activities.
      */
@@ -166,133 +161,29 @@ public class ReadToolsSAMFileWriterFactory {
     }
 
     /**
-     * Create a BAMFileWriter that is ready to receive SAMRecords.  Uses default compression level.
+     * Set the reference file for output CRAM.
      *
-     * @param header     entire header. Sort order is determined by the sortOrder property of this
-     *                   arg.
-     * @param presorted  if true, SAMRecords must be added to the SAMFileWriter in order that
-     *                   agrees with header.sortOrder.
-     * @param outputFile where to write the output.
+     * @param referenceFile the reference file
      */
-    public SAMFileWriter makeBAMWriter(final SAMFileHeader header, final boolean presorted,
-            final File outputFile)
-            throws IOException {
-        checkExistenceAndCreateDirs(outputFile);
-        return FACTORY.makeBAMWriter(header, presorted, outputFile);
+    public ReadToolsSAMFileWriterFactory setReferenceFile(final File referenceFile) {
+        FACTORY.setReferenceFile(referenceFile);
+        return this;
     }
 
     /**
-     * Create a BAMFileWriter that is ready to receive SAMRecords.
-     *
-     * @param header           entire header. Sort order is determined by the sortOrder property of
-     *                         this arg.
-     * @param presorted        if true, SAMRecords must be added to the SAMFileWriter in order that
-     *                         agrees with
-     *                         header.sortOrder.
-     * @param outputFile       where to write the output.
-     * @param compressionLevel Override default compression level with the given value, between 0
-     *                         (fastest) and 9
-     *                         (smallest).
-     */
-    public SAMFileWriter makeBAMWriter(final SAMFileHeader header, final boolean presorted,
-            final File outputFile,
-            final int compressionLevel) throws IOException {
-        checkExistenceAndCreateDirs(outputFile);
-        return FACTORY.makeBAMWriter(header, presorted, outputFile, compressionLevel);
-    }
-
-    /**
-     * Create a SAMTextWriter that is ready to receive SAMRecords.
-     *
-     * @param header     entire header. Sort order is determined by the sortOrder property of this
-     *                   arg.
-     * @param presorted  if true, SAMRecords must be added to the SAMFileWriter in order that
-     *                   agrees
-     *                   with
-     *                   header.sortOrder.
-     * @param outputFile where to write the output.
-     */
-    public SAMFileWriter makeSAMWriter(final SAMFileHeader header, final boolean presorted,
-            final File outputFile)
-            throws IOException {
-        checkExistenceAndCreateDirs(outputFile);
-        return FACTORY.makeSAMWriter(header, presorted, outputFile);
-    }
-
-    /**
-     * Create a SAMTextWriter for writing to a stream that is ready to receive SAMRecords. This
-     * method does not support
-     * the creation of an MD5 file
-     *
-     * @param header    entire header. Sort order is determined by the sortOrder property of this
-     *                  arg.
-     * @param presorted if true, SAMRecords must be added to the SAMFileWriter in order that agrees
-     *                  with
-     *                  header.sortOrder.
-     * @param stream    the stream to write records to.  Note that this method does not buffer the
-     *                  stream, so the caller
-     *                  must buffer if desired.  Note that PrintStream is buffered.
-     */
-    public SAMFileWriter makeSAMWriter(final SAMFileHeader header, final boolean presorted,
-            final OutputStream stream) {
-        return FACTORY.makeSAMWriter(header, presorted, stream);
-    }
-
-    /**
-     * Create a BAMFileWriter for writing to a stream that is ready to receive SAMRecords. This
-     * method does not support
-     * the creation of an MD5 file
-     *
-     * @param header    entire header. Sort order is determined by the sortOrder property of this
-     *                  arg.
-     * @param presorted if true, SAMRecords must be added to the SAMFileWriter in order that agrees
-     *                  with
-     *                  header.sortOrder.
-     * @param stream    the stream to write records to.  Note that this method does not buffer the
-     *                  stream, so the caller
-     *                  must buffer if desired.  Note that PrintStream is buffered.
-     */
-    public SAMFileWriter makeBAMWriter(final SAMFileHeader header, final boolean presorted,
-            final OutputStream stream) {
-        return FACTORY.makeBAMWriter(header, presorted, stream);
-    }
-
-    /**
-     * Create either a SAM or a BAM writer based on examination of the outputFile extension.
+     * Create either a SAM/BAM/CRAM writer based on examination of the outputFile extension.
      *
      * @param header     entire header. Sort order is determined by the sortOrder property of this
      *                   arg.
      * @param presorted  presorted if true, SAMRecords must be added to the SAMFileWriter in order
-     *                   that agrees with
-     *                   header.sortOrder.
+     *                   that agrees with header.sortOrder.
      * @param outputFile where to write the output.  Must end with .sam or .bam.
      *
-     * @return SAM or BAM writer based on file extension of outputFile.
+     * @return SAM/BAM/CRAM writer based on file extension of outputFile.
      */
-    public SAMFileWriter makeSAMOrBAMWriter(final SAMFileHeader header, final boolean presorted,
-            final File outputFile)
-            throws IOException {
-        checkExistenceAndCreateDirs(outputFile);
-        return FACTORY.makeSAMOrBAMWriter(header, presorted, outputFile);
-    }
-
-    public SAMFileWriter makeWriter(final SAMFileHeader header, final boolean presorted,
-            final File outputFile,
-            final File referenceFasta) throws IOException {
-        checkExistenceAndCreateDirs(outputFile);
-        return FACTORY.makeWriter(header, presorted, outputFile, referenceFasta);
-    }
-
-    public CRAMFileWriter makeCRAMWriter(final SAMFileHeader header, final OutputStream stream,
-            final File referenceFasta) {
-        return FACTORY.makeCRAMWriter(header, stream, referenceFasta);
-    }
-
-    public CRAMFileWriter makeCRAMWriter(final SAMFileHeader header, final File outputFile,
-            final File referenceFasta)
-            throws IOException {
-        checkExistenceAndCreateDirs(outputFile);
-        return FACTORY.makeCRAMWriter(header, outputFile, referenceFasta);
+    public SAMFileWriter openSAMWriter(final SAMFileHeader header, final boolean presorted,
+            final String outputFile) {
+        return FACTORY.openSAMWriter(header, presorted, outputFile);
     }
 
     /**
@@ -330,15 +221,13 @@ public class ReadToolsSAMFileWriterFactory {
         // create the mapping
         for (Map.Entry<String, ArrayList<SAMReadGroupRecord>> entry : readGroups.entrySet()) {
             mapping.put(entry.getKey(),
-                    this.makeSAMOrBAMWriter(getReadHeaderFor(header, entry.getValue()), true,
-                            new File(String.format("%s_%s%s", filePrefix, entry.getKey(),
-                                    extension))));
+                    this.openSAMWriter(getReadHeaderFor(header, entry.getValue()), true,
+                            String.format("%s_%s%s", filePrefix, entry.getKey(), extension)));
         }
         // add a unknown barcode
         mapping.put(BarcodeMatch.UNKNOWN_STRING,
-                this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
-                        new File(String.format("%s_%s%s", filePrefix, IOUtils.DISCARDED_SUFFIX,
-                                extension))));
+                this.openSAMWriter(getDiscardedFileHeader(header), true,
+                        String.format("%s_%s%s", filePrefix, IOUtils.DISCARDED_SUFFIX, extension)));
         return new SplitSAMFileWriterAbstract(header, mapping) {
 
             @Override
@@ -379,12 +268,11 @@ public class ReadToolsSAMFileWriterFactory {
                 (bam) ? BamFileIoUtils.BAM_FILE_EXTENSION : IOUtils.DEFAULT_SAM_EXTENSION;
         Hashtable<String, SAMFileWriter> mapping = new Hashtable<>(2);
         // add the assign barcode
-        mapping.put("assign", makeSAMOrBAMWriter(header, true, new File(filePrefix + extension)));
+        mapping.put("assign", this.openSAMWriter(header, true, filePrefix + extension));
         // add a unknown barcode
         mapping.put(BarcodeMatch.UNKNOWN_STRING,
-                this.makeSAMOrBAMWriter(getDiscardedFileHeader(header), true,
-                        new File(String.format("%s_%s%s", filePrefix, IOUtils.DISCARDED_SUFFIX,
-                                extension))));
+                this.openSAMWriter(getDiscardedFileHeader(header), true,
+                        String.format("%s_%s%s", filePrefix, IOUtils.DISCARDED_SUFFIX, extension)));
         return new SplitSAMFileWriterAbstract(header, mapping) {
 
             @Override
@@ -431,16 +319,5 @@ public class ReadToolsSAMFileWriterFactory {
         return getReadHeaderFor(original, new ArrayList<SAMReadGroupRecord>() {{
             add(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
         }});
-    }
-
-    /**
-     * Check the existence of the file if the factory should do it and generate all the intermediate
-     * directories
-     */
-    private void checkExistenceAndCreateDirs(final File outputFile) throws IOException {
-        if (checkExistence) {
-            IOUtils.exceptionIfExists(outputFile.toPath());
-        }
-        IOUtils.createDirectoriesForOutput(outputFile.toPath());
     }
 }

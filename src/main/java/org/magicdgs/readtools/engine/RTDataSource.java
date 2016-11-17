@@ -29,6 +29,7 @@ import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.utils.iterators.InterleaveGATKReadIterators;
 import org.magicdgs.readtools.utils.iterators.ReadTransformerIterator;
 import org.magicdgs.readtools.utils.iterators.paired.GATKReadPairedIterator;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import org.magicdgs.readtools.utils.read.transformer.CheckQualityReadTransformer;
 import org.magicdgs.readtools.utils.read.transformer.SolexaToSangerReadTransformer;
 
@@ -67,6 +68,9 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
     // logger for the class
     private final Logger logger = LogManager.getLogger(this);
 
+    // factory for creating readers
+    private static ReadReaderFactory readerFactory = new ReadReaderFactory();
+
     // source handler
     private final ReadsSourceHandler readHandler;
     private final ReadsSourceHandler secondHandler;
@@ -97,9 +101,9 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
         if (interleaved && secondSourceString != null) {
             throw new IllegalArgumentException("Provided interleaved and a second source");
         }
-        this.readHandler = ReadsSourceHandler.getHandler(readSourceString);
+        this.readHandler = ReadsSourceHandler.getHandler(readSourceString, readerFactory);
         this.secondHandler = (secondSourceString == null)
-                ? null : ReadsSourceHandler.getHandler(secondSourceString);
+                ? null : ReadsSourceHandler.getHandler(secondSourceString, readerFactory);
         this.interleaved = interleaved;
         this.forceEncoding = forceEncoding;
     }
@@ -157,6 +161,11 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
      */
     public RTDataSource(final String readSourceStringFirst, final String readSourceStringSecond) {
         this(readSourceStringFirst, readSourceStringSecond, false, null);
+    }
+
+    /** Sets the reader factory used in the RTDataSource to open the sources. */
+    public static void setReadReaderFactory(final ReadReaderFactory factory) {
+        readerFactory = factory;
     }
 
     /** Returns {@code true} if the source represents pair-end data; {@link false} otherwise. */

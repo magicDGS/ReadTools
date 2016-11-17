@@ -40,11 +40,11 @@ import org.magicdgs.readtools.ProjectProperties;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.StringUtil;
 import org.broadinstitute.hellbender.cmdline.Argument;
 import org.broadinstitute.hellbender.cmdline.PicardCommandLineProgram;
@@ -153,12 +153,12 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
 
     private ReadToolsFastqWriterFactory fastqWriterFactory = null;
     private ReadToolsSAMFileWriterFactory samFileWriterFactory = null;
-    private SamReaderFactory samReaderFactory = null;
+    private ReadReaderFactory readerFactory = null;
 
     private ReadToolsFastqWriterFactory getFastqFactoryFromCommandLine() {
         if (fastqWriterFactory == null) {
             fastqWriterFactory = new ReadToolsFastqWriterFactory()
-                    .setCheckExistence(!forceOverwrite)
+                    .setForceOverwrite(forceOverwrite)
                     .setGzipOutput(!disableZippedOutput)
                     .setUseAsyncIo(nThreads != 1)
                     .setCreateMd5(CREATE_MD5_FILE);
@@ -168,22 +168,27 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
 
     private ReadToolsSAMFileWriterFactory getSamFactoryFromCommandLine() {
         if (samFileWriterFactory == null) {
-            // Picard is taking care of setting the index creation, md5 digest, max records in ram
+            // even if Picard is setting the default factory, we set everything here to be sure
+            // Picard is taking care of setting the index creation, max records in ram
             samFileWriterFactory = new ReadToolsSAMFileWriterFactory()
-                    .setCheckExistence(!forceOverwrite)
+                    .setMaxRecordsInRam(MAX_RECORDS_IN_RAM)
+                    .setCreateIndex(CREATE_INDEX)
+                    .setReferenceFile(REFERENCE_SEQUENCE)
+                    .setCreateMd5File(CREATE_MD5_FILE)
+                    .setForceOverwrite(forceOverwrite)
                     .setUseAsyncIo(nThreads != 1);
         }
         return samFileWriterFactory;
     }
 
-    private SamReaderFactory getSamReaderFactoryFromCommandLine() {
-        if (samReaderFactory == null) {
-            // Picard is taking care of the validation stringency
-            // we added the reference sequence for the CRAM files
-            samReaderFactory = SamReaderFactory.makeDefault()
-                    .referenceSequence(REFERENCE_SEQUENCE);
+    private ReadReaderFactory getReadReaderFactoryFromCommandLine() {
+        if (readerFactory == null) {
+            // even if Picard is setting the default factory, we reset everything here to be sure
+            readerFactory = new ReadReaderFactory()
+                    .setValidationStringency(VALIDATION_STRINGENCY)
+                    .setReferenceSequence(REFERENCE_SEQUENCE);
         }
-        return samReaderFactory;
+        return readerFactory;
     }
 
     /**
@@ -282,11 +287,11 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
         // Picard is taking care of the validation stringency
         if (maintainFormat) {
             // if the format is maintained, create a default sam reader
-            return new SamReaderImpl(input, getSamReaderFactoryFromCommandLine(),
+            return new SamReaderImpl(input, getReadReaderFactoryFromCommandLine(),
                     allowHigherSangerQualities);
         } else {
             // if not, standardize
-            return new SamReaderSanger(input, getSamReaderFactoryFromCommandLine(),
+            return new SamReaderSanger(input, getReadReaderFactoryFromCommandLine(),
                     allowHigherSangerQualities);
         }
     }

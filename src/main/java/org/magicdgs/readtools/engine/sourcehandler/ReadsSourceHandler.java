@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.engine.sourcehandler;
 
 import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -55,8 +56,8 @@ public abstract class ReadsSourceHandler implements Closeable {
     protected final String source;
 
     /**
-     * Protected constructor. Use {@link #getHandler(String)} for detect the handler or a concrete
-     * implementation.
+     * Protected constructor. Use {@link #getHandler(String, ReadReaderFactory)} for detect the
+     * handler or a concrete implementation.
      */
     protected ReadsSourceHandler(final String source) {
         this.source = source;
@@ -104,12 +105,13 @@ public abstract class ReadsSourceHandler implements Closeable {
      *
      * @return the source handler.
      */
-    public static ReadsSourceHandler getHandler(final String source) {
+    public static ReadsSourceHandler getHandler(final String source,
+            final ReadReaderFactory factory) {
         // first check if it is a SAM/BAM/CRAM format
         if (IOUtils.isSamBamOrCram(source)) {
-            return new SamSourceHandler(source);
+            return new SamSourceHandler(source, factory);
         } else if (IOUtils.isFastq(source)) {
-            return new FastqSourceHandler(source);
+            return new FastqSourceHandler(source, factory);
         }
         throw new UserException("Impossible to handle source of reads: "
                 + source + ": not recognized extension");

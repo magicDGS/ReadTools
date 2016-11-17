@@ -27,22 +27,21 @@ package org.magicdgs.readtools.tools.quality;
 import org.magicdgs.io.readers.bam.SamReaderSanger;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleSanger;
-import org.magicdgs.io.writers.bam.ReadToolsSAMFileWriterFactory;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
+import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
-import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.hellbender.cmdline.Argument;
@@ -52,7 +51,6 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
@@ -72,10 +70,11 @@ public final class StandardizeQuality extends ReadToolsBaseTool {
 
     @Argument(fullName = ReadToolsLegacyArgumentDefinitions.OUTPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.OUTPUT_SHORT_NAME, optional = false,
             doc = "Output for the converted file. The extension determine the format SAM/BAM or FASTQ/GZIP.")
-    public File output = null;
+    public String output = null;
 
     private Closeable reader;
     private Closeable writer;
+    private ReadWriterFactory factory;
 
     @Override
     protected String[] customCommandLineValidation() {
@@ -92,6 +91,12 @@ public final class StandardizeQuality extends ReadToolsBaseTool {
 
     @Override
     protected Object doWork() {
+        factory = new ReadWriterFactory()
+                .setReferenceFile(REFERENCE_SEQUENCE)
+                .setCreateIndex(CREATE_INDEX)
+                .setCreateMd5File(CREATE_MD5_FILE)
+                .setUseAsyncIo(nThreads != 1)
+                .setForceOverwrite(forceOverwrite);
         if (IOUtils.isSamBamOrCram(input.toPath())) {
             runBam();
         } else {
@@ -111,11 +116,8 @@ public final class StandardizeQuality extends ReadToolsBaseTool {
         // open reader (directly converting)
         final FastqReaderSingleInterface reader =
                 new FastqReaderSingleSanger(input, allowHigherSangerQualities);
-        // open factory for writer
-        final FastqWriterFactory factory = new FastqWriterFactory();
-        factory.setUseAsyncIo(nThreads != 1);
         // open writer
-        final FastqWriter writer = factory.newWriter(output);
+        final FastqWriter writer = factory.openFastqWriter(output);
         // start iterations
         final FastqLogger progress = new FastqLogger(logger);
         for (final FastqRecord record : reader) {
@@ -132,17 +134,10 @@ public final class StandardizeQuality extends ReadToolsBaseTool {
      */
     private void runBam() {
         final SamReader reader =
-                new SamReaderSanger(input, SamReaderFactory.make(), allowHigherSangerQualities);
+                new SamReaderSanger(input, new ReadReaderFactory(), allowHigherSangerQualities);
         final SAMFileHeader header = reader.getFileHeader();
         header.addProgramRecord(getToolProgramRecord());
-        final SAMFileWriter writer;
-        try {
-            writer = new ReadToolsSAMFileWriterFactory().setCreateIndex(CREATE_INDEX)
-                    .setUseAsyncIo(nThreads != 1)
-                    .makeSAMOrBAMWriter(header, true, output);
-        } catch (IOException e) {
-            throw new UserException(e.getMessage(), e);
-        }
+        final SAMFileWriter writer = factory.openSAMWriter(header, true, output);
         // start iterations
         final ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
         for (final SAMRecord record : reader) {

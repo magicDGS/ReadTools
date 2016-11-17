@@ -23,20 +23,18 @@
 package org.magicdgs.io.writers.fastq;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
-import htsjdk.samtools.fastq.FastqWriterFactory;
 import htsjdk.samtools.util.Lazy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -45,7 +43,9 @@ import java.util.Hashtable;
  * FastqWriterFactory for ReadTools
  *
  * @author Daniel Gómez-Sánchez
+ * @deprecated for create writers, use {@link ReadWriterFactory}.
  */
+@Deprecated
 public class ReadToolsFastqWriterFactory {
 
     private final Logger logger = LogManager.getLogger(ReadToolsFastqWriterFactory.class);
@@ -53,7 +53,7 @@ public class ReadToolsFastqWriterFactory {
     /**
      * The underlying factory
      */
-    private final FastqWriterFactory FACTORY;
+    private final ReadWriterFactory FACTORY;
 
     /**
      * By default, the output will be GZIPPED if a prefix is provided; if a file is provided, it is
@@ -62,16 +62,16 @@ public class ReadToolsFastqWriterFactory {
     private boolean GZIP_OUTPUT = true;
 
     /**
-     * Should we check the existence of the file. Default value is the negation of
-     * {@link RTDefaults#FORCE_OVERWRITE}
-     */
-    private boolean checkExistence = !RTDefaults.FORCE_OVERWRITE;
-
-    /**
      * Initialize a new factory
      */
     public ReadToolsFastqWriterFactory() {
-        FACTORY = new FastqWriterFactory();
+        FACTORY = new ReadWriterFactory();
+    }
+
+    /** Sets the force overwrite. */
+    public ReadToolsFastqWriterFactory setForceOverwrite(final boolean forceOverwrite) {
+        FACTORY.setForceOverwrite(forceOverwrite);
+        return this;
     }
 
     /**
@@ -86,7 +86,7 @@ public class ReadToolsFastqWriterFactory {
      * If true, compute MD5 and write appropriately-named file when file is closed.
      */
     public ReadToolsFastqWriterFactory setCreateMd5(final boolean createMd5) {
-        FACTORY.setCreateMd5(createMd5);
+        FACTORY.setCreateMd5File(createMd5);
         return this;
     }
 
@@ -99,26 +99,6 @@ public class ReadToolsFastqWriterFactory {
     }
 
     /**
-     * If <code>true</code> the output will be checked for existence, otherwise if will be
-     * overwritten if already exists.
-     */
-    public ReadToolsFastqWriterFactory setCheckExistence(final boolean checkExistence) {
-        this.checkExistence = checkExistence;
-        return this;
-    }
-
-    /**
-     * Create a new default writer (using {@link htsjdk.samtools.fastq.FastqWriterFactory#newWriter(java.io.File)})
-     *
-     * @param out the file to create the writer from (it is not checked for anything)
-     *
-     * @return a new instance of the writer
-     */
-    protected ReadToolsFastqWriter newWriterDefault(final File out) {
-        return new ReadToolsBasicFastqWriter(FACTORY.newWriter(out));
-    }
-
-    /**
      * Create a new FastqWriter from a prefix
      *
      * @param prefix the prefix for the files
@@ -127,7 +107,7 @@ public class ReadToolsFastqWriterFactory {
      */
     public ReadToolsFastqWriter newWriter(String prefix) throws IOException {
         final String outputName = IOUtils.makeOutputNameFastqWithDefaults(prefix, GZIP_OUTPUT);
-        return newWriterDefault(IOUtils.newOutputFile(outputName, checkExistence).toFile());
+        return new ReadToolsBasicFastqWriter(FACTORY.openFastqWriter(outputName));
     }
 
     /**
@@ -142,8 +122,7 @@ public class ReadToolsFastqWriterFactory {
         final FastqWriter pair2 = newWriter(prefix + "_2");
         final String seOutputName =
                 IOUtils.makeOutputNameFastqWithDefaults(prefix + "_SE", GZIP_OUTPUT);
-        final File seOutput = IOUtils.newOutputFile(seOutputName, checkExistence).toFile();
-        Lazy<FastqWriter> single = new Lazy<>(() -> FACTORY.newWriter(seOutput));
+        Lazy<FastqWriter> single = new Lazy<>(() -> FACTORY.openFastqWriter(seOutputName));
         return new PairFastqWriters(pair1, pair2, single);
     }
 
@@ -179,8 +158,6 @@ public class ReadToolsFastqWriterFactory {
                 newPairWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX) :
                 newWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX));
         return new SplitFastqWriterAbstract(mapping) {
-
-            private final boolean p = paired;
 
             @Override
             public void write(FastqRecord record) {
@@ -228,8 +205,6 @@ public class ReadToolsFastqWriterFactory {
                 newPairWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX) :
                 newWriter(prefix + "_" + IOUtils.DISCARDED_SUFFIX));
         return new SplitFastqWriterAbstract(mapping) {
-
-            private final boolean p = paired;
 
             /**
              * By default, any record is correct

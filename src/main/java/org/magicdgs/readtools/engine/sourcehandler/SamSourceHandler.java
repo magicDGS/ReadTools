@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
+
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
@@ -46,16 +48,13 @@ import java.util.List;
  */
 public final class SamSourceHandler extends FileSourceHandler<SamReader> {
 
-    // factory used for create the readers
-    private final SamReaderFactory factory;
-
     /**
      * Constructor using the {@link SamReaderFactory#DEFAULT}.
      *
      * @param source the source of reads (SAM/BAM/CRAM).
      */
     public SamSourceHandler(final String source) {
-        this(source, SamReaderFactory.makeDefault());
+        this(source, new ReadReaderFactory());
     }
 
     /**
@@ -64,9 +63,8 @@ public final class SamSourceHandler extends FileSourceHandler<SamReader> {
      * @param source  the source of reads (SAM/BAM/CRAM).
      * @param factory the factory to create the readers from.
      */
-    public SamSourceHandler(final String source, final SamReaderFactory factory) {
-        super(source);
-        this.factory = factory;
+    public SamSourceHandler(final String source, final ReadReaderFactory factory) {
+        super(source, factory);
     }
 
     /** Gets the interval iterator from a fresh reader, including unmapped reads. */
@@ -81,7 +79,7 @@ public final class SamSourceHandler extends FileSourceHandler<SamReader> {
     }
 
     protected SamReader getFreshReader() {
-        return factory.open(path);
+        return factory.openSamReader(path);
     }
 
     @Override

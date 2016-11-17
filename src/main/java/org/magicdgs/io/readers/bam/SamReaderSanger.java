@@ -22,9 +22,10 @@
  */
 package org.magicdgs.io.readers.bam;
 
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
+
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
-import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 
 import java.io.File;
@@ -37,7 +38,7 @@ import java.io.File;
  */
 public class SamReaderSanger extends SamReaderAbstract {
 
-    public SamReaderSanger(File file, SamReaderFactory factory,
+    public SamReaderSanger(File file, ReadReaderFactory factory,
             boolean allowHigherSangerQualities) {
         super(file, factory, allowHigherSangerQualities);
     }
