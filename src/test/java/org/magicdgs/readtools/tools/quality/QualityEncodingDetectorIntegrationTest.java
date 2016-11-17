@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Daniel Gómez-Sánchez
+ * Copyright (c) 2016 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,32 +38,32 @@ import java.util.Arrays;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class QualityCheckerIntegrationTest extends CommandLineProgramTest {
-
-    @DataProvider(name = "smallFiles")
-    public static Object[][] getTestFiles() {
-        return new Object[][] {
-                // test FASTQ file
-                {SMALL_FASTQ_1, FastqQualityFormat.Standard},
-                {getInputDataFile("small.illumina.fq"), FastqQualityFormat.Illumina},
-                // test SAM files
-                {PAIRED_BAM_FILE, FastqQualityFormat.Standard},
-                {getInputDataFile("small.illumina.sam"), FastqQualityFormat.Illumina}
-        };
-    }
+public class QualityEncodingDetectorIntegrationTest extends CommandLineProgramTest {
 
     @Test(expectedExceptions = UserException.BadArgumentValue.class)
     public void testBadArgument() throws Exception {
+        // TODO: change when SMALL_FASTQ_1 doees not exists anymore
         runCommandLine(
-                Arrays.asList("-i", SMALL_FASTQ_1.getAbsolutePath(), "--maximum-reads", "-1"));
+                Arrays.asList("-I", SMALL_FASTQ_1.getAbsolutePath(), "--maximumReads", "-1"));
     }
 
-    @Test(dataProvider = "smallFiles")
+    @DataProvider(name = "notExistingFiles")
+    public Object[][] getNotExisting() {
+        return new Object[][] {{"doesNotExists.bam"}, {"doesNotExists.fq"}};
+    }
+
+    @Test(dataProvider = "notExistingFiles", expectedExceptions = UserException.CouldNotReadInputFile.class)
+    public void testFileDoesNotExists(final String fileName) throws Exception {
+        // TODO: change when SMALL_FASTQ_1 doees not exists anymore
+        runCommandLine(Arrays.asList("-I", fileName));
+    }
+
+    // TODO: generate a new data provider when this class is removed
+    // TODO: this is a very simple test for check that we are not changing anything
+    @Test(dataProvider = "smallFiles", dataProviderClass = QualityCheckerIntegrationTest.class)
     public void testQualityChecker(final File file, final FastqQualityFormat expectedFormat) {
-        final Object format = runCommandLine(Arrays.asList("-i", file.getAbsolutePath()));
-        Assert.assertEquals(format, (expectedFormat == FastqQualityFormat.Standard)
-                        ? "Sanger" : expectedFormat.toString());
+        final Object format = runCommandLine(Arrays.asList("-I", file.getAbsolutePath()));
+        Assert.assertEquals(format, expectedFormat);
     }
-
 
 }

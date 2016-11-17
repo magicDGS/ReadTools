@@ -29,12 +29,16 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.fastq.FastqReader;
+import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 /**
- * Factory for generate readers for all sources of reads with the same parameters.
+ * Factory for generate readers for all sources of reads with the same parameters. If any error
+ * occurs when opening a reader, an {@link UserException.CouldNotCreateOutputFile} is thrown.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -74,27 +78,39 @@ public class ReadReaderFactory {
 
     /** Open a new SAMReader from a path. */
     public SamReader openSamReader(final Path path) {
-        return samFactory.open(path);
+        return openWrappingException(() -> samFactory.open(path), path::toString);
     }
 
     /** Open a new SAMReader from a file. */
     public SamReader openSamReader(final File file) {
-        return samFactory.open(file);
+        return openWrappingException(() -> samFactory.open(file), file::getAbsolutePath);
     }
 
     /** Open a new SAMReader from a resource. */
     public SamReader openSamReader(final SamInputResource resource) {
         // TODO: probably this should disappear in favour of a String open.
-        return samFactory.open(resource);
+        return openWrappingException(() -> samFactory.open(resource), resource::toString);
     }
 
     /** Open a new FastqReader from a path. */
     public FastqReader openFastqReader(final Path path) {
-        return new FastqReader(path.toFile());
+        return openFastqReader(path.toFile());
     }
 
-    /** Open a new FastqReaderr from a path. */
+    /** Open a new FastqReaderr from a file. */
     public FastqReader openFastqReader(final File file) {
-        return new FastqReader(file);
+        return openWrappingException(() -> new FastqReader(file), file::getAbsolutePath);
     }
+
+    // any exception caused by open a file will thrown a could not read input file exception
+    private static <T> T openWrappingException(final Callable<T> opener,
+            final Supplier<String> source) {
+        try {
+            return opener.call();
+        } catch (Exception e) {
+            throw new UserException.CouldNotReadInputFile(source.get(), e);
+        }
+    }
+
+
 }

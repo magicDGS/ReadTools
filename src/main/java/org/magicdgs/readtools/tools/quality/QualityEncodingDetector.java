@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Daniel Gómez-Sánchez
+ * Copyright (c) 2016 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,42 +25,36 @@
 package org.magicdgs.readtools.tools.quality;
 
 import org.magicdgs.readtools.RTDefaults;
-import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.cmd.programgroups.DeprecatedProgramGroup;
-import org.magicdgs.readtools.utils.fastq.QualityUtils;
+import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
-import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.hellbender.cmdline.Argument;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
+import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
+import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
-import java.io.File;
+import java.io.IOException;
 
 /**
- * Tool for check the quality in both FASTQ and BAM files
- *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @deprecated this tool correspond to legacy elements.
  */
-@CommandLineProgramProperties(oneLineSummary = "DEPRECATED: USE 'QualityEncodingDetector' for get the quality encoding for a BAM/FASTQ file.",
-        summary = "DEPRECATED: USE 'QualityEncodingDetector' instead.\n"
-                + "Check the quality encoding for a BAM/FASTQ file and output in the STDOUT the encoding.",
-        programGroup = DeprecatedProgramGroup.class)
-@Deprecated
-public final class QualityChecker extends CommandLineProgram {
+@CommandLineProgramProperties(oneLineSummary = "Detects the quality encoding format for all kind of sources for ReadTools.",
+        summary = "Detects the quality encoding for a SAM/BAM/CRAM/FASTQ files, output to the STDOUT the quality encoding.",
+        programGroup = QCProgramGroup.class)
+public class QualityEncodingDetector extends CommandLineProgram {
 
-    @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME, optional = false,
-            doc = "Input BAM/FASTQ to determine the quality.")
-    public File input;
+    @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "Reads input.", optional = false)
+    public String sourceString;
 
-    @Argument(fullName = "maximum-reads", optional = true, doc = "Maximum number of read to use to iterate.")
+    @Argument(fullName = "maximumReads", shortName = "maximumReads", doc = "Maximum number of reads to use for detect the quality encoding.", optional = true)
     public Long recordsToIterate = RTDefaults.MAX_RECORDS_FOR_QUALITY;
 
     @Override
     protected String[] customCommandLineValidation() {
         if (recordsToIterate <= 0) {
-            throw new UserException.BadArgumentValue("maximum-reads",
+            throw new UserException.BadArgumentValue("maximumReads",
                     recordsToIterate.toString(), "should be a positive integer");
         }
         return super.customCommandLineValidation();
@@ -68,8 +62,12 @@ public final class QualityChecker extends CommandLineProgram {
 
     @Override
     protected Object doWork() {
-        final FastqQualityFormat format =
-                QualityUtils.getFastqQualityFormat(input, recordsToIterate);
-        return (format == FastqQualityFormat.Standard) ? "Sanger" : "Illumina";
+        try (final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(sourceString, new ReadReaderFactory())) {
+            return handler.getQualityEncoding(recordsToIterate);
+        } catch (IOException e) {
+            logger.debug(e);
+        }
+        logger.warn("Unable to detect quality encoding");
+        return "UNDEFINED";
     }
 }
