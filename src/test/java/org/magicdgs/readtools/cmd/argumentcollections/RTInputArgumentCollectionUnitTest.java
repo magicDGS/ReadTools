@@ -21,35 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.magicdgs.readtools.cmd;
 
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
+package org.magicdgs.readtools.cmd.argumentcollections;
+
+import org.magicdgs.readtools.utils.tests.BaseTest;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * Standard argument names for ReadTools. This encapsulates the names for all arguments that does
- * not belong to legacy tools alone.
- *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTStandardArguments {
+public class RTInputArgumentCollectionUnitTest extends BaseTest {
 
-    /** Cannot be instantiated. */
-    private RTStandardArguments() {}
+    private static RTInputArgumentCollection getWithRequiredArguments() {
+        final RTInputArgumentCollection args = new RTInputArgumentCollection();
+        args.inputSource = "input1.fastq";
+        return args;
+    }
 
-    /** Output for force overwrite in the tools. */
-    public static final String FORCE_OVERWRITE_NAME = "forceOverwrite";
+    @Test
+    public void testSingleEndArgumentsNotFailing() {
+        Assert.assertFalse(getWithRequiredArguments().getDataSource(null).isPaired());
+    }
 
-    /** Parameter for the second of the pair (if pair-end split files). */
-    public static final String INPUT_PAIR_LONG_NAME =
-            StandardArgumentDefinitions.INPUT_LONG_NAME + "2";
-    public static final String INPUT_PAIR_SHORT_NAME =
-            StandardArgumentDefinitions.INPUT_SHORT_NAME + "2";
+    @Test
+    public void testPairEndFilesArgumentsNotFailing() {
+        final RTInputArgumentCollection args = getWithRequiredArguments();
+        args.inputPair = "input2.fastq";
+        Assert.assertTrue(args.getDataSource(null).isPaired());
+    }
 
-    /** Parameter for interleaved pair-end input. */
-    public static final String INTERLEAVED_INPUT_LONG_NAME = "interleavedInput";
-    public static final String INTERLEAVED_INPUT_SHORT_NAME = "interleaved";
-
-    /** Parameter for forcing a concrete encoding of the input. */
-    public static final String FORCE_QUALITY_ENCODING_NAME = "forceEncoding";
+    @Test
+    public void testInterleavedArgumentsNotFailing() {
+        final RTInputArgumentCollection args = getWithRequiredArguments();
+        args.interleaved = true;
+        Assert.assertTrue(args.getDataSource(null).isPaired());
+    }
 
 }
