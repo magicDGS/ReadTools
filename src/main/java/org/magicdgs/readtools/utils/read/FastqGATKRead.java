@@ -76,5 +76,8 @@ public class FastqGATKRead extends SAMRecordToGATKReadAdapter {
             this.setAttribute(SAMTag.CO.toString(), baseQualHeader);
         }
         this.setIsUnmapped();
+        if (this.isPaired()) {
+            this.setMateIsUnmapped();
+        }
     }
 }

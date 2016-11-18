@@ -63,6 +63,7 @@ public class FastqGATKReadUnitTest extends BaseTest {
                 baseRecord.deepCopy()});
         // case with a read name with pair-end information
         baseRecord.setIsSecondOfPair();
+        baseRecord.setIsUnmapped();
         data.add(new Object[] {
                 new FastqRecord(baseRecord.getName() + "/2", bases, "quality comment",
                         baseQualities),
@@ -100,6 +101,10 @@ public class FastqGATKReadUnitTest extends BaseTest {
                 expected.getAttributeAsString("CO"));
         // assert that it is unmapped always
         Assert.assertTrue(fastqRead.isUnmapped());
+        // assert that the mate unmapped state is the same
+        if (expected.isPaired()) {
+            Assert.assertEquals(fastqRead.mateIsUnmapped(), expected.mateIsUnmapped());
+        }
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
