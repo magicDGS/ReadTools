@@ -28,6 +28,7 @@ import org.magicdgs.io.readers.bam.SamReaderSanger;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleSanger;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
+import org.magicdgs.readtools.cmd.programgroups.DeprecatedProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
@@ -56,12 +57,14 @@ import java.io.File;
  * Class for converting from Illumina to Sanger encoding both FASTQ and BAM files
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this tool correspond to legacy elements.
  */
-@CommandLineProgramProperties(oneLineSummary = "Convert an Illumina BAM/FASTQ file into a Sanger.",
-        summary =
+@CommandLineProgramProperties(oneLineSummary = "DEPRECATED: USE 'StandardizeReads' for convert an Illumina BAM/FASTQ into Sanger.",
+        summary = "DEPRECATED: USE 'StandardizeReads' instead.\n" +
                 "The standard encoding for a BAM file is Sanger and this tool is provided to standardize both BAM/FASTQ files "
                         + "for latter analysis. It does not support mixed qualities.",
-        programGroup = QCProgramGroup.class)
+        programGroup = DeprecatedProgramGroup.class)
+@Deprecated
 public final class StandardizeQuality extends ReadToolsBaseTool {
 
     @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME, optional = false,

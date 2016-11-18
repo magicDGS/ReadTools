@@ -54,6 +54,11 @@ public abstract class CommandLineProgramTest extends BaseTest implements Command
         return getTestedClassName();
     }
 
+    /** Returns a file in the class test directory with the provided file name. */
+    public File getTestFile(final String fileName) {
+        return new File(getClassTestDirectory(), fileName);
+    }
+
     /** Use our main class. */
     @Override
     public Object runCommandLine(final List<String> args) {

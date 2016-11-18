@@ -54,16 +54,16 @@ public class ReadToolsWalkerUnitTest extends CommandLineProgramTest {
     // the test directory for the class
     private final File testDir = getClassTestDirectory();
 
-    private String getTestFile(final String fileName) {
-        return new File(testDir, fileName).getAbsolutePath();
+    private String getTestFileName(final String fileName) {
+        return getTestFile(fileName).getAbsolutePath();
     }
 
     @DataProvider(name = "arguments")
     public Object[][] walkerArguments() {
         return new Object[][] {
-                {new String[] {"-I", getTestFile("small.mapped.bam")}, 206},
-                {new String[] {"-I", getTestFile("small_1.illumina.fq"),
-                        "-I2", getTestFile("small_2.illumina.fq")}, 10}
+                {new String[] {"-I", getTestFileName("small.mapped.bam")}, 206},
+                {new String[] {"-I", getTestFileName("small_1.illumina.fq"),
+                        "-I2", getTestFileName("small_2.illumina.fq")}, 10}
         };
     }
 
