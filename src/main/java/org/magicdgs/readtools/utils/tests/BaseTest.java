@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.tests;
 
+import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.testng.Reporter;
 
 import java.io.File;
@@ -62,6 +63,19 @@ public class BaseTest {
     public final File getClassTestDirectory() {
         return TestResourcesUtils.getReadToolsTestResource(
                 getClass().getPackage().getName().replace(".", "/") + "/" + getTestedClassName());
+    }
+
+    /**
+     * Creates a temp directory for tests, deleting recursively on exit.
+     *
+     * @param prefix the prefix for the test directory.
+     *
+     * @return temp directory file.
+     */
+    public static File createTestTempDir(final String prefix) {
+        final File dir = IOUtils.tempDir(prefix, "");
+        IOUtils.deleteRecursivelyOnExit(dir);
+        return dir;
     }
 
     // TODO: include utility methods for assertions

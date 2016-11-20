@@ -26,6 +26,7 @@ package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 
 import htsjdk.samtools.Defaults;
 import htsjdk.samtools.SAMFileHeader;
@@ -42,6 +43,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 /**
  * Factory for generate writers for all sources of reads with the same parameters. Before opening a
@@ -62,7 +65,6 @@ public final class ReadWriterFactory {
     private File referenceFile = null;
     // false if we do not check for existence
     private boolean forceOverwrite = RTDefaults.FORCE_OVERWRITE;
-
 
     /** Creates a default factory. */
     public ReadWriterFactory() {
@@ -138,7 +140,7 @@ public final class ReadWriterFactory {
     /** Open a new FASTQ writer from a Path. */
     public FastqWriter openFastqWriter(final Path path) {
         checkOutputAndCreateDirs(path);
-        return fastqFactory.newWriter(path.toFile());
+        return createWrappingException(() -> fastqFactory.newWriter(path.toFile()), path::toString);
     }
 
     /** Open a new FASTQ writer based from a String path. */
@@ -156,20 +158,34 @@ public final class ReadWriterFactory {
     public SAMFileWriter openSAMWriter(final SAMFileHeader header, final boolean presorted,
             final Path output) {
         checkOutputAndCreateDirs(output);
-        return samFactory.makeWriter(header, presorted, output.toFile(), referenceFile);
+        return createWrappingException(
+                () -> samFactory.makeWriter(header, presorted, output.toFile(), referenceFile),
+                output::toString);
+    }
+
+    /** Creates a SAM/BAM/CRAM writer from a String path. */
+    public GATKReadWriter createSAMWriter(final String output, final SAMFileHeader header,
+            final boolean presorted) {
+        if (null == referenceFile && output.endsWith(CramIO.CRAM_FILE_EXTENSION)) {
+            throw new UserException.MissingReference("A reference file is required for writing CRAM files");
+        }
+        return new SAMFileGATKReadWriter(openSAMWriter(header, presorted, output));
+    }
+
+    /** Creates a FASTQ writer from a String path. */
+    public GATKReadWriter createFASTQWriter(final String output) {
+        return new FastqGATKWriter(openFastqWriter(output));
     }
 
     /** Creates a GATKReadWriter based on the path extension. */
-    public GATKReadWriter createWriter(final Path output, final SAMFileHeader header,
+    public GATKReadWriter createWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
-        if (null == referenceFile && output.endsWith(CramIO.CRAM_FILE_EXTENSION)) {
-            throw new UserException("A reference file is required for writing CRAM files");
-        }
         if (IOUtils.isSamBamOrCram(output)) {
-            return new SAMFileGATKReadWriter(openSAMWriter(header, presorted, output));
+            return createSAMWriter(output, header, presorted);
+        } else if (IOUtils.isFastq(output)) {
+            return createFASTQWriter(output);
         }
-        // TODO: this should output other kind of writers eventually
-        throw new UserException.CouldNotCreateOutputFile(output.toFile(),
+        throw new UserException.CouldNotCreateOutputFile(new File(output),
                 "not supported output format based on the extension");
     }
 
@@ -186,6 +202,16 @@ public final class ReadWriterFactory {
         } catch (IOException e) {
             throw new UserException.CouldNotCreateOutputFile(outputFile.toFile(), e.getMessage(),
                     e);
+        }
+    }
+
+    // any exception caused by open a file for will thrown a could not read input file exception
+    private static <T> T createWrappingException(final Callable<T> opener,
+            final Supplier<String> source) {
+        try {
+            return opener.call();
+        } catch (Exception e) {
+            throw new UserException.CouldNotCreateOutputFile(source.get(), e.getMessage(), e);
         }
     }
 

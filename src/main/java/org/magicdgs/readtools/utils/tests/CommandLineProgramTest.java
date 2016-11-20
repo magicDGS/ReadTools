@@ -42,19 +42,6 @@ public abstract class CommandLineProgramTest extends BaseTest implements Command
         return TestResourcesUtils.getReadToolsTestResource("org/magicdgs/readtools/data/" + fileName);
     }
 
-    /**
-     * Creates a temp directory for tests, deleting recursively on exit.
-     *
-     * @param prefix the prefix for the test directory.
-     *
-     * @return temp directory file.
-     */
-    public static File createTestTempDir(final String prefix) {
-        final File dir = IOUtils.tempDir(prefix, "");
-        IOUtils.deleteRecursivelyOnExit(dir);
-        return dir;
-    }
-
     /** All the tests will have only the debug verbosity. */
     @BeforeSuite
     public void setTestVerbosity() {
