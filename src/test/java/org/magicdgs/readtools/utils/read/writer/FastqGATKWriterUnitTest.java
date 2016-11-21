@@ -40,11 +40,11 @@ public class FastqGATKWriterUnitTest extends BaseTest {
         final GATKRead read2 = ArtificialReadUtils.createArtificialUnmappedRead(
                 null, new byte[] {'A', 'C', 'A', 'G'},
                 new byte[] {37, 20, 40, 40});
-        read2.setName("read2#ACTG");
+        read2.setName("read2");
         read2.setIsSecondOfPair();
         read2.setMateIsUnmapped();
         read2.setAttribute("CO", "comment2");
-
+        read2.setAttribute("BC", "ACTG");
 
         // TODO: add more lists?
         return new Object[][] {

@@ -69,7 +69,8 @@ public class FastqGATKReadUnitTest extends BaseTest {
                         baseQualities),
                 baseRecord.deepCopy()});
         // case with read name as CASAVA format
-        baseRecord.setName("baseRecord#ATCG");
+        baseRecord.setName("baseRecord");
+        baseRecord.setAttribute("BC", "ATCG");
         data.add(new Object[] {
                 new FastqRecord("baseRecord 2:N:3:ATCG", bases, "quality comment", baseQualities),
                 baseRecord.deepCopy()});
@@ -105,6 +106,9 @@ public class FastqGATKReadUnitTest extends BaseTest {
         if (expected.isPaired()) {
             Assert.assertEquals(fastqRead.mateIsUnmapped(), expected.mateIsUnmapped());
         }
+        // assert that the BC tag is the same
+        Assert.assertEquals(fastqRead.getAttributeAsString("BC"),
+                expected.getAttributeAsString("BC"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)

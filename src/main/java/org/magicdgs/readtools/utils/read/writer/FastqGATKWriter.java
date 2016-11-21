@@ -24,7 +24,9 @@
 
 package org.magicdgs.readtools.utils.read.writer;
 
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
+import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.fastq.FastqRecord;
@@ -54,12 +56,19 @@ public class FastqGATKWriter implements GATKReadWriter {
 
     @Override
     public void addRead(final GATKRead read) {
-        String readName = read.getName();
-        if (read.isPaired()) {
-            readName += (read.isFirstOfPair())
-                    ? RTFastqContstants.FIRST_OF_PAIR : RTFastqContstants.SECOND_OF_PAIR;
+        final StringBuilder readName = new StringBuilder(read.getName());
+        // adding the raw barcode information if found
+        final String[] barcodes = RTReadUtils.getRawBarcodes(read);
+        if (barcodes.length != 0) {
+            readName.append(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER)
+                    .append(String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes));
         }
-        writer.write(new FastqRecord(readName,
+        // adding the pair information
+        if (read.isPaired()) {
+            readName.append((read.isFirstOfPair())
+                    ? RTFastqContstants.FIRST_OF_PAIR : RTFastqContstants.SECOND_OF_PAIR);
+        }
+        writer.write(new FastqRecord(readName.toString(),
                 read.getBasesString(),
                 read.getAttributeAsString(SAMTag.CO.name()),
                 ReadUtils.getBaseQualityString(read)));

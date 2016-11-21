@@ -24,6 +24,9 @@
 
 package org.magicdgs.readtools.utils.fastq;
 
+import org.magicdgs.readtools.RTDefaults;
+import org.magicdgs.readtools.utils.read.RTReadUtils;
+
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -88,21 +91,13 @@ public enum FastqReadNameEncoding {
      * with this format.
      */
     @VisibleForTesting
-    String getIlluminaReadNameWithoutComment(final String readName) {
+    String getPlainName(final String readName) {
         final Matcher matcher = pattern.matcher(readName);
         if (!matcher.find()) {
             throw new IllegalArgumentException(
                     "Wrong encoded read name for " + name() + " encoding: " + readName);
         }
-        final StringBuilder normalizedName = new StringBuilder(matcher.group(1));
-        if (barcodeGroup != -1) {
-            final String barcode = matcher.group(barcodeGroup);
-            if (barcode != null) {
-                normalizedName.append(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER)
-                        .append(matcher.group(barcodeGroup));
-            }
-        }
-        return normalizedName.toString();
+        return matcher.group(1);
     }
 
     /**
@@ -116,13 +111,20 @@ public enum FastqReadNameEncoding {
      */
     @Deprecated
     public String normalizeReadName(final String readName) {
-        String normalizedName = getIlluminaReadNameWithoutComment(readName);
+        final StringBuilder normalizedName =
+                new StringBuilder(getPlainName(readName));
+        final String barcode =
+                String.join(RTDefaults.BARCODE_INDEX_DELIMITER, getBarcodes(readName));
+        if (!barcode.isEmpty()) {
+            normalizedName.append(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER)
+                    .append(barcode);
+        }
         final String pairInfo = getPairedState(readName);
         if (!"0".equals(pairInfo)) {
-            normalizedName = new StringBuilder(normalizedName)
-                    .append("/").append(pairInfo).toString();
+            normalizedName.append(BarcodeMethods.READ_PAIR_SEPARATOR)
+                    .append(pairInfo);
         }
-        return normalizedName;
+        return normalizedName.toString();
     }
 
     /**
@@ -190,6 +192,26 @@ public enum FastqReadNameEncoding {
     }
 
     /**
+     * Returns the barcodes in the read name (splitted by {@link RTDefaults#BARCODE_INDEX_DELIMITER}).
+     *
+     * @param readName the read name to extract the information.
+     *
+     * @return the barcodes in the read name; empty array if information is not present.
+     */
+    public String[] getBarcodes(final String readName) {
+        if (barcodeGroup != -1) {
+            final Matcher matcher = pattern.matcher(readName);
+            if (matcher.find()) {
+                final String barcode = matcher.group(barcodeGroup);
+                if (barcode != null) {
+                    return barcode.split(RTDefaults.BARCODE_INDEX_DELIMITER);
+                }
+            }
+        }
+        return new String[0];
+    }
+
+    /**
      * Detects the format for the read name, and update the read with the following information:
      *
      * - Read name according to SAM specs (Illumina-like read name with barcode but without pair
@@ -209,7 +231,7 @@ public enum FastqReadNameEncoding {
             throw new GATKException.ShouldNeverReachHereException("Encoding should not be null.");
         } else {
             logger.debug("Detected encoding: {}", encoding);
-            read.setName(encoding.getIlluminaReadNameWithoutComment(readName));
+            read.setName(encoding.getPlainName(readName));
             final String pairState = encoding.getPairedState(readName);
             switch (pairState) {
                 case "0":
@@ -226,7 +248,7 @@ public enum FastqReadNameEncoding {
                             "Incorrect detection of pair-state: " + pairState);
             }
             read.setFailsVendorQualityCheck(encoding.isPF(readName));
-            // TODO: add barcode to tag if present -> warning: this will change the behaviour of other parts of the code
+            RTReadUtils.addBarcodesTagToRead(read, encoding.getBarcodes(readName));
         }
     }
 
