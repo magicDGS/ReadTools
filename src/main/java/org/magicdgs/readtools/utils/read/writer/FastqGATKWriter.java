@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools.utils.read.writer;
 
+import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
+
 import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
@@ -40,10 +42,6 @@ import java.io.IOException;
  */
 public class FastqGATKWriter implements GATKReadWriter {
 
-    // TODO: this will be in HTSJDK FastqConstants after https://github.com/samtools/htsjdk/pull/572
-    public static final String FIRST_OF_PAIR = "/1";
-    public static final String SECOND_OF_PAIR = "/2";
-
     // TODO: this is just a wrapper for now, but I would like to have more control
     // TODO: to allow using Path and set buffer size and other parameters not available
     // TODO: in the HTSJDK implementation
@@ -58,7 +56,8 @@ public class FastqGATKWriter implements GATKReadWriter {
     public void addRead(final GATKRead read) {
         String readName = read.getName();
         if (read.isPaired()) {
-            readName += (read.isFirstOfPair()) ? FIRST_OF_PAIR : SECOND_OF_PAIR;
+            readName += (read.isFirstOfPair())
+                    ? RTFastqContstants.FIRST_OF_PAIR : RTFastqContstants.SECOND_OF_PAIR;
         }
         writer.write(new FastqRecord(readName,
                 read.getBasesString(),

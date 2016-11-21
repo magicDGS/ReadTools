@@ -36,7 +36,7 @@ import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
-import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
+import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.record.FastqRecordUtils;
@@ -60,7 +60,7 @@ import java.util.Iterator;
  */
 @CommandLineProgramProperties(oneLineSummary = "Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library.",
         summary = "Detect barcodes in the header of the read name (based on the marker "
-                + BarcodeMethods.NAME_BARCODE_SEPARATOR
+                + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
                 + ") and assign to a sample based on a provided dictionary. Barcodes in the input file "
                 + "that are larger than the used ones are cut in the last bases.",
         programGroup = RawDataProgramGroup.class)

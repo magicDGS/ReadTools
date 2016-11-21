@@ -33,7 +33,7 @@ import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
-import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
+import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.record.SAMRecordUtils;
@@ -59,7 +59,7 @@ import java.util.HashSet;
  */
 @CommandLineProgramProperties(oneLineSummary = "Identify barcodes in the read name for a BAM file and assign to the ones used on the library",
         summary = "Detect barcodes in the header of the read name (based on the marker "
-                + BarcodeMethods.NAME_BARCODE_SEPARATOR
+                + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
                 + ") and assign to a sample based on a provided dictionary. Barcodes in the input file that are larger than the used ones are cut in the last bases.",
         programGroup = MappedDataProgramGroup.class)
 public final class BamBarcodeDetector extends ReadToolsBaseTool {

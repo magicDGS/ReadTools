@@ -24,6 +24,7 @@ package org.magicdgs.readtools.utils.record;
 
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
+import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMUtils;
@@ -72,7 +73,7 @@ public class SAMRecordUtils {
      */
     public static void addBarcodeToName(final SAMRecord record, final String barcode) {
         String recordName = String
-                .format("%s%s%s", record.getReadName(), BarcodeMethods.NAME_BARCODE_SEPARATOR,
+                .format("%s%s%s", record.getReadName(), RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER,
                         barcode);
         record.setReadName(recordName);
     }
@@ -86,7 +87,7 @@ public class SAMRecordUtils {
      * @return <code>true</code> if the barcode is changed; <code>false</code> otherwise
      */
     public static boolean addBarcodeToNameIfAbsent(final SAMRecord record, final String barcode) {
-        if (record.getReadName().contains(BarcodeMethods.NAME_BARCODE_SEPARATOR)) {
+        if (record.getReadName().contains(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER)) {
             return false;
         }
         addBarcodeToName(record, barcode);
@@ -147,19 +148,6 @@ public class SAMRecordUtils {
      */
     public static String[] getBarcodesInName(final SAMRecord record) {
         return BarcodeMethods.getSeveralBarcodesFromName(record.getReadName());
-    }
-
-    /**
-     * Get the barcode(s) in the name from a SAMRecord
-     *
-     * @param record    the record to extract the barcode from
-     * @param separator the separator between barcodes
-     *
-     * @return an array with the barcode(s) without read information; <code>null</code> if no
-     * barcode is found
-     */
-    public static String[] getBarcodesInName(final SAMRecord record, final String separator) {
-        return BarcodeMethods.getSeveralBarcodesFromName(record.getReadName(), separator);
     }
 
     /**

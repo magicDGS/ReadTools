@@ -27,48 +27,44 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Static methods for barcode matching
+ * Static methods for barcode matching.
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class BarcodeMethods {
 
     /**
-     * The separator between the read name and the barcode
-     */
-    public static final String NAME_BARCODE_SEPARATOR = "#";
-
-    /**
      * The separator between the read name (and barcode, if present) and the read pair information
-     * (0, 1, 2)
+     * (0, 1, 2).
      */
     public static final String READ_PAIR_SEPARATOR = "/";
 
     /**
-     * The separator between several barcodes
+     * The separator between several barcodes.
      */
     public static final String BARCODE_BARCODE_SEPARATOR = "_";
 
     /**
      * The pattern to match a barcode in a read name including everything after the {@link
-     * #NAME_BARCODE_SEPARATOR}
+     * RTFastqContstants#ILLUMINA_NAME_BARCODE_DELIMITER}.
      */
     public static final Pattern BARCODE_COMPLETE_PATTERN =
-            Pattern.compile(NAME_BARCODE_SEPARATOR + "(.+)");
+            Pattern.compile(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER + "(.+)");
 
     /**
      * The pattern to match a barcode in a read name removing also the read pair info (after {@link
      * #READ_PAIR_SEPARATOR})
      */
     public static final Pattern BARCODE_WITH_READPAIR_PATTERN = Pattern
-            .compile(NAME_BARCODE_SEPARATOR + "(.+)" + READ_PAIR_SEPARATOR);
+            .compile(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER + "(.+)"
+                    + READ_PAIR_SEPARATOR);
 
     /**
-     * Get the barcode from a read name
+     * Get the barcode from a read name.
      *
-     * @param readName the readName to extract the name from
+     * @param readName the readName to extract the name from.
      *
-     * @return the barcode without pair information if found; <code>null</code> otherwise
+     * @return the barcode without pair information if found; {@code null} otherwise.
      */
     public static String getOnlyBarcodeFromName(final String readName) {
         final Matcher matcher;
@@ -84,34 +80,34 @@ public class BarcodeMethods {
     }
 
     /**
-     * Join several barcodes together using teh barcode separator
+     * Join several barcodes together using teh barcode separator.
      *
-     * @param barcodes the barcodes
+     * @param barcodes the barcodes.
      *
-     * @return the formatted barcode
+     * @return the formatted barcode.
      */
     public static String joinBarcodes(final String[] barcodes, final String barcodeSeparator) {
         return String.join(barcodeSeparator, barcodes);
     }
 
     /**
-     * Join several barcodes together usin {@link #BARCODE_BARCODE_SEPARATOR}
+     * Join several barcodes together usin {@link #BARCODE_BARCODE_SEPARATOR}.
      *
-     * @param barcodes the barcodes
+     * @param barcodes the barcodes.
      *
-     * @return the formatted barcode
+     * @return the formatted barcode.
      */
     public static String joinBarcodes(final String[] barcodes) {
         return joinBarcodes(barcodes, BARCODE_BARCODE_SEPARATOR);
     }
 
     /**
-     * Get several barcodes encoding after {@link #NAME_BARCODE_SEPARATOR}
+     * Get several barcodes encoding after {@link RTFastqContstants#ILLUMINA_NAME_BARCODE_DELIMITER}.
      *
-     * @param readName         the readName to extract the name from
-     * @param barcodeSeparator the separator between the barcodes
+     * @param readName         the readName to extract the name from.
+     * @param barcodeSeparator the separator between the barcodes.
      *
-     * @return the array with the barcodes
+     * @return the array with the barcodes.
      */
     public static String[] getSeveralBarcodesFromName(final String readName,
             final String barcodeSeparator) {
@@ -120,27 +116,27 @@ public class BarcodeMethods {
     }
 
     /**
-     * Get several barcodes, encoding after {@link #NAME_BARCODE_SEPARATOR}, and separated between
-     * each other with
-     * {@link #BARCODE_BARCODE_SEPARATOR}
+     * Get several barcodes, encoding after {@link RTFastqContstants#ILLUMINA_NAME_BARCODE_DELIMITER},
+     * and separated between each other with {@link #BARCODE_BARCODE_SEPARATOR}.
      *
-     * @param readName the readName to extract the name from
+     * @param readName the readName to extract the name from.
      *
-     * @return the array with the barcodes
+     * @return the array with the barcodes.
      */
     public static String[] getSeveralBarcodesFromName(final String readName) {
         return getSeveralBarcodesFromName(readName, BARCODE_BARCODE_SEPARATOR);
     }
 
     /**
-     * Get the readName removing everything from the '#' to the end
+     * Get the readName removing everything from the {@link RTFastqContstants#ILLUMINA_NAME_BARCODE_DELIMITER}
+     * to the end.
      *
-     * @param readName the readName to extract the name from
+     * @param readName the readName to extract the name from.
      *
-     * @return the readName without the barcode information (if present)
+     * @return the readName without the barcode information (if present).
      */
     public static String getNameWithoutBarcode(final String readName) {
-        int index = readName.indexOf(NAME_BARCODE_SEPARATOR);
+        int index = readName.indexOf(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER);
         if (index != -1) {
             return readName.substring(0, index);
         }

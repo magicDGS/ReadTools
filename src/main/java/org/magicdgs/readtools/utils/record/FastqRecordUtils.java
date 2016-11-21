@@ -24,6 +24,7 @@ package org.magicdgs.readtools.utils.record;
 
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
+import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
@@ -84,19 +85,6 @@ public class FastqRecordUtils {
     }
 
     /**
-     * Get the barcode(s) in the name from a SAMRecord
-     *
-     * @param record    the record to extract the barcode from
-     * @param separator the separator between barcodes
-     *
-     * @return an array with the barcode(s) without read information; <code>null</code> if no
-     * barcode is found
-     */
-    public static String[] getBarcodesInName(final FastqRecord record, final String separator) {
-        return BarcodeMethods.getSeveralBarcodesFromName(record.getReadHeader(), separator);
-    }
-
-    /**
      * Get the barcode in the name from a FastqPairedRecord. If only one is present or both match,
      * return the first one;
      * if they do not match, thrown an error
@@ -132,21 +120,6 @@ public class FastqRecordUtils {
     public static String[] getBarcodesInName(final FastqPairedRecord record) {
         return pairedBarcodesConsensus(getBarcodesInName(record.getRecord1()),
                 getBarcodesInName(record.getRecord2()));
-    }
-
-    /**
-     * Get the barcode(s) in the name from a SAMRecord
-     *
-     * @param record    the record to extract the barcode from
-     * @param separator the separator between barcodes
-     *
-     * @return an array with the barcode(s) without read information; <code>null</code> if no
-     * barcode is found
-     */
-    public static String[] getBarcodesInName(final FastqPairedRecord record,
-            final String separator) {
-        return pairedBarcodesConsensus(getBarcodesInName(record.getRecord1(), separator),
-                getBarcodesInName(record.getRecord2(), separator));
     }
 
     private static String[] pairedBarcodesConsensus(final String[] barcode1,
@@ -207,7 +180,7 @@ public class FastqRecordUtils {
             final int numberOfPair) {
         return new FastqRecord(String
                 .format("%s%s%s%s%s", getReadNameWithoutBarcode(record),
-                        BarcodeMethods.NAME_BARCODE_SEPARATOR, newBarcode,
+                        RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER, newBarcode,
                         BarcodeMethods.READ_PAIR_SEPARATOR, numberOfPair), record.getReadString(),
                 record.getBaseQualityHeader(), record.getBaseQualityString());
     }

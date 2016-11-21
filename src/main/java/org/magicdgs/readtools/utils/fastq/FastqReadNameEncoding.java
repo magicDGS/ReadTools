@@ -60,7 +60,8 @@ public enum FastqReadNameEncoding {
     // third group  = nested group in previous -> the string between # and / or space (barcode)
     // fourth group = (/([012]){1})?           -> match '/0', '/1' or '/2' or nothing
     // fifth group  = nested group in previous -> match '0', '1' or '2'
-    ILLUMINA("([^#/]+)(#([^/\\s]+))?(/([012]){1})?.?", 5, 3, -1);
+    ILLUMINA("([^#/]+)(" + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
+            + "([^/\\s]+))?(/([012]){1})?.?", 5, 3, -1);
 
     private static Logger logger = LogManager.getLogger(FastqReadNameEncoding.class);
 
@@ -97,7 +98,7 @@ public enum FastqReadNameEncoding {
         if (barcodeGroup != -1) {
             final String barcode = matcher.group(barcodeGroup);
             if (barcode != null) {
-                normalizedName.append(BarcodeMethods.NAME_BARCODE_SEPARATOR)
+                normalizedName.append(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER)
                         .append(matcher.group(barcodeGroup));
             }
         }
@@ -225,6 +226,7 @@ public enum FastqReadNameEncoding {
                             "Incorrect detection of pair-state: " + pairState);
             }
             read.setFailsVendorQualityCheck(encoding.isPF(readName));
+            // TODO: add barcode to tag if present -> warning: this will change the behaviour of other parts of the code
         }
     }
 

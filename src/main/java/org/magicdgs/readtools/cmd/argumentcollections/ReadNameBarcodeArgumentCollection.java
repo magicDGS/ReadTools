@@ -25,17 +25,12 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.fastq.FastqReadNameEncoding;
 
-import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.fastq.FastqRecord;
 import org.broadinstitute.hellbender.cmdline.Argument;
 import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
 import org.broadinstitute.hellbender.exceptions.UserException;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Argument collection for solve issues of barcodes in the read name not with the normal encoding.
