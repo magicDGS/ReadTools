@@ -30,7 +30,10 @@ import java.util.regex.Pattern;
  * Static methods for barcode matching.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this will be replaced by the utility methods for GATKRead in
+ * {@link org.magicdgs.readtools.utils.read.RTReadUtils}
  */
+@Deprecated
 public class BarcodeMethods {
 
     /**
@@ -41,7 +44,11 @@ public class BarcodeMethods {
 
     /**
      * The separator between several barcodes.
+     *
+     * @deprecated use {@link org.magicdgs.readtools.RTDefaults#BARCODE_INDEX_DELIMITER} instead.
+     * Maintained here til legacy tools are removed.
      */
+    @Deprecated
     public static final String BARCODE_BARCODE_SEPARATOR = "_";
 
     /**

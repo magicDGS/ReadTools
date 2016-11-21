@@ -40,6 +40,9 @@ public final class RTDefaults {
     // logger for the defauls
     private static final Logger logger = LogManager.getLogger(RTDefaults.class);
 
+    /** Delimiter between barcode when several indexes are used. Default='-'. */
+    public static final String BARCODE_INDEX_DELIMITER;
+
     /** Maximum number of record used to guess the quality of a file. Default=1000000. */
     public static final long MAX_RECORDS_FOR_QUALITY;
 
@@ -50,6 +53,7 @@ public final class RTDefaults {
     public static final boolean FORCE_OVERWRITE;
 
     static {
+        BARCODE_INDEX_DELIMITER = getStringProperty("barcode_index_delimiter", "-");
         MAX_RECORDS_FOR_QUALITY = (long) getIntProperty("max_record_for_quality", 1000000);
         SAMPLING_QUALITY_CHECKING_FREQUENCY = getIntProperty("sampling_quality_checking_frequency", 1000);
         FORCE_OVERWRITE = getBooleanProperty("force_overwrite", false);
