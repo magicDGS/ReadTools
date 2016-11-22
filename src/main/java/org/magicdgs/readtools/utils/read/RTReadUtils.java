@@ -29,6 +29,8 @@ import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 
 import htsjdk.samtools.SAMTag;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
@@ -44,6 +46,9 @@ public class RTReadUtils {
 
     /** Cannot be instantiated. */
     private RTReadUtils() {}
+
+    /** Zero quality character. */
+    public final static char ZERO_QUALITY_CHAR = '!';
 
     // this is for avoid re-instantation
     private final static List<String> RAW_BARCODE_TAGS =
@@ -79,14 +84,16 @@ public class RTReadUtils {
     /**
      * Returns an array that contains the barcodes stored in the provided tags. The tags are
      * splitted by {@link RTDefaults#BARCODE_INDEX_DELIMITER} to check if there are more than 1
-     * sequence. If the value for a tag is null, this tag is skipped.
+     * sequence. If the value for a tag is {@code null} (does not exists), this tag is skipped.
      *
      * Note: no validation is performed to check if the tags are real barcodes.
      *
      * @param read the read to extract the barcodes from.
-     * @param tags the tags that contains the barcodes, in order.
+     * @param tags the tags containing the barcodes, in order.
      *
      * @return the barcodes in the provided tags (in order) if any; empty array otherwise.
+     *
+     * @see #getBarcodesAndQualitiesFromTags(GATKRead, List, List) if qualities are also needed.
      */
     public static String[] getBarcodesFromTags(final GATKRead read, final List<String> tags) {
         Utils.nonNull(read, "null read");
@@ -103,6 +110,65 @@ public class RTReadUtils {
     }
 
     /**
+     * Returns an pair of arrays of the same length that contains the barcodes/qualities stored in
+     * the provided tags. The tags are splitted by {@link RTDefaults#BARCODE_INDEX_DELIMITER} to
+     * check if there are more than 1 sequence/quality. If the value for a tag is {@code null}
+     * (does not exists), this tag is skipped (also the quality without checking). If the quality
+     * is empty for the corresponding tag, the quality is filled with {@link #ZERO_QUALITY_CHAR} to
+     * match the same length.
+     *
+     * Note: no validation is performed to check if the tags are real barcodes/qualities.
+     *
+     * @param read        the read to extract the barcodes from.
+     * @param barcodeTags the tags containing the barcodes, in order.
+     * @param qualityTags the tags containing the qualities, in order.
+     *
+     * @return the barcodes in the provided tags (in order) if any; empty array otherwise.
+     *
+     * @throws IllegalStateException if for a concrete barcode/quality tag, the length is
+     *                               different.
+     * @see #getBarcodesFromTags(GATKRead, List) (GATKRead, List) if qualities are not needed.
+     */
+    public static Pair<String[], String[]> getBarcodesAndQualitiesFromTags(final GATKRead read,
+            final List<String> barcodeTags, final List<String> qualityTags) {
+        Utils.nonNull(read, "null read");
+        Utils.nonEmpty(barcodeTags, "empty barcodeTags");
+        Utils.nonEmpty(qualityTags, "empty qualityTags");
+        Utils.validateArg(barcodeTags.size() == qualityTags.size(), "tags lenghts should be equal");
+        String[] barcodes = new String[0];
+        String[] qualities = new String[0];
+        for (int i = 0; i < barcodeTags.size(); i++) {
+            final String bcValue = read.getAttributeAsString(barcodeTags.get(i));
+            if (bcValue != null) {
+                final String[] bcSplit = bcValue.split(RTDefaults.BARCODE_INDEX_DELIMITER);
+                final String qualVal = read.getAttributeAsString(qualityTags.get(i));
+                final String[] qualSplit;
+                if (qualVal == null) {
+                    qualSplit = new String[bcSplit.length];
+                    // fill in with '!'
+                    for (int j = 0; j < bcSplit.length; j++) {
+                        qualSplit[0] = StringUtils.repeat(ZERO_QUALITY_CHAR, bcSplit[0].length());
+                    }
+                } else if (bcValue.length() != qualVal.length()) {
+                    throwExceptionForDifferentBarcodeQualityLenghts(barcodeTags.get(i), bcValue,
+                            qualityTags.get(i), qualVal);
+                    // this break should be included because qualSplit is not initialized
+                    break;
+                } else {
+                    qualSplit = qualVal.split(RTDefaults.BARCODE_INDEX_DELIMITER);
+                    if (bcSplit.length != qualSplit.length) {
+                        throwExceptionForDifferentBarcodeQualityLenghts(barcodeTags.get(i), bcValue,
+                                qualityTags.get(i), qualVal);
+                    }
+                }
+                barcodes = ArrayUtils.addAll(barcodes, bcSplit);
+                qualities = ArrayUtils.addAll(qualities, qualSplit);
+            }
+        }
+        return Pair.of(barcodes, qualities);
+    }
+
+    /**
      * Returns the raw barcodes from the {@link SAMTag#BC} tag.
      *
      * @param read the read to extract the barcodes from.
@@ -114,7 +180,7 @@ public class RTReadUtils {
     }
 
     /**
-     * Sets the {@link SAMTag#BC} tag for a read joining the barcodes with {@link
+     * Sets the {@link SAMTag#BC} tag for a read, joining the barcodes with {@link
      * RTDefaults#BARCODE_INDEX_DELIMITER}.
      *
      * @param read     the read to update with the barcodes.
@@ -128,6 +194,45 @@ public class RTReadUtils {
             read.setAttribute(SAMTag.BC.name(),
                     String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes));
         }
+    }
+
+
+    /**
+     * Sets the {@link SAMTag#BC} and {@link SAMTag#QT} tags for a read, joining the
+     * barcodes/qualities with {@link RTDefaults#BARCODE_INDEX_DELIMITER}.
+     *
+     * Note: barcodes and qualities should have the same length.
+     *
+     * @param read      the read to update with the barcodes.
+     * @param barcodes  barcodes to use. If the array is empty, no update will be performed.
+     * @param qualities associated qualities for the barcodes.
+     */
+    public static void addBarcodeWithQualitiesTagsToRead(final GATKRead read,
+            final String[] barcodes, final String[] qualities) {
+        Utils.nonNull(read, "null read");
+        Utils.nonNull(barcodes, "null barcodes");
+        Utils.nonNull(qualities, "null qualities");
+        Utils.validateArg(barcodes.length == qualities.length,
+                "barcodes.length != qualities.length");
+        // only ipdate if there are barcodes
+        if (barcodes.length != 0) {
+            final String barcodeString = String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes);
+            final String qualityString = String.join(RTDefaults.BARCODE_INDEX_DELIMITER, qualities);
+            // perform extra validation of lengths
+            if (barcodeString.length() != qualityString.length()) {
+                throwExceptionForDifferentBarcodeQualityLenghts(SAMTag.BC.name(), barcodeString,
+                        SAMTag.QT.name(), qualityString);
+            }
+            read.setAttribute(SAMTag.BC.name(), barcodeString);
+            read.setAttribute(SAMTag.QT.name(), qualityString);
+        }
+    }
+
+    private static void throwExceptionForDifferentBarcodeQualityLenghts(final String barcodeTag,
+            final String bcValue, final String qualityTag, final String qualVal) {
+        throw new IllegalArgumentException(
+                "Barcodes and qualities have different lengths: "
+                        + barcodeTag + "=" + bcValue + " vs. " + qualityTag + "=" + qualVal);
     }
 
 }
