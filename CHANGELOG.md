@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
-- Fixed issue for CRAM files detection by extension
+- Fixed issue for CRAM files detection by extension and IO
 
 ### Changed
+- Tool deprecation: `QualityChecker`
 - Metrics from barcode detection ordered as the input file (samples and barcodes)
+- Default values are provided in the command line for list arguments in BarcodeArgumentCollection. If the user provide an option, the arguments will be overridden.
 
 ## [0.2.3] - 2016-11-01
 

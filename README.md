@@ -32,14 +32,17 @@ For a long description of each tool:
 `java -jar ReadTools.jar <toolName> --help`
 
 
-The current release includes the following tools:
+The current pre-release includes the following tools:
 
 * __TrimFastq__: Implementation of the trimming algorithm from [Kofler _et al._ (2011)](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015925)
 * __TaggedBamToFastq__: Convert an BAM file with BC tags into a FASTQ file
-* __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
+* __QualityEncodingDetector__: Detects the quality encoding format for all kind of sources for ReadTools
 * __StandardizeQuality__: Convert an Illumina BAM/FASTQ file into a Sanger
 * __FastqBarcodeDetector__: Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library
 * __BamBarcodeDetector__:	Identify barcodes in the read name for a BAM file and assign to the ones used on the library
+
+Legacy tools that will disapear in following releases:
+* __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
 
 ---
 

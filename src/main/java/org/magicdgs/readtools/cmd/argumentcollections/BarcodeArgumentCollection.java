@@ -37,6 +37,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -59,22 +60,20 @@ public class BarcodeArgumentCollection implements ArgumentCollectionDefinition {
     public static final String MAXIMUM_MISMATCH_LONG_NAME = "maximum-mismatches";
     public static final String MAXIMUM_MISMATCH_SHORT_NAME = "m";
     public static final String MAXIMUM_MISMATCH_DOC =
-            "Maximum number of mismatches allowed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. Default value is "
-                    + BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES + "if no one is provided";
+            "Maximum number of mismatches allowed for a matched barcode. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file.";
 
     /** Maximum number of mismatches allowed. */
     @Argument(fullName = MAXIMUM_MISMATCH_LONG_NAME, shortName = MAXIMUM_MISMATCH_SHORT_NAME, optional = true, doc = MAXIMUM_MISMATCH_DOC)
-    public List<Integer> maxMismatches = new ArrayList<>();
+    public List<Integer> maxMismatches = new ArrayList<>(Collections.singleton(BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES));
 
     public static final String MINIMUM_DISTANCE_LONG_NAME = "minimum-distance";
     public static final String MINIMUM_DISTANCE_SHORT_NAME = "d";
     public static final String MINIMUM_DISTANCE_DOC =
-            "Minimum distance (in difference between number of mismatches) between the best match and the second to consider a match. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file. Default value is "
-                    + BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND + "if no one is provided";
+            "Minimum distance (in difference between number of mismatches) between the best match and the second to consider a match. It could be provided only once for use in all barcodes or the same number of times as barcodes provided in the file.";
 
     /** Minimum distance between matches in barcodes. */
     @Argument(fullName = MINIMUM_DISTANCE_LONG_NAME, shortName = MINIMUM_DISTANCE_SHORT_NAME, optional = true, doc = MINIMUM_DISTANCE_DOC)
-    public List<Integer> minimumDistance = new ArrayList<>();
+    public List<Integer> minimumDistance = new ArrayList<>(Collections.singleton(BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND));
 
     public static final String N_NO_MISMATCH_LONG_NAME = "n-no-mismatch";
     public static final String N_NO_MISMATCH_SHORT_NAME = "nnm";
