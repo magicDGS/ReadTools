@@ -72,6 +72,12 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
         this.no3prime = no3prime;
     }
 
+    /** @deprecated used only in legacy code. */
+    @Deprecated
+    public boolean noTrim5p() {
+        return no5prime;
+    }
+
     /**
      * If the read is completely trimmed, does nothing. Otherwise, the read is hard-clipped based
      * on the trimming flags.
