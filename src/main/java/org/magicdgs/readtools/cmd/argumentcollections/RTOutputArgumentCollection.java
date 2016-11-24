@@ -99,4 +99,9 @@ public abstract class RTOutputArgumentCollection implements ArgumentCollectionDe
         return new RTOutputBamArgumentCollection();
     }
 
+    /** Returns the a collection for output FASTQ files. */
+    public static final RTOutputArgumentCollection fastqOutput() {
+        return new RTOutputFastqArgumentCollection();
+    }
+
 }

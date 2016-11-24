@@ -41,6 +41,17 @@ public class RTStandardArguments {
     /** Output for force overwrite in the tools. */
     public static final String FORCE_OVERWRITE_NAME = "forceOverwrite";
 
+    /** Output format of the tool. */
+    public static final String OUTPUT_FORMAT_NAME = "outputFormat";
+
+    /** Parameter for creates MD5 for FASTQ files. */
+    public static final String CREATE_OUTPUT_FASTQ_MD5_LONG_NAME = "createOutputFastqMD5";
+    public static final String CREATE_OUTPUT_FASTQ_MD5_SHORT_NAME = "OFM";
+
+    /** Parameter for interleave output FASTQ files. */
+    public static final String INTERLEAVED_OUTPUT_FASTQ_LONG_NAME = "interleavedFastqOutput";
+    public static final String INTERLEAVED_OUTPUT_FASTQ_SHORT_NAME = "IFO";
+
     // INPUT PARAMS
 
     /** Parameter for the second of the pair (if pair-end split files). */

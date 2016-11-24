@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - New tools for quality checking/standardizing: `QualityEncodingDetector` and `StandardizeReads`
+- New tool for converting to other format: `ReadsToFastq`
 - Input formats for every tool (except specified) includes BAM/SAM/CRAM/FASTQ
 - Tools output is in a consistent BAM/SAM/CRAM format (except for conversion tools)
 - Walker framework for single/pair-end reads traversal

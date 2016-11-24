@@ -46,6 +46,7 @@ The current pre-release includes the following tools:
 * __StandardizeReads__: Standardize quality and format for all kind of sources for ReadTools
 * __FastqBarcodeDetector__: Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library
 * __BamBarcodeDetector__:	Identify barcodes in the read name for a BAM file and assign to the ones used on the library
+* __ReadsToFastq__: Converts any kind of ReadTools source to FASTQ format
 
 Legacy tools that will disapear in following releases:
 * __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
