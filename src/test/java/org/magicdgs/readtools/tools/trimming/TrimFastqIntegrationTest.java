@@ -10,7 +10,9 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -69,7 +71,19 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
                 {"testTrimmingSingleEndLengthRange", getRequiredArguments()
                         .addArgument("minimum-length", "60")
                         .addArgument("maximum-length", "75"),
-                        false, true}
+                        false, true},
+                // test discard internal ns
+                {"testTrimmingSingleEndDiscardInternalN", getRequiredArguments()
+                        .addBooleanArgument("discard-internal-N", true),
+                        false, true},
+                // test trimming Ns, discarding internal Ns and no 5 primer
+                {"testTrimmingSingleEndNo5p", getRequiredArguments()
+                        .addBooleanArgument("no-5p-trim", true),
+                        false, true},
+                // test no trimming quality
+                {"testTrimmingSingleEndNoQuality", getRequiredArguments()
+                        .addBooleanArgument("no-trim-quality", true),
+                        false, false}
         };
     }
 
@@ -109,6 +123,21 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
         IntegrationTestSpec.assertEqualTextFiles(new File(outPath + suffix),
                 new File(TestResourcesUtils.getReadToolsTestResource("org/magicdgs/readtools/"
                         + getTestedClassName()), testName + suffix));
+    }
+
+    @Test
+    public void testTrimOnlyNdata() throws Exception {
+        final File outputPrefix = new File(TEST_TEMP_DIR, "testTrimOnlyNdata");
+        final File expectedOutput = new File(outputPrefix.getAbsolutePath() + ".fq");
+        Assert.assertFalse(expectedOutput.exists());
+        runCommandLine(new ArgumentsBuilder()
+                .addFileArgument("output", outputPrefix)
+                .addFileArgument("input1", getInputDataFile("onlyN.fq"))
+                .addBooleanArgument("disable-zipped-output", true));
+        Assert.assertTrue(expectedOutput.exists());
+        try (BufferedReader br = new BufferedReader(new FileReader(expectedOutput))) {
+            Assert.assertNull(br.readLine());
+        }
     }
 
 }
