@@ -26,7 +26,6 @@ import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
-import htsjdk.samtools.util.FastqQualityFormat;
 
 import java.io.File;
 
@@ -44,16 +43,6 @@ public class SamReaderImpl extends SamReaderAbstract {
     @Override
     protected SAMRecordIterator toReturnIterator(SAMRecordIterator iterator) {
         return SamRecordIteratorWithStandardizer.of(iterator, checker, false);
-    }
-
-    /**
-     * Returns the original encoding
-     *
-     * @return the original encoding
-     */
-    @Override
-    public FastqQualityFormat getFastqQuality() {
-        return getOriginalEncoding();
     }
 
     @Override
