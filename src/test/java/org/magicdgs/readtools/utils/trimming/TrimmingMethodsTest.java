@@ -75,4 +75,12 @@ public class TrimmingMethodsTest extends BaseTest {
         Assert.assertNull(trimQualityMott(record, encoding, 21));
         Assert.assertNull(trimQualityMott(record, encoding, 21, true));
     }
+
+    @Test
+    public void testTrimQualityMottWithWithout5p() throws Exception {
+        final FastqRecord record = createFakeRecord("AAAATTAA", "TTTTUUAA");
+        Assert.assertEquals(trimQualityMott(record, encoding, 19), createFakeRecord("AAAATT", "TTTTUU"));
+        Assert.assertEquals(trimQualityMott(record, encoding, 20), createFakeRecord("TT", "UU"));
+    }
+
 }

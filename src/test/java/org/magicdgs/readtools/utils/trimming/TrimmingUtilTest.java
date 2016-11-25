@@ -25,10 +25,10 @@
 package org.magicdgs.readtools.utils.trimming;
 
 import org.magicdgs.readtools.utils.tests.BaseTest;
-import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
 
 import htsjdk.samtools.SAMUtils;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -36,27 +36,62 @@ import org.testng.annotations.Test;
  */
 public class TrimmingUtilTest extends BaseTest {
 
-    @Test
-    public void trimPointsMott() throws Exception {
-        byte[] testQuals = SAMUtils.fastqToPhred("555566");
-        // no trim
-        Assert.assertEquals(TrimmingUtil.trimPointsMott(testQuals, 19),
-                new int[] {0, testQuals.length});
-        // trim one end
-        Assert.assertEquals(TrimmingUtil.trimPointsMott(testQuals, 20),
-                new int[] {4, testQuals.length});
-        // trim the other end
-        testQuals = SAMUtils.fastqToPhred("665555");
-        Assert.assertEquals(TrimmingUtil.trimPointsMott(testQuals, 20),
-                new int[] {0, 2});
-        // trim both ends
-        testQuals = SAMUtils.fastqToPhred("55665555");
-        Assert.assertEquals(TrimmingUtil.trimPointsMott(testQuals, 20),
-                new int[] {2, 4});
-        // trim all
-        testQuals = SAMUtils.fastqToPhred("555555");
-        Assert.assertEquals(TrimmingUtil.trimPointsMott(testQuals, 20),
-                new int[] {testQuals.length, testQuals.length});
+    @DataProvider
+    public Object[][] trimMottData() {
+        final byte[] quals1 = SAMUtils.fastqToPhred("555566");
+        final byte[] quals2 = SAMUtils.fastqToPhred("665555");
+        final byte[] quals3 = SAMUtils.fastqToPhred("55665555");
+        final byte[] quals4 = SAMUtils.fastqToPhred("555555");
+        return new Object[][] {
+                // no trim
+                {quals1, 19, new int[] {0, quals1.length}},
+                {quals2, 19, new int[] {0, quals2.length}},
+                {quals3, 19, new int[] {0, quals3.length}},
+                {quals4, 19, new int[] {0, quals4.length}},
+                // trim one end or the other
+                {quals1, 20, new int[] {4, quals1.length}},
+                {quals2, 20, new int[] {0, 2}},
+                // trim both ends
+                {quals3, 20, new int[] {2, 4}},
+                {quals4, 20, new int[] {quals4.length, quals4.length}}
+        };
+    }
+
+    @Test(dataProvider = "trimMottData")
+    public void testTrimPointsMott(final byte[] quals, final int threshold, final int[] expected) {
+        Assert.assertEquals(TrimmingUtil.trimPointsMott(quals, threshold), expected);
+    }
+
+    @DataProvider
+    public Object[][] trimTrailingNdata() {
+        return new Object[][] {
+                // not trimming because there is no N
+                {new byte[] {'A', 'T', 'T', 'G', 'C', 'T'}, new int[] {0, 6}},
+                // not trimming internal Ns
+                {new byte[] {'A', 'T', 'T', 'G', 'N', 'T'}, new int[] {0, 6}},
+                // trimming last bases
+                {new byte[] {'A', 'T', 'T', 'G', 'C', 'N'}, new int[] {0, 5}},
+                {new byte[] {'A', 'T', 'T', 'G', 'N', 'N'}, new int[] {0, 4}},
+                {new byte[] {'A', 'T', 'N', 'G', 'N', 'N'}, new int[] {0, 4}},
+                // trimming first bases
+                {new byte[] {'N', 'T', 'T', 'G', 'C', 'T'}, new int[] {1, 6}},
+                {new byte[] {'N', 'N', 'T', 'G', 'C', 'T'}, new int[] {2, 6}},
+                {new byte[] {'N', 'N', 'T', 'N', 'C', 'T'}, new int[] {2, 6}},
+                // trimming both ends
+                {new byte[] {'N', 'T', 'T', 'G', 'C', 'N'}, new int[] {1, 5}},
+                {new byte[] {'N', 'N', 'T', 'G', 'C', 'N'}, new int[] {2, 5}},
+                {new byte[] {'N', 'N', 'T', 'N', 'C', 'N'}, new int[] {2, 5}},
+                {new byte[] {'N', 'T', 'T', 'G', 'N', 'N'}, new int[] {1, 4}},
+                {new byte[] {'N', 'N', 'T', 'G', 'N', 'N'}, new int[] {2, 4}},
+                // trimming all
+                {new byte[] {'N', 'N', 'N', 'N', 'N', 'N'}, new int[] {6, 6}}
+        };
+    }
+
+    @Test(dataProvider = "trimTrailingNdata")
+    public void testTrimPointsTrailingNs(final byte[] bases, final int[] expected)
+            throws Exception {
+        Assert.assertEquals(TrimmingUtil.trimPointsTrailingNs(bases), expected);
     }
 
 }

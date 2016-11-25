@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools.utils.trimming;
 
+import org.broadinstitute.hellbender.utils.BaseUtils;
+
 import java.util.Arrays;
 import java.util.TreeMap;
 
@@ -38,8 +40,8 @@ public class TrimmingUtil {
 
     /**
      * Implements quality trimming with the Mott algorithm. Takes in an array of quality values as
-     * byte[] and return two indexes where the byte array should be clipped, such as that the caller
-     * can then invoke things like:
+     * byte[] and return two indexes where the byte array should be clipped, such as that the
+     * caller can then invoke things like:
      * int[] retval = trimPointsMott(quals, trimQual)
      * final byte[] trimmedQuals = Array.copyOfRange(quals, retval[0], retval[1])
      * final String trimmedBases = bases.substring(retval[0], retval[1])
@@ -89,4 +91,38 @@ public class TrimmingUtil {
         }
         return hsps.get(hsps.lastKey());
     }
+
+    /**
+     * Implements trailing Ns (unknown nucleotide) trimming. Tajes in an array of sequence value as
+     * byte[] and return two indexes where the byte array should be clipped, such as that the
+     * caller can then invoke things like:
+     * int[] retval = trimPointsTrailingNs(bases)
+     * final byte[] trimmedQuals = Array.copyOfRange(quals, retval[0], retval[1])
+     * final String trimmedBases = bases.substring(retval[0], retval[1])
+     *
+     * @param bases a byte[] of bases (ACTGN)
+     *
+     * @return the zero-base indexes which should be trimmed. When no trimming is required,
+     * [0, quals.length] will be returned.
+     */
+    public static int[] trimPointsTrailingNs(final byte[] bases) {
+        final int[] positions = new int[] {0, bases.length};
+        // first check if trimming is required for the
+        for (int i = 0; i < bases.length; i++) {
+            if (!BaseUtils.isNBase(bases[i])) {
+                break;
+            }
+            positions[0]++;
+        }
+        if (positions[0] != bases.length) {
+            for (int i = bases.length - 1; i > positions[0]; i--) {
+                if (!BaseUtils.isNBase(bases[i])) {
+                    break;
+                }
+                positions[1]--;
+            }
+        }
+        return positions;
+    }
+
 }
