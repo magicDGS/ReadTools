@@ -3,11 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- New tools for quality checking/standardizing: `QualityEncodingDetector` and `StandardizeReads`
+- Input formats for every tool (except specified) includes BAM/SAM/CRAM/FASTQ
+- Tools output is in a consistent BAM/SAM/CRAM format (except for conversion tools)
+- Walker framework for single/pair-end reads traversal
+- BAM/SAM/CRAM/FASTQ sources are managed in the same way for a consistent output
+
 ### Fixed
 - Fixed issue for CRAM files detection by extension and IO
 
 ### Changed
-- Tool deprecation: `QualityChecker`
+- Tool deprecation: `QualityChecker`, `StandardizeQuality`
 - Metrics from barcode detection ordered as the input file (samples and barcodes)
 - Default values are provided in the command line for list arguments in BarcodeArgumentCollection. If the user provide an option, the arguments will be overridden.
 

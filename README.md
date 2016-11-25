@@ -7,17 +7,20 @@
 
 # ReadTools
 
-Tools for sequencing data (BAM and FASTQ files)
+Tools for sequencing reads data sources (SAM/BAM/CRAM/FASTQ files)
 
 ---
 
-The tools contained in this software are develop for working with FASTQ and BAM files (no mapped, although some of the tools will work with them) for different pre-processing of the data. The aim is to provide a set of tools for trimming, barcoding and quality-related pipelines, but not adaptor removal or barcode identification from scratch.
+Tools contained in this software are develop for work with different sources of reads data, in different formats. The aim is to provide a set of tools for:
+
+- Pre-processing raw reads from any kind of sources (SAM/BAM/CRAM/FASTQ), as trimming and sample-barcode assignation.
+- Standardize read sources to follow the [SAM specs](http://samtools.github.io/hts-specs/), as fixing quality encoding or barcode tags.
 
 ---
 
-### Download release
+### Download
 
-[Releases](https://github.com/magicDGS/ReadTools/releases) for the software could be downloaded as a jar file. You could use that jar file without installing from source, although some developmental changes could be still not included in the jar file.
+Packaged jar files could be found in [Releases](https://github.com/magicDGS/ReadTools/releases). For install from source, see bellow.
 
 ---
 
@@ -31,24 +34,28 @@ For a long description of each tool:
 
 `java -jar ReadTools.jar <toolName> --help`
 
+For getting the packaged version:
+
+`java -jar ReadTools.jar --version` or `java -jar ReadTools.jar -v`
 
 The current pre-release includes the following tools:
 
 * __TrimFastq__: Implementation of the trimming algorithm from [Kofler _et al._ (2011)](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015925)
 * __TaggedBamToFastq__: Convert an BAM file with BC tags into a FASTQ file
 * __QualityEncodingDetector__: Detects the quality encoding format for all kind of sources for ReadTools
-* __StandardizeQuality__: Convert an Illumina BAM/FASTQ file into a Sanger
+* __StandardizeReads__: Standardize quality and format for all kind of sources for ReadTools
 * __FastqBarcodeDetector__: Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library
 * __BamBarcodeDetector__:	Identify barcodes in the read name for a BAM file and assign to the ones used on the library
 
 Legacy tools that will disapear in following releases:
 * __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
+* __StandardizeQuality__: Convert an Illumina BAM/FASTQ file into a Sanger
 
 ---
 
 ### Installation from source
 
-Master branch is guarantee to compile successfully and containing the later changes. To install the later release with the updated changes, you should run the following commands:
+Master branch is guarantee to compile successfully and contain the latest release changes. For installation, run:
 
 ```
 
@@ -58,7 +65,7 @@ cd ReadTools
 
 ```
 
-The executable jar file will appear under the __build/libs/__ folder with the name _ReadTools.jar_. It could be copied to a different folder and the rest of the folder could be removed.
+Executable jar file will be under the __build/libs/ReadTools.jar__ path. This packaged jar contains all needed dependencies, and could be used independently of the repository folder.
 
 ---
 
@@ -66,11 +73,11 @@ The executable jar file will appear under the __build/libs/__ folder with the na
 
 The software is provided with a copy of the [MIT License](http://opensource.org/licenses/MIT), but is build with several Java libraries that have different licenses. Information for the libraries used in the software is available in the [build.gradle](https://github.com/magicDGS/ReadTools/blob/master/build.gradle) file.
 
-If you use this software, please add the citation as following (the version is printed in the header of the help):
+If you use this software, please add the citation as following:
 
 &nbsp;&nbsp;&nbsp;&nbsp;Gómez-Sánchez D (2015): ReadTools ${version}, Institut für Populationsgenetik, Vetmeduni Vienna.
 
 If some of the tools is a (re)implementation of a method described in a different place, the citation for the method is provided under the long description. Please, cite the method in addition to this software to give credit to the original authors.
 
 ---
-*Please, if you find any problem add a new [issue](https://github.com/magicDGS/ReadTools/issues) or contact me: <daniel.gomez.sanchez@hotmail.es>
+*Please, if you find any problem add a new [issue](https://github.com/magicDGS/ReadTools/issues) or contact by email: <daniel.gomez.sanchez@hotmail.es>
