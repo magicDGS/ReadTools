@@ -78,6 +78,12 @@ public class BaseTest {
         return dir;
     }
 
+
+    /** Returns a file in the class test directory with the provided file name. */
+    public File getTestFile(final String fileName) {
+        return new File(getClassTestDirectory(), fileName);
+    }
+
     // TODO: include utility methods for assertions
 
 }

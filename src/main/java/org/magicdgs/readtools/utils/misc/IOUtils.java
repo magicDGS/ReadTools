@@ -138,7 +138,7 @@ public class IOUtils {
             Files.createDirectories(path.getParent());
             // return the file
             return path;
-        } catch (IOException e) {
+        } catch (final Exception e) {
             // we catch the user exception in
             throw new UserException.CouldNotCreateOutputFile(output, e.getMessage(), e);
         }
