@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Daniel Gómez-Sánchez
+ * Copyright (c) 2016 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.magicdgs.readtools.utils;
+package org.magicdgs.readtools.utils.trimming;
 
 import static org.magicdgs.readtools.utils.trimming.TrimmingMethods.trim3pNs;
 import static org.magicdgs.readtools.utils.trimming.TrimmingMethods.trim5pNs;
