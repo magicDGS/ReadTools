@@ -28,6 +28,7 @@ import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.apache.commons.lang3.tuple.Pair;
+import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
@@ -63,7 +64,7 @@ public class RTReadUtilsUnitTest extends BaseTest {
             read.setAttribute(twoTags.get(0), barcode);
             read.setAttribute(twoQualTags.get(0), quality1);
             data.add(new Object[] {new String[] {barcode}, read.deepCopy(),
-                    twoTags.subList(0, 1), new String[]{quality1}, twoQualTags.subList(0, 1)});
+                    twoTags.subList(0, 1), new String[] {quality1}, twoQualTags.subList(0, 1)});
             for (final String barcode2 : new String[] {"ACTG", "GGGG"}) {
                 read.setName(baseReadName + "-" + barcode2);
                 read.setAttribute(twoTags.get(0), barcode);
@@ -71,13 +72,14 @@ public class RTReadUtilsUnitTest extends BaseTest {
                 read.setAttribute(twoQualTags.get(0), quality1);
                 read.setAttribute(twoQualTags.get(1), quality2);
                 data.add(new Object[] {new String[] {barcode, barcode2}, read.deepCopy(),
-                        twoTags, new String[]{quality1, quality2}, twoQualTags});
+                        twoTags, new String[] {quality1, quality2}, twoQualTags});
                 read.setAttribute(twoTags.get(0), barcode + "-" + barcode2);
                 read.setAttribute(twoTags.get(1), (String) null);
                 read.setAttribute(twoQualTags.get(0), quality1 + "-" + quality2);
                 read.setAttribute(twoQualTags.get(1), (String) null);
                 data.add(new Object[] {new String[] {barcode, barcode2}, read.deepCopy(),
-                        twoTags.subList(0, 1), new String[]{quality1, quality2}, twoQualTags.subList(0, 1)});
+                        twoTags.subList(0, 1), new String[] {quality1, quality2},
+                        twoQualTags.subList(0, 1)});
             }
         }
 
@@ -86,7 +88,8 @@ public class RTReadUtilsUnitTest extends BaseTest {
 
     @Test(dataProvider = "barcodesData")
     public void testExtractBarcodesFromReadName(final String[] barcodes, final GATKRead read,
-            final List<String> tags, final String[] qualities, final List<String> qualityTags) throws Exception {
+            final List<String> tags, final String[] qualities, final List<String> qualityTags)
+            throws Exception {
         Assert.assertNotEquals(read.getName().indexOf('#'), -1);
         Assert.assertEquals(RTReadUtils.extractBarcodesFromReadName(read), barcodes);
         Assert.assertEquals(read.getName().indexOf('#'), -1);
@@ -94,21 +97,25 @@ public class RTReadUtilsUnitTest extends BaseTest {
 
     @Test(dataProvider = "barcodesData")
     public void testGetBarcodesFromTags(final String[] barcodes, final GATKRead read,
-            final List<String> tags, final String[] qualities, final List<String> qualityTags) throws Exception {
+            final List<String> tags, final String[] qualities, final List<String> qualityTags)
+            throws Exception {
         Assert.assertEquals(RTReadUtils.getBarcodesFromTags(read, tags), barcodes);
     }
 
     @Test(dataProvider = "barcodesData")
     public void testGetBarcodesAndQualitiesFromTags(final String[] barcodes, final GATKRead read,
-            final List<String> tags, final String[] qualities, final List<String> qualityTags) throws Exception {
-        final Pair<String[], String[]> result = RTReadUtils.getBarcodesAndQualitiesFromTags(read, tags, qualityTags);
+            final List<String> tags, final String[] qualities, final List<String> qualityTags)
+            throws Exception {
+        final Pair<String[], String[]> result =
+                RTReadUtils.getBarcodesAndQualitiesFromTags(read, tags, qualityTags);
         Assert.assertEquals(result.getLeft(), barcodes);
         Assert.assertEquals(result.getRight(), qualities);
     }
 
     @Test(dataProvider = "barcodesData")
     public void testAddBarcodesTagToRead(final String[] barcodes, final GATKRead read,
-            final List<String> tags, final String[] qualities, final List<String> qualityTags) throws Exception {
+            final List<String> tags, final String[] qualities, final List<String> qualityTags)
+            throws Exception {
         RTReadUtils.addBarcodesTagToRead(read, barcodes);
         Assert.assertTrue(read.hasAttribute("BC"));
         Assert.assertEquals(read.getAttributeAsString("BC"), String.join("-", barcodes));
@@ -116,7 +123,8 @@ public class RTReadUtilsUnitTest extends BaseTest {
 
     @Test(dataProvider = "barcodesData")
     public void testAddBarcodeWithQualitiesTagsToRead(final String[] barcodes, final GATKRead read,
-            final List<String> tags, final String[] qualities, final List<String> qualityTags) throws Exception {
+            final List<String> tags, final String[] qualities, final List<String> qualityTags)
+            throws Exception {
         RTReadUtils.addBarcodeWithQualitiesTagsToRead(read, barcodes, qualities);
         Assert.assertTrue(read.hasAttribute("BC"));
         Assert.assertEquals(read.getAttributeAsString("BC"), String.join("-", barcodes));
@@ -135,7 +143,8 @@ public class RTReadUtilsUnitTest extends BaseTest {
         Assert.assertEquals(fromName, emptyArray);
         final String[] fromTags = RTReadUtils.getBarcodesFromTags(read, twoTags);
         Assert.assertEquals(fromTags, emptyArray);
-        final Pair<String[], String[]> withQuals = RTReadUtils.getBarcodesAndQualitiesFromTags(read, twoTags, twoQualTags);
+        final Pair<String[], String[]> withQuals =
+                RTReadUtils.getBarcodesAndQualitiesFromTags(read, twoTags, twoQualTags);
         Assert.assertEquals(withQuals.getLeft(), emptyArray);
         Assert.assertEquals(withQuals.getRight(), emptyArray);
         // this test if all the methods does not update the read if no data is provided
@@ -161,9 +170,10 @@ public class RTReadUtilsUnitTest extends BaseTest {
         final GATKRead read = ArtificialReadUtils
                 .createArtificialUnmappedRead(header, new byte[] {'A', 'T'}, new byte[] {40, 40});
         read.setAttribute(twoTags.get(0), barcode);
-        final Pair<String[], String[]> result = RTReadUtils.getBarcodesAndQualitiesFromTags(read, twoTags, twoQualTags);
-        Assert.assertEquals(result.getLeft(), new String[]{barcode});
-        Assert.assertEquals(result.getRight(),new String[]{ "!!!!"});
+        final Pair<String[], String[]> result =
+                RTReadUtils.getBarcodesAndQualitiesFromTags(read, twoTags, twoQualTags);
+        Assert.assertEquals(result.getLeft(), new String[] {barcode});
+        Assert.assertEquals(result.getRight(), new String[] {"!!!!"});
     }
 
     @DataProvider(name = "badParamsBarcodesAndQualitiesFromTags")
@@ -173,7 +183,7 @@ public class RTReadUtilsUnitTest extends BaseTest {
         read.setAttribute(twoTags.get(0), "ACTG-TTTT");
         read.setAttribute(twoQualTags.get(0), "ACT");
         read.setAttribute(twoQualTags.get(1), "ACTG_TTTT");
-        return new Object[][]{
+        return new Object[][] {
                 {null, null, null},
                 {read, null, null},
                 {read, Collections.emptyList(), null},
@@ -190,20 +200,21 @@ public class RTReadUtilsUnitTest extends BaseTest {
     @Test(dataProvider = "badParamsBarcodesAndQualitiesFromTags", expectedExceptions = IllegalArgumentException.class)
     public void testGetBarcodesAndQualitiesFromTagsBadParams(final GATKRead read,
             final List<String> tags, final List<String> qualTags) throws Exception {
-        log(Arrays.toString(RTReadUtils.getBarcodesAndQualitiesFromTags(read, tags, qualTags).getValue()));
+        log(Arrays.toString(
+                RTReadUtils.getBarcodesAndQualitiesFromTags(read, tags, qualTags).getValue()));
     }
 
     @DataProvider(name = "badParamsAdddBarcodeWithQualitiesTagsToRead")
     public Object[][] getBadParamsAdddBarcodeWithQualitiesTagsToRead() {
         final GATKRead read = ArtificialReadUtils
                 .createArtificialUnmappedRead(header, new byte[] {'A', 'T'}, new byte[] {40, 40});
-        return new Object[][]{
+        return new Object[][] {
                 {null, null, null},
                 {read, null, null},
                 {read, new String[0], null},
                 {read, new String[0], new String[1]},
                 {read, new String[1], new String[0]},
-                {read, new String[]{"A"}, new String[]{"AA"}}
+                {read, new String[] {"A"}, new String[] {"AA"}}
         };
     }
 
@@ -212,5 +223,124 @@ public class RTReadUtilsUnitTest extends BaseTest {
     public void testAddBarcodeWithQualitiesTagsToReadBadParams(final GATKRead read,
             final String[] barcodes, final String[] qualities) throws Exception {
         RTReadUtils.addBarcodeWithQualitiesTagsToRead(read, barcodes, qualities);
+    }
+
+    public List<Object[]> generateTrimmingData() {
+        final List<Object[]> data = new ArrayList<>();
+        final int readLength = 50;
+        final byte[] bases = Utils.repeatBytes((byte) 'A', readLength);
+        final byte[] quals = Utils.repeatBytes((byte) 'I', readLength);
+        // all combinations with te, ts, tc set for this read length
+        for (int ts = 0; ts <= readLength; ts++) {
+            for (int te = readLength; te >= 0; te--) {
+                final GATKRead read = ArtificialReadUtils
+                        .createArtificialUnmappedRead(header, bases, quals);
+                final int ct;
+                //= te == 0 || ts == readLength || ts >= te || te <= ts;
+                if (ts == readLength) {
+                    ct = 1;
+                } else if (te == 0) {
+                    ct = 2;
+                } else if (ts >= te || te <= ts) {
+                    ct = 3;
+                } else {
+                    ct = 0;
+                }
+                data.add(new Object[] {read, ts, te, ct});
+            }
+        }
+        return data;
+    }
+
+    @DataProvider(name = "trimmingPointSetters")
+    public Iterator<Object[]> trimmingPointSetters() {
+        return generateTrimmingData().iterator();
+    }
+
+    @DataProvider(name = "trimmingPointGetters")
+    public Iterator<Object[]> trimmingPointGetters() {
+        final List<Object[]> data = generateTrimmingData();
+        data.forEach(o -> {
+            final GATKRead read = (GATKRead) o[0];
+            read.setAttribute("ts", (int) o[1]);
+            read.setAttribute("te", (int) o[2]);
+            read.setAttribute("ct", (int) o[3]);
+            o[3] = (int) o[3] != 0;
+        });
+        // add case without information
+        data.add(new Object[] {
+                ArtificialReadUtils
+                        .createArtificialUnmappedRead(header, new byte[100], new byte[100]),
+                0, 100, false
+        });
+        return data.iterator();
+    }
+
+    @Test(dataProvider = "trimmingPointGetters")
+    public void testTrimmingPointGetters(final GATKRead read, final int ts, final int te,
+            final boolean ct) throws Exception {
+        Assert.assertEquals(RTReadUtils.getTrimmingStartPoint(read), ts);
+        Assert.assertEquals(RTReadUtils.getTrimmingEndPoint(read), te);
+        Assert.assertEquals(RTReadUtils.isCompletelyTrimRead(read), ct);
+    }
+
+    @Test(dataProvider = "trimmingPointSetters")
+    public void testSingleValueTrimmingPointSetters(final GATKRead read, final int ts, final int te,
+            final int ct) throws Exception {
+        // start tag
+        Assert.assertEquals(read.getAttributeAsInteger("ts"), null);
+        RTReadUtils.updateTrimmingStartPointTag(read, ts);
+        Assert.assertEquals(read.getAttributeAsInteger("ts").intValue(), ts);
+        // end tag
+        Assert.assertEquals(read.getAttributeAsInteger("te"), null);
+        RTReadUtils.updateTrimmingEndPointTag(read, te);
+        Assert.assertEquals(read.getAttributeAsInteger("te").intValue(), te);
+        // completely trimmed
+        Assert.assertEquals(read.getAttributeAsInteger("ct"), null);
+        Assert.assertEquals(RTReadUtils.updateCompletelyTrimReadFlag(read), ct != 0);
+        Assert.assertEquals(read.getAttributeAsInteger("ct").intValue(), ct);
+    }
+
+    @Test(dataProvider = "trimmingPointSetters")
+    public void testUpdateAllTrimmingPoints(final GATKRead read, final int ts, final int te,
+            final int ct) throws Exception {
+        Assert.assertEquals(read.getAttributeAsInteger("ts"), null);
+        Assert.assertEquals(read.getAttributeAsInteger("te"), null);
+        Assert.assertEquals(read.getAttributeAsInteger("ct"), null);
+        RTReadUtils.updateTrimmingPointTags(read, ts, te);
+        Assert.assertEquals(read.getAttributeAsInteger("ts").intValue(), ts);
+        Assert.assertEquals(read.getAttributeAsInteger("te").intValue(), te);
+        Assert.assertEquals(read.getAttributeAsInteger("ct").intValue(), ct);
+    }
+
+    @DataProvider(name = "badArgumentsTrimming")
+    public Object[][] badArgumentsFOrSingleValueTrimmingPointSetters() {
+        final GATKRead read = ArtificialReadUtils
+                .createArtificialUnmappedRead(header, new byte[0], new byte[0]);
+        return new Object[][] {
+                {null, 10},
+                {read, -1},
+                {read, -10}
+        };
+    }
+
+    @Test(dataProvider = "badArgumentsTrimming", expectedExceptions = IllegalArgumentException.class)
+    public void testBadUpdateTrimmingStartPointTag(final GATKRead read, final int value)
+            throws Exception {
+        RTReadUtils.updateTrimmingStartPointTag(read, value);
+    }
+
+    @Test(dataProvider = "badArgumentsTrimming", expectedExceptions = IllegalArgumentException.class)
+    public void testBadUpdateTrimmingEndPointTag(final GATKRead read, final int value)
+            throws Exception {
+        RTReadUtils.updateTrimmingEndPointTag(read, value);
+    }
+
+    @Test
+    public void testUpdateCompletelyTrimReadFlagAlreadySet() throws Exception {
+        final GATKRead read = ArtificialReadUtils
+                .createArtificialUnmappedRead(header, new byte[0], new byte[0]);
+        read.setAttribute("ct", 1);
+        Assert.assertTrue(RTReadUtils.updateCompletelyTrimReadFlag(read));
     }
 }

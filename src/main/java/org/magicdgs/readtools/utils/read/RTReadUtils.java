@@ -36,6 +36,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.IntSupplier;
 
 /**
  * Static utils for handling {@link GATKRead} in ReadTools.
@@ -233,6 +234,158 @@ public class RTReadUtils {
         throw new IllegalArgumentException(
                 "Barcodes and qualities have different lengths: "
                         + barcodeTag + "=" + bcValue + " vs. " + qualityTag + "=" + qualVal);
+    }
+
+
+    /**
+     * Updates the trimming tags ({@link ReservedTags#ts}, {@link ReservedTags#te} and
+     * {@link ReservedTags#ct}) on a read, with the specified trimming points.
+     *
+     * @param read  the read to update.
+     * @param start the first trimming point.
+     * @param end   the last trimming point.
+     *
+     * @see #updateTrimmingStartPointTag(GATKRead, int).
+     * @see #updateTrimmingEndPointTag(GATKRead, int)}.
+     * @see #updateCompletelyTrimReadFlag(GATKRead).
+     */
+    public static void updateTrimmingPointTags(final GATKRead read, final int start,
+            final int end) {
+        updateTrimmingStartPointTag(read, start);
+        updateTrimmingEndPointTag(read, end);
+        updateCompletelyTrimReadFlag(read);
+    }
+
+    /**
+     * Updates the start trimming tag ({@link ReservedTags#ts}) on a read, with the specified
+     * trimming points.
+     *
+     * If the read already have the tag, it conserves the right-most trim point.
+     *
+     * Note: the completely trim tag ({@link ReservedTags#ct}) is not updated.
+     *
+     * @param read  the read to update.
+     * @param start the first trimming point.
+     */
+    public static void updateTrimmingStartPointTag(final GATKRead read, final int start) {
+        Utils.nonNull(read, "null read");
+        Utils.validateArg(start >= 0, "negative start not allowed");
+        // get the previous start point
+        int startPoint = getTrimmingStartPoint(read);
+        // if there is not start point, and/or
+        if (start > startPoint) {
+            startPoint = start;
+        }
+        read.setAttribute(ReservedTags.ts, startPoint);
+    }
+
+    /** Returns the trimming start point from the {@link ReservedTags#ts} if present; 0 otherwise. */
+    public static int getTrimmingStartPoint(final GATKRead read) {
+        Utils.nonNull(read, "null read");
+        return getIntAttributeOrDefault(read, ReservedTags.ts, () -> 0);
+    }
+
+    /**
+     * Updates the start trimming tag ({@link ReservedTags#ts}) on a read, with the specified
+     * trimming points.
+     *
+     * If the read already have the tag, it conserves the left-most trim point.
+     *
+     * Note: the completely trim tag ({@link ReservedTags#ct}) is not updated.
+     *
+     * @param read the read to update.
+     * @param end  the last trimming point.
+     */
+    public static void updateTrimmingEndPointTag(final GATKRead read, final int end) {
+        Utils.nonNull(read, "null read");
+        Utils.validateArg(end >= 0, "negative start not allowed");
+        int endPoint = getTrimmingEndPoint(read);
+        if (end < endPoint) {
+            endPoint = end;
+        }
+        read.setAttribute(ReservedTags.te, endPoint);
+    }
+
+    /**
+     * Returns the trimming end point from the {@link ReservedTags#ts} if present; read length
+     * otherwise.
+     */
+    public static int getTrimmingEndPoint(final GATKRead read) {
+        Utils.nonNull(read, "null read");
+        return getIntAttributeOrDefault(read, ReservedTags.te, read::getLength);
+    }
+
+    /**
+     * Returns {@code false} if the {@link ReservedTags#ct} is 0 or does not exists; {@code true}
+     * otherwise.
+     *
+     * Warning: this method does not take into account the trimming points. If the read is
+     * completely trimmed but the {@link ReservedTags#ct} was not updated, the method will return
+     * {@code false}. Use the {@link #updateCompletelyTrimReadFlag(GATKRead)} for safe retrieval
+     * of the tag.
+     */
+    public static boolean isCompletelyTrimRead(final GATKRead read) {
+        Utils.nonNull(read, "null read");
+        return getIntAttributeOrDefault(read, ReservedTags.ct, () -> 0) != 0;
+    }
+
+    /**
+     * Updates the completely trim flag if the read with the start/end trim points, only if the
+     * read does not have a value which indicates that is already completely trim
+     * ({@code ReservedTags.ct != 0}).
+     *
+     * Based on the trim points, the read is completely trimmed if:
+     *
+     * - If the {@link ReservedTags#ct} is already set to a value different from 0.
+     * - If the start point is equals to the read length ({@code ReservedTags.ct = 1}).
+     * - If the end point is equals to 0 ({@code ReservedTags.ct = 2}.
+     * - If the start and end points are exactly the same ({@code ReservedTags.ct = 3}.
+     * - If the start point is after the end ({@code ReservedTags.ct = 3}.
+     * - If the end point is before the start (({@code ReservedTags.ct = 3}.
+     *
+     * Otherwise, the read is not completely trimmed (ct=0).
+     *
+     * If the read is completely trimmed, it will be marked in-place with the
+     * {@link ReservedTags#ct} tag; otherwise, it will be marked with 0.
+     *
+     * @param read the read to update.
+     *
+     * @return {@code true} if the read is completely trim; {@code false} otherwise.
+     */
+    public static boolean updateCompletelyTrimReadFlag(final GATKRead read) {
+        // check first if the completely trim flag is already set to a different of 0 value
+        if (isCompletelyTrimRead(read)) {
+            return true;
+        }
+        // then, check the start point
+        final int startPoint = getTrimmingStartPoint(read);
+        // if the start is already larger, return
+        if (startPoint == read.getLength()) {
+            read.setAttribute(ReservedTags.ct, 1);
+            return true;
+        }
+        // then, check the end point
+        final int endPoint = getTrimmingEndPoint(read);
+        // if the end is already smaller, return
+        if (endPoint == 0) {
+            read.setAttribute(ReservedTags.ct, 2);
+            return true;
+        }
+        // now check the other condition
+        final int comp = Integer.compare(startPoint, endPoint);
+        if (comp >= 0) {
+            read.setAttribute(ReservedTags.ct, 3);
+            return true;
+        }
+        read.setAttribute(ReservedTags.ct, 0);
+        return false;
+    }
+
+    // helper for return a default value from an integer tag
+    private static int getIntAttributeOrDefault(final GATKRead read, final String tag,
+            final IntSupplier defaultValue) {
+        final Integer value = read.getAttributeAsInteger(tag);
+        return (value == null) ? defaultValue.getAsInt() : value;
     }
 
 }
