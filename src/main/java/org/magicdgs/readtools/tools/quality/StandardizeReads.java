@@ -68,7 +68,7 @@ import java.util.List;
                 + "format. The raw barcode (BC) is extracted from the read name if present "
                 + "(does not require any barcode option).",
         programGroup = ReadToolsProgramGroup.class)
-public class StandardizeReads extends ReadToolsWalker {
+public final class StandardizeReads extends ReadToolsWalker {
 
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =

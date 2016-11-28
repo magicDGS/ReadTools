@@ -43,7 +43,7 @@ import java.io.IOException;
 @CommandLineProgramProperties(oneLineSummary = "Detects the quality encoding format for all kind of sources for ReadTools.",
         summary = "Detects the quality encoding for a SAM/BAM/CRAM/FASTQ files, output to the STDOUT the quality encoding.",
         programGroup = QCProgramGroup.class)
-public class QualityEncodingDetector extends CommandLineProgram {
+public final class QualityEncodingDetector extends CommandLineProgram {
 
     @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "Reads input.", optional = false)
     public String sourceString;
