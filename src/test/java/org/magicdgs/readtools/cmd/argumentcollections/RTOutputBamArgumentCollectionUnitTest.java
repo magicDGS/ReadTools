@@ -56,17 +56,17 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
     public void testIllegalOutputName(final String outputName) throws Exception {
         final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
         args.outputName = outputName;
-        args.outputWriter(null, new SAMFileHeader(), true, null);
+        args.outputWriter(new SAMFileHeader(), null, true, null);
     }
 
     @Test(expectedExceptions = UserException.MissingReference.class)
     public void testCramOutputWithoutReference() throws Exception {
         final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
         args.outputName = "example.cram";
-        args.outputWriter(null, new SAMFileHeader(), true, () -> new SAMProgramRecord("ID"));
+        args.outputWriter(new SAMFileHeader(), () -> new SAMProgramRecord("ID"), true, null);
     }
 
-    @DataProvider(name = "outptuWriterProvider")
+    @DataProvider(name = "outputWriterProvider")
     public Object[][] getOutputWriterData() {
         final File testDir = createTestTempDir(this.getClass().getSimpleName());
         final SAMProgramRecord record = new SAMProgramRecord("test");
@@ -88,7 +88,7 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
         };
     }
 
-    @Test(dataProvider = "outptuWriterProvider")
+    @Test(dataProvider = "outputWriterProvider")
     public void testWritingHeader(final File outputFile, final SAMProgramRecord record,
             final boolean addProgramGroup) throws Exception {
         Assert.assertFalse(outputFile.exists(), "broken test: test output file exists " + outputFile);
@@ -96,8 +96,9 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
         args.outputName = outputFile.getAbsolutePath();
         args.addOutputSAMProgramRecord = addProgramGroup;
         final GATKReadWriter writer =
-                args.outputWriter(null, new SAMFileHeader(), true,
-                        (record == null) ? null : () -> record);
+                args.outputWriter(new SAMFileHeader(), (record == null) ? null : () -> record, true,
+                        null
+                );
         writer.close();
         Assert.assertTrue(outputFile.exists(), "not output written");
         final SAMFileHeader writtenHeader =

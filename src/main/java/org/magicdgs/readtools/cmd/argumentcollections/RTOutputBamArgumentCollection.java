@@ -24,14 +24,12 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
@@ -44,16 +42,11 @@ import java.util.function.Supplier;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTOutputBamArgumentCollection implements ArgumentCollectionDefinition {
+final class RTOutputBamArgumentCollection extends RTOutputArgumentCollection {
     private static final long serialVersionUID = 1L;
-
-    // TODO: add option for splitting by different splitters
 
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file.", optional = false)
     public String outputName;
-
-    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", optional = true)
-    public Boolean forceOverwrite = false;
 
     @Argument(fullName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_LONG_NAME, shortName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_SHORT_NAME, doc = "If true, create a BAM/CRAM index when writing a coordinate-sorted BAM/CRAM file.", optional = true)
     public boolean createOutputBamIndex = true;
@@ -65,34 +58,38 @@ public class RTOutputBamArgumentCollection implements ArgumentCollectionDefiniti
     public boolean addOutputSAMProgramRecord = true;
 
     /** Gets the writer factory for the arguments, adding also the reference file. */
-    protected ReadWriterFactory getWriterFactory(final File referenceFile) {
-        return new ReadWriterFactory()
-                .setReferenceFile(referenceFile)
+    @Override
+    protected ReadWriterFactory getWriterFactory() {
+        return super.getWriterFactory()
                 .setForceOverwrite(forceOverwrite)
                 .setCreateIndex(createOutputBamIndex)
                 .setCreateMd5File(createOutputBamMD5);
     }
 
     /**
-     * Gets the output writer for the arguments.
-     *
-     * @param referenceFile the reference file for CRAM output. May be {@code null}.
-     * @param header        the header for the output file.
-     * @param presorted     if {@code true}, the output is assumed to be pre-sorted.
-     * @param programRecord program record supplier. May be {@code null}, but should not return
-     *                      {@code null}.
+     * Checks if the output name is a SAM/BAM/CRAM file and if so it creates a SAM writer.
+     * Otherwise, it thrown an UserException.
      */
-    public GATKReadWriter outputWriter(final File referenceFile, final SAMFileHeader header,
-            final boolean presorted, final Supplier<SAMProgramRecord> programRecord) {
-        if (addOutputSAMProgramRecord && programRecord != null) {
-            header.addProgramRecord(programRecord.get());
-        }
+    @Override
+    protected GATKReadWriter createWriter(final ReadWriterFactory factory,
+            final SAMFileHeader header, final boolean presorted) {
         if (!IOUtils.isSamBamOrCram(outputName)) {
-            // TODO: GATK4 pr for String/Path/File on UserExceptions for files
+            // TODO: update after https://github.com/broadinstitute/gatk/pull/2282
             throw new UserException.CouldNotCreateOutputFile(new File(outputName),
                     "The output file should have a BAM/SAM/CRAM extension.");
         }
-        return getWriterFactory(referenceFile)
-                .createSAMWriter(outputName, header, presorted);
+        return factory.createSAMWriter(outputName, header, presorted);
+    }
+
+    /**
+     * Updates the header with the program record if {@link #addOutputSAMProgramRecord} is
+     * {@code true} and the supplier is not {@code null}.
+     */
+    @Override
+    protected void updateHeader(final SAMFileHeader header,
+            final Supplier<SAMProgramRecord> programRecord) {
+        if (addOutputSAMProgramRecord && programRecord != null) {
+            header.addProgramRecord(programRecord.get());
+        }
     }
 }

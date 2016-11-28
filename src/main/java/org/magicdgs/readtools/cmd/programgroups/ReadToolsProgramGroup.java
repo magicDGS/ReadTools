@@ -32,11 +32,11 @@ import org.broadinstitute.hellbender.cmdline.CommandLineProgramGroup;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadToolsProgramGroup implements CommandLineProgramGroup {
+public final class ReadToolsProgramGroup implements CommandLineProgramGroup {
 
     @Override
     public String getName() {
-        return "Reads";
+        return "Reads manipulation";
     }
 
     @Override

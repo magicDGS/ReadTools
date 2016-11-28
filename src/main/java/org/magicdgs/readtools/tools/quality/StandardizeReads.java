@@ -24,7 +24,8 @@
 
 package org.magicdgs.readtools.tools.quality;
 
-import org.magicdgs.readtools.cmd.argumentcollections.RTOutputBamArgumentCollection;
+import org.magicdgs.readtools.cmd.RTStandardArguments;
+import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.ReadToolsProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
@@ -70,26 +71,23 @@ import java.util.List;
 public class StandardizeReads extends ReadToolsWalker {
 
     @ArgumentCollection
-    public RTOutputBamArgumentCollection outputBamArgumentCollection =
-            new RTOutputBamArgumentCollection();
+    public RTOutputArgumentCollection outputBamArgumentCollection =
+            RTOutputArgumentCollection.defaultOutput();
 
-    private static final String RAW_BARCODE_SEQUENCE_TAG_NAME = "rawBarcodeSequenceTags";
-    @Argument(fullName = RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RAW_BARCODE_SEQUENCE_TAG_NAME, doc = "Use the barcode encoded in this tag(s) as raw barcodes. WARNING: this tag(s) will be removed.", optional = true,
-            mutex = {USER_READ_NAME_BARCODE_NAME})
+    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, doc = "Use the barcode encoded in this tag(s) as raw barcodes. WARNING: this tag(s) will be removed.", optional = true,
+            mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
     public List<String> rawBarcodeTags = new ArrayList<>();
 
-    private static final String RAW_BARCODE_QUALITIES_TAG_NAME = "rawBarcodeQualityTag";
-    @Argument(fullName = RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RAW_BARCODE_QUALITIES_TAG_NAME, doc =
+    @Argument(fullName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, doc =
             "Use the qualities encoded in this tag(s) as raw barcode qualities. Requires --"
-                    + RAW_BARCODE_SEQUENCE_TAG_NAME
+                    + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
                     + ". WARNING: this tag(s) will be removed.", optional = true,
-            mutex = {USER_READ_NAME_BARCODE_NAME})
+            mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
     public List<String> rawBarcodeQualsTags = new ArrayList<>();
 
-    // TODO: explain in the help in which cases this could be useful
-    private static final String USER_READ_NAME_BARCODE_NAME = "barcodeInReadName";
-    @Argument(fullName = USER_READ_NAME_BARCODE_NAME, shortName = USER_READ_NAME_BARCODE_NAME, doc = "Use the barcode encoded in the read name as raw barcodes. WARNING: the read name will be modified.", optional = true,
-            mutex = {RAW_BARCODE_SEQUENCE_TAG_NAME, RAW_BARCODE_QUALITIES_TAG_NAME})
+    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, doc = "Use the barcode encoded in the read name as raw barcodes. WARNING: the read name will be modified.", optional = true,
+            mutex = {RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME,
+                    RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME})
     public boolean useReadNameBarcode = false;
 
     // the writer for the reads
@@ -101,16 +99,19 @@ public class StandardizeReads extends ReadToolsWalker {
     @Override
     public String[] customCommandLineValidation() {
         if (rawBarcodeTags.isEmpty() && !rawBarcodeQualsTags.isEmpty()) {
-            throw new UserException.MissingArgument(RAW_BARCODE_SEQUENCE_TAG_NAME,
-                    "required if --" + RAW_BARCODE_QUALITIES_TAG_NAME + "is specified.");
+            throw new UserException.MissingArgument(
+                    RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME,
+                    "required if --" + RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME
+                            + "is specified.");
         }
         if (!rawBarcodeQualsTags.isEmpty() && rawBarcodeTags.size() != rawBarcodeQualsTags.size()) {
             // TODO: I don't know if we should allow different number of tags
             // TODO: but this requires a change in the implementation on how to handle them
             // TODO: let's see if some user request it
-            throw new UserException.CommandLineException("--" + RAW_BARCODE_SEQUENCE_TAG_NAME
-                    + " and --" + RAW_BARCODE_QUALITIES_TAG_NAME
-                    + " should be provided the same number of times.");
+            throw new UserException.CommandLineException(
+                    "--" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
+                            + " and --" + RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME
+                            + " should be provided the same number of times.");
         }
         return super.customCommandLineValidation();
     }
@@ -118,8 +119,9 @@ public class StandardizeReads extends ReadToolsWalker {
     @Override
     public void onTraversalStart() {
         final SAMFileHeader headerFromReads = getHeaderForReads();
-        writer = outputBamArgumentCollection.outputWriter(getReferenceFile(), headerFromReads, true,
-                () -> getProgramRecord(headerFromReads));
+        writer = outputBamArgumentCollection.outputWriter(headerFromReads,
+                () -> getProgramRecord(headerFromReads), true, getReferenceFile()
+        );
         if (useReadNameBarcode) {
             transformer = new FixReadNameBarcodesReadTransformer();
         } else if (!rawBarcodeTags.isEmpty()) {

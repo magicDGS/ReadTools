@@ -36,8 +36,12 @@ public class RTStandardArguments {
     /** Cannot be instantiated. */
     private RTStandardArguments() {}
 
+    // OUTPUT PARAMS
+
     /** Output for force overwrite in the tools. */
     public static final String FORCE_OVERWRITE_NAME = "forceOverwrite";
+
+    // INPUT PARAMS
 
     /** Parameter for the second of the pair (if pair-end split files). */
     public static final String INPUT_PAIR_LONG_NAME =
@@ -51,5 +55,11 @@ public class RTStandardArguments {
 
     /** Parameter for forcing a concrete encoding of the input. */
     public static final String FORCE_QUALITY_ENCODING_NAME = "forceEncoding";
+
+    // BARCODE PARAMS
+
+    public static final String RAW_BARCODE_SEQUENCE_TAG_NAME = "rawBarcodeSequenceTags";
+    public static final String RAW_BARCODE_QUALITIES_TAG_NAME = "rawBarcodeQualityTag";
+    public static final String USER_READ_NAME_BARCODE_NAME = "barcodeInReadName";
 
 }

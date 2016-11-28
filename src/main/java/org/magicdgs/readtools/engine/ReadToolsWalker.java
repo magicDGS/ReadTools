@@ -75,10 +75,10 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
      */
     // TODO: probably our progress metter could be better
     // TODO: because this only takes into account the locus positions
-    ProgressMeter progressMeter;
+    private ProgressMeter progressMeter;
 
     /** Source of reads for traversal, either pair-end or single-end data. */
-    RTDataSource dataSource;
+    private RTDataSource dataSource;
 
     /**
      * Start the progress meter, and initialize the data source.
@@ -115,7 +115,7 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
 
     /**
      * A complete traversal from start to finish of {@link RTDataSource}. Default implementation
-     * iterates over pair-end data if {@link RTDataSource#isPaired()} returns {@code true}, or
+     * iterates over pair-end data if {@link #isPaired()} returns {@code true}, or
      * over single-end data if it returns {@code false}.
      *
      * Authors should implement {@link #apply(GATKRead)} and/or {@link #apply(Tuple2)} for perform
@@ -125,7 +125,7 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
      * but it should be suitable for most of the cases.
      */
     protected void traverse() {
-        if (dataSource.isPaired()) {
+        if (isPaired()) {
             logger.info("Processing reads as pairs.");
             StreamSupport.stream(dataSource.pairedIterator().spliterator(), false)
                     .forEach(pairEndConsumer);
@@ -219,6 +219,11 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
     /** Gets the reference file if provided; {@code null} otherwise. */
     public final File getReferenceFile() {
         return referenceFile;
+    }
+
+    /** Rerturns {@code true} if the input is paired. */
+    public final boolean isPaired() {
+        return dataSource.isPaired();
     }
 
     /**

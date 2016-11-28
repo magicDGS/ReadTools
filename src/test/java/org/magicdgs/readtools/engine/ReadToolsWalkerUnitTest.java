@@ -61,17 +61,18 @@ public class ReadToolsWalkerUnitTest extends CommandLineProgramTest {
     @DataProvider(name = "arguments")
     public Object[][] walkerArguments() {
         return new Object[][] {
-                {new String[] {"-I", getTestFileName("small.mapped.bam")}, 206},
+                {new String[] {"-I", getTestFileName("small.mapped.bam")}, 206, false},
                 {new String[] {"-I", getTestFileName("small_1.illumina.fq"),
-                        "-I2", getTestFileName("small_2.illumina.fq")}, 10}
+                        "-I2", getTestFileName("small_2.illumina.fq")}, 10, true}
         };
     }
 
     @Test(dataProvider = "arguments")
-    public void testReadToolsSimpleWalker(final String[] args, final int expectedReads)
-            throws Exception {
+    public void testReadToolsSimpleWalker(final String[] args, final int expectedReads,
+            final boolean isPaired) throws Exception {
         final TestWalker walker = new TestWalker();
         Assert.assertNull(walker.instanceMain(args));
+        Assert.assertEquals(walker.isPaired(), isPaired);
         Assert.assertEquals(walker.nReads, expectedReads);
         // get the program record
         final SAMProgramRecord pg = walker.getProgramRecord(new SAMFileHeader());
