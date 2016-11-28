@@ -25,6 +25,8 @@
 package org.magicdgs.readtools.utils.tests;
 
 import org.broadinstitute.hellbender.utils.io.IOUtils;
+import org.broadinstitute.hellbender.utils.text.XReadLines;
+import org.testng.Assert;
 import org.testng.Reporter;
 
 import java.io.File;
@@ -84,6 +86,12 @@ public class BaseTest {
         return new File(getClassTestDirectory(), fileName);
     }
 
-    // TODO: include utility methods for assertions
-
+    /** Asserts that a file (compressed or not) is empty. */
+    public static void assertFileIsEmpty(final File expectedEmptyFile) {
+        try (XReadLines lines = new XReadLines(expectedEmptyFile)) {
+            Assert.assertFalse(lines.hasNext());
+        } catch (Exception e) {
+            Assert.fail("File is not empty or IO error: " + e.getMessage());
+        }
+    }
 }

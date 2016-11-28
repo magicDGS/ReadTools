@@ -135,9 +135,7 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
                 .addFileArgument("input1", getInputDataFile("onlyN.fq"))
                 .addBooleanArgument("disable-zipped-output", true));
         Assert.assertTrue(expectedOutput.exists());
-        try (BufferedReader br = new BufferedReader(new FileReader(expectedOutput))) {
-            Assert.assertNull(br.readLine());
-        }
+        assertFileIsEmpty(expectedOutput);
     }
 
 }
