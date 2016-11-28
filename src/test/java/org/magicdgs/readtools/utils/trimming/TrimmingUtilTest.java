@@ -36,8 +36,8 @@ import org.testng.annotations.Test;
  */
 public class TrimmingUtilTest extends BaseTest {
 
-    @DataProvider
-    public Object[][] trimMottData() {
+    @DataProvider(name = "trimMottData")
+    public static Object[][] trimMottData() {
         final byte[] quals1 = SAMUtils.fastqToPhred("555566");
         final byte[] quals2 = SAMUtils.fastqToPhred("665555");
         final byte[] quals3 = SAMUtils.fastqToPhred("55665555");
@@ -62,8 +62,8 @@ public class TrimmingUtilTest extends BaseTest {
         Assert.assertEquals(TrimmingUtil.trimPointsMott(quals, threshold), expected);
     }
 
-    @DataProvider
-    public Object[][] trimTrailingNdata() {
+    @DataProvider(name = "trimTrailingNdata")
+    public static Object[][] trimTrailingNdata() {
         return new Object[][] {
                 // not trimming because there is no N
                 {new byte[] {'A', 'T', 'T', 'G', 'C', 'T'}, new int[] {0, 6}},
