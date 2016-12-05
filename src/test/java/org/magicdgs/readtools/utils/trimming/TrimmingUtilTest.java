@@ -26,7 +26,6 @@ package org.magicdgs.readtools.utils.trimming;
 
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
-import htsjdk.samtools.SAMUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -38,28 +37,43 @@ public class TrimmingUtilTest extends BaseTest {
 
     @DataProvider(name = "trimMottData")
     public static Object[][] trimMottData() {
-        final byte[] quals1 = SAMUtils.fastqToPhred("555566");
-        final byte[] quals2 = SAMUtils.fastqToPhred("665555");
-        final byte[] quals3 = SAMUtils.fastqToPhred("55665555");
-        final byte[] quals4 = SAMUtils.fastqToPhred("555555");
         return new Object[][] {
-                // no trim
-                {quals1, 19, new int[] {0, quals1.length}},
-                {quals2, 19, new int[] {0, quals2.length}},
-                {quals3, 19, new int[] {0, quals3.length}},
-                {quals4, 19, new int[] {0, quals4.length}},
-                // trim one end or the other
-                {quals1, 20, new int[] {4, quals1.length}},
-                {quals2, 20, new int[] {0, 2}},
-                // trim both ends
-                {quals3, 20, new int[] {2, 4}},
-                {quals4, 20, new int[] {quals4.length, quals4.length}}
+                // this are test which mimics the ones in the perl script from PoPoolation
+                {new byte[] {20, 20, 20, 20}, 20, new int[] {4, 4}},
+                {new byte[] {21, 21, 21, 20, 19}, 20, new int[] {0, 3}},
+                {new byte[] {20, 20, 21, 21, 21, 21, 20, 20}, 20, new int[] {2, 6}},
+                {new byte[] {19, 19, 21, 21, 21, 21, 1, 1, 21, 21, 21, 21, 21}, 20,
+                        new int[] {8, 13}},
+                {new byte[] {19, 19, 21, 21, 21, 21, 1, 1, 21, 21, 21, 21, 21, 19}, 20,
+                        new int[] {8, 13}},
+                {new byte[] {19, 19, 21, 21, 21, 21, 21, 1, 1, 21, 21, 21, 21}, 20,
+                        new int[] {2, 7}},
+                {new byte[] {19, 19, 21, 21, 21, 20, 20, 19, 19, 21, 21, 21, 20}, 20,
+                        new int[] {2, 12}},
+                {new byte[] {19, 21, 21, 21, 20, 20, 19, 19, 21, 21, 21, 20, 19}, 20,
+                        new int[] {1, 11}},
+                {new byte[] {19, 21, 21, 21, 20, 20, 19, 19, 21, 21, 21, 20, 19, 19, 21, 20, 19},
+                        20, new int[] {1, 11}},
+                {new byte[] {21, 20, 20, 19, 19, 21, 21, 21, 20, 20, 19, 19, 21, 21, 21, 20, 19},
+                        20, new int[] {5, 15}}
+
+
         };
     }
 
     @Test(dataProvider = "trimMottData")
     public void testTrimPointsMott(final byte[] quals, final int threshold, final int[] expected) {
         Assert.assertEquals(TrimmingUtil.trimPointsMott(quals, threshold), expected);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testTrimPointsMottNullQuals() {
+        TrimmingUtil.trimPointsMott(null, 1);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testTrimPointsMottNegativeThreshold() {
+        TrimmingUtil.trimPointsMott(new byte[] {20, 20}, -1);
     }
 
     @DataProvider(name = "trimTrailingNdata")
@@ -92,6 +106,11 @@ public class TrimmingUtilTest extends BaseTest {
     public void testTrimPointsTrailingNs(final byte[] bases, final int[] expected)
             throws Exception {
         Assert.assertEquals(TrimmingUtil.trimPointsTrailingNs(bases), expected);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testTrimPoitnTrailingNsNullBases() {
+        TrimmingUtil.trimPointsTrailingNs(null);
     }
 
 }

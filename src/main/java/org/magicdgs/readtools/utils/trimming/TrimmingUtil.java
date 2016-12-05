@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.utils.trimming;
 
 import org.broadinstitute.hellbender.utils.BaseUtils;
+import org.broadinstitute.hellbender.utils.Utils;
 
 import java.util.Arrays;
 import java.util.TreeMap;
@@ -58,6 +59,8 @@ public class TrimmingUtil {
      * [0, quals.length] will be returned.
      */
     public static int[] trimPointsMott(final byte[] quals, final int trimQual) {
+        Utils.nonNull(quals, "null quals");
+        Utils.validateArg(trimQual >= 0, "negative trimQual");
         final TreeMap<Integer, int[]> hsps = new TreeMap<>();
         int highScore = 0;
         int activeScore = 0;
@@ -80,6 +83,7 @@ public class TrimmingUtil {
                 positions[0] = -1;
                 positions[1] = 0;
                 activeScore = 0;
+                highScore = 0;
             }
         }
         if (highScore > 0) {
@@ -106,6 +110,7 @@ public class TrimmingUtil {
      * [0, quals.length] will be returned.
      */
     public static int[] trimPointsTrailingNs(final byte[] bases) {
+        Utils.nonNull(bases, "null bases");
         final int[] positions = new int[] {0, bases.length};
         // first check if trimming is required for the
         for (int i = 0; i < bases.length; i++) {
