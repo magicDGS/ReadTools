@@ -30,12 +30,12 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.apache.logging.log4j.Logger;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
+import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeArgumentCollection implements ArgumentCollectionDefinition {
+public class BarcodeArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String BARCODES_LONG_NAME = "barcodes";

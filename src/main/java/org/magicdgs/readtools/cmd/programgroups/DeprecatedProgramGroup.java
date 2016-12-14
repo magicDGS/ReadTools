@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.programgroups;
 
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramGroup;
+import org.broadinstitute.barclay.argparser.CommandLineProgramGroup;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)

@@ -28,9 +28,10 @@ import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.utils.fastq.FastqReadNameEncoding;
 
 import htsjdk.samtools.fastq.FastqRecord;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
+import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.exceptions.UserException;
+
+import java.io.Serializable;
 
 /**
  * Argument collection for solve issues of barcodes in the read name not with the normal encoding.
@@ -39,7 +40,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadNameBarcodeArgumentCollection implements ArgumentCollectionDefinition {
+public class ReadNameBarcodeArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String READNAME_ENCODING_NAME = "readNameEncoding";

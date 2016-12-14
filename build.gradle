@@ -42,8 +42,8 @@ repositories {
     }
 }
 // versions for the dependencies
-final gatkVersion = '4.alpha.2-104-g50cb7f7-SNAPSHOT'
-final htsjdkVersion = '2.7.0'
+final gatkVersion = '4.alpha.2-123-g710c6b8-SNAPSHOT'
+final htsjdkVersion = '2.8.1'
 final testngVersion = "6.9.10"
 
 dependencies {
@@ -52,9 +52,15 @@ dependencies {
         exclude module: 'jgrapht' // this is not required
         exclude module: 'htsjdk'
         exclude module: 'testng'
+        // TODO: remove this line once the GKL is working
+        // TODO: see https://github.com/broadinstitute/gatk/issues/2315
+        exclude module: 'gkl'
     }
     compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
     compile group: 'org.testng', name: 'testng', version: testngVersion
+    // TODO: remove this line once the GKL is working
+    // TODO: see https://github.com/broadinstitute/gatk/issues/2315
+    compile "com.intel.gkl:gkl:0.2.0"
 }
 
 // for managing the wrapper task

@@ -3,16 +3,14 @@ package org.magicdgs.readtools.tools.trimming;
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 import org.magicdgs.readtools.utils.tests.TestResourcesUtils;
 
-import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -40,7 +38,7 @@ public class TrimFastqIntegrationTest extends CommandLineProgramTest {
         };
     }
 
-    @Test(dataProvider = "barArguments", expectedExceptions = UserException.BadArgumentValue.class)
+    @Test(dataProvider = "barArguments", expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testBadArguments(final String testName, final ArgumentsBuilder builder)
             throws Exception {
         builder.addArgument("output", new File(TEST_TEMP_DIR, testName).getAbsolutePath());

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.programgroups;
 
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramGroup;
+import org.broadinstitute.barclay.argparser.CommandLineProgramGroup;
 
 /**
  * Conversion program groups represents tools for convert any kind of reads sources to other

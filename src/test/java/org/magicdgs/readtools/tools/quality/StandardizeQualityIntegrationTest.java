@@ -32,6 +32,7 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqRecord;
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.testng.Assert;
@@ -48,7 +49,7 @@ public class StandardizeQualityIntegrationTest extends CommandLineProgramTest {
     private final static File TEST_TEMP_DIR =
             createTestTempDir(StandardizeQualityIntegrationTest.class.getSimpleName());
 
-    @Test(expectedExceptions = UserException.BadArgumentValue.class)
+    @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testBadArgument() throws Exception {
         runCommandLine(new ArgumentsBuilder()
                 .addArgument("input", getInputDataFile("small.illumina.sam").getAbsolutePath())

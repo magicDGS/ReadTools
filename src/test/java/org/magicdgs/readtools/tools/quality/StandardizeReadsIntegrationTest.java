@@ -29,7 +29,7 @@ import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
-import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -67,7 +67,7 @@ public class StandardizeReadsIntegrationTest extends CommandLineProgramTest {
         };
     }
 
-    @Test(dataProvider = "badArgs", expectedExceptions = UserException.CommandLineException.class)
+    @Test(dataProvider = "badArgs", expectedExceptions = CommandLineException.class)
     public void testBadArguments(final String[] args) throws Exception {
         runCommandLine(args);
     }

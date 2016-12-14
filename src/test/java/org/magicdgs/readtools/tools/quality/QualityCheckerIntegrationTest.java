@@ -27,7 +27,7 @@ package org.magicdgs.readtools.tools.quality;
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -52,7 +52,7 @@ public class QualityCheckerIntegrationTest extends CommandLineProgramTest {
         };
     }
 
-    @Test(expectedExceptions = UserException.BadArgumentValue.class)
+    @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testBadArgument() throws Exception {
         runCommandLine(
                 Arrays.asList("-i", SMALL_FASTQ_1.getAbsolutePath(), "--maximum-reads", "-1"));

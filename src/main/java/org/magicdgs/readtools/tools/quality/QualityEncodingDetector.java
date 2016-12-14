@@ -28,12 +28,12 @@ import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
-import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
-import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.IOException;
 
@@ -54,7 +54,7 @@ public final class QualityEncodingDetector extends CommandLineProgram {
     @Override
     protected String[] customCommandLineValidation() {
         if (recordsToIterate <= 0) {
-            throw new UserException.BadArgumentValue("maximumReads",
+            throw new CommandLineException.BadArgumentValue("maximumReads",
                     recordsToIterate.toString(), "should be a positive integer");
         }
         return super.customCommandLineValidation();

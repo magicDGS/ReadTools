@@ -29,15 +29,16 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 
 import htsjdk.samtools.SAMReadGroupRecord;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
+import org.broadinstitute.barclay.argparser.Argument;
+
+import java.io.Serializable;
 
 /**
  * Legacy argument collection for get read groups from barcodes.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadGroupLegacyArgumentCollection implements ArgumentCollectionDefinition {
+public class ReadGroupLegacyArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** Run ID in read groups. */

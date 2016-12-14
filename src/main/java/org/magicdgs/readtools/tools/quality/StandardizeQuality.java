@@ -45,9 +45,9 @@ import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
-import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.Closeable;
@@ -82,7 +82,7 @@ public final class StandardizeQuality extends ReadToolsBaseTool {
     @Override
     protected String[] customCommandLineValidation() {
         if (maintainFormat) {
-            throw new UserException.BadArgumentValue(
+            throw new CommandLineException.BadArgumentValue(
                     ReadToolsLegacyArgumentDefinitions.MAINTAIN_FORMAT_SHORT_NAME);
         }
         if (QualityUtils.getFastqQualityFormat(input) == FastqQualityFormat.Standard) {

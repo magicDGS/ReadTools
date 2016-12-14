@@ -27,6 +27,7 @@ package org.magicdgs.readtools.tools.quality;
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -40,7 +41,7 @@ import java.util.Arrays;
  */
 public class QualityEncodingDetectorIntegrationTest extends CommandLineProgramTest {
 
-    @Test(expectedExceptions = UserException.BadArgumentValue.class)
+    @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testBadArgument() throws Exception {
         // TODO: change when SMALL_FASTQ_1 doees not exists anymore
         runCommandLine(

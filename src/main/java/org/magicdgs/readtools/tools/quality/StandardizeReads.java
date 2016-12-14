@@ -34,10 +34,10 @@ import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcode
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.util.CloserUtil;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollection;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
-import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.ArgumentCollection;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
@@ -99,7 +99,7 @@ public final class StandardizeReads extends ReadToolsWalker {
     @Override
     public String[] customCommandLineValidation() {
         if (rawBarcodeTags.isEmpty() && !rawBarcodeQualsTags.isEmpty()) {
-            throw new UserException.MissingArgument(
+            throw new CommandLineException.MissingArgument(
                     RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME,
                     "required if --" + RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME
                             + "is specified.");
@@ -108,7 +108,7 @@ public final class StandardizeReads extends ReadToolsWalker {
             // TODO: I don't know if we should allow different number of tags
             // TODO: but this requires a change in the implementation on how to handle them
             // TODO: let's see if some user request it
-            throw new UserException.CommandLineException(
+            throw new CommandLineException(
                     "--" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
                             + " and --" + RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME
                             + " should be provided the same number of times.");

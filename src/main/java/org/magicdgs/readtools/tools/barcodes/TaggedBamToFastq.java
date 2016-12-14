@@ -43,9 +43,10 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.util.CloserUtil;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollection;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.ArgumentCollection;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
@@ -114,7 +115,7 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
                 tags = inputTags.stream().toArray(String[]::new);
             }
             if (tags.length != decoder.getDictionary().getNumberOfBarcodes()) {
-                throw new UserException.BadArgumentValue("tag", inputTags.toString(),
+                throw new CommandLineException.BadArgumentValue("tag", inputTags.toString(),
                         "number of barcodes in file differ for non-default barcode tags provided");
             }
             logger.debug("Tags: {}", Arrays.toString(tags));

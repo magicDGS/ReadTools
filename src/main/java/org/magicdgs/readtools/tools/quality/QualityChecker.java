@@ -30,10 +30,10 @@ import org.magicdgs.readtools.cmd.programgroups.DeprecatedProgramGroup;
 import org.magicdgs.readtools.utils.fastq.QualityUtils;
 
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
-import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 
@@ -60,7 +60,7 @@ public final class QualityChecker extends CommandLineProgram {
     @Override
     protected String[] customCommandLineValidation() {
         if (recordsToIterate <= 0) {
-            throw new UserException.BadArgumentValue("maximum-reads",
+            throw new CommandLineException.BadArgumentValue("maximum-reads",
                     recordsToIterate.toString(), "should be a positive integer");
         }
         return super.customCommandLineValidation();

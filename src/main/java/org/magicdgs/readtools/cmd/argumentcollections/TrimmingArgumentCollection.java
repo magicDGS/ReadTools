@@ -27,16 +27,17 @@ package org.magicdgs.readtools.cmd.argumentcollections;
 import org.magicdgs.readtools.tools.trimming.trimmers.Trimmer;
 import org.magicdgs.readtools.tools.trimming.trimmers.TrimmerBuilder;
 
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
-import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+
+import java.io.Serializable;
 
 /**
  * Argument collection for trimming algorithm
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmingArgumentCollection implements ArgumentCollectionDefinition {
+public class TrimmingArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String QUALITY_THRESHOLD_LONG_NAME = "quality-threshold";
@@ -114,23 +115,23 @@ public class TrimmingArgumentCollection implements ArgumentCollectionDefinition 
     /**
      * Validates that the arguments are in the correct range.
      *
-     * @throws UserException.BadArgumentValue if found a wrong provided value.
+     * @throws CommandLineException.BadArgumentValue if found a wrong provided value.
      */
     public void validateArguments() {
         if (qualThreshold < 0) {
-            throw new UserException.BadArgumentValue(QUALITY_THRESHOLD_LONG_NAME,
+            throw new CommandLineException.BadArgumentValue(QUALITY_THRESHOLD_LONG_NAME,
                     qualThreshold.toString(), "cannot be a negative value");
         }
         if (minLength < 1) {
-            throw new UserException.BadArgumentValue(MINIMUM_LENGTH_LONG_NAME,
+            throw new CommandLineException.BadArgumentValue(MINIMUM_LENGTH_LONG_NAME,
                     minLength.toString(), "should be a positive integer");
         }
         if (maxLength != null && maxLength < 1) {
-            throw new UserException.BadArgumentValue(MAXIMUM_LENGTH_LONG_NAME,
+            throw new CommandLineException.BadArgumentValue(MAXIMUM_LENGTH_LONG_NAME,
                     minLength.toString(), "should be a positive integer");
         }
         if (maxLength != null && minLength > maxLength) {
-            throw new UserException.BadArgumentValue(String.format(
+            throw new CommandLineException.BadArgumentValue(String.format(
                     "--%s (%s) should be smaller or equal than --%s (%s)",
                     MINIMUM_LENGTH_LONG_NAME, MAXIMUM_LENGTH_LONG_NAME,
                     minLength, maxLength));

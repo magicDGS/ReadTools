@@ -31,12 +31,12 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
+import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.function.Supplier;
 
 /**
@@ -44,7 +44,7 @@ import java.util.function.Supplier;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public abstract class RTOutputArgumentCollection implements ArgumentCollectionDefinition {
+public abstract class RTOutputArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected final static Logger logger = LogManager.getLogger(RTOutputArgumentCollection.class);

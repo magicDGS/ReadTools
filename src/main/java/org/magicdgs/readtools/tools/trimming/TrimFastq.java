@@ -41,9 +41,9 @@ import org.magicdgs.readtools.utils.misc.IOUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.CloserUtil;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollection;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramProperties;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.ArgumentCollection;
+import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;

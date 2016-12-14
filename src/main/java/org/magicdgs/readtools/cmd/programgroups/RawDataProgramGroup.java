@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.programgroups;
 
-import org.broadinstitute.hellbender.cmdline.CommandLineProgramGroup;
+import org.broadinstitute.barclay.argparser.CommandLineProgramGroup;
 
 /**
  * Program group for raw reads data.

@@ -31,20 +31,20 @@ import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.apache.logging.log4j.util.Supplier;
-import org.broadinstitute.hellbender.cmdline.Advanced;
-import org.broadinstitute.hellbender.cmdline.Argument;
-import org.broadinstitute.hellbender.cmdline.ArgumentCollectionDefinition;
+import org.broadinstitute.barclay.argparser.Advanced;
+import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.utils.read.ReadConstants;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * Argument collection for ReaTools input files.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTInputArgumentCollection implements ArgumentCollectionDefinition {
+public class RTInputArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // TODO: change our default validation stringency?

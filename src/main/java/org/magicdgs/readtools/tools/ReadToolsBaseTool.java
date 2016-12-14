@@ -46,9 +46,9 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.util.StringUtil;
-import org.broadinstitute.hellbender.cmdline.Argument;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.cmdline.PicardCommandLineProgram;
-import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +88,7 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
     @Override
     protected String[] customCommandLineValidation() {
         if (nThreads < 0) {
-            throw new UserException.BadArgumentValue(
+            throw new CommandLineException.BadArgumentValue(
                     ReadToolsLegacyArgumentDefinitions.PARALLEL_LONG_NAME, nThreads.toString(),
                     "should be a positive number.");
         }
