@@ -49,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Class for testing barcodes against a dictionary
@@ -285,6 +286,11 @@ public class BarcodeDecoder {
                 int sampleIndex = allBarcodes.indexOf(current.barcode);
                 // check if it is unique for this set
                 if (dictionary.isBarcodeUniqueInAt(current.barcode, i)) {
+                    // update the rest of barcodes
+                    if (i < bestMatchs.size()) {
+                        IntStream.range(i+1, bestMatchs.size()).forEach(j ->
+                                updateMatchStats(j, bestMatchs.get(j)));
+                    }
                     final String toReturn = dictionary.getCombinedBarcodesFor(sampleIndex);
                     stats.get(toReturn).RECORDS++;
                     // return directly the barcode
@@ -345,12 +351,7 @@ public class BarcodeDecoder {
     private boolean updateMatchStatsAndPassFilters(final int index, final BarcodeMatch match,
             final int maxMismatches, final int minDifferenceWithSecond) {
         // first check if it passing
-        if (match.isMatch()) {
-            final BarcodeStat toUpdate = barcodeStats.get(index).get(match.barcode);
-            mismatchesHist.get(index).get(match.barcode).increment(match.mismatches);
-            nMean.get(index).get(match.barcode).push(match.numberOfNs);
-            toUpdate.MATCHED++;
-        } else {
+        if (!updateMatchStats(index, match)) {
             metricHeader.DISCARDED_NO_MATCH++;
             return false;
         }
@@ -367,6 +368,18 @@ public class BarcodeDecoder {
             return false;
         }
         return true;
+    }
+
+    // return true if it is updated (match); false otherwise
+    private boolean updateMatchStats(final int index, final BarcodeMatch match) {
+        if (match.isMatch()) {
+            final BarcodeStat toUpdate = barcodeStats.get(index).get(match.barcode);
+            mismatchesHist.get(index).get(match.barcode).increment(match.mismatches);
+            nMean.get(index).get(match.barcode).push(match.numberOfNs);
+            toUpdate.MATCHED++;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -400,6 +413,9 @@ public class BarcodeDecoder {
                 // if it is the second best, track the result
                 best.mismatchesToSecondBest = currentMismatch;
             }
+        }
+        if (best.isMatch()) {
+            best.numberOfNs = missingCount(barcode.substring(0, best.barcode.length()));
         }
         return best;
     }

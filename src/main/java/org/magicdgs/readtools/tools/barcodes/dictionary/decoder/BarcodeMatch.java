@@ -64,7 +64,7 @@ public class BarcodeMatch {
         barcode = UNKNOWN_STRING;
         mismatches = maxMismatches;
         mismatchesToSecondBest = maxMismatches;
-        numberOfNs = maxMismatches;
+        numberOfNs = 0;
     }
 
     /**
