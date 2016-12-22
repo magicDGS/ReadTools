@@ -79,6 +79,6 @@ public abstract class SplitFastqWriterAbstract implements SplitFastqWriter {
 
     @Override
     public void close() {
-        mapping.values().stream().forEach(FastqWriter::close);
+        mapping.values().forEach(FastqWriter::close);
     }
 }

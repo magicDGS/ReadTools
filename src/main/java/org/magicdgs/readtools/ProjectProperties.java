@@ -24,13 +24,15 @@ package org.magicdgs.readtools;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * Static methods for retrieve Project properties as version, program name and build
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class ProjectProperties {
 
@@ -39,15 +41,17 @@ public class ProjectProperties {
     /**
      * The default properties
      */
-    private static final Hashtable<String, String> DEFAULT_VERSION_VALUES =
-            new Hashtable<String, String>() {{
-                put("version", "UNKNOWN");
-                put("name", "Program");
-                put("build", "develop"); // the build will be computed except it is in develop
-                put("timestamp", "unknown");
-                put("contact_person", "DGS");
-                put("contact_email", "");
-            }};
+    private static final Map<String, String> DEFAULT_VERSION_VALUES;
+    static {
+        final Map<String, String> defaults = new HashMap<>(6);
+        defaults.put("version", "UNKNOWN");
+        defaults.put("name", "Program");
+        defaults.put("build", "develop"); // the build will be computed except it is in develop
+        defaults.put("timestamp", "unknown");
+        defaults.put("contact_person", "DGS");
+        defaults.put("contact_email", "");
+        DEFAULT_VERSION_VALUES = Collections.unmodifiableMap(defaults);
+    }
 
     private static String name = null;
 

@@ -119,9 +119,7 @@ public final class SplitGATKWriter implements GATKReadWriter {
                 .map(splitter -> splitter.getSplitsBy(header))
                 .collect(Collectors.toList());
         // For every combination of keys, add a GATKWriter.
-        addKey(splitKeys, 0, "", key -> {
-            outs.put(key, createWriterOnDemand(key));
-        });
+        addKey(splitKeys, 0, "", key -> outs.put(key, createWriterOnDemand(key)));
     }
 
     /**

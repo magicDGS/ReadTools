@@ -35,10 +35,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -50,7 +50,7 @@ public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
         // this are the expected files with the output prefix
         final String outputPrefix = createTestTempDir(this.getClass().getSimpleName())
                 .getAbsolutePath() + "splitOutput";
-        final List<File> expectedFiles = Arrays.asList("_1", "_2", "_SE").stream()
+        final List<File> expectedFiles = Stream.of("_1", "_2", "_SE")
                 .map(e -> new File(outputPrefix + e + ".fq.gz")).collect(Collectors.toList());
         // set the arguments
         final RTOutputFastqArgumentCollection args = new RTOutputFastqArgumentCollection();

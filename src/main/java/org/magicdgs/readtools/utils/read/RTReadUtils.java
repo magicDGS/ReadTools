@@ -37,6 +37,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.IntSupplier;
+import java.util.stream.Stream;
 
 /**
  * Static utils for handling {@link GATKRead} in ReadTools.
@@ -99,15 +100,10 @@ public class RTReadUtils {
     public static String[] getBarcodesFromTags(final GATKRead read, final List<String> tags) {
         Utils.nonNull(read, "null read");
         Utils.nonEmpty(tags, "empty tags");
-        String[] barcodes = new String[0];
-        for (int i = 0; i < tags.size(); i++) {
-            final String value = read.getAttributeAsString(tags.get(i));
-            if (value != null) {
-                barcodes = ArrayUtils
-                        .addAll(barcodes, value.split(RTDefaults.BARCODE_INDEX_DELIMITER));
-            }
-        }
-        return barcodes;
+        return tags.stream().map(read::getAttributeAsString)
+                .filter(value -> value != null)
+                .flatMap(value -> Stream.of(value.split(RTDefaults.BARCODE_INDEX_DELIMITER)))
+                .toArray(String[]::new);
     }
 
     /**

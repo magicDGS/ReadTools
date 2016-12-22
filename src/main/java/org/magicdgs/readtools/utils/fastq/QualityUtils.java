@@ -34,13 +34,13 @@ import htsjdk.samtools.util.QualityEncodingDetector;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
  * Class with utils for work with quality
  *
- * @author Daniel Gómez Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class QualityUtils {
 
@@ -50,10 +50,7 @@ public class QualityUtils {
      * Supported quality formats for this program
      */
     public static final Set<FastqQualityFormat> SUPPORTED_FORMATS = Collections
-            .unmodifiableSet(new HashSet<FastqQualityFormat>() {{
-                add(FastqQualityFormat.Illumina);
-                add(FastqQualityFormat.Standard);
-            }});
+            .unmodifiableSet(EnumSet.of(FastqQualityFormat.Illumina, FastqQualityFormat.Standard));
 
     /**
      * QualityException for errors in Quality Encoding

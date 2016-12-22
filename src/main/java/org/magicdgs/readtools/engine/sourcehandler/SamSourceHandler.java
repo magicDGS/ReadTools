@@ -29,7 +29,6 @@ import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.QualityEncodingDetector;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -49,7 +48,7 @@ import java.util.List;
 public final class SamSourceHandler extends FileSourceHandler<SamReader> {
 
     /**
-     * Constructor using the {@link SamReaderFactory#DEFAULT}.
+     * Constructor using default factory.
      *
      * @param source the source of reads (SAM/BAM/CRAM).
      */

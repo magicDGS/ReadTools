@@ -146,8 +146,6 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
      *
      * @param header     the header to update
      * @param dictionary the dictionary with the information for each sample
-     *
-     * @return a mapping with the sample and the SAMReadGroupRecord
      */
     private void addReadGroupToHeader(final SAMFileHeader header,
             final BarcodeDictionary dictionary) {
