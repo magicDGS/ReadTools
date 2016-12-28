@@ -22,8 +22,6 @@
  */
 package org.magicdgs.readtools.utils.record;
 
-import static org.magicdgs.readtools.utils.record.SequenceMatch.mismatchesCount;
-import static org.magicdgs.readtools.utils.record.SequenceMatch.missingCount;
 import static org.magicdgs.readtools.utils.record.SequenceMatch.sequenceContainNs;
 import static org.magicdgs.readtools.utils.record.SequenceMatch.sequenceEndByNs;
 import static org.magicdgs.readtools.utils.record.SequenceMatch.sequenceStartByN;
@@ -31,6 +29,7 @@ import static org.magicdgs.readtools.utils.record.SequenceMatch.sequenceStartByN
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class SequenceMatchTest extends BaseTest {
@@ -71,28 +70,29 @@ public class SequenceMatchTest extends BaseTest {
         Assert.assertTrue(sequenceContainNs("annnnnna"));
     }
 
-    @Test
-    public void testMismatchesCount() throws Exception {
-        // test for real bases mismatches
-        Assert.assertEquals(mismatchesCount("ACTG", "ACCC"), 2);
-        Assert.assertEquals(mismatchesCount("ACTG", "ACCC", false), 2);
-        // test for missing bases
-        Assert.assertEquals(mismatchesCount("ACTG", "ACNN"), 2);
-        Assert.assertEquals(mismatchesCount("ACNN", "ACTG"), 2);
-        Assert.assertEquals(mismatchesCount("ACTG", "ACNN", false), 0);
-        Assert.assertEquals(mismatchesCount("ACNN", "ACTG", false), 0);
-        // test for different base case
-        Assert.assertEquals(mismatchesCount("ACTG", "actg"), 0);
-        Assert.assertEquals(mismatchesCount("ACTG", "accc"), 2);
-        Assert.assertEquals(mismatchesCount("ACTG", "acnn"), 2);
-        Assert.assertEquals(mismatchesCount("ACTG", "acnn", false), 0);
+    @DataProvider
+    public Object[][] hammingDistanceData() {
+        return new Object[][] {
+                // without Ns
+                {"ACTG", "ACCC", true, 2},
+                {"ACTG", "ACCC", false, 2},
+                // with missing bases
+                {"ACTG", "ACNN", true, 2},
+                {"ACTG", "ACNN", false, 0},
+                {"ACNN", "ACTG", true, 2},
+                {"ACNN", "ACTG", false, 0},
+                // case sensitivity
+                {"ACTG", "actg", true, 0},
+                {"ACTG", "accc", true, 2},
+                {"ACTG", "acnn", true, 2},
+                {"ACTG", "acnn", false, 0}
+        };
     }
 
-    @Test
-    public void testNcount() throws Exception {
-        // uppercase
-        Assert.assertEquals(missingCount("NNAAANNAAANN"), 6);
-        // lowercase
-        Assert.assertEquals(missingCount("nnaaannaaann"), 6);
+    @Test(dataProvider = "hammingDistanceData")
+    public void testHammingDistance(String test, String target, boolean nAsMismatch,
+            int expectedDistance) throws Exception {
+        Assert.assertEquals(SequenceMatch.hammingDistance(test, target, nAsMismatch),
+                expectedDistance);
     }
 }

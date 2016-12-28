@@ -22,7 +22,7 @@
  */
 package org.magicdgs.readtools.utils.record;
 
-import htsjdk.samtools.util.SequenceUtil;
+import org.broadinstitute.hellbender.utils.BaseUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,62 +86,32 @@ public class SequenceMatch {
     }
 
     /**
-     * Count the missing characters in a sequence
+     * Computes Hamming distance (number of mismatches) between a test sequence and a target
+     * sequence.
      *
-     * @param sequence the sequence
+     * @param testSequence   test sequence.
+     * @param targetSequence target sequence.
+     * @param nAsMismatches  if {@code true} N bases are counted as mismatch; otherwise they are
+     *                       ignored.
      *
-     * @return the number of missing
+     * @return hamming distance between the two sequences.
      */
-    public static int missingCount(final String sequence) {
-        int count = 0;
-        for (final char b : sequence.toCharArray()) {
-            if (SequenceUtil.isNoCall((byte) b)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Count the number of mismatches between a test barcode and a target barcode counting Ns as
-     * mismatch
-     *
-     * @param testSequence   the test sequence
-     * @param targetSequence the target sequence
-     *
-     * @return the number of mismatches between barcodes
-     */
-    public static int mismatchesCount(final String testSequence, final String targetSequence) {
-        return mismatchesCount(testSequence, targetSequence, true);
-    }
-
-    /**
-     * Count the number of mismatches between a test barcode and a target barcode
-     *
-     * @param testSequence   the test sequence
-     * @param targetSequence the target sequence
-     * @param nAsMismatch    if <code>true</code> N and other bases are counted as mismatch; if
-     *                       <code>false</code> it is
-     *                       ignored
-     *
-     * @return the number of mismatches between barcodes
-     */
-    public static int mismatchesCount(final String testSequence, final String targetSequence,
-            final boolean nAsMismatch) {
+    public static int hammingDistance(final String testSequence, final String targetSequence,
+            final boolean nAsMismatches) {
         // logger.debug("Testing ", testSequence, " against ", targetSequence);
         // if(testSequence.length() != barcode.length()) return testSequence.length();
-        int mmCnt = 0;
+        int measuredDistance = 0;
         for (int i = 0; i < testSequence.length(); i++) {
-            final byte testBase = (byte) testSequence.charAt(i);
-            final byte targetBase = (byte) targetSequence.charAt(i);
+            final byte test = (byte) testSequence.charAt(i);
+            final byte target = (byte) targetSequence.charAt(i);
             // only count if n is a mismatch of none of the test/target bases is an N
-            final boolean shouldCount = nAsMismatch
-                    || !(SequenceUtil.isNoCall(testBase) || SequenceUtil.isNoCall(targetBase));
+            final boolean shouldCount = nAsMismatches
+                    || !(BaseUtils.isNBase(test) || BaseUtils.isNBase(target));
             // case-insensitive mismatches count for N or not N
-            if (shouldCount && !SequenceUtil.basesEqual(testBase, targetBase)) {
-                mmCnt++;
+            if (shouldCount && !BaseUtils.basesAreEqual(test, target)) {
+                measuredDistance++;
             }
         }
-        return mmCnt;
+        return measuredDistance;
     }
 }

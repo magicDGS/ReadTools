@@ -32,6 +32,7 @@ import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.MatcherStat;
 import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.Formats;
@@ -53,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -145,9 +147,11 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
             logger.warn("{} {} fails vendor quality (PF flag) and were discarded",
                     Formats.commaFmt.format(pf), (single) ? "records" : "pairs");
         }
-        decoder.logMatcherResult(logger);
         try {
-            decoder.outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
+            final Collection<MatcherStat> stats = decoder
+                    .outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
+            stats.forEach(s -> logger.info("Found {} records for {} ({}).",
+                    Formats.commaFmt.format(s.RECORDS), s.SAMPLE, s.BARCODE));
         } catch (IOException e) {
             throw new UserException(e.getMessage(), e);
         }

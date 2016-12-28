@@ -36,8 +36,10 @@ import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.MatcherStat;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
+import org.magicdgs.readtools.utils.misc.Formats;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
@@ -51,6 +53,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -122,9 +125,11 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
                     "Unknown FastqReaderInterface: " + reader.getClass());
         }
         progress.logNumberOfVariantsProcessed();
-        decoder.logMatcherResult(logger);
         try {
-            decoder.outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
+            final Collection<MatcherStat> stats = decoder
+                    .outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
+            stats.forEach(s -> logger.info("Found {} records for {} ({}).",
+                    Formats.commaFmt.format(s.RECORDS), s.SAMPLE, s.BARCODE));
         } catch (IOException e) {
             throw new UserException(e.getMessage(), e);
         }

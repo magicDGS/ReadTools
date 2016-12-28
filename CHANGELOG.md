@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed issue for CRAM files detection by extension and IO
-- Fixed barcode detection metrics (solves issue [#77](https://github.com/magicDGS/ReadTools/issues/77))
+- Fixed barcode detection metrics (solves issue [#77](https://github.com/magicDGS/ReadTools/issues/77) and other minor issues)
 
 ### Changed
 - Tool deprecation: `QualityChecker`, `StandardizeQuality`
