@@ -384,4 +384,24 @@ public class RTReadUtils {
         return (value == null) ? defaultValue.getAsInt() : value;
     }
 
+    /**
+     * Fix a SAM tag that should be in sync for the two reads in a read pair. If it is only present
+     * in one of them, set that tag in the other.
+     *
+     * Note: If it is not set in any or it is in both, they keep this state.
+     *
+     * @param tag   the tag to fix.
+     * @param read1 first read in the pair.
+     * @param read2 second read in the pair.
+     */
+    public static void fixPairTag(final String tag, final GATKRead read1, final GATKRead read2) {
+        final String tagVal1 = read1.getAttributeAsString(tag);
+        final String tagVal2 = read2.getAttributeAsString(tag);
+        if (tagVal1 == null && tagVal2 != null) {
+            read1.setAttribute(tag, tagVal2);
+        } else if (tagVal2 == null && tagVal1 != null) {
+            read2.setAttribute(tag, tagVal1);
+        }
+        // TODO: should we also check if they are the same?
+    }
 }

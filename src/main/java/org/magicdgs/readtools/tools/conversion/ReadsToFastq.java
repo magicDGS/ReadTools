@@ -28,6 +28,7 @@ import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.ReadToolsConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
+import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcodesReadTransformer;
 
@@ -129,22 +130,9 @@ public final class ReadsToFastq extends ReadToolsWalker {
         final GATKRead read1 = transformer.apply(pair._1);
         final GATKRead read2 = transformer.apply(pair._2);
         // now we have to fix the barcode tags
-        fixPairTag(SAMTag.BC.name(), read1, read2);
+        RTReadUtils.fixPairTag(SAMTag.BC.name(), read1, read2);
         writer.addRead(read1);
         writer.addRead(read2);
-    }
-
-    // helper function to fix a pair-end tag for barcodes and qualities
-    // TODO: probably this should be moved to a different one
-    private void fixPairTag(final String tag, final GATKRead read1, final GATKRead read2) {
-        final String tagVal1 = read1.getAttributeAsString(tag);
-        final String tagVal2 = read2.getAttributeAsString(tag);
-        if (tagVal1 == null && tagVal2 != null) {
-            read1.setAttribute(tag, tagVal2);
-        } else if (tagVal2 == null && tagVal1 != null) {
-            read2.setAttribute(tag, tagVal1);
-        }
-        // TODO: should we also check if they are the same?
     }
 
     @Override

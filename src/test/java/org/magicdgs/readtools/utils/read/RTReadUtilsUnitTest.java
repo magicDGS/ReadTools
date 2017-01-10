@@ -343,4 +343,33 @@ public class RTReadUtilsUnitTest extends BaseTest {
         read.setAttribute("ct", 1);
         Assert.assertTrue(RTReadUtils.updateCompletelyTrimReadFlag(read));
     }
+
+    @DataProvider(name = "fixPairTagData")
+    public Object[][] getFixPairTagData() throws Exception {
+        final GATKRead read1 = ArtificialReadUtils
+                .createArtificialUnmappedRead(header, new byte[0], new byte[0]);
+        read1.setAttribute("R1", "true");
+        read1.setAttribute("ST", "1");
+        final GATKRead read2 = ArtificialReadUtils
+                .createArtificialUnmappedRead(header, new byte[0], new byte[0]);
+        read2.setAttribute("R2", "true");
+        read2.setAttribute("ST", "2");
+        return new Object[][] {
+                // change one or the other
+                {"R1", read1, read2, "true", "true"},
+                {"R2", read1, read2, "true", "true"},
+                // no change
+                {"ST", read1, read2, "1", "2"},
+                // both null
+                {"NL", read1, read2, null, null}
+        };
+    }
+
+    @Test(dataProvider = "fixPairTagData")
+    public void testFixPairTag(final String tag, final GATKRead read1, final GATKRead read2,
+            final String expectedTagValue1, final String expectedTagValue2) throws Exception {
+        RTReadUtils.fixPairTag(tag, read1, read2);
+        Assert.assertEquals(read1.getAttributeAsString(tag), expectedTagValue1);
+        Assert.assertEquals(read2.getAttributeAsString(tag), expectedTagValue2);
+    }
 }
