@@ -24,8 +24,8 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
+import org.magicdgs.readtools.ProjectProperties;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -55,13 +55,16 @@ public class ReadGroupLegacyArgumentCollection implements Serializable {
     public String platformUnit = null;
 
     /**
-     * Gets basic Read Group from the arguments. The ID is set to
-     * {@link BarcodeMatch#UNKNOWN_STRING} and using the information from
-     * {@link BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}.
+     * Gets basic Read Group from the arguments. The ID and sample is set to
+     * {@link BarcodeMatch#UNKNOWN_STRING}, and the program group to
+     * {@link ProjectProperties#getName()}.
      */
     public SAMReadGroupRecord getUnknownBasicReadGroup() {
-        final SAMReadGroupRecord readGroupInfo = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING,
-                BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
+        // constructing on demand
+        final SAMReadGroupRecord readGroupInfo =
+                new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
+        readGroupInfo.setProgramGroup(ProjectProperties.getName());
+        readGroupInfo.setSample(BarcodeMatch.UNKNOWN_STRING);
         if (platform != null) {
             readGroupInfo.setPlatform(platform.toString());
         }

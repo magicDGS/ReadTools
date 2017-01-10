@@ -48,6 +48,9 @@ public class BarcodeDictionary {
      */
     private final List<SAMReadGroupRecord> sampleRecord;
 
+    /** The unknown barcode for this dictionary. */
+    private final SAMReadGroupRecord unknownBarcode;
+
     /**
      * Array which contains the barcodes. The lenght is the number of barcodes used, and the
      * internal array contain the
@@ -68,13 +71,15 @@ public class BarcodeDictionary {
     /**
      * Protected constructor. For construct an instance, use {@link BarcodeDictionaryFactory}
      *
-     * @param samples  the sample names
-     * @param barcodes the barcodes
+     * @param samples        the sample names.
+     * @param barcodes       the barcodes.
+     * @param unknownBarcode the unknown barcode to assign to unknonw samples.
      */
     protected BarcodeDictionary(final List<SAMReadGroupRecord> samples,
-            final List<List<String>> barcodes) {
+            final List<List<String>> barcodes, final SAMReadGroupRecord unknownBarcode) {
         this.sampleRecord = samples;
         this.barcodes = barcodes;
+        this.unknownBarcode = unknownBarcode;
     }
 
     /**
@@ -91,7 +96,7 @@ public class BarcodeDictionary {
     protected BarcodeDictionary(final String run, final List<String> samples,
             final List<List<String>> barcodes, final List<String> libraries,
             final SAMReadGroupRecord readGroupInfo) {
-        this(new ArrayList<>(samples.size()), barcodes);
+        this(new ArrayList<>(samples.size()), barcodes, readGroupInfo);
         initReadGroups(run, samples, libraries, readGroupInfo);
     }
 
@@ -207,13 +212,17 @@ public class BarcodeDictionary {
         return sampleRecord.get(sampleIndex);
     }
 
+    public SAMReadGroupRecord getUnknownReadGroup() {
+        return unknownBarcode;
+    }
+
     /**
-     * Get the read group for a combined barcode
+     * Gets the read group for a combined barcode.
      *
-     * @param combinedBarcode the combined barcode
+     * @param combinedBarcode the combined barcode.
      *
-     * @return the read group associated with that barcode; {@link BarcodeDictionaryFactory#UNKNOWN_READGROUP_INFO}
-     * if not found
+     * @return the read group associated with that barcode; if not found it returns the unknown r
+     * ead group (see {@link #getUnknownReadGroup()}).
      */
     public SAMReadGroupRecord getReadGroupFor(final String combinedBarcode) {
         if (barcodeRGmap.isEmpty()) {
@@ -221,7 +230,7 @@ public class BarcodeDictionary {
         }
         return (barcodeRGmap.containsKey(combinedBarcode)) ?
                 barcodeRGmap.get(combinedBarcode) :
-                BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO;
+                unknownBarcode;
     }
 
     /**

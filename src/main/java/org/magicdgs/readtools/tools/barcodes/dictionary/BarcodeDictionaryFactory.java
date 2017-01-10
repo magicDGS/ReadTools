@@ -23,8 +23,6 @@
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
 import org.magicdgs.io.readers.SpaceDelimitedReader;
-import org.magicdgs.readtools.ProjectProperties;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.apache.logging.log4j.LogManager;
@@ -38,82 +36,67 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Class to create different combined/not combined dictionaries from a barcode file. Barcode files
- * have the following columns: sampleName, library, and several barcodes. They are space delimited
- * (tabs or other white spaces).
+ * Class to create/read barcode dictionaries. Barcode files have the following columns: sampleName,
+ * library, and several barcodes. They are space-delimited (tabs or other white-spaces).
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class BarcodeDictionaryFactory {
 
     private static final Logger logger = LogManager.getLogger(BarcodeDictionaryFactory.class);
 
     /**
-     * The read group information for default tags
-     */
-    public static final SAMReadGroupRecord UNKNOWN_READGROUP_INFO;
-
-    // initialize the unknown read group information
-    static {
-        UNKNOWN_READGROUP_INFO = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
-        UNKNOWN_READGROUP_INFO.setProgramGroup(ProjectProperties.getName());
-        UNKNOWN_READGROUP_INFO.setSample(BarcodeMatch.UNKNOWN_STRING);
-    }
-
-    /**
-     * Create a barcode dictionary from a file, with the first column being the barcode and the
-     * subsequent the barcodes.
-     * Each of the barcodes is stored independently
+     * Reads a barcode dictionary from a file. Each of the barcodes is stored independently.
      *
-     * @param run           the run name; <code>null</code> is allowed
-     * @param barcodeFile   the file
-     * @param readGroupInfo read group record where tags for other barcodes will be used (except
-     *                      ID and SN)
+     * @param run              run name. May be {@code null}.
+     * @param barcodeFile      file to read the barcode information from.
+     * @param unknownReadGroup read group record for unknown samples. The tags will be used
+     *                         (except ID and SN) for the rest of barcodes.
      *
      * @return the barcode dictionary
-     *
-     * @throws java.io.IOException if the file have some problem
      */
     public static BarcodeDictionary createDefaultDictionary(final String run,
-            final File barcodeFile, final SAMReadGroupRecord readGroupInfo) throws IOException {
-        final SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile);
-        // read the first line
-        String[] nextLine = reader.next();
-        if (nextLine == null) {
-            throwWrongFormatException(barcodeFile);
-        }
-        final int numberOfBarcodes = nextLine.length - 2;
-        if (numberOfBarcodes < 1) {
-            throwWrongFormatException(barcodeFile);
-        }
-        logger.debug("Detected {} barcodes.", numberOfBarcodes);
-        // at this point, we know the number of barcodes
-        final List<List<String>> barcodes = new ArrayList<>(numberOfBarcodes);
-        // initialize all the barcodes
-        for (int i = 0; i < numberOfBarcodes; i++) {
-            barcodes.add(new ArrayList<>());
-        }
-        // create the lists with samples and libraries
-        final List<String> samples = new ArrayList<>();
-        final List<String> libraries = new ArrayList<>();
-        // reading the rest of the lines
-        while (nextLine != null) {
-            logger.debug(Arrays.toString(nextLine));
-            if (numberOfBarcodes != nextLine.length - 2) {
+            final File barcodeFile, final SAMReadGroupRecord unknownReadGroup) {
+        try (final SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile)) {
+            // read the first line
+            String[] nextLine = reader.next();
+            if (nextLine == null) {
                 throwWrongFormatException(barcodeFile);
             }
-            // the first item is the sample name
-            samples.add(nextLine[0]);
-            libraries.add(nextLine[1]);
-            // get the barcodes
-            for (int i = 2; i < nextLine.length; i++) {
-                barcodes.get(i - 2).add(nextLine[i]);
+            final int numberOfBarcodes = nextLine.length - 2;
+            if (numberOfBarcodes < 1) {
+                throwWrongFormatException(barcodeFile);
             }
-            nextLine = reader.next();
+            logger.debug("Detected {} barcodes.", numberOfBarcodes);
+            // at this point, we know the number of barcodes
+            final List<List<String>> barcodes = new ArrayList<>(numberOfBarcodes);
+            // initialize all the barcodes
+            for (int i = 0; i < numberOfBarcodes; i++) {
+                barcodes.add(new ArrayList<>());
+            }
+            // create the lists with samples and libraries
+            final List<String> samples = new ArrayList<>();
+            final List<String> libraries = new ArrayList<>();
+            // reading the rest of the lines
+            while (nextLine != null) {
+                logger.debug(Arrays.toString(nextLine));
+                if (numberOfBarcodes != nextLine.length - 2) {
+                    throwWrongFormatException(barcodeFile);
+                }
+                // the first item is the sample name
+                samples.add(nextLine[0]);
+                libraries.add(nextLine[1]);
+                // get the barcodes
+                for (int i = 2; i < nextLine.length; i++) {
+                    barcodes.get(i - 2).add(nextLine[i]);
+                }
+                nextLine = reader.next();
+            }
+            // construct the barcode dictionary
+            return new BarcodeDictionary(run, samples, barcodes, libraries, unknownReadGroup);
+        } catch (final IOException e) {
+            throw new UserException.CouldNotReadInputFile(barcodeFile, e);
         }
-        reader.close();
-        // construct the barcode dictionary
-        return new BarcodeDictionary(run, samples, barcodes, libraries, readGroupInfo);
     }
 
     private static void throwWrongFormatException(File barcodeFile) {

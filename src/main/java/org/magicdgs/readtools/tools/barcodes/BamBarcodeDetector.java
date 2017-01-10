@@ -89,6 +89,7 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
     private SamReader reader;
     private SplitSAMFileWriter writer;
     private BarcodeDecoder decoder;
+    private SAMReadGroupRecord unknownRg;
 
     @Override
     protected void onStartup() {
@@ -107,6 +108,7 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
             writer = getBamWriterOrSplitWriterFromInput(outputPrefix, header,
                     barcodeArguments.split ? decoder.getDictionary() : null,
                     !samFormat);
+            unknownRg = decoder.getDictionary().getUnknownReadGroup();
         } catch (IOException e) {
             throw new UserException(e.getMessage(), e);
         }
@@ -120,7 +122,7 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
             final String[] barcode = SAMRecordUtils.getBarcodesInName(record);
             final String best = decoder.getBestBarcode(barcode);
             final SAMReadGroupRecord rg = decoder.getDictionary().getReadGroupFor(best);
-            if (!rg.equals(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO)) {
+            if (!rg.equals(unknownRg)) {
                 SAMRecordUtils.changeBarcodeInName(record, best);
             }
             record.setAttribute("RG", rg.getId());

@@ -31,7 +31,6 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.barclay.argparser.Argument;
-import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -140,18 +139,13 @@ public class BarcodeLegacyArgumentCollection implements Serializable {
      */
     private BarcodeDictionary getBarcodeDictionaryFromArguments(final Logger logger,
             final ReadGroupLegacyArgumentCollection rgac) {
-        try {
-            final BarcodeDictionary dictionary;
-            final SAMReadGroupRecord readGroupInfo = rgac.getUnknownBasicReadGroup();
-            dictionary = BarcodeDictionaryFactory
-                    .createDefaultDictionary(rgac.runId, inputFile, readGroupInfo);
-            logger.info("Loaded barcode file for {} samples with {} different barcode sets",
-                    dictionary.numberOfUniqueSamples(), dictionary.numberOfSamples());
-            return dictionary;
-        } catch (IOException e) {
-            // malformed files are handled by the dictionary factory
-            throw new UserException.CouldNotReadInputFile(inputFile, e);
-        }
+        final BarcodeDictionary dictionary;
+        final SAMReadGroupRecord readGroupInfo = rgac.getUnknownBasicReadGroup();
+        dictionary = BarcodeDictionaryFactory
+                .createDefaultDictionary(rgac.runId, inputFile, readGroupInfo);
+        logger.info("Loaded barcode file for {} samples with {} different barcode sets",
+                dictionary.numberOfUniqueSamples(), dictionary.numberOfSamples());
+        return dictionary;
     }
 
 }

@@ -23,8 +23,8 @@
  */
 package org.magicdgs.io.writers.bam;
 
+import org.magicdgs.readtools.ProjectProperties;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
-import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
@@ -40,8 +40,10 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -302,7 +304,7 @@ public class ReadToolsSAMFileWriterFactory {
      * @return the header for the sample file
      */
     private static SAMFileHeader getReadHeaderFor(SAMFileHeader original,
-            ArrayList<SAMReadGroupRecord> readGroupInfo) {
+            List<SAMReadGroupRecord> readGroupInfo) {
         SAMFileHeader toReturn = original.clone();
         toReturn.setReadGroups(readGroupInfo);
         return toReturn;
@@ -316,8 +318,10 @@ public class ReadToolsSAMFileWriterFactory {
      * @return the header for the discarded file
      */
     private static SAMFileHeader getDiscardedFileHeader(SAMFileHeader original) {
-        return getReadHeaderFor(original, new ArrayList<SAMReadGroupRecord>() {{
-            add(BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
-        }});
+        // constructing on demand
+        final SAMReadGroupRecord unkwnownRg = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
+        unkwnownRg.setProgramGroup(ProjectProperties.getName());
+        unkwnownRg.setSample(BarcodeMatch.UNKNOWN_STRING);
+        return getReadHeaderFor(original, Arrays.asList(unkwnownRg));
     }
 }

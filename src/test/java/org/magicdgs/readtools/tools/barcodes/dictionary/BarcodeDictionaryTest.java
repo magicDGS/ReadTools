@@ -22,6 +22,8 @@
  */
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
+import org.magicdgs.readtools.ProjectProperties;
+import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -48,6 +50,17 @@ public class BarcodeDictionaryTest extends BaseTest {
 
     private static final String[] barcodes = new String[] {"AAAA", "CCCC", "TTTT", "GGGG"};
 
+    // the unknown read group to test
+    private static final SAMReadGroupRecord UNKNOWN_READGROUP_INFO;
+
+    // initialize the unknown read group information
+    static {
+        UNKNOWN_READGROUP_INFO = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
+        UNKNOWN_READGROUP_INFO.setProgramGroup(ProjectProperties.getName());
+        UNKNOWN_READGROUP_INFO.setSample(BarcodeMatch.UNKNOWN_STRING);
+    }
+
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         barcodesSingle.add(new ArrayList<>());
@@ -56,7 +69,7 @@ public class BarcodeDictionaryTest extends BaseTest {
         for (int i = 0; i < barcodes.length; i++) {
             final SAMReadGroupRecord rg =
                     new SAMReadGroupRecord("sample" + i + String.join("_", barcodes[i]),
-                            BarcodeDictionaryFactory.UNKNOWN_READGROUP_INFO);
+                            UNKNOWN_READGROUP_INFO);
             samples.add(rg);
             barcodesSingle.get(0).add(barcodes[i]);
             barcodesDouble.get(0).add(barcodes[i]);
@@ -73,8 +86,8 @@ public class BarcodeDictionaryTest extends BaseTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        dictionarySingle = new BarcodeDictionary(samples, barcodesSingle);
-        dictionaryDouble = new BarcodeDictionary(samples, barcodesDouble);
+        dictionarySingle = new BarcodeDictionary(samples, barcodesSingle, UNKNOWN_READGROUP_INFO);
+        dictionaryDouble = new BarcodeDictionary(samples, barcodesDouble, UNKNOWN_READGROUP_INFO);
     }
 
     @Test
