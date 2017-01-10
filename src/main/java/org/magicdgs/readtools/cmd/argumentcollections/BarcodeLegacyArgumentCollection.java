@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeArgumentCollection implements Serializable {
+public class BarcodeLegacyArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String BARCODES_LONG_NAME = "barcodes";

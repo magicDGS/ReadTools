@@ -26,7 +26,7 @@ package org.magicdgs.readtools.tools.barcodes;
 
 import org.magicdgs.io.writers.bam.SplitSAMFileWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
+import org.magicdgs.readtools.cmd.argumentcollections.BarcodeLegacyArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupLegacyArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.MappedDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
@@ -79,7 +79,7 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
     public Boolean samFormat = false;
 
     @ArgumentCollection
-    public BarcodeArgumentCollection barcodeArguments = new BarcodeArgumentCollection();
+    public BarcodeLegacyArgumentCollection barcodeArguments = new BarcodeLegacyArgumentCollection();
 
     @ArgumentCollection(doc = "Arguments for RG information for output BAM/SAM")
     public ReadGroupLegacyArgumentCollection readGroupArgumentCollection =

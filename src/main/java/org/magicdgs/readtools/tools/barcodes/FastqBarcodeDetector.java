@@ -30,7 +30,7 @@ import org.magicdgs.io.readers.fastq.paired.FastqReaderPairedInterface;
 import org.magicdgs.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
+import org.magicdgs.readtools.cmd.argumentcollections.BarcodeLegacyArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadNameBarcodeArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
@@ -84,7 +84,7 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
     public String outputPrefix = null;
 
     @ArgumentCollection
-    public BarcodeArgumentCollection barcodeArguments = new BarcodeArgumentCollection();
+    public BarcodeLegacyArgumentCollection barcodeArguments = new BarcodeLegacyArgumentCollection();
 
     @ArgumentCollection
     public ReadNameBarcodeArgumentCollection readNameBarcodeArguments =

@@ -27,7 +27,7 @@ package org.magicdgs.readtools.tools.barcodes;
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.cmd.argumentcollections.BarcodeArgumentCollection;
+import org.magicdgs.readtools.cmd.argumentcollections.BarcodeLegacyArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
@@ -94,7 +94,7 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
     public Boolean single = false;
 
     @ArgumentCollection
-    public BarcodeArgumentCollection barcodeArguments = new BarcodeArgumentCollection();
+    public BarcodeLegacyArgumentCollection barcodeArguments = new BarcodeLegacyArgumentCollection();
 
     private BarcodeDecoder decoder;
     private SamReader reader;
