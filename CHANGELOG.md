@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - New tools for quality checking/standardizing: `QualityEncodingDetector` and `StandardizeReads`
 - New tool for converting to other format: `ReadsToFastq`
+- New tool for barcode detection: `AssignReadGroupByBarcode`
 - Input formats for every tool (except specified) includes BAM/SAM/CRAM/FASTQ
 - Tools output is in a consistent BAM/SAM/CRAM format (except for conversion tools)
 - Walker framework for single/pair-end reads traversal
@@ -14,9 +15,10 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed issue for CRAM files detection by extension and IO
 - Fixed barcode detection metrics (solves issue [#77](https://github.com/magicDGS/ReadTools/issues/77) and other minor issues)
+- BarcodeDictionary.getSampleReadGroups() returns an unmodifiable list
 
 ### Changed
-- Tool deprecation: `QualityChecker`, `StandardizeQuality`
+- Tool deprecation: `QualityChecker`, `StandardizeQuality`, `BamBarcodeDetector`, `FastqBarcodeDetector`, `TaggedBamToFastq`
 - Metrics from barcode detection ordered as the input file (samples and barcodes)
 - Default values are provided in the command line for list arguments in BarcodeArgumentCollection. If the user provide an option, the arguments will be overridden.
 

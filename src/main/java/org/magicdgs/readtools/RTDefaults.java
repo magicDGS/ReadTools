@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools;
 
+import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,11 +54,15 @@ public final class RTDefaults {
     /** Force overwrite of output files. Default=false. */
     public static final boolean FORCE_OVERWRITE;
 
+    /** Suffix for discarded output file(s). Default="_discarded" */
+    public static final String DISCARDED_OUTPUT_SUFFIX;
+
     static {
         BARCODE_INDEX_DELIMITER = getStringProperty("barcode_index_delimiter", "-");
         MAX_RECORDS_FOR_QUALITY = (long) getIntProperty("max_record_for_quality", 1000000);
         SAMPLING_QUALITY_CHECKING_FREQUENCY = getIntProperty("sampling_quality_checking_frequency", 1000);
         FORCE_OVERWRITE = getBooleanProperty("force_overwrite", false);
+        DISCARDED_OUTPUT_SUFFIX = getStringProperty("discarded_output_suffix", SplitGATKWriter.KEY_SPLIT_SEPARATOR + "discarded");
     }
 
 

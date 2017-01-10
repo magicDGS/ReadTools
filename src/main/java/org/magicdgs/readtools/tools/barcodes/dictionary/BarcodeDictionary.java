@@ -168,7 +168,7 @@ public class BarcodeDictionary {
      * @return the sample names
      */
     public List<SAMReadGroupRecord> getSampleReadGroups() {
-        return sampleRecord;
+        return Collections.unmodifiableList(sampleRecord);
     }
 
     /**

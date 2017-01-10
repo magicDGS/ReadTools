@@ -26,16 +26,22 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.BarcodeDetector;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.BarcodeStat;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.MatcherStat;
+import org.magicdgs.readtools.utils.read.RTReadUtils;
 
+import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.metrics.MetricsFile;
 import htsjdk.samtools.util.Histogram;
 import htsjdk.tribble.util.MathUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.Utils;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +58,8 @@ import java.util.stream.IntStream;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class BarcodeDecoder {
+
+    private final Logger logger;
 
     // the barcode dictionary to match against
     private final BarcodeDictionary dictionary;
@@ -115,6 +123,7 @@ public class BarcodeDecoder {
                 "minDifferenceWithSecond.size() != number of barcodes");
 
         this.metricHeader = new BarcodeDetector();
+        this.logger = LogManager.getLogger(this.getClass());
         initStats();
     }
 
@@ -159,6 +168,25 @@ public class BarcodeDecoder {
     /** Gets the barcode dictionary associated with this object. */
     public BarcodeDictionary getDictionary() {
         return dictionary;
+    }
+
+    /**
+     * Assigns the read group to a read using the raw barcodes. If there is no raw barcode, it is
+     * assigned to the UNKNOWN one; otherwise, it is assigned by matching the barcodes using the
+     * pipeline in {@link #getBestBarcodeString(String...)}.
+     *
+     * @param read the read to asssing the read group.
+     */
+    public void assignReadGroupByBarcode(final GATKRead read) {
+        final String[] barcodes = RTReadUtils.getRawBarcodes(read);
+        logger.debug("Raw barcodes: {}", () -> Arrays.toString(barcodes));
+        // if there is not barcode in the read, just ignore it
+        final String bestBarcode = (barcodes.length == 0)
+                ? BarcodeMatch.UNKNOWN_STRING : getBestBarcodeString(barcodes);
+        logger.debug("Detected barcode: {}", () -> bestBarcode);
+        final SAMReadGroupRecord readGroup = dictionary.getReadGroupFor(bestBarcode);
+        logger.debug("Detected RG: {}", () -> readGroup);
+        read.setReadGroup(readGroup.getReadGroupId());
     }
 
     /**

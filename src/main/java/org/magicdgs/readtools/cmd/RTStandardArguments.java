@@ -52,6 +52,9 @@ public class RTStandardArguments {
     public static final String INTERLEAVED_OUTPUT_FASTQ_LONG_NAME = "interleavedFastqOutput";
     public static final String INTERLEAVED_OUTPUT_FASTQ_SHORT_NAME = "IFO";
 
+    /** Parameter for keep the discarded records from an output. */
+    public static final String KEEP_DISCARDED_NAME = "keepDiscarded";
+
     // INPUT PARAMS
 
     /** Parameter for the second of the pair (if pair-end split files). */

@@ -32,7 +32,7 @@ import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeLegacyArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadNameBarcodeArgumentCollection;
-import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.DeprecatedProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
@@ -60,13 +60,16 @@ import java.util.Iterator;
  * Tool for split by barcode (in the read name) for FASTQ files.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this tool correspond to legacy elements.
  */
-@CommandLineProgramProperties(oneLineSummary = "Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library.",
-        summary = "Detect barcodes in the header of the read name (based on the marker "
+@CommandLineProgramProperties(oneLineSummary = "DEPRECATED: USE 'AssignReadGroupByBarcode' for identify barcodes in the read name for a FASTQ file and assign to the ones used on the library.",
+        summary = "DEPRECATED: USE 'AssignReadGroupByBarcode' instead.\n" +
+                "Detect barcodes in the header of the read name (based on the marker "
                 + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
                 + ") and assign to a sample based on a provided dictionary. Barcodes in the input file "
                 + "that are larger than the used ones are cut in the last bases.",
-        programGroup = RawDataProgramGroup.class)
+        programGroup = DeprecatedProgramGroup.class)
+@Deprecated
 public final class FastqBarcodeDetector extends ReadToolsBaseTool {
 
     @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "1", shortName =

@@ -28,7 +28,7 @@ import org.magicdgs.io.writers.bam.SplitSAMFileWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeLegacyArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupLegacyArgumentCollection;
-import org.magicdgs.readtools.cmd.programgroups.MappedDataProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.DeprecatedProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
@@ -58,12 +58,15 @@ import java.util.HashSet;
  * Tool for split by barcode (in the read name) for BAM files.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this tool correspond to legacy elements.
  */
-@CommandLineProgramProperties(oneLineSummary = "Identify barcodes in the read name for a BAM file and assign to the ones used on the library",
-        summary = "Detect barcodes in the header of the read name (based on the marker "
+@CommandLineProgramProperties(oneLineSummary = "DEPRECATED: USE 'AssignReadGroupByBarcode' for identify barcodes in the read name for a BAM file and assign to the ones used on the library",
+        summary = "DEPRECATED: USE 'AssignReadGroupByBarcode' instead.\n" +
+                "Detect barcodes in the header of the read name (based on the marker "
                 + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
                 + ") and assign to a sample based on a provided dictionary. Barcodes in the input file that are larger than the used ones are cut in the last bases.",
-        programGroup = MappedDataProgramGroup.class)
+        programGroup = DeprecatedProgramGroup.class)
+@Deprecated
 public final class BamBarcodeDetector extends ReadToolsBaseTool {
 
     @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME, shortName = ReadToolsLegacyArgumentDefinitions.INPUT_SHORT_NAME, optional = false,

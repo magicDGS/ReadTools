@@ -28,7 +28,7 @@ import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeLegacyArgumentCollection;
-import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.DeprecatedProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
@@ -61,8 +61,10 @@ import java.util.List;
  * Class for converting from a Barcoded BAM to a FASTQ.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this tool correspond to legacy elements.
  */
-@CommandLineProgramProperties(summary ="Because some sequencing companies/services provide a barcoded BAM file instead of a FASTQ this tool"
+@CommandLineProgramProperties(summary = "DEPRECATED: USE 'AssignReadGroupByBarcode' instead.\n" +
+        "Because some sequencing companies/services provide a barcoded BAM file instead of a FASTQ this tool"
                 + "converts the BAM file into the latter. It works with one or two barcodes, pair-end (interleaved BAM file) "
                 + "and single-end sequencing. In addition, it matches the sequenced barcodes with the used ones and discards some"
                 + " reads that could not be matched, and adds the exact detected barcode to the read name. The method to assign"
@@ -70,8 +72,9 @@ import java.util.List;
                 + " is more than 1 barcode, it assigns the read to the sample with which most barcodes match; otherwise, the read"
                 + " is discarded. If the barcode in the input file is larger than the sequenced barcode the last base from the "
                 + "input barcode is ignored.",
-        oneLineSummary = "Convert an BAM file with BC tags into a FASTQ file.",
-        programGroup = RawDataProgramGroup.class)
+        oneLineSummary = "DEPRECATED: USE 'AssignReadGroupByBarcode' for convert an BAM file with BC tags into a FASTQ file.",
+        programGroup = DeprecatedProgramGroup.class)
+@Deprecated
 public final class TaggedBamToFastq extends ReadToolsBaseTool {
 
     private final static String DEFAULT_BARCODE_TAG1 = "BC";
