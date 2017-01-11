@@ -35,6 +35,7 @@ import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
+import org.broadinstitute.hellbender.engine.GATKTool;
 import org.broadinstitute.hellbender.engine.ProgressMeter;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import scala.Tuple2;
@@ -58,8 +59,7 @@ import java.util.stream.StreamSupport;
 public abstract class ReadToolsWalker extends CommandLineProgram {
 
     // For the progress meter in the GATKTool
-    // TODO: extract the parameter name in GATK!
-    @Argument(fullName = "secondsBetweenProgressUpdates", shortName = "secondsBetweenProgressUpdates", doc = "Output traversal statistics every time this many seconds elapse.", optional = true)
+    @Argument(fullName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, shortName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, doc = "Output traversal statistics every time this many seconds elapse.", optional = true)
     private double secondsBetweenProgressUpdates = ProgressMeter.DEFAULT_SECONDS_BETWEEN_UPDATES;
 
     @Argument(fullName = StandardArgumentDefinitions.REFERENCE_LONG_NAME, shortName = StandardArgumentDefinitions.REFERENCE_SHORT_NAME, doc = "Reference sequence file. Required for CRAM input.", optional = true)

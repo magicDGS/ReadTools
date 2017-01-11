@@ -64,7 +64,6 @@ public class ReadToolsLegacyArgumentDefinitions {
 
     // legacy options for ReadTools read groups
     // TODO: remove this parameters to be in the Picard tool for the read group parameters
-    // TODO: contribute to GATK4 for use their constants?
     public static final String RG_ID_LONG_NAME = "run-id";
     public static final String RG_ID_SHORT_NAME = "run";
     public static final String RG_ID_DOC =

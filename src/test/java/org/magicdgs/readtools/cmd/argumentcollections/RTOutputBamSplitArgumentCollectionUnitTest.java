@@ -81,7 +81,6 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
         return data.iterator();
     }
 
-    // TODO: needs data provider
     @Test(dataProvider = "outputsData")
     public void testOutputs(final ReadToolsOutputFormat.BamFormat format,
             final boolean sample, final boolean id, final boolean library) throws Exception {

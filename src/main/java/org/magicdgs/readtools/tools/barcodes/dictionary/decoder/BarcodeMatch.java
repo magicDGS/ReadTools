@@ -116,7 +116,6 @@ public final class BarcodeMatch {
      *
      * @return {@code true} if the barcode is assignable; {@code false} otherwise.
      */
-    // TODO: add test
     public boolean isAssignable(final int threshold) {
         // TODO: we should change the implementation:
         // TODO: 1) does not allow thesholds of 0 -> this will break compatibility

@@ -43,20 +43,12 @@ import java.util.Set;
  */
 public class BarcodeMatchUnitTest extends BaseTest {
 
-    private final static Set<String> SINGLE_BASE_BARCODES = new LinkedHashSet<>(
-            Arrays.asList("AAAA", "TTTT", "CCCC"));
-
-    private final static Set<String> ALL_BARCODES = new LinkedHashSet<>(SINGLE_BASE_BARCODES);
-
-    static {
-        ALL_BARCODES.addAll(Arrays.asList("AATC"));
-    }
+    private final static Set<String> ALL_BARCODES = new LinkedHashSet<>(
+            Arrays.asList("AAAA", "TTTT", "CCCC", "AATC"));
 
     @DataProvider
     public Iterator<Object[]> bestBarcodes() throws Exception {
         final List<Object[]> data = new ArrayList<>(ALL_BARCODES.size());
-        // TODO: change the arrays.asList for all the barcodes
-        // TODO: this is not possible because there is a bad implementation of isAssignable
         // test perfect match
         ALL_BARCODES.forEach(b -> {
             // first index with Ns as mismatches

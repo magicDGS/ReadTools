@@ -136,7 +136,6 @@ public class GATKReadPairedIteratorUnitTest extends BaseTest {
         final List<GATKRead> reads = new ArrayList<>(
                 ArtificialReadUtils.createPair(header, "read1", 10, 100, 200, true, false));
         final GATKRead unpaired = ArtificialReadUtils.createArtificialRead("10M");
-        // TODO: should I set something?
         reads.add(unpaired);
         final InterleavedGATKReadPairedIterator iterator =
                 new InterleavedGATKReadPairedIterator(reads.iterator());

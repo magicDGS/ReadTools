@@ -54,7 +54,6 @@ public abstract class GATKReadPairedIterator
      *
      * @return the paired-end iterator.
      */
-    // TODO: add tests for check if it is returning the correct iterator
     public static GATKReadPairedIterator of(final Iterator<GATKRead>... iterators) {
         Utils.nonNull(iterators, "null iterators");
         switch (iterators.length) {
