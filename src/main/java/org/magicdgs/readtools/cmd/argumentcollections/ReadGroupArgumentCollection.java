@@ -34,15 +34,12 @@ import org.broadinstitute.hellbender.tools.picard.sam.AddOrReplaceReadGroups;
 import java.io.Serializable;
 
 /**
- * Picard AddOrReplaceReadGroup arguments, except sample name, read group description
+ * Picard AddOrReplaceReadGroup arguments, except library, sample name, read group description
  * and program group.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class ReadGroupArgumentCollection implements Serializable {
-
-    @Argument(fullName = AddOrReplaceReadGroups.RGLB_LONG_NAME, shortName = AddOrReplaceReadGroups.RGLB_SHORT_NAME, doc = "Read Group Library")
-    public String readGroupLibrary;
 
     // This is a modification w.r.t. Picard, because there is an enum for platform values that may be useful for limiting this value
     @Argument(fullName = AddOrReplaceReadGroups.RGPL_LONG_NAME, shortName = AddOrReplaceReadGroups.RGPL_SHORT_NAME, doc = "Read Group platform (e.g. illumina, solid)", optional = true)
@@ -54,7 +51,7 @@ public class ReadGroupArgumentCollection implements Serializable {
     @Argument(fullName = AddOrReplaceReadGroups.RGCN_LONG_NAME, shortName = AddOrReplaceReadGroups.RGCN_SHORT_NAME, doc = "Read Group sequencing center name", optional = true)
     public String readGroupSequencingCenter;
 
-    @Argument(fullName = AddOrReplaceReadGroups.RGDT_LONG_NAME, shortName = AddOrReplaceReadGroups.RGCN_SHORT_NAME, doc = "Read Group run date", optional = true)
+    @Argument(fullName = AddOrReplaceReadGroups.RGDT_LONG_NAME, shortName = AddOrReplaceReadGroups.RGDT_SHORT_NAME, doc = "Read Group run date", optional = true)
     public Iso8601Date readGroupRunDate;
 
     @Argument(fullName = AddOrReplaceReadGroups.RGPI_LONG_NAME, shortName = AddOrReplaceReadGroups.RGPI_SHORT_NAME, doc = "Read Group predicted insert size", optional = true)
@@ -77,9 +74,6 @@ public class ReadGroupArgumentCollection implements Serializable {
         rg.setProgramGroup(ProjectProperties.getName());
         if (readGroupPlatform != null) {
             rg.setPlatform(readGroupPlatform.toString());
-        }
-        if (readGroupLibrary != null) {
-            rg.setLibrary(readGroupLibrary);
         }
         if (readGroupPlatformUnit != null) {
             rg.setPlatformUnit(readGroupPlatformUnit);

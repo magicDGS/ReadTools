@@ -59,9 +59,6 @@ public class ReadGroupArgumentCollectionUnitTest extends BaseTest {
         expected.setPlatform("ILLUMINA");
         rgargs.readGroupPlatform = SAMReadGroupRecord.PlatformValue.ILLUMINA;
 
-        expected.setLibrary("LB");
-        rgargs.readGroupLibrary = expected.getLibrary();
-
         expected.setPlatformUnit("PU");
         rgargs.readGroupPlatformUnit = expected.getPlatformUnit();
 

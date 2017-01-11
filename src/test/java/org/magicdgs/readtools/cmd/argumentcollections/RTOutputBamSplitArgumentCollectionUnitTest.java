@@ -92,9 +92,9 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
 
         final RTOutputBamSplitArgumentCollection args = new RTOutputBamSplitArgumentCollection();
         args.outputPrefix = outputPrefix.getAbsolutePath();
-        args.SAMPLE = sample;
-        args.READ_GROUP = id;
-        args.LIBRARY_NAME = library;
+        args.splitBySample = sample;
+        args.splitByReadGroup = id;
+        args.splitByLibrary = library;
         args.outputFormat = format;
         final List<File> expectedFiles = READ_GROUPS.stream().map(rg -> {
             String suffix = "";

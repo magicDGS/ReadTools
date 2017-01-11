@@ -58,14 +58,14 @@ class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentColl
     public ReadToolsOutputFormat.BamFormat outputFormat = ReadToolsOutputFormat.BamFormat.BAM;
 
 
-    @Argument(shortName = SplitReads.SAMPLE_SHORT_NAME, doc = "Split file by sample.", optional = true)
-    public boolean SAMPLE = false;
+    @Argument(fullName = "splitBySample", shortName = "splitSM", doc = "Split file by sample.", optional = true)
+    public boolean splitBySample = false;
 
-    @Argument(shortName = SplitReads.READ_GROUP_SHORT_NAME, doc = "Split file by read group.", optional = true)
-    public boolean READ_GROUP = false;
+    @Argument(fullName = "splitByReadGroup", shortName = "splitRG", doc = "Split file by read group.", optional = true)
+    public boolean splitByReadGroup = false;
 
-    @Argument(shortName = SplitReads.LIBRARY_NAME_SHORT_NAME, doc = "Split file by library.", optional = true)
-    public boolean LIBRARY_NAME = false;
+    @Argument(fullName = "splitByLibrary", shortName = "splitLB", doc = "Split file by library.", optional = true)
+    public boolean splitByLibrary = false;
 
     @Override
     protected GATKReadWriter createWriter(final ReadWriterFactory factory,
@@ -73,15 +73,15 @@ class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentColl
         // set the splitter
         final List<ReaderSplitter<?>> splitter = new ArrayList<>(3);
         // first sample
-        if (SAMPLE) {
+        if (splitBySample) {
             splitter.add(new SampleNameSplitter());
         }
         // second the read group
-        if (READ_GROUP) {
+        if (splitByReadGroup) {
             splitter.add(new ReadGroupIdSplitter());
         }
         // third the library
-        if (LIBRARY_NAME) {
+        if (splitByLibrary) {
             splitter.add(new LibraryNameSplitter());
         }
 
