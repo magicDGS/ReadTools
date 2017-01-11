@@ -37,7 +37,10 @@ import java.io.Serializable;
  * Legacy argument collection for get read groups from barcodes.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this argument collection correspond to legacy elements.
+ * Use the Picard-like {@link ReadGroupArgumentCollection}.
  */
+@Deprecated
 public class ReadGroupLegacyArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -58,7 +61,11 @@ public class ReadGroupLegacyArgumentCollection implements Serializable {
      * Gets basic Read Group from the arguments. The ID and sample is set to
      * {@link BarcodeMatch#UNKNOWN_STRING}, and the program group to
      * {@link ProjectProperties#getName()}.
+     *
+     * @deprecated use {@link ReadGroupArgumentCollection#getReadGroupFromArguments(String, String)}
+     * with {@link BarcodeMatch#UNKNOWN_STRING} as parameters.
      */
+    @Deprecated
     public SAMReadGroupRecord getUnknownBasicReadGroup() {
         // constructing on demand
         final SAMReadGroupRecord readGroupInfo =
