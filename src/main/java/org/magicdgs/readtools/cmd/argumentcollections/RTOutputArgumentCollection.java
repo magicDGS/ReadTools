@@ -104,4 +104,9 @@ public abstract class RTOutputArgumentCollection implements Serializable {
         return new RTOutputFastqArgumentCollection();
     }
 
+    /** Returns an output collection for SAM/BAM/CRAM files and splitting them. */
+    public static final RTOutputArgumentCollection splitOutput() {
+        return new RTOutputBamSplitArgumentCollection();
+    }
+
 }

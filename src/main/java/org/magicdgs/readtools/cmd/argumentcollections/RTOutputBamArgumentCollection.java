@@ -38,33 +38,15 @@ import java.io.File;
 import java.util.function.Supplier;
 
 /**
- * Output argument collection for output SAM/BAM/CRAM files.
+ * Simple output argument collection for output SAM/BAM/CRAM files, without splitting.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-final class RTOutputBamArgumentCollection extends RTOutputArgumentCollection {
+class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollection {
     private static final long serialVersionUID = 1L;
 
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file.", optional = false)
     public String outputName;
-
-    @Argument(fullName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_LONG_NAME, shortName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_SHORT_NAME, doc = "If true, create a BAM/CRAM index when writing a coordinate-sorted BAM/CRAM file.", optional = true)
-    public boolean createOutputBamIndex = true;
-
-    @Argument(fullName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_MD5_LONG_NAME, shortName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_MD5_SHORT_NAME, doc = "If true, create a MD5 digest for any BAM/SAM/CRAM file created", optional = true)
-    public boolean createOutputBamMD5 = false;
-
-    @Argument(fullName = "addOutputSAMProgramRecord", shortName = "addOutputSAMProgramRecord", doc = "If true, adds a PG tag to created SAM/BAM/CRAM files.", optional = true)
-    public boolean addOutputSAMProgramRecord = true;
-
-    /** Gets the writer factory for the arguments, adding also the reference file. */
-    @Override
-    protected ReadWriterFactory getWriterFactory() {
-        return super.getWriterFactory()
-                .setForceOverwrite(forceOverwrite)
-                .setCreateIndex(createOutputBamIndex)
-                .setCreateMd5File(createOutputBamMD5);
-    }
 
     /**
      * Checks if the output name is a SAM/BAM/CRAM file and if so it creates a SAM writer.
@@ -79,17 +61,5 @@ final class RTOutputBamArgumentCollection extends RTOutputArgumentCollection {
                     "The output file should have a BAM/SAM/CRAM extension.");
         }
         return factory.createSAMWriter(outputName, header, presorted);
-    }
-
-    /**
-     * Updates the header with the program record if {@link #addOutputSAMProgramRecord} is
-     * {@code true} and the supplier is not {@code null}.
-     */
-    @Override
-    protected void updateHeader(final SAMFileHeader header,
-            final Supplier<SAMProgramRecord> programRecord) {
-        if (addOutputSAMProgramRecord && programRecord != null) {
-            header.addProgramRecord(programRecord.get());
-        }
     }
 }

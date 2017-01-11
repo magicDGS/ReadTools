@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
+import org.magicdgs.readtools.engine.RTDataSource;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import org.testng.Assert;
@@ -57,6 +58,14 @@ public class RTInputArgumentCollectionUnitTest extends BaseTest {
         final RTInputArgumentCollection args = getWithRequiredArguments();
         args.interleaved = true;
         Assert.assertTrue(args.getDataSource(null).isPaired());
+    }
+
+    @Test
+    public void testGetTwoIndependentDataSources() {
+        final RTInputArgumentCollection args = getWithRequiredArguments();
+        final RTDataSource first = args.getDataSource(null);
+        final RTDataSource second = args.getDataSource(null);
+        Assert.assertNotSame(first, second);
     }
 
 }
