@@ -50,8 +50,9 @@ public class RTDataSourceUnitTest extends BaseTest {
     private final static SAMFileHeader minimalPairedHeader = new SAMFileHeader();
 
     static {
-        // header for paired-data will be always sorted by queryname
-        minimalPairedHeader.setSortOrder(SAMFileHeader.SortOrder.queryname);
+        // TODO: header for paired-data will be always sorted by queryname
+        // TODO: now we have some limitations
+        minimalPairedHeader.setSortOrder(SAMFileHeader.SortOrder.unsorted);
     }
 
     private final static SAMFileHeader samHeader = new SAMTextHeaderCodec().decode(
@@ -117,8 +118,10 @@ public class RTDataSourceUnitTest extends BaseTest {
         final SAMFileHeader header = samHeader.clone();
         // clone is broken and change the version, so change it here too
         header.setAttribute(SAMFileHeader.VERSION_TAG, samHeader.getVersion());
-        // paired data is always sorted by queryname
-        header.setSortOrder(SAMFileHeader.SortOrder.queryname);
+        // TODO: paired data should be always sorted by queryname at some point
+        // currently we have the limitation that the queryname sorting by other tools
+        // cannot be checked, so we assume unsorted
+        header.setSortOrder(SAMFileHeader.SortOrder.unsorted);
         return new Object[][] {
                 // this is really paired
                 {getSource("small.paired.sam"), FastqQualityFormat.Standard, header, 4},

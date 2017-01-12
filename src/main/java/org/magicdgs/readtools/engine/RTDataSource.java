@@ -202,8 +202,9 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
             final SAMFileHeader firstHeader = getSamFileHeader(readHandler);
             // if it is pair-end
             if (secondHandler != null) {
-                // always assume sorted by queryname if paired
-                header = new SamFileHeaderMerger(SAMFileHeader.SortOrder.queryname,
+                // TODO: always assume sorted by queryname if paired
+                // TODO: it is not possible because the queryname sort order is not really specified
+                header = new SamFileHeaderMerger(SAMFileHeader.SortOrder.unsorted,
                         Arrays.asList(firstHeader, getSamFileHeader(secondHandler)), true)
                         .getMergedHeader();
                 // removes group order included by the merger
@@ -238,7 +239,7 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
             case duplicate:
                 if (isPaired()) {
                     logger.warn(
-                            "Paired read source {} sorted by {}. This could cause errors while processing, because queryname is expected.",
+                            "Paired read source {} sorted by '{}'. This could cause errors while processing, because sorted by read name is expected to keep pairs together.",
                             handler.getHandledSource(), header.getSortOrder());
                     header.setSortOrder(SAMFileHeader.SortOrder.queryname);
                 }
@@ -246,15 +247,22 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
             case unsorted:
                 if (isPaired()) {
                     logger.warn(
-                            "Unsorted read source {} for pair-end data. Assuming sorted by queryname.",
+                            "Unsorted read source {} for pair-end data. Assuming sorted by read name, keeping pairs together.",
                             handler.getHandledSource());
                     header.setSortOrder(SAMFileHeader.SortOrder.queryname);
                 }
                 break;
             case queryname:
+                logger.warn(
+                        "Sort order by 'queryname' is assumed to follow the Picard specifications. This limitation may be removed in the future.");
                 break;
             default:
                 throw new GATKException("Unknown sort order: " + header.getSortOrder());
+        }
+        if (isPaired()) {
+            // TODO: does not log this warning nor setting to unsorted
+            logger.warn("Output will reflect unsorted even if queryname is assumed. This limitation may be removed in the future.");
+            header.setSortOrder(SAMFileHeader.SortOrder.unsorted);
         }
         return header;
     }
