@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 /**
@@ -46,8 +48,8 @@ public class SpaceDelimitedReader implements Closeable {
      *
      * @param file the file
      */
-    public SpaceDelimitedReader(File file) throws FileNotFoundException {
-        scanner = new Scanner(new FileReader(file));
+    public SpaceDelimitedReader(final Path file) throws IOException {
+        scanner = new Scanner(Files.newInputStream(file));
     }
 
     /**

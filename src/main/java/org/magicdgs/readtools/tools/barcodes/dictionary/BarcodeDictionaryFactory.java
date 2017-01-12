@@ -31,6 +31,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +57,7 @@ public class BarcodeDictionaryFactory {
      * @return the barcode dictionary
      */
     public static BarcodeDictionary createDefaultDictionary(final String run,
-            final File barcodeFile, final SAMReadGroupRecord unknownReadGroup) {
+            final Path barcodeFile, final SAMReadGroupRecord unknownReadGroup) {
         try (final SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile)) {
             // read the first line
             String[] nextLine = reader.next();
@@ -95,12 +96,14 @@ public class BarcodeDictionaryFactory {
             // construct the barcode dictionary
             return new BarcodeDictionary(run, samples, barcodes, libraries, unknownReadGroup);
         } catch (final IOException e) {
-            throw new UserException.CouldNotReadInputFile(barcodeFile, e);
+            // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
+            throw new UserException.CouldNotReadInputFile(barcodeFile.toFile(), e);
         }
     }
 
-    private static void throwWrongFormatException(File barcodeFile) {
-        throw new UserException.MalformedFile(barcodeFile,
+    private static void throwWrongFormatException(final Path barcodeFile) {
+        // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
+        throw new UserException.MalformedFile(barcodeFile.toFile(),
                 "wrong barcode file format: Each line should have two first columns (for the sample and the library) and the same number of barcodes after them.");
     }
 }

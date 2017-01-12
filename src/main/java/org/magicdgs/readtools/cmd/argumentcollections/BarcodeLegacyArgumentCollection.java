@@ -31,6 +31,7 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.hellbender.utils.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class BarcodeLegacyArgumentCollection implements Serializable {
 
     /** Barcode file. A white-space delimited file with sampleName, libraryName and barcodes. */
     @Argument(fullName = BARCODES_LONG_NAME, shortName = BARCODES_SHORT_NAME, optional = false, doc = BARCODES_DOC)
-    public File inputFile;
+    public String inputFile;
 
     public static final String MAXIMUM_MISMATCH_LONG_NAME = "maximum-mismatches";
     public static final String MAXIMUM_MISMATCH_SHORT_NAME = "m";
@@ -142,7 +143,7 @@ public class BarcodeLegacyArgumentCollection implements Serializable {
         final BarcodeDictionary dictionary;
         final SAMReadGroupRecord readGroupInfo = rgac.getUnknownBasicReadGroup();
         dictionary = BarcodeDictionaryFactory
-                .createDefaultDictionary(rgac.runId, inputFile, readGroupInfo);
+                .createDefaultDictionary(rgac.runId, IOUtils.getPath(inputFile), readGroupInfo);
         logger.info("Loaded barcode file for {} samples with {} different barcode sets",
                 dictionary.numberOfUniqueSamples(), dictionary.numberOfSamples());
         return dictionary;
