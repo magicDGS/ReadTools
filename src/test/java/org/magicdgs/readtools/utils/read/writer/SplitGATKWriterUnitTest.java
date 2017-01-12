@@ -30,10 +30,16 @@ import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMReadGroupRecord;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamReader;
 import htsjdk.samtools.ValidationStringency;
-import junit.framework.Assert;
 import org.broadinstitute.hellbender.tools.readersplitters.ReaderSplitter;
+import org.broadinstitute.hellbender.tools.readersplitters.SampleNameSplitter;
+import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -43,9 +49,11 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -129,6 +137,54 @@ public class SplitGATKWriterUnitTest extends BaseTest {
     private static boolean fileIsEmpty(final File file) throws Exception {
         try (final BufferedReader br = new BufferedReader(new FileReader(file))) {
             return br.readLine() == null;
+        }
+    }
+
+    @Test
+    public void testWriteAndReadSplitBySample() throws Exception {
+        final File testPrefix = new File(createTestTempDir("testNoNewOutputWhenRepeatedSplitBy"),
+                "testNoNewOutputWhenRepeatedSplitBy");
+        // set the read groups
+        final List<SAMReadGroupRecord> readGroups = IntStream.range(0, 5).mapToObj(n -> {
+            final SAMReadGroupRecord rg = new SAMReadGroupRecord(String.valueOf(n));
+                rg.setSample((n == 0) ? "unique" : "multiple");
+            return rg;
+        }).collect(Collectors.toList());
+        final SAMFileHeader header = ArtificialReadUtils.createArtificialSamHeader();
+        header.setReadGroups(readGroups);
+
+        // expected files
+        final File uniqueFile = new File(testPrefix + "_unique.sam");
+        final File multipleFile = new File(testPrefix + "_multiple.sam");
+
+        // they should not be there
+        Assert.assertFalse(uniqueFile.exists());
+        Assert.assertFalse(multipleFile.exists());
+
+        // open the writer and create files
+        final SplitGATKWriter writer = new SplitGATKWriter(testPrefix.getAbsolutePath(),
+                ReadToolsOutputFormat.BamFormat.SAM,
+                Collections.singletonList(new SampleNameSplitter()),
+                header, true, new ReadWriterFactory(), false);
+
+        final List<GATKRead> multipleReads = readGroups.stream().map(rg -> {
+            final GATKRead read = ArtificialReadUtils.createArtificialRead("1M");
+            read.setReadGroup(rg.getReadGroupId());
+            writer.addRead(read);
+            return read;
+        }).filter(read -> !read.getReadGroup().equals("0")).collect(Collectors.toList());
+        writer.close();
+
+        // assert files were created
+        Assert.assertTrue(uniqueFile.exists());
+        Assert.assertTrue(multipleFile.exists());
+
+        // test the multiple
+        try (final SamReader reader = new ReadReaderFactory().openSamReader(multipleFile)) {
+            Assert.assertEquals(reader.getFileHeader(), header);
+            final Iterator<SAMRecord> it = reader.iterator();
+            multipleReads.forEach(r -> Assert.assertEquals(it.next(), r.convertToSAMRecord(header)));
+            Assert.assertFalse(it.hasNext());
         }
     }
 

@@ -34,8 +34,10 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -100,7 +102,7 @@ public final class SplitGATKWriter implements GATKReadWriter {
 
     @Override
     public void addRead(final GATKRead read) {
-        outs.computeIfAbsent(getKey(read), this::createWriterOnDemand).addRead(read);
+        outs.computeIfAbsent(getKey(read), this::createWriter).addRead(read);
     }
 
     @Override
@@ -115,11 +117,11 @@ public final class SplitGATKWriter implements GATKReadWriter {
      */
     private void initWriters() {
         // Build up a list of key options at each level.
-        final List<List<?>> splitKeys = splitters.stream()
-                .map(splitter -> splitter.getSplitsBy(header))
+        final List<Set<?>> splitKeys = splitters.stream()
+                .map(splitter -> new LinkedHashSet<>(splitter.getSplitsBy(header)))
                 .collect(Collectors.toList());
         // For every combination of keys, add a GATKWriter.
-        addKey(splitKeys, 0, "", key -> outs.put(key, createWriterOnDemand(key)));
+        addKey(splitKeys, 0, "", key -> outs.put(key, createWriter(key)));
     }
 
     /**
@@ -133,7 +135,7 @@ public final class SplitGATKWriter implements GATKReadWriter {
      * @param adder     Function to run on the recursively generated key once the bottom of the
      *                  outer list is reached.
      */
-    private void addKey(final List<List<?>> listKeys, final int listIndex,
+    private void addKey(final List<Set<?>> listKeys, final int listIndex,
             final String key, final Consumer<String> adder) {
         if (listIndex < listKeys.size()) {
             for (final Object newKey : listKeys.get(listIndex)) {
@@ -163,7 +165,7 @@ public final class SplitGATKWriter implements GATKReadWriter {
     }
 
     // helper method to use the compute if absent
-    private GATKReadWriter createWriterOnDemand(final String attributeValue) {
+    private GATKReadWriter createWriter(final String attributeValue) {
         return factory.createWriter(outputPrefix + attributeValue + format.getExtension(),
                 header, presorted);
     }
