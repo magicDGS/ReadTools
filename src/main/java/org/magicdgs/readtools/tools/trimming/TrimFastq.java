@@ -48,6 +48,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Class that implements the trimming algorithm from Kofler et al. 2011
@@ -125,7 +126,13 @@ public final class TrimFastq extends ReadToolsBaseTool {
         // final line of progress
         progress.logNumberOfVariantsProcessed();
         // print the metrics file
-        trimmer.printTrimmerMetrics(IOUtils.makeMetricsFile(outputPrefix).toFile());
+        final Path metricsFile = IOUtils.makeMetricsFile(outputPrefix);
+        try {
+            trimmer.printTrimmerMetrics(metricsFile);
+        } catch (IOException e) {
+            throw new UserException.CouldNotCreateOutputFile(metricsFile.toString(),
+                    e.getMessage(), e);
+        }
         return null;
     }
 

@@ -155,4 +155,21 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
         Assert.assertEquals(args.getOutputNameWithSuffix(suffix), expectedOutputName);
     }
 
+    @DataProvider
+    public Object[][] getMetricsNames() {
+        return new Object[][] {
+                {"example", null, new File("example.metrics")},
+                {"example.2", null, new File("example.2.metrics")},
+                {"example", "", new File("example.metrics")},
+                {"example", "_suffix", new File("example_suffix.metrics")}
+        };
+    }
+
+    @Test(dataProvider = "getMetricsNames")
+    public void testMakeMetricsFile(final String outputPrefix, final String suffix,
+            final File expectedMetricsFile) throws Exception {
+        final RTOutputBamSplitArgumentCollection args = new RTOutputBamSplitArgumentCollection();
+        args.outputPrefix = outputPrefix;
+        Assert.assertEquals(args.makeMetricsFile(suffix).toFile(), expectedMetricsFile);
+    }
 }

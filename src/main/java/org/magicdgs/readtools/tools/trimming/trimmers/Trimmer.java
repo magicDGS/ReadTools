@@ -42,7 +42,8 @@ import org.broadinstitute.hellbender.transformers.MisencodedBaseQualityReadTrans
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Contains the pipeline for trimming quality in Kofler et al 2011 with some set thresholds,
@@ -220,5 +221,5 @@ public abstract class Trimmer {
      *
      * @param metricsFile the file for the output
      */
-    public abstract void printTrimmerMetrics(final File metricsFile);
+    public abstract void printTrimmerMetrics(final Path metricsFile) throws IOException;
 }

@@ -32,10 +32,10 @@ import htsjdk.samtools.util.Histogram;
 import htsjdk.tribble.util.MathUtils;
 import org.broadinstitute.hellbender.utils.Utils;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -317,12 +317,12 @@ public class BarcodeDecoder {
     /**
      * Outputs the statistics for the processed barcodes.
      *
-     * @param statsFile metrics file where the statistics will be output.
+     * @param statsPath metrics file where the statistics will be output.
      *
      * @return the statistics for each combined barcode.
      */
-    public Collection<MatcherStat> outputStats(final File statsFile) throws IOException {
-        final Writer statsWriter = new FileWriter(statsFile);
+    public Collection<MatcherStat> outputStats(final Path statsPath) throws IOException {
+        final Writer statsWriter = Files.newBufferedWriter(statsPath);
         // create the matcher stats
         final MetricsFile<MatcherStat, Integer> matcherStats = new MetricsFile<>();
         // add the header and the metrics

@@ -37,6 +37,7 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.function.Supplier;
 
 /**
@@ -84,8 +85,14 @@ public abstract class RTOutputArgumentCollection implements Serializable {
                 header, presorted);
     }
 
-    /** Gets a new output name using a suffix with the current parameters.*/
+    /** Gets a new output name using a suffix with the current parameters. */
     public abstract String getOutputNameWithSuffix(final String suffix);
+
+    /**
+     * Gets a new metrics file for output using a suffix. If the suffix is {@code null}, it is not
+     * used.
+     */
+    public abstract Path makeMetricsFile(final String suffix);
 
     /**
      * Creates the writer with the provided factory, updated header and presorted.

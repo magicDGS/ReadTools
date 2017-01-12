@@ -135,4 +135,22 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
         args.outputName = outputName;
         args.getOutputNameWithSuffix("_wrong");
     }
+
+    @DataProvider
+    public Object[][] getMetricsNames() {
+        return new Object[][] {
+                {"example.bam", null, new File("example.metrics")},
+                {"example.2.sam", null, new File("example.2.metrics")},
+                {"example.cram", "", new File("example.metrics")},
+                {"example.bam", "_suffix", new File("example_suffix.metrics")}
+        };
+    }
+
+    @Test(dataProvider = "getMetricsNames")
+    public void testMakeMetricsFile(final String outputName, final String suffix,
+            final File expectedMetricsFile) throws Exception {
+        final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
+        args.outputName = outputName;
+        Assert.assertEquals(args.makeMetricsFile(suffix).toFile(), expectedMetricsFile);
+    }
 }

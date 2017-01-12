@@ -109,11 +109,11 @@ public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
         final List<Object[]> data = new ArrayList<>();
         for (final ReadToolsOutputFormat.FastqFormat format : ReadToolsOutputFormat.FastqFormat
                 .values()) {
-            data.add(new Object[]{"prefix", format, "_suffix",
+            data.add(new Object[] {"prefix", format, "_suffix",
                     "prefix_suffix" + format.getExtension()});
-            data.add(new Object[]{"prefix.one_suffix", format, ".second",
+            data.add(new Object[] {"prefix.one_suffix", format, ".second",
                     "prefix.one_suffix.second" + format.getExtension()});
-            data.add(new Object[]{"prefix.one_suffix", format, "_second",
+            data.add(new Object[] {"prefix.one_suffix", format, "_second",
                     "prefix.one_suffix_second" + format.getExtension()});
         }
         return data.iterator();
@@ -129,4 +129,21 @@ public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
         Assert.assertEquals(args.getOutputNameWithSuffix(suffix), expectedOutputName);
     }
 
+    @DataProvider
+    public Object[][] getMetricsNames() {
+        return new Object[][] {
+                {"example", null, new File("example.metrics")},
+                {"example.2", null, new File("example.2.metrics")},
+                {"example", "", new File("example.metrics")},
+                {"example", "_suffix", new File("example_suffix.metrics")}
+        };
+    }
+
+    @Test(dataProvider = "getMetricsNames")
+    public void testMakeMetricsFile(final String outputPrefix, final String suffix,
+            final File expectedMetricsFile) throws Exception {
+        final RTOutputFastqArgumentCollection args = new RTOutputFastqArgumentCollection();
+        args.outputPrefix = outputPrefix;
+        Assert.assertEquals(args.makeMetricsFile(suffix).toFile(), expectedMetricsFile);
+    }
 }

@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.cmd.RTStandardArguments;
+import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.writer.PairEndSplitter;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsOutputFormat;
@@ -37,6 +38,7 @@ import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.tools.readersplitters.ReaderSplitter;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -75,6 +77,12 @@ final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
     @Override
     public String getOutputNameWithSuffix(final String suffix) {
         return outputPrefix + suffix + outputFormat.getExtension();
+    }
+
+    @Override
+    public Path makeMetricsFile(final String suffix) {
+        final String prefix = (suffix == null) ? outputPrefix : outputPrefix + suffix;
+        return IOUtils.makeMetricsFile(prefix);
     }
 
     @Override

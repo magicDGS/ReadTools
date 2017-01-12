@@ -127,7 +127,7 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
         progress.logNumberOfVariantsProcessed();
         try {
             final Collection<MatcherStat> stats = decoder
-                    .outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
+                    .outputStats(IOUtils.makeMetricsFile(outputPrefix));
             stats.forEach(s -> logger.info("Found {} records for {} ({}).",
                     Formats.commaFmt.format(s.RECORDS), s.SAMPLE, s.BARCODE));
         } catch (IOException e) {

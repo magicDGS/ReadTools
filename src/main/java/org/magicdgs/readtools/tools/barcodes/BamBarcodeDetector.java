@@ -31,7 +31,6 @@ import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupLegacyArgumentCol
 import org.magicdgs.readtools.cmd.programgroups.MappedDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
-import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.MatcherStat;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
@@ -133,7 +132,7 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
         // output statistics and log them
         try {
             final Collection<MatcherStat> stats = decoder
-                    .outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
+                    .outputStats(IOUtils.makeMetricsFile(outputPrefix));
             stats.forEach(s -> logger.info("Found {} records for {} ({}).",
                     Formats.commaFmt.format(s.RECORDS), s.SAMPLE, s.BARCODE));
         } catch (IOException e) {

@@ -87,7 +87,7 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
 
     @Argument(fullName = "tag", shortName = "t", optional = true,
             doc = "Tag in the BAM file for the stored barcodes. It should be provided the same number of times as barcodes provided in the file. If not, default values are "
-            + DEFAULT_BARCODE_TAG1 + " and " + DEFAULT_BARCODE_TAG2)
+                    + DEFAULT_BARCODE_TAG1 + " and " + DEFAULT_BARCODE_TAG2)
     public List<String> inputTags = new ArrayList<>();
 
     @Argument(fullName = "single", shortName = "s", optional = false, doc = "Switch to single-end parsing.")
@@ -149,7 +149,7 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
         }
         try {
             final Collection<MatcherStat> stats = decoder
-                    .outputStats(IOUtils.makeMetricsFile(outputPrefix).toFile());
+                    .outputStats(IOUtils.makeMetricsFile(outputPrefix));
             stats.forEach(s -> logger.info("Found {} records for {} ({}).",
                     Formats.commaFmt.format(s.RECORDS), s.SAMPLE, s.BARCODE));
         } catch (IOException e) {

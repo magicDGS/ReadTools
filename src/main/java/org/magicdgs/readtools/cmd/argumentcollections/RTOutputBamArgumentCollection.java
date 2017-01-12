@@ -35,6 +35,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Simple output argument collection for output SAM/BAM/CRAM files, without splitting.
@@ -57,6 +58,15 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
                     "The output file should have a BAM/SAM/CRAM extension.");
         }
         return outputNameWithSuffix;
+    }
+
+    @Override
+    public Path makeMetricsFile(String suffix) {
+        String prefix = FilenameUtils.removeExtension(outputName);
+        if (suffix != null) {
+            prefix += suffix;
+        }
+        return IOUtils.makeMetricsFile(prefix);
     }
 
     /**

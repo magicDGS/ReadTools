@@ -31,7 +31,10 @@ import htsjdk.samtools.metrics.MetricsFile;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.Histogram;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Implementation of trimmer for single end that is accumulating the stats as a single end even for
@@ -77,11 +80,13 @@ public class TrimmerSingle extends Trimmer {
     }
 
     @Override
-    public void printTrimmerMetrics(final File metricsFile) {
-        final MetricsFile<TrimStat, Integer> metrics = new MetricsFile<>();
-        metrics.addMetric(metric);
-        metrics.addHistogram(histogram);
-        metrics.addHeader(header);
-        metrics.write(metricsFile);
+    public void printTrimmerMetrics(final Path metricsFile) throws IOException {
+        try (final Writer writer = Files.newBufferedWriter(metricsFile)) {
+            final MetricsFile<TrimStat, Integer> metrics = new MetricsFile<>();
+            metrics.addMetric(metric);
+            metrics.addHistogram(histogram);
+            metrics.addHeader(header);
+            metrics.write(writer);
+        }
     }
 }
