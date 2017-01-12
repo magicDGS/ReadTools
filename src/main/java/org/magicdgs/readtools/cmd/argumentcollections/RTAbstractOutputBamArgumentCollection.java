@@ -52,7 +52,7 @@ abstract class RTAbstractOutputBamArgumentCollection extends RTOutputArgumentCol
 
     /** Gets the writer factory for the arguments, adding also the reference file. */
     @Override
-    protected final ReadWriterFactory getWriterFactory() {
+    public final ReadWriterFactory getWriterFactory() {
         return super.getWriterFactory()
                 .setForceOverwrite(forceOverwrite)
                 .setCreateIndex(createOutputBamIndex)

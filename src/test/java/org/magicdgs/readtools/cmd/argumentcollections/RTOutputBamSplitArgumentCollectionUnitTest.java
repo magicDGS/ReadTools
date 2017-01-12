@@ -130,4 +130,29 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
         expectedFiles.forEach(f -> Assert.assertTrue(f.exists(), f.getName() + " does not exists"));
     }
 
+    @DataProvider
+    public Iterator<Object[]> outputWithSuffix() throws Exception {
+        final List<Object[]> data = new ArrayList<>();
+        for (final ReadToolsOutputFormat.BamFormat format : ReadToolsOutputFormat.BamFormat
+                .values()) {
+            data.add(new Object[] {"prefix", format, "_suffix",
+                    "prefix_suffix" + format.getExtension()});
+            data.add(new Object[] {"prefix.one_suffix", format, ".second",
+                    "prefix.one_suffix.second" + format.getExtension()});
+            data.add(new Object[] {"prefix.one_suffix", format, "_second",
+                    "prefix.one_suffix_second" + format.getExtension()});
+        }
+        return data.iterator();
+    }
+
+    @Test(dataProvider = "outputWithSuffix")
+    public void testGetOutputNameWithSuffix(final String outputPrefix,
+            ReadToolsOutputFormat.BamFormat format, final String suffix,
+            final String expectedOutputName) throws Exception {
+        final RTOutputBamSplitArgumentCollection args = new RTOutputBamSplitArgumentCollection();
+        args.outputPrefix = outputPrefix;
+        args.outputFormat = format;
+        Assert.assertEquals(args.getOutputNameWithSuffix(suffix), expectedOutputName);
+    }
+
 }

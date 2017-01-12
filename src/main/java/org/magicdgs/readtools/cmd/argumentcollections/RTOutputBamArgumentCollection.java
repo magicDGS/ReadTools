@@ -28,14 +28,13 @@ import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMProgramRecord;
+import org.apache.commons.io.FilenameUtils;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 import java.io.File;
-import java.util.function.Supplier;
 
 /**
  * Simple output argument collection for output SAM/BAM/CRAM files, without splitting.
@@ -47,6 +46,18 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
 
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file.", optional = false)
     public String outputName;
+
+    @Override
+    public String getOutputNameWithSuffix(final String suffix) {
+        final String outputNameWithSuffix = FilenameUtils.removeExtension(outputName) + suffix
+                + "." + FilenameUtils.getExtension(outputName);
+        if (!IOUtils.isSamBamOrCram(outputNameWithSuffix)) {
+            // TODO: update after https://github.com/broadinstitute/gatk/pull/2282
+            throw new UserException.CouldNotCreateOutputFile(new File(outputNameWithSuffix),
+                    "The output file should have a BAM/SAM/CRAM extension.");
+        }
+        return outputNameWithSuffix;
+    }
 
     /**
      * Checks if the output name is a SAM/BAM/CRAM file and if so it creates a SAM writer.

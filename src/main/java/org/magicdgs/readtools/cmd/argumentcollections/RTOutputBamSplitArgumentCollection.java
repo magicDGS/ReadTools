@@ -32,7 +32,6 @@ import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
-import org.broadinstitute.hellbender.tools.SplitReads;
 import org.broadinstitute.hellbender.tools.readersplitters.LibraryNameSplitter;
 import org.broadinstitute.hellbender.tools.readersplitters.ReadGroupIdSplitter;
 import org.broadinstitute.hellbender.tools.readersplitters.ReaderSplitter;
@@ -66,6 +65,11 @@ class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentColl
 
     @Argument(fullName = "splitByLibrary", shortName = "splitLB", doc = "Split file by library.", optional = true)
     public boolean splitByLibrary = false;
+
+    @Override
+    public String getOutputNameWithSuffix(final String suffix) {
+        return outputPrefix + suffix + outputFormat.getExtension();
+    }
 
     @Override
     protected GATKReadWriter createWriter(final ReadWriterFactory factory,

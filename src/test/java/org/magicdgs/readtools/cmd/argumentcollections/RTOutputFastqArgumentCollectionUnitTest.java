@@ -32,10 +32,13 @@ import org.magicdgs.readtools.utils.tests.BaseTest;
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -99,6 +102,31 @@ public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
         writer.close();
         // assert that the files exists
         expectedFiles.forEach(f -> Assert.assertTrue(f.exists()));
+    }
+
+    @DataProvider
+    public Iterator<Object[]> outputWithSuffix() throws Exception {
+        final List<Object[]> data = new ArrayList<>();
+        for (final ReadToolsOutputFormat.FastqFormat format : ReadToolsOutputFormat.FastqFormat
+                .values()) {
+            data.add(new Object[]{"prefix", format, "_suffix",
+                    "prefix_suffix" + format.getExtension()});
+            data.add(new Object[]{"prefix.one_suffix", format, ".second",
+                    "prefix.one_suffix.second" + format.getExtension()});
+            data.add(new Object[]{"prefix.one_suffix", format, "_second",
+                    "prefix.one_suffix_second" + format.getExtension()});
+        }
+        return data.iterator();
+    }
+
+    @Test(dataProvider = "outputWithSuffix")
+    public void testGetOutputNameWithSuffix(final String outputPrefix,
+            ReadToolsOutputFormat.FastqFormat format, final String suffix,
+            final String expectedOutputName) throws Exception {
+        final RTOutputFastqArgumentCollection args = new RTOutputFastqArgumentCollection();
+        args.outputPrefix = outputPrefix;
+        args.outputFormat = format;
+        Assert.assertEquals(args.getOutputNameWithSuffix(suffix), expectedOutputName);
     }
 
 }

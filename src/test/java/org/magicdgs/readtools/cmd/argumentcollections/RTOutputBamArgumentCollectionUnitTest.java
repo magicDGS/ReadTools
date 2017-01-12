@@ -72,7 +72,7 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
         final SAMProgramRecord record = new SAMProgramRecord("test");
         record.setCommandLine("command line");
         return new Object[][] {
-                // test cram
+                // TODO: test cram
                 // {new File(testDir, "example.empty.cram"), null},
                 // {new File(testDir, "example.cram"), record},
                 // test bam
@@ -91,7 +91,8 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
     @Test(dataProvider = "outputWriterProvider")
     public void testWritingHeader(final File outputFile, final SAMProgramRecord record,
             final boolean addProgramGroup) throws Exception {
-        Assert.assertFalse(outputFile.exists(), "broken test: test output file exists " + outputFile);
+        Assert.assertFalse(outputFile.exists(),
+                "broken test: test output file exists " + outputFile);
         final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
         args.outputName = outputFile.getAbsolutePath();
         args.addOutputSAMProgramRecord = addProgramGroup;
@@ -111,5 +112,27 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
         Assert.assertEquals(writtenHeader, expectedHeader);
     }
 
+    @DataProvider
+    public Object[][] outputWithSuffix() throws Exception {
+        return new Object[][] {
+                {"example.bam", ".empty", "example.empty.bam"},
+                {"example.sam", "_suffix", "example_suffix.sam"},
+                {"example.otherSuffix.cram", ".newSuffix", "example.otherSuffix.newSuffix.cram"}
+        };
+    }
 
+    @Test(dataProvider = "outputWithSuffix")
+    public void testGetOutputNameWithSuffix(final String outputName, final String suffix,
+            final String expectedOutputName) throws Exception {
+        final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
+        args.outputName = outputName;
+        Assert.assertEquals(args.getOutputNameWithSuffix(suffix), expectedOutputName);
+    }
+
+    @Test(dataProvider = "badOutputNames", expectedExceptions = UserException.CouldNotCreateOutputFile.class)
+    public void testIllegalOutputNameWithSuffix(final String outputName) throws Exception {
+        final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
+        args.outputName = outputName;
+        args.getOutputNameWithSuffix("_wrong");
+    }
 }

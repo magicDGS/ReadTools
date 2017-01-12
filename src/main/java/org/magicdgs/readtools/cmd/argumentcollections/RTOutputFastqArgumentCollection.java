@@ -67,9 +67,14 @@ final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
 
 
     @Override
-    protected ReadWriterFactory getWriterFactory() {
+    public ReadWriterFactory getWriterFactory() {
         return super.getWriterFactory()
                 .setCreateMd5File(createsMd5);
+    }
+
+    @Override
+    public String getOutputNameWithSuffix(final String suffix) {
+        return outputPrefix + suffix + outputFormat.getExtension();
     }
 
     @Override

@@ -53,10 +53,15 @@ public abstract class RTOutputArgumentCollection implements Serializable {
     public Boolean forceOverwrite = false;
 
     /**
-     * Gets a fresh default factory. Implementations should call the super method to honor the
-     * common arguments.
+     * Gets a fresh default factory.
+     *
+     * Note: this factory may be used for extra outputs that are not part of the argument
+     * collection. For instance, if a discarded output is requested. Otherwise, use
+     * {@link #outputWriter(SAMFileHeader, Supplier, boolean, File)}.
+     *
+     * Implementations should call the super method to honor the common arguments.
      */
-    protected ReadWriterFactory getWriterFactory() {
+    public ReadWriterFactory getWriterFactory() {
         return new ReadWriterFactory()
                 .setForceOverwrite(forceOverwrite);
     }
@@ -79,6 +84,9 @@ public abstract class RTOutputArgumentCollection implements Serializable {
                 header, presorted);
     }
 
+    /** Gets a new output name using a suffix with the current parameters.*/
+    public abstract String getOutputNameWithSuffix(final String suffix);
+
     /**
      * Creates the writer with the provided factory, updated header and presorted.
      *
@@ -92,7 +100,6 @@ public abstract class RTOutputArgumentCollection implements Serializable {
     /** Updates the header if necessary. */
     protected abstract void updateHeader(final SAMFileHeader header,
             final Supplier<SAMProgramRecord> programRecord);
-
 
     /** Returns the default output collection for ReadTools (only SAM/BAM/CRAM files). */
     public static final RTOutputArgumentCollection defaultOutput() {
@@ -108,5 +115,4 @@ public abstract class RTOutputArgumentCollection implements Serializable {
     public static final RTOutputArgumentCollection splitOutput() {
         return new RTOutputBamSplitArgumentCollection();
     }
-
 }
