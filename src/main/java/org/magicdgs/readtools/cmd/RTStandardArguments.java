@@ -76,4 +76,11 @@ public class RTStandardArguments {
     public static final String RAW_BARCODE_QUALITIES_TAG_NAME = "rawBarcodeQualityTag";
     public static final String USER_READ_NAME_BARCODE_NAME = "barcodeInReadName";
 
+    // ARGUMENTS FOR TRIMMER PLUGIN
+
+    public static final String TRIMMER_LONG_NAME = "trimmer";
+    public static final String TRIMMER_SHORT_NAME = "TM";
+    public static final String DISABLE_TRIMMER_LONG_NAME = "disableTrimmer";
+    public static final String DISABLE_TRIMMER_SHORT_NAME = "DTM";
+    public static final String DISABLE_ALL_TRIMMERS_NAME = "disableAllTrimmers";
 }
