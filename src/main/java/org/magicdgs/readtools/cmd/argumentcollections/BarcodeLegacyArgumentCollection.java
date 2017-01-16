@@ -31,12 +31,13 @@ import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,9 +45,18 @@ import java.util.List;
  * Argument collection for barcodes
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this argument collection correspond to legacy elements.
+ * Use {@link BarcodeDetectorArgumentCollection} instead.
  */
+@Deprecated
 public class BarcodeLegacyArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /** Default maximum number of mismatches. */
+    public static final int DEFAULT_MAXIMUM_MISMATCHES = 0;
+
+    /** Default minimum number of differences between the best barcode and the second.*/
+    public static final int DEFAULT_MIN_DIFFERENCE_WITH_SECOND = 1;
 
     public static final String BARCODES_LONG_NAME = "barcodes";
     public static final String BARCODES_SHORT_NAME = "bc";
@@ -64,7 +74,7 @@ public class BarcodeLegacyArgumentCollection implements Serializable {
 
     /** Maximum number of mismatches allowed. */
     @Argument(fullName = MAXIMUM_MISMATCH_LONG_NAME, shortName = MAXIMUM_MISMATCH_SHORT_NAME, optional = true, doc = MAXIMUM_MISMATCH_DOC)
-    public List<Integer> maxMismatches = new ArrayList<>(Collections.singleton(BarcodeDecoder.DEFAULT_MAXIMUM_MISMATCHES));
+    public List<Integer> maxMismatches = new ArrayList<>(Collections.singleton(DEFAULT_MAXIMUM_MISMATCHES));
 
     public static final String MINIMUM_DISTANCE_LONG_NAME = "minimum-distance";
     public static final String MINIMUM_DISTANCE_SHORT_NAME = "d";
@@ -73,7 +83,7 @@ public class BarcodeLegacyArgumentCollection implements Serializable {
 
     /** Minimum distance between matches in barcodes. */
     @Argument(fullName = MINIMUM_DISTANCE_LONG_NAME, shortName = MINIMUM_DISTANCE_SHORT_NAME, optional = true, doc = MINIMUM_DISTANCE_DOC)
-    public List<Integer> minimumDistance = new ArrayList<>(Collections.singleton(BarcodeDecoder.DEFAULT_MIN_DIFFERENCE_WITH_SECOND));
+    public List<Integer> minimumDistance = new ArrayList<>(Collections.singleton(DEFAULT_MIN_DIFFERENCE_WITH_SECOND));
 
     public static final String N_NO_MISMATCH_LONG_NAME = "n-no-mismatch";
     public static final String N_NO_MISMATCH_SHORT_NAME = "nnm";
@@ -128,7 +138,34 @@ public class BarcodeLegacyArgumentCollection implements Serializable {
         int[] minDist = minimumDistance.stream().mapToInt(Integer::intValue).toArray();
         return new BarcodeDecoder(dictionary,
                 (maxN == null) ? Integer.MAX_VALUE : maxN,
-                !nNoMismatch, mismatches, minDist);
+                !nNoMismatch,
+                setIntParameter(dictionary, DEFAULT_MAXIMUM_MISMATCHES, mismatches),
+                setIntParameter(dictionary, DEFAULT_MIN_DIFFERENCE_WITH_SECOND, minDist));
+    }
+
+    /**
+     * Gets the int array used for the decoder regarding the number of parameters.
+     *
+     * @param parameter a single value if it is the same for all the barcodes, an array containing
+     *                  the values for each barcode or {@code null} if default value is requested.
+     *
+     * @return the int array formatted to use in the decoder.
+     */
+    private int[] setIntParameter(final BarcodeDictionary dictionary, final int defaultValue, final int... parameter) {
+        final int[] toReturn = new int[dictionary.getNumberOfBarcodes()];
+        if (parameter == null || parameter.length == 0) {
+            Arrays.fill(toReturn, defaultValue);
+        } else if (parameter.length == 1) {
+            Arrays.fill(toReturn, parameter[0]);
+        } else if (parameter.length == dictionary.getNumberOfBarcodes()) {
+            return parameter;
+        } else {
+            // this was before an IllegalArgumentException
+            throw new UserException(
+                    "Thresholds and dictionary should have the same length or be equals 1. Found "
+                            + Arrays.toString(parameter));
+        }
+        return toReturn;
     }
 
     /**

@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,17 +52,6 @@ import java.util.stream.IntStream;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class BarcodeDecoder {
-
-    /**
-     * Default maximum number of mismatches for the constructor.
-     */
-    public static final int DEFAULT_MAXIMUM_MISMATCHES = 0;
-
-    /**
-     * Default minimum number of differences between the best barcode and the second for the
-     * constructor.
-     */
-    public static final int DEFAULT_MIN_DIFFERENCE_WITH_SECOND = 1;
 
     // the barcode dictionary to match against
     private final BarcodeDictionary dictionary;
@@ -96,56 +84,38 @@ public class BarcodeDecoder {
     private List<Map<String, MathUtils.RunningStat>> nMean;
 
     /**
-     * Default constructor with all the parameters.
+     * Default constructor.
      *
      * @param dictionary              non-null barcode dictionary with indexes to match.
      * @param nAsMismatches           if {@code true}, the Ns count as mismatches.
-     * @param maxMismatches           the maximum number of mismatches allowed (for each barcode);
-     *                                if {@code null}, uses {@link #DEFAULT_MAXIMUM_MISMATCHES}.
+     * @param maxMismatches           maximum number of mismatches allowed (for each barcode).
      * @param minDifferenceWithSecond the minimum difference in the number of mismatches between
-     *                                the  first and the second best barcodes (for each barcode);
-     *                                if {@code null}, uses {@link #DEFAULT_MIN_DIFFERENCE_WITH_SECOND}-
+     *                                the first and the second best barcodes (for each barcode).
      *
      * @throws IllegalArgumentException if the thresholds are arrays with different lengths than
-     *                                  the
-     *                                  number of barcodes in the dictionary.
+     *                                  the number of barcodes in the dictionary.
      */
-    // TODO: do not allow null values
     public BarcodeDecoder(final BarcodeDictionary dictionary, final int maxN,
             final boolean nAsMismatches, final int[] maxMismatches,
             final int[] minDifferenceWithSecond) {
-        this.dictionary = Utils.nonNull(dictionary);
+        this.dictionary = Utils.nonNull(dictionary, "null dictionary");
+
+        Utils.validateArg(maxN >= 0, "negative maxN");
         this.maxN = maxN;
+
         this.nAsMismatches = nAsMismatches;
-        this.maxMismatches = setIntParameter(DEFAULT_MAXIMUM_MISMATCHES, maxMismatches);
-        this.minDifferenceWithSecond =
-                setIntParameter(DEFAULT_MIN_DIFFERENCE_WITH_SECOND, minDifferenceWithSecond);
+
+        this.maxMismatches = Utils.nonNull(maxMismatches, "null maxMismatches");
+        Utils.validateArg(maxMismatches.length == dictionary.getNumberOfBarcodes(),
+                "maxMismatches.size() != number of barcodes");
+
+        this.minDifferenceWithSecond = Utils.nonNull(minDifferenceWithSecond,
+                "null minDifferenceWithSecond");
+        Utils.validateArg(minDifferenceWithSecond.length == dictionary.getNumberOfBarcodes(),
+                "minDifferenceWithSecond.size() != number of barcodes");
+
         this.metricHeader = new BarcodeDetector();
         initStats();
-    }
-
-    /**
-     * Gets the int array used for the decoder regarding the number of parameters.
-     *
-     * @param parameter a single value if it is the same for all the barcodes, an array containing
-     *                  the values for each barcode or {@code null} if default value is requested.
-     *
-     * @return the int array formatted to use in the decoder.
-     */
-    private int[] setIntParameter(final int defaultValue, final int... parameter) {
-        final int[] toReturn = new int[dictionary.getNumberOfBarcodes()];
-        if (parameter == null || parameter.length == 0) {
-            Arrays.fill(toReturn, defaultValue);
-        } else if (parameter.length == 1) {
-            Arrays.fill(toReturn, parameter[0]);
-        } else if (parameter.length == dictionary.getNumberOfBarcodes()) {
-            return parameter;
-        } else {
-            throw new IllegalArgumentException(
-                    "Thresholds and dictionary should have the same length or be equals 1. Found "
-                            + Arrays.toString(parameter));
-        }
-        return toReturn;
     }
 
     // initilialize the statistics on construction
