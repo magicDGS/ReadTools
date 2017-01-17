@@ -19,19 +19,35 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-package org.magicdgs.readtools.tools.trimming.trimmers.stats;
+package org.magicdgs.readtools.metrics.barcodes;
 
-import htsjdk.samtools.metrics.StringHeader;
+import htsjdk.samtools.metrics.MetricBase;
 
 /**
- * Header for single end trimming
- *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class SingleEndTrimming extends StringHeader {
+public class MatcherStat extends MetricBase {
 
-    public SingleEndTrimming() {
-        this.setValue("All reads trimmed as singles");
+    /**
+     * The sample name
+     */
+    public String SAMPLE;
+
+    /**
+     * The barcode sequence
+     */
+    public String BARCODE;
+
+    /**
+     * The number of records for this sequence
+     */
+    public int RECORDS;
+
+    public MatcherStat(String barcode, String sample) {
+        this.BARCODE = barcode;
+        this.SAMPLE = sample;
+        this.RECORDS = 0;
     }
 }

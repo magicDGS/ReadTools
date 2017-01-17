@@ -19,48 +19,38 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-package org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats;
+package org.magicdgs.readtools.metrics.trimming;
 
 import htsjdk.samtools.metrics.MetricBase;
 
 /**
- * Metrics for barcode detector
- *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeStat extends MetricBase {
+public class TrimStat extends MetricBase {
 
-    /**
-     * The barcode sequence
-     */
-    public String SEQUENCE;
+    public String PAIR;
 
-    /**
-     * The number of barcodes that match
-     */
-    public int MATCHED;
+    public int TOTAL;
 
-    /**
-     * Average number of mismatches per matched barcode
-     */
-    public double MEAN_MISMATCH;
+    public int PASSED;
 
-    /**
-     * Average number of Ns in the sequence
-     */
-    public double MEAN_N;
+    public int POLY_N_TRIMMED;
 
-    /**
-     * The number of barcodes discarded by the maximum number of mismatches
-     */
-    public int DISCARDED;
+    public int INTERNAL_N_DISCARDED;
 
-    public BarcodeStat(String sequence) {
-        this.SEQUENCE = sequence;
-        this.MATCHED = 0;
-        this.MEAN_MISMATCH = 0;
-        this.MEAN_N = 0;
-        this.DISCARDED = 0;
+    public int LENGTH_DISCARDED;
+
+    public int QUALITY_TRIMMED;
+
+    public TrimStat(final String pair) {
+        PAIR = pair;
+        TOTAL = 0;
+        POLY_N_TRIMMED = 0;
+        INTERNAL_N_DISCARDED = 0;
+        QUALITY_TRIMMED = 0;
+        LENGTH_DISCARDED = 0;
+        PASSED = 0;
     }
 }

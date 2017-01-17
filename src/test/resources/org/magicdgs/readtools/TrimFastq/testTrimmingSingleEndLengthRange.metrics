@@ -1,7 +1,7 @@
-## org.magicdgs.readtools.tools.trimming.trimmers.stats.SingleEndTrimming
+## org.magicdgs.readtools.metrics.trimming.SingleEndTrimming
 # All reads trimmed as singles
 
-## METRICS CLASS	org.magicdgs.readtools.tools.trimming.trimmers.stats.TrimStat
+## METRICS CLASS	org.magicdgs.readtools.metrics.trimming.TrimStat
 PAIR	TOTAL	PASSED	POLY_N_TRIMMED	INTERNAL_N_DISCARDED	LENGTH_DISCARDED	QUALITY_TRIMMED
 single	103	3	2	0	100	3
 

@@ -19,34 +19,49 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-package org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats;
+package org.magicdgs.readtools.metrics.barcodes;
 
 import htsjdk.samtools.metrics.MetricBase;
 
 /**
- * @author Daniel Gómez-Sánchez
+ * Metrics for barcode detector
+ *
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class MatcherStat extends MetricBase {
-
-    /**
-     * The sample name
-     */
-    public String SAMPLE;
+public class BarcodeStat extends MetricBase {
 
     /**
      * The barcode sequence
      */
-    public String BARCODE;
+    public String SEQUENCE;
 
     /**
-     * The number of records for this sequence
+     * The number of barcodes that match
      */
-    public int RECORDS;
+    public int MATCHED;
 
-    public MatcherStat(String barcode, String sample) {
-        this.BARCODE = barcode;
-        this.SAMPLE = sample;
-        this.RECORDS = 0;
+    /**
+     * Average number of mismatches per matched barcode
+     */
+    public double MEAN_MISMATCH;
+
+    /**
+     * Average number of Ns in the sequence
+     */
+    public double MEAN_N;
+
+    /**
+     * The number of barcodes discarded by the maximum number of mismatches
+     */
+    public int DISCARDED;
+
+    public BarcodeStat(String sequence) {
+        this.SEQUENCE = sequence;
+        this.MATCHED = 0;
+        this.MEAN_MISMATCH = 0;
+        this.MEAN_N = 0;
+        this.DISCARDED = 0;
     }
 }

@@ -23,8 +23,8 @@
 package org.magicdgs.readtools.tools.trimming.trimmers;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.tools.trimming.trimmers.stats.SingleEndTrimming;
-import org.magicdgs.readtools.tools.trimming.trimmers.stats.TrimStat;
+import org.magicdgs.readtools.metrics.trimming.SingleEndTrimming;
+import org.magicdgs.readtools.metrics.trimming.TrimStat;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.metrics.MetricsFile;

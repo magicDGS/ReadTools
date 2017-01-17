@@ -23,9 +23,9 @@
 package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
 
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.BarcodeDetector;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.BarcodeStat;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.MatcherStat;
+import org.magicdgs.readtools.metrics.barcodes.BarcodeDetector;
+import org.magicdgs.readtools.metrics.barcodes.BarcodeStat;
+import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.SAMReadGroupRecord;

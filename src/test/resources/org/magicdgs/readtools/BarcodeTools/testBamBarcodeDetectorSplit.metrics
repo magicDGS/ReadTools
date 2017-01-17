@@ -1,7 +1,7 @@
-## org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.BarcodeDetector
+## org.magicdgs.readtools.metrics.barcodes.BarcodeDetector
 # No match: 0	Discarded by N: 0	Discarded by mismatch: 10	Discarded by distance: 0
 
-## METRICS CLASS	org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.MatcherStat
+## METRICS CLASS	org.magicdgs.readtools.metrics.barcodes.MatcherStat
 SAMPLE	BARCODE	RECORDS
 sample1	ATTACTCG	12
 sample2	TCCGGAGA	10
@@ -17,7 +17,7 @@ UNKNOWN	UNKNOWN	10
 
 
 
-## METRICS CLASS	org.magicdgs.readtools.tools.barcodes.dictionary.decoder.stats.BarcodeStat
+## METRICS CLASS	org.magicdgs.readtools.metrics.barcodes.BarcodeStat
 SEQUENCE	MATCHED	MEAN_MISMATCH	MEAN_N	DISCARDED
 ATTACTCG	14	0.285714	0.285714	0
 TCCGGAGA	10	0	0	0

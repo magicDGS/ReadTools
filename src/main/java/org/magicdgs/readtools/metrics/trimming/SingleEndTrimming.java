@@ -19,37 +19,20 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-package org.magicdgs.readtools.tools.trimming.trimmers.stats;
+package org.magicdgs.readtools.metrics.trimming;
 
-import htsjdk.samtools.metrics.MetricBase;
+import htsjdk.samtools.metrics.StringHeader;
 
 /**
- * @author Daniel Gómez-Sánchez
+ * Header for single end trimming
+ *
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimStat extends MetricBase {
+public class SingleEndTrimming extends StringHeader {
 
-    public String PAIR;
-
-    public int TOTAL;
-
-    public int PASSED;
-
-    public int POLY_N_TRIMMED;
-
-    public int INTERNAL_N_DISCARDED;
-
-    public int LENGTH_DISCARDED;
-
-    public int QUALITY_TRIMMED;
-
-    public TrimStat(final String pair) {
-        PAIR = pair;
-        TOTAL = 0;
-        POLY_N_TRIMMED = 0;
-        INTERNAL_N_DISCARDED = 0;
-        QUALITY_TRIMMED = 0;
-        LENGTH_DISCARDED = 0;
-        PASSED = 0;
+    public SingleEndTrimming() {
+        this.setValue("All reads trimmed as singles");
     }
 }

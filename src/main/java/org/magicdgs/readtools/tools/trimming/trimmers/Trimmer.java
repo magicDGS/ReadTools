@@ -23,7 +23,7 @@
 package org.magicdgs.readtools.tools.trimming.trimmers;
 
 import org.magicdgs.io.FastqPairedRecord;
-import org.magicdgs.readtools.tools.trimming.trimmers.stats.TrimStat;
+import org.magicdgs.readtools.metrics.trimming.TrimStat;
 import org.magicdgs.readtools.utils.read.FastqGATKRead;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.ReservedTags;
