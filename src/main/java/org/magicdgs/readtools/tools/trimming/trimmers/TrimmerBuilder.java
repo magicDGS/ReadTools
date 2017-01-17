@@ -25,7 +25,8 @@ package org.magicdgs.readtools.tools.trimming.trimmers;
 /**
  * Trimmer builder for both paired-single end with default parameters
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline} instead.
  */
 public class TrimmerBuilder {
 

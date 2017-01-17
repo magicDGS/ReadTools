@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Daniel Gómez-Sánchez
+ * Copyright (c) 2017 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,39 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.magicdgs.readtools.metrics.trimming;
+
+package org.magicdgs.readtools.metrics;
 
 import htsjdk.samtools.metrics.MetricBase;
 
 /**
+ * Holds summary statistics for trimming processing.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @deprecated use {@link org.magicdgs.readtools.metrics.TrimmingMetric}
- * and {@link org.magicdgs.readtools.metrics.FilterMetric} instead.
  */
-@Deprecated
-public class TrimStat extends MetricBase {
+public class TrimmingMetric extends MetricBase {
 
-    public String PAIR;
+    /** Name of the trimmer applied to the reads. */
+    public String TRIMMER;
 
-    public int TOTAL;
+    /** Total number of reads passed to the trimmer. */
+    public int TOTAL = 0;
 
-    public int PASSED;
+    /** Trimmed reads in the 5 prime end. */
+    public int TRIMMED_5_P = 0;
 
-    public int POLY_N_TRIMMED;
+    /** Trimmed reads in the 3 prime end. */
+    public int TRIMMED_3_P = 0;
 
-    public int INTERNAL_N_DISCARDED;
+    /** Completely trimmed reads. */
+    public int TRIMMED_COMPLETE = 0;
 
-    public int LENGTH_DISCARDED;
+    /** Constructor for unknown trimmer name. */
+    public TrimmingMetric() {
+        this("UNKNOWN");
+    }
 
-    public int QUALITY_TRIMMED;
-
-    public TrimStat(final String pair) {
-        PAIR = pair;
-        TOTAL = 0;
-        POLY_N_TRIMMED = 0;
-        INTERNAL_N_DISCARDED = 0;
-        QUALITY_TRIMMED = 0;
-        LENGTH_DISCARDED = 0;
-        PASSED = 0;
+    /** Constructor for default trimmer name. */
+    public TrimmingMetric(final String trimmer) {
+        this.TRIMMER = trimmer;
     }
 }

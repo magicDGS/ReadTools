@@ -35,9 +35,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline} instead.
  */
 public class TrimmerPaired extends Trimmer {
 
@@ -112,5 +115,10 @@ public class TrimmerPaired extends Trimmer {
             metrics.addHeader(header);
             metrics.write(writer);
         }
+    }
+
+    @Override
+    public List<TrimStat> getTrimStats() {
+        return Arrays.asList(metricPair1, metricPair2);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Daniel Gómez-Sánchez
+ * Copyright (c) 2017 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,39 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.magicdgs.readtools.metrics.trimming;
+
+package org.magicdgs.readtools.metrics;
 
 import htsjdk.samtools.metrics.MetricBase;
 
 /**
+ * Holds summary statistics for filtering processing.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @deprecated use {@link org.magicdgs.readtools.metrics.TrimmingMetric}
- * and {@link org.magicdgs.readtools.metrics.FilterMetric} instead.
  */
-@Deprecated
-public class TrimStat extends MetricBase {
+public class FilterMetric extends MetricBase {
 
-    public String PAIR;
+    /** Name of the filter applied to the reads. */
+    public String FILTER;
 
-    public int TOTAL;
+    /** Total number reads reaching the filter. */
+    public int TOTAL = 0;
 
-    public int PASSED;
+    /** Number of reads passing the filter. */
+    public int PASSED = 0;
 
-    public int POLY_N_TRIMMED;
+    /** Constructor for unknown filter name. */
+    public FilterMetric() {
+        this("UNKNOWN");
+    }
 
-    public int INTERNAL_N_DISCARDED;
-
-    public int LENGTH_DISCARDED;
-
-    public int QUALITY_TRIMMED;
-
-    public TrimStat(final String pair) {
-        PAIR = pair;
-        TOTAL = 0;
-        POLY_N_TRIMMED = 0;
-        INTERNAL_N_DISCARDED = 0;
-        QUALITY_TRIMMED = 0;
-        LENGTH_DISCARDED = 0;
-        PASSED = 0;
+    /** Constructor for default filter name. */
+    public FilterMetric(final String filter) {
+        this.FILTER = filter;
     }
 }

@@ -35,12 +35,15 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Implementation of trimmer for single end that is accumulating the stats as a single end even for
  * FastqPairEndRecords
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline} instead.
  */
 public class TrimmerSingle extends Trimmer {
 
@@ -88,5 +91,10 @@ public class TrimmerSingle extends Trimmer {
             metrics.addHeader(header);
             metrics.write(writer);
         }
+    }
+
+    @Override
+    public List<TrimStat> getTrimStats() {
+        return Collections.singletonList(metric);
     }
 }

@@ -31,12 +31,12 @@ import org.magicdgs.readtools.utils.read.filter.NoAmbiguousSequenceReadFilter;
 import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultReadTransfomer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
-import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.Histogram;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
+import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
 import org.broadinstitute.hellbender.transformers.MisencodedBaseQualityReadTransformer;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
@@ -45,12 +45,17 @@ import org.broadinstitute.hellbender.utils.read.ReadUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Contains the pipeline for trimming quality in Kofler et al 2011 with some set thresholds,
  * using the algorithms in {@link org.magicdgs.readtools.utils.trimming.TrimmingUtil}.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline} instead with
+ * the trimmers {@link TrailingNtrimmer} and {@link MottQualityTrimmer}; and the filters
+ * {@link NoAmbiguousSequenceReadFilter} (if discardRemainingNs is {@code true} and
+ * {@link ReadLengthReadFilter}.
  */
 public abstract class Trimmer {
 
@@ -62,7 +67,7 @@ public abstract class Trimmer {
 
     private final MottQualityTrimmer mottTrimmer = new MottQualityTrimmer();
 
-    private final boolean discardRemainingNs;
+    private final ReadFilter discardRemainingNsFilter;
 
     private final ApplyTrimResultReadTransfomer applyTrimming;
 
@@ -81,10 +86,11 @@ public abstract class Trimmer {
     Trimmer(final boolean trimQuality, final int qualThreshold, final int minLength,
             final int maxLength, final boolean discardRemainingNs, final boolean no5ptrim) {
         this.trimQuality = trimQuality;
-        this.discardRemainingNs = discardRemainingNs;
         this.applyTrimming = new ApplyTrimResultReadTransfomer(no5ptrim, false);
         this.mottTrimmer.qualThreshold = qualThreshold;
         this.lengthFilter = new ReadLengthReadFilter(minLength, maxLength).negate();
+        this.discardRemainingNsFilter = (discardRemainingNs)
+                ? noNsInSequence : ReadFilterLibrary.ALLOW_ALL_READS;
     }
 
     /**
@@ -120,6 +126,9 @@ public abstract class Trimmer {
     /**
      * Trims the read with the provided settings in the Trimmer object.
      *
+     * Note: if the read is discarded by length, it returns a read with {@link ReservedTags#ct} set
+     * to 10.
+     *
      * @param read      the read to trim.
      * @param metric    the trimming statistics to update.
      * @param histogram the length distribution to update.
@@ -127,7 +136,7 @@ public abstract class Trimmer {
      * @return the trimmed read (modified in place). To check if it is completely trimmed, use
      * {@link RTReadUtils#isCompletelyTrimRead(GATKRead)}.
      */
-    protected GATKRead trimRead(final GATKRead read, final TrimStat metric,
+    public GATKRead trimRead(final GATKRead read, final TrimStat metric,
             final Histogram<Integer> histogram) {
         int start = RTReadUtils.getTrimmingStartPoint(read);
         int end = RTReadUtils.getTrimmingEndPoint(read);
@@ -137,7 +146,9 @@ public abstract class Trimmer {
         // if the new record is completely trimmed return directly
         if (RTReadUtils.updateCompletelyTrimReadFlag(read)) {
             metric.POLY_N_TRIMMED++;
-            // set as completely trimmed (because of the length)
+            applyTrimming.apply(read);
+            // set as completely trimmed (because of the length after poly-N trimmed)
+            // set to 10 for debugging issues
             read.setAttribute(ReservedTags.ct, 10);
             return read;
         } else if (shouldUpdateStatistic(read, start, end)) {
@@ -149,10 +160,12 @@ public abstract class Trimmer {
         // intact and check if still there are some internal Ns
         // this is very dirty, but this class will be deprecated soon and it is not necessary
         // to work on solving the issue
-        if (discardRemainingNs && !noNsInSequence.test(applyTrimming.apply(read.deepCopy()))) {
+        if (!discardRemainingNsFilter.test(applyTrimming.apply(read.deepCopy()))) {
             metric.INTERNAL_N_DISCARDED++;
-            // set as completely trimmed (because of the length)
-            read.setAttribute(ReservedTags.ct, 10);
+            applyTrimming.apply(read);
+            // set as completely trimmed (because of the remaining Ns after trimming trailing Ns)
+            // set to 11 for debugging issues
+            read.setAttribute(ReservedTags.ct, 11);
             return read;
         }
         // now the new record will be trimmed by quality if set
@@ -164,6 +177,10 @@ public abstract class Trimmer {
             if (RTReadUtils.updateCompletelyTrimReadFlag(read)) {
                 metric.QUALITY_TRIMMED++;
                 metric.LENGTH_DISCARDED++;
+                applyTrimming.apply(read);
+                // set as completely trimmed (because it is completely trimmed after quality)
+                // set to 12 for debugging issues
+                read.setAttribute(ReservedTags.ct, 12);
                 return read;
             } else if (shouldUpdateStatistic(read, start, end)) {
                 metric.QUALITY_TRIMMED++;
@@ -175,7 +192,8 @@ public abstract class Trimmer {
         if (RTReadUtils.updateCompletelyTrimReadFlag(read) || lengthFilter.test(read)) {
             metric.LENGTH_DISCARDED++;
             // set as completely trimmed (because of the length)
-            read.setAttribute(ReservedTags.ct, 10);
+            // set to 13 for debugging issues
+            read.setAttribute(ReservedTags.ct, 13);
             return read;
         }
         // here it passed all the filters
@@ -223,4 +241,8 @@ public abstract class Trimmer {
      * @param metricsFile the file for the output
      */
     public abstract void printTrimmerMetrics(final Path metricsFile) throws IOException;
+
+    /** Gets the trimming statistics from the trimmer. */
+    public abstract List<TrimStat> getTrimStats();
+
 }
