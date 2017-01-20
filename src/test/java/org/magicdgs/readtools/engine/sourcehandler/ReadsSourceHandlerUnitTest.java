@@ -39,7 +39,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
 
     private final static SimpleInterval INTERVAL_TO_QUERY = new SimpleInterval("2L");
 
-    protected final File sourcesFolder = getClassTestDirectory().getParentFile();
+    private final File sourcesFolder = getClassTestDirectory().getParentFile();
 
     // this is the factory for tests, including reference sequence for CRAM
     private final ReadReaderFactory FACTORY_FOR_TEST = new ReadReaderFactory()
@@ -121,7 +121,7 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
         testHandler(handler, format, header, length);
         // fastq files could not be iterated
         Assert.assertThrows(UnsupportedOperationException.class,
-                () -> handler.toIntervalIterator(Arrays.asList(INTERVAL_TO_QUERY)));
+                () -> handler.toIntervalIterator(Collections.singletonList(INTERVAL_TO_QUERY)));
     }
 
     @Test(dataProvider = "samSourcesNoIndex")
@@ -132,7 +132,7 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
         testHandler(handler, format, header, length);
         // sources without index could not be iterated with interval iteration
         Assert.assertThrows(UnsupportedOperationException.class,
-                () -> handler.toIntervalIterator(Arrays.asList(INTERVAL_TO_QUERY)));
+                () -> handler.toIntervalIterator(Collections.singletonList(INTERVAL_TO_QUERY)));
     }
 
     @Test(dataProvider = "samSourcesIndexed")
@@ -143,7 +143,7 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
         testHandler(handler, format, header, length);
         // sources with index should be tested
         final Iterator<GATKRead> itInterval =
-                handler.toIntervalIterator(Arrays.asList(INTERVAL_TO_QUERY));
+                handler.toIntervalIterator(Collections.singletonList(INTERVAL_TO_QUERY));
         int n = 0;
         while (itInterval.hasNext()) {
             n++;

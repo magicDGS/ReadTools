@@ -91,9 +91,9 @@ public class BarcodeDetectorArgumentCollectionUnitTest extends BaseTest {
 
     // test the validation while running a tool with customCommandLineValidation
     // should thrown
-    public Object runBarcodeDetectorArgumentCollectionToolWithArgs(final File barcodeFile,
+    private static Object runBarcodeDetectorArgumentCollectionToolWithArgs(final File barcodeFile,
             final Integer maxN, final List<Integer> maxMismatches,
-            final List<Integer> minDistance) throws Exception {
+            final List<Integer> minDistance) {
         final ArgumentsBuilder args = new ArgumentsBuilder()
                 .addFileArgument("barcodeFile", barcodeFile)
                 .addArgument("maximumN", String.valueOf(maxN));

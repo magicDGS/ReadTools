@@ -180,12 +180,12 @@ public class RTDataSourceUnitTest extends BaseTest {
 
     // test that the format and the header are the same
     // in addition, test if forcing a different format will provide the correct "original" quality
-    public void testFormatAndHeader(final RTDataSource source, final FastqQualityFormat format,
+    private static void testFormatAndHeader(final RTDataSource source, final FastqQualityFormat format,
             final SAMFileHeader expectedHeader) throws Exception {
         Assert.assertEquals(source.getOriginalQualityEncoding(), format);
         Assert.assertEquals(source.getHeader(), expectedHeader);
         final FastqQualityFormat incorrectForce = Stream.of(FastqQualityFormat.values())
-                .filter(p -> !p.equals(format)).findFirst().get();
+                .filter(p -> !p.equals(format)).findFirst().orElse(null);
         final RTDataSource forced = new RTDataSource(source, incorrectForce);
         Assert.assertNotEquals(forced.getOriginalQualityEncoding(), format);
         Assert.assertEquals(forced.getOriginalQualityEncoding(), incorrectForce);
@@ -193,7 +193,7 @@ public class RTDataSourceUnitTest extends BaseTest {
     }
 
     // test a paired data source
-    public void testPairedProvider(final RTDataSource source, final int numberOfPairs) {
+    private static void testPairedProvider(final RTDataSource source, final int numberOfPairs) {
         Assert.assertTrue(source.isPaired());
         int n = 0;
         for (final Tuple2<GATKRead, GATKRead> pair : source.pairedIterator()) {
@@ -213,7 +213,7 @@ public class RTDataSourceUnitTest extends BaseTest {
     }
 
     // test a single-end provider
-    public void testSingleProvider(final RTDataSource source, final int numberOfReads) {
+    private static void testSingleProvider(final RTDataSource source, final int numberOfReads) {
         int n = 0;
         for (final GATKRead read : source) {
             n++;

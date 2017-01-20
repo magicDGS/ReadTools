@@ -37,35 +37,35 @@ import org.testng.annotations.Test;
  */
 public class FixReadNameBarcodesReadTransformerUnitTest extends BaseTest {
 
-    private static final GATKRead read = ArtificialReadUtils.createArtificialUnmappedRead(
+    private static final GATKRead READ = ArtificialReadUtils.createArtificialUnmappedRead(
             ArtificialReadUtils.createArtificialSamHeader(),
             new byte[0], new byte[0]
     );
 
     static {
-        read.setName("read1");
+        READ.setName("read1");
     }
 
-    private static ReadTransformer transformer = new FixReadNameBarcodesReadTransformer();
+    private static final ReadTransformer TRANSFORMER = new FixReadNameBarcodesReadTransformer();
 
     @Test
     public void testUpdatedRead() {
-        final GATKRead toTest = read.deepCopy();
+        final GATKRead toTest = READ.deepCopy();
         final String barcode = "ACTG";
-        toTest.setName(read.getName() + "#" + barcode);
-        transformer.apply(toTest);
-        Assert.assertNotEquals(toTest.getAttributeAsString("BC"), read.getAttributeAsString("BC"));
+        toTest.setName(READ.getName() + "#" + barcode);
+        TRANSFORMER.apply(toTest);
+        Assert.assertNotEquals(toTest.getAttributeAsString("BC"), READ.getAttributeAsString("BC"));
         Assert.assertEquals(toTest.getAttributeAsString("BC"), barcode);
         // this is a check to be aware that this is removing the barcode from the name
-        Assert.assertEquals(toTest.getName(), read.getName());
+        Assert.assertEquals(toTest.getName(), READ.getName());
     }
 
     @Test
     public void testNotUpdatedRead() {
-        final GATKRead toTest = read.deepCopy();
-        transformer.apply(toTest);
+        final GATKRead toTest = READ.deepCopy();
+        TRANSFORMER.apply(toTest);
         // this should represent exactly the same
-        Assert.assertEquals(toTest.convertToSAMRecord(null), read.convertToSAMRecord(null));
+        Assert.assertEquals(toTest.convertToSAMRecord(null), READ.convertToSAMRecord(null));
     }
 
 }

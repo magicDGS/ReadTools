@@ -82,22 +82,14 @@ public class QualityUtilsTest extends BaseTest {
         final byte[] sangerBytesToTest =
                 Arrays.copyOfRange(sangerQuality.getBytes(), 0, sangerQuality.length() - 10);
         for (final byte b : sangerBytesToTest) {
-            try {
-                QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false);
-                Assert.fail("QualityException is not thrown for quality " + b + " (" + (char) b
-                        + ") in Illumina encoding");
-            } catch (QualityUtils.QualityException e) {
-            }
+            Assert.assertThrows(QualityUtils.QualityException.class, () ->
+                    QualityUtils.checkEncoding(b, FastqQualityFormat.Illumina, false));
         }
         final byte[] illuminaBytesToTest =
                 Arrays.copyOfRange(illuminaQuality.getBytes(), 11, illuminaQuality.length());
         for (final byte b : illuminaBytesToTest) {
-            try {
-                QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false);
-                Assert.fail("QualityException is not thrown for quality " + b + " (" + (char) b
-                        + ") in Sanger encoding");
-            } catch (QualityUtils.QualityException e) {
-            }
+            Assert.assertThrows(QualityUtils.QualityException.class, () ->
+                QualityUtils.checkEncoding(b, FastqQualityFormat.Standard, false));
         }
         // check if allow higher qualities is working
         for (final byte b : illuminaBytesToTest) {

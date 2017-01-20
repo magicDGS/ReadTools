@@ -65,11 +65,11 @@ public class FixRawBarcodeTagsReadTransformerUnitTest extends BaseTest {
     public Object[][] wrongConstructorWithQuals() {
         return new Object[][]{
                 {null, null},
-                {Arrays.asList("RT"), null},
+                {Collections.singletonList("RT"), null},
                 {Collections.emptyList(), null},
-                {Arrays.asList("RT"), Collections.emptyList()},
-                {Arrays.asList("BC", "B2"), Arrays.asList("QT")},
-                {Arrays.asList("BC"), Arrays.asList("QT", "Q2")}
+                {Collections.singletonList("RT"), Collections.emptyList()},
+                {Arrays.asList("BC", "B2"), Collections.singletonList("QT")},
+                {Collections.singletonList("BC"), Arrays.asList("QT", "Q2")}
         };
     }
 
@@ -81,7 +81,7 @@ public class FixRawBarcodeTagsReadTransformerUnitTest extends BaseTest {
     @Test
     public void testOnlyBcUpdate() {
         final String rtTag = "RT";
-        final ReadTransformer transformer = new FixRawBarcodeTagsReadTransformer(Arrays.asList(rtTag));
+        final ReadTransformer transformer = new FixRawBarcodeTagsReadTransformer(Collections.singletonList(rtTag));
         final GATKRead toTest = read.deepCopy();
         final String barcode = "ACTG";
         toTest.setAttribute(rtTag, barcode);
@@ -98,7 +98,7 @@ public class FixRawBarcodeTagsReadTransformerUnitTest extends BaseTest {
         final String b2Tag = "B2";
         final String q2Tag = "Q2";
         final ReadTransformer transformer =
-                new FixRawBarcodeTagsReadTransformer(Arrays.asList(b2Tag), Arrays.asList(q2Tag));
+                new FixRawBarcodeTagsReadTransformer(Collections.singletonList(b2Tag), Collections.singletonList(q2Tag));
         final GATKRead toTest = read.deepCopy();
         final String barcode = "ACTG";
         final String quality = "####";

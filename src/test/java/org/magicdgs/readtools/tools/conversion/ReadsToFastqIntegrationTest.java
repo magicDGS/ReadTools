@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.tools.conversion;
 
-
 import org.magicdgs.readtools.utils.tests.BaseTest;
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
@@ -36,6 +35,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,12 +43,13 @@ import java.util.List;
  */
 public class ReadsToFastqIntegrationTest extends CommandLineProgramTest {
 
-    private File tempFolder = createTestTempDir(ReadsToFastqIntegrationTest.class.getSimpleName());
+    private static final File TEST_TEMP_DIR =
+            createTestTempDir(ReadsToFastqIntegrationTest.class.getSimpleName());
 
     // this is separated from the rest because it will have special treatment in the future
     @Test
     public void testMappedSortFile() throws Exception {
-        final File outputPrefix = new File(tempFolder, "testMappedSortFile");
+        final File outputPrefix = new File(TEST_TEMP_DIR, "testMappedSortFile");
         final ArgumentsBuilder args = new ArgumentsBuilder()
                 .addInput(getTestFile("mapped.sort.sam"))
                 .addOutput(outputPrefix);
@@ -69,7 +70,7 @@ public class ReadsToFastqIntegrationTest extends CommandLineProgramTest {
                 {"test_SAM_single_standard",
                         new ArgumentsBuilder()
                                 .addInput(getTestFile("single.standard.sam")),
-                        Arrays.asList(getTestFile("expected_single_SE.fq")),
+                        Collections.singletonList(getTestFile("expected_single_SE.fq")),
                         false},
                 {"test_SAM_paired_standard",
                         new ArgumentsBuilder()
@@ -83,7 +84,7 @@ public class ReadsToFastqIntegrationTest extends CommandLineProgramTest {
                         new ArgumentsBuilder()
                                 .addArgument("rawBarcodeSequenceTags", "null")
                                 .addInput(getTestFile("small_se.illumina.fq")),
-                        Arrays.asList(getTestFile("expected_single_SE.fq")),
+                        Collections.singletonList(getTestFile("expected_single_SE.fq")),
                         false},
                 {"test_FASTQ_paired_standard",
                         new ArgumentsBuilder()
@@ -116,26 +117,21 @@ public class ReadsToFastqIntegrationTest extends CommandLineProgramTest {
     @Test(dataProvider = "readSources")
     public void testReadsToFastq(final String testName, final ArgumentsBuilder args,
             final List<File> expectedFiles, final boolean paired) {
-        final File outputName = new File(tempFolder, testName);
+        final File outputName = new File(TEST_TEMP_DIR, testName);
         args.addOutput(outputName);
         final List<File> pairedFiles = Arrays.asList(
-                new File(tempFolder, testName + "_1.fq.gz"),
-                new File(tempFolder, testName + "_2.fq.gz"));
-        final List<File> singleEndFiles =
-                Arrays.asList(new File(tempFolder, testName + "_SE.fq.gz"));
+                new File(TEST_TEMP_DIR, testName + "_1.fq.gz"),
+                new File(TEST_TEMP_DIR, testName + "_2.fq.gz"));
+        final File singleEndFile = new File(TEST_TEMP_DIR, testName + "_SE.fq.gz");
         log("Running " + testName);
         runCommandLine(args);
         if (paired) {
             testFiles(pairedFiles, expectedFiles);
-            testEmpty(singleEndFiles);
+            assertFileIsEmpty(singleEndFile);
         } else {
-            testFiles(singleEndFiles, expectedFiles);
-            testEmpty(pairedFiles);
+            testFiles(Collections.singletonList(singleEndFile), expectedFiles);
+            pairedFiles.forEach(BaseTest::assertFileIsEmpty);
         }
-    }
-
-    private void testEmpty(final List<File> emptyFiles) {
-        emptyFiles.forEach(BaseTest::assertFileIsEmpty);
     }
 
     private void testFiles(final List<File> actualFiles, final List<File> expectedFiles) {

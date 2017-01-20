@@ -225,7 +225,7 @@ public class RTReadUtilsUnitTest extends BaseTest {
         RTReadUtils.addBarcodeWithQualitiesTagsToRead(read, barcodes, qualities);
     }
 
-    public List<Object[]> generateTrimmingData() {
+    private static List<Object[]> generateTrimmingData() {
         final List<Object[]> data = new ArrayList<>();
         final int readLength = 50;
         final byte[] bases = Utils.repeatBytes((byte) 'A', readLength);

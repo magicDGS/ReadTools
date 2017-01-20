@@ -34,8 +34,8 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -78,10 +78,10 @@ public class InterleaveGATKReadIteratorsUnitTest extends BaseTest {
 
     @Test
     public void testBrokenIterator() throws Exception {
-        final List<GATKRead> second = Arrays.asList(ArtificialReadUtils.createArtificialRead("10M"));
-        second.forEach(r -> r.setName("second"));
+        final GATKRead second = ArtificialReadUtils.createArtificialRead("10M");
+        second.setName("second");
         final InterleaveGATKReadIterators interleaved =
-                new InterleaveGATKReadIterators(makeReadsIterator("first"), second.iterator());
+                new InterleaveGATKReadIterators(makeReadsIterator("first"), Stream.of(second).iterator());
         Assert.assertEquals(interleaved.next().getName(), "first");
         Assert.assertEquals(interleaved.next().getName(), "second");
         Assert.assertEquals(interleaved.next().getName(), "first");

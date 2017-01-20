@@ -43,7 +43,8 @@ import java.util.Iterator;
  */
 public class StandardizeReadsIntegrationTest extends CommandLineProgramTest {
 
-    private final File testDir = createTestTempDir(this.getClass().getSimpleName());
+    private final static File TEST_TEMP_DIR =
+            createTestTempDir(StandardizeReadsIntegrationTest.class.getSimpleName());
 
     private final File expectedPaired = getTestFile("expected_paired_standard.sam");
     private final File expectedSingle = getTestFile("expected_single_standard.sam");
@@ -52,7 +53,7 @@ public class StandardizeReadsIntegrationTest extends CommandLineProgramTest {
     public Object[][] getBadArguments() {
         final ArgumentsBuilder builder = new ArgumentsBuilder()
                 .addInput(getTestFile("small_1.illumina.fq"))
-                .addOutput(new File(testDir, "example.bam"));
+                .addOutput(new File(TEST_TEMP_DIR, "example.bam"));
         return new Object[][] {
                 // only quality
                 {builder.addArgument("rawBarcodeQualityTag", "B2")
@@ -117,7 +118,7 @@ public class StandardizeReadsIntegrationTest extends CommandLineProgramTest {
     public void tesStandardizeReads(final String name, final ArgumentsBuilder args,
             final File expectedOutput)
             throws Exception {
-        final File output = new File(testDir, name + ".sam");
+        final File output = new File(TEST_TEMP_DIR, name + ".sam");
         args.addOutput(output);
         runCommandLine(args);
         final SamReader actual = SamReaderFactory.makeDefault().open(output);

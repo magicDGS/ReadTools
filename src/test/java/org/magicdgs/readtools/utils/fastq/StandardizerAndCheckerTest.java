@@ -98,12 +98,8 @@ public class StandardizerAndCheckerTest extends BaseTest {
             default:
                 throw new GATKException("Unreachable code");
         }
-        try {
-            checker.checkMisencoded(read);
-            Assert.fail(checkerFormat
-                    + ".checkMisencoded does not throw a QualityException if the quality is not correctly formatted");
-        } catch (QualityUtils.QualityException e) {
-        }
+        Assert.assertThrows(QualityUtils.QualityException.class,
+                () -> checker.checkMisencoded(read));
     }
 
     @Test
@@ -115,18 +111,7 @@ public class StandardizerAndCheckerTest extends BaseTest {
         Assert.assertEquals(sangerChecker.standardize(sangerFASTQ), sangerFASTQ);
         Assert.assertEquals(sangerChecker.standardize(sangerSAM), sangerSAM);
         // checking that an error is thrown if the quality is misencoded
-        try {
-            illuminaChecker.standardize(sangerFASTQ);
-            Assert.fail(
-                    "FASTQ Illumina Standardizer does not throw a SAMException if the quality is Sanger");
-        } catch (SAMException e) {
-        }
-        try {
-            illuminaChecker.standardize(sangerSAM);
-            Assert.fail(
-                    "SAM Illumina Standardizer does not throw a SAMException if the quality is Sanger");
-        } catch (SAMException e) {
-        }
+        Assert.assertThrows(SAMException.class, () -> illuminaChecker.standardize(sangerFASTQ));
         // this should not throw errors, but return the exactly same result
         Assert.assertEquals(sangerChecker.standardize(illuminaFASTQ), illuminaFASTQ);
         Assert.assertEquals(sangerChecker.standardize(illuminaSAM), illuminaSAM);

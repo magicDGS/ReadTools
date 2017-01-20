@@ -26,7 +26,7 @@ package org.magicdgs.readtools.utils.misc;
 
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

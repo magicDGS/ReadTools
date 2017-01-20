@@ -33,8 +33,6 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.File;
-
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -50,9 +48,6 @@ public class ReadToolsWalkerUnitTest extends CommandLineProgramTest {
         }
 
     }
-
-    // the test directory for the class
-    private final File testDir = getClassTestDirectory();
 
     private String getTestFileName(final String fileName) {
         return getTestFile(fileName).getAbsolutePath();

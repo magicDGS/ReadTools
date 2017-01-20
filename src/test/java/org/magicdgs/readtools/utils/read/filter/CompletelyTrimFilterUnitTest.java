@@ -40,17 +40,16 @@ public class CompletelyTrimFilterUnitTest extends BaseTest {
 
     @DataProvider(name  = "reads")
     public Object[][] toFilterReads() {
-        final byte[] bases = new byte[] {'A', 'T', 'C', 'G'};
-        final GATKRead filtered1 = ArtificialReadUtils.createArtificialRead(bases, bases, "1M");
+        final GATKRead filtered1 = ArtificialReadUtils.createArtificialRead("4M");
         filtered1.setAttribute("ct", 1);
-        final GATKRead filtered2 = ArtificialReadUtils.createArtificialRead(bases, bases, "1M");
-        filtered2.setAttribute("ts", bases.length);
-        final GATKRead filtered3 = ArtificialReadUtils.createArtificialRead(bases, bases, "1M");
+        final GATKRead filtered2 = ArtificialReadUtils.createArtificialRead("4M");
+        filtered2.setAttribute("ts", 4);
+        final GATKRead filtered3 = ArtificialReadUtils.createArtificialRead("4M");
         filtered3.setAttribute("te", 0);
-        final GATKRead unfiltered1 = ArtificialReadUtils.createArtificialRead(bases, bases, "1M");
-        final GATKRead unfiltered2 = ArtificialReadUtils.createArtificialRead(bases, bases, "1M");
+        final GATKRead unfiltered1 = ArtificialReadUtils.createArtificialRead("4M");
+        final GATKRead unfiltered2 = ArtificialReadUtils.createArtificialRead("4M");
         unfiltered2.setAttribute("ts", 1);
-        final GATKRead unfiltered3 = ArtificialReadUtils.createArtificialRead(bases, bases, "1M");
+        final GATKRead unfiltered3 = ArtificialReadUtils.createArtificialRead("1M");
         unfiltered3.setAttribute("te", 1);
         return new Object[][] {
                 {filtered1, false},

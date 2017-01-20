@@ -39,13 +39,13 @@ import org.testng.annotations.Test;
 public class TrailingNtrimmerUnitTest extends BaseTest {
 
     // trimmmer to test
-    private final static TrimmingFunction trimmer = new TrailingNtrimmer();
+    private final static TrimmingFunction TRIMMER = new TrailingNtrimmer();
 
     @Test(dataProvider = "trimTrailingNdata", dataProviderClass = TrimmingUtilTest.class)
     public void testTrimmer(final byte[] bases, final int[] expected) throws Exception {
         final GATKRead read = ArtificialReadUtils.createArtificialRead(bases,
                 Utils.repeatBytes((byte) 'I', bases.length), bases.length + "M");
-        trimmer.apply(read);
+        TRIMMER.apply(read);
         Assert.assertEquals(read.getAttributeAsInteger("ts").intValue(), expected[0]);
         Assert.assertEquals(read.getAttributeAsInteger("te").intValue(), expected[1]);
     }
