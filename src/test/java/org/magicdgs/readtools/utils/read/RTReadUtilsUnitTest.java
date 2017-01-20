@@ -299,6 +299,11 @@ public class RTReadUtilsUnitTest extends BaseTest {
         Assert.assertEquals(read.getAttributeAsInteger("ct"), null);
         Assert.assertEquals(RTReadUtils.updateCompletelyTrimReadFlag(read), ct != 0);
         Assert.assertEquals(read.getAttributeAsInteger("ct").intValue(), ct);
+        // now clear the attributes
+        RTReadUtils.clearTrimmingPointTags(read);
+        Assert.assertNull(read.getAttributeAsInteger("ts"));
+        Assert.assertNull(read.getAttributeAsInteger("te"));
+        Assert.assertEquals(read.getAttributeAsInteger("ct").intValue(), ct);
     }
 
     @Test(dataProvider = "trimmingPointSetters")

@@ -41,6 +41,7 @@ import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
 import org.broadinstitute.hellbender.transformers.MisencodedBaseQualityReadTransformer;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.hellbender.utils.read.ReadUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -109,11 +110,11 @@ public abstract class Trimmer {
         if (RTReadUtils.isCompletelyTrimRead(trimmed)) {
             return null;
         }
-        // TODO: this rely on cut read does not update the read tags
-        // TODO: but maybe this will change in the future
-        return FastqRecordUtils.cutRecord(record,
-                (applyTrimming.noTrim5p()) ? 0 : RTReadUtils.getTrimmingStartPoint(trimmed),
-                RTReadUtils.getTrimmingEndPoint(trimmed));
+        return new FastqRecord( // read/qual headers come from the record; bases from the trimmed read
+                record.getReadHeader(),
+                trimmed.getBasesString(),
+                record.getBaseQualityHeader(),
+                ReadUtils.getBaseQualityString(read));
     }
 
     /**

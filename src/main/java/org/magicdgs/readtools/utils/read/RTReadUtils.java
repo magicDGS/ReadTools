@@ -232,6 +232,20 @@ public class RTReadUtils {
                         + barcodeTag + "=" + bcValue + " vs. " + qualityTag + "=" + qualVal);
     }
 
+    /**
+     * Removes trimming point tags ({@link ReservedTags#ts} and {@link ReservedTags#te}) on the
+     * read.
+     *
+     * Note: The completely trim tag ({@link ReservedTags#ct}) will be updated, but not removed to keep
+     * track of completely trim reads.
+     *
+     * @param read the read to update.
+     */
+    public static void clearTrimmingPointTags(final GATKRead read) {
+        updateCompletelyTrimReadFlag(read);
+        read.clearAttribute(ReservedTags.ts);
+        read.clearAttribute(ReservedTags.te);
+    }
 
     /**
      * Updates the trimming tags ({@link ReservedTags#ts}, {@link ReservedTags#te} and

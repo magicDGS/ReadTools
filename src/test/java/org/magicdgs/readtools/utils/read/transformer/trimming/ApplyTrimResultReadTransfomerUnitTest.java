@@ -30,11 +30,14 @@ import htsjdk.samtools.Cigar;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.TextCigarCodec;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
+import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.hellbender.utils.read.ReadUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.junit.ArrayAsserts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,12 +70,18 @@ public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
 
     private static void testTrimmedRead(final GATKRead trimRead, final int length,
             final byte[] bases, final byte[] quals, final Cigar cigar) throws Exception {
+        // check the data provider
         Assert.assertEquals(bases.length, length, "broken data provider");
         Assert.assertEquals(quals.length, length, "broken data provider");
+        // check that the read is correctly trimmed
         Assert.assertEquals(trimRead.getLength(), length, "wrong length");
         Assert.assertEquals(trimRead.getBases(), bases, "wrong bases");
         Assert.assertEquals(trimRead.getBaseQualities(), quals, "wrong qualities");
         Assert.assertEquals(trimRead.getCigar(), cigar, "wrong cigar");
+        // check that the tags are correctly set
+        Assert.assertNull(trimRead.getAttributeAsInteger("ts"), "non-null ts");
+        Assert.assertNull(trimRead.getAttributeAsInteger("te"), "non-null te");
+        Assert.assertNotNull(trimRead.getAttributeAsInteger("ct"), "null ct");
     }
 
     @DataProvider(name = "trimmedUmapped")
@@ -102,6 +111,7 @@ public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
         final byte[] bases = Arrays.copyOfRange(read.getBases(), start, end);
         final byte[] quals = Arrays.copyOfRange(read.getBaseQualities(), start, end);
         final GATKRead trimmed = transformer.apply(read);
+        Assert.assertSame(trimmed, read);
         testTrimmedRead(trimmed, length, bases, quals, new Cigar());
     }
 
@@ -138,6 +148,7 @@ public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
         final Cigar cigar = TextCigarCodec.decode(cigarString);
         Assert.assertEquals(cigar.getReadLength(), length, "broken data provided");
         final GATKRead trimmed = transformer.apply(read);
+        Assert.assertSame(trimmed, read);
         testTrimmedRead(trimmed, length, bases, quals, cigar);
     }
 
@@ -228,6 +239,26 @@ public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testBadArgument() throws Exception {
         new ApplyTrimResultReadTransfomer(true, true);
+    }
+
+    @Test(dataProvider = "trimmedMapped")
+    public void testReadWithIndelQuals(final GATKRead read, final int start, final int end,
+            final int length, final String cigarString) throws Exception {
+        final byte[] bases = Arrays.copyOfRange(read.getBases(), start, end);
+        final byte[] quals = Arrays.copyOfRange(read.getBaseQualities(), start, end);
+        final Cigar cigar = TextCigarCodec.decode(cigarString);
+        Assert.assertEquals(cigar.getReadLength(), length, "broken data provided");
+
+        // make a copy of the read and set indel quals
+        ReadUtils.setInsertionBaseQualities(read, read.getBaseQualities());
+
+        // trimming and checking
+        final GATKRead trimmed = transformer.apply(read);
+        Assert.assertSame(trimmed, read);
+        testTrimmedRead(trimmed, length, bases, quals, cigar);
+
+        // assert the insertion qualities
+        Assert.assertEquals(ReadUtils.getBaseInsertionQualities(read), quals);
     }
 
 }

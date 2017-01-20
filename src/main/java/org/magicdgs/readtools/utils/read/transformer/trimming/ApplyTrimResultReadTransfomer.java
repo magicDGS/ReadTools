@@ -32,6 +32,7 @@ import org.broadinstitute.hellbender.utils.clipping.ClippingOp;
 import org.broadinstitute.hellbender.utils.clipping.ClippingRepresentation;
 import org.broadinstitute.hellbender.utils.clipping.ReadClipper;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.hellbender.utils.read.ReadUtils;
 
 import java.util.Arrays;
 
@@ -40,6 +41,8 @@ import java.util.Arrays;
  * ({@link org.magicdgs.readtools.utils.read.ReservedTags#ct},
  * {@link org.magicdgs.readtools.utils.read.ReservedTags#ts},
  * {@link org.magicdgs.readtools.utils.read.ReservedTags#te}).
+ * Trimming point tags are removed using {@link RTReadUtils#clearTrimmingPointTags(GATKRead)},
+ * except {@link org.magicdgs.readtools.utils.read.ReservedTags#ct}.
  *
  * Note: this read transformer assumes that the trimming tags are independent on the strand.
  *
@@ -81,6 +84,10 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
     /**
      * If the read is completely trimmed, does nothing. Otherwise, the read is hard-clipped based
      * on the trimming flags.
+     *
+     * Note: the read is modified in-place.
+     *
+     * @return the same read object, trimmed as necessary.
      */
     @Override
     public GATKRead apply(final GATKRead read) {
@@ -98,10 +105,8 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
         if (read.isUnmapped()) {
             final byte[] newBases = Arrays.copyOfRange(read.getBases(), start, end);
             final byte[] newQuals = Arrays.copyOfRange(read.getBaseQualities(), start, end);
-            // TODO: should we modify in place or not?
             read.setBases(newBases);
             read.setBaseQualities(newQuals);
-            return read;
         } else {
             final ReadClipper clipper = new ReadClipper(read);
             // we have to clip the end first, because the read clipper works in a step-wise way
@@ -112,14 +117,33 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
                 // we should remove 1 for correctly clipping
                 clipper.addOp(new ClippingOp(0, start - 1));
             }
-            return clipper.clipRead(ClippingRepresentation.HARDCLIP_BASES);
+            // this should modify in place here
+            modifyWithClipped(read, clipper.clipRead(ClippingRepresentation.HARDCLIP_BASES));
+            // return the same read
+        }
+        // now remove the tags
+        RTReadUtils.clearTrimmingPointTags(read);
+        // it is modified in place
+        return read;
+    }
+
+    // required to modify in-place
+    private static void modifyWithClipped(final GATKRead read, final GATKRead clipped) {
+        // TODO: maybe this method requires something else if the ClippingRepresentation is settable
+        read.setBaseQualities(clipped.getBaseQualities());
+        read.setBases(clipped.getBases());
+        read.setCigar(clipped.getCigar());
+        read.setPosition(clipped); // TODO: maybe this adds to much complexity
+        if (ReadUtils.hasBaseIndelQualities(read)) {
+            ReadUtils.setInsertionBaseQualities(read, ReadUtils.getBaseInsertionQualities(clipped));
+            ReadUtils.setDeletionBaseQualities(read, ReadUtils.getBaseDeletionQualities(clipped));
         }
     }
 
     private static GATKRead handleCompletelyTrimmed(final GATKRead read) {
-        // TODO: this is just an identity function
-        // TODO: but probably we should operate differently
+        // TODO: probably we should operate differently
         // TODO: for instance, all the bases transformed to Ns or qualities to 0?
+        RTReadUtils.clearTrimmingPointTags(read);
         return read;
     }
 }
