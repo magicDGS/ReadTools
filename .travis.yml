@@ -4,6 +4,19 @@ git:
 jdk:
     - oraclejdk8
 
+env:
+    # disable gradle daemon
+    - GRADLE_OPTS="-Dorg.gradle.daemon=false"
+
+# gradle cache
+before_cache:
+    - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+    - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+    directories:
+        - $HOME/.gradle/caches/
+        - $HOME/.gradle/wrapper/
+
 install:
     - ./gradlew shadowJar
 
