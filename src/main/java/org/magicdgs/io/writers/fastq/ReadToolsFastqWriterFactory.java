@@ -25,10 +25,11 @@ package org.magicdgs.io.writers.fastq;
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
-import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.util.Lazy;
@@ -161,13 +162,13 @@ public class ReadToolsFastqWriterFactory {
 
             @Override
             public void write(FastqRecord record) {
-                String barcode = FastqRecordUtils.getBarcodeInName(record);
+                String barcode = BarcodeMethods.getOnlyBarcodeFromName(record.getReadHeader());
                 write(getUnknownIfNoMapping(barcode), record);
             }
 
             @Override
             public void write(FastqPairedRecord record) {
-                String barcode = FastqRecordUtils.getBarcodeInName(record);
+                String barcode = getBarcodeInName(record);
                 write(getUnknownIfNoMapping(barcode), record);
             }
 
@@ -244,5 +245,30 @@ public class ReadToolsFastqWriterFactory {
                 }
             }
         };
+    }
+
+    /**
+     * Get the barcode in the name from a FastqPairedRecord. If only one is present or both match,
+     * return the first one;
+     * if they do not match, thrown an error
+     *
+     * @param record the record to extract the barcode from
+     *
+     * @return the barcode without read information; <code>null</code> if not barcode is found in
+     * either record
+     *
+     * @throws htsjdk.samtools.SAMException if both records have a barcode that do not match
+     */
+    private static String getBarcodeInName(final FastqPairedRecord record) throws SAMException {
+        final String barcode1 = BarcodeMethods.getOnlyBarcodeFromName(record.getRecord1().getReadHeader());
+        final String barcode2 = BarcodeMethods.getOnlyBarcodeFromName(record.getRecord2().getReadHeader());
+        if (barcode1 == null) {
+            return barcode2;
+        }
+        if (barcode1.equals(barcode2)) {
+            return barcode1;
+        }
+        throw new SAMException(
+                "Barcodes from FastqPairedRecord do not match: " + barcode1 + "-" + barcode2);
     }
 }

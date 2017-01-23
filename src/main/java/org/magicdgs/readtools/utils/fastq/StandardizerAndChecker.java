@@ -25,10 +25,11 @@ package org.magicdgs.readtools.utils.fastq;
 
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.RTDefaults;
-import org.magicdgs.readtools.utils.record.SAMRecordUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMUtils;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.hellbender.exceptions.GATKException;
@@ -237,7 +238,7 @@ public class StandardizerAndChecker {
             }
             SAMRecord newRecord = (SAMRecord) record.clone();
             // relies on the checking of the record
-            SAMRecordUtils.toSanger(newRecord, allowHighQualities);
+            toSanger(newRecord, allowHighQualities);
             return newRecord;
         } catch (CloneNotSupportedException e) {
             // This should not happen, because it is suppose to be quality
@@ -245,6 +246,29 @@ public class StandardizerAndChecker {
         } catch (QualityUtils.QualityException e) {
             throw new SAMException("Wrongly formatted quality string for " +
                     record.getReadName() + ": " + record.getBaseQualityString());
+        }
+    }
+
+    /**
+     * Update the quality encoding for a record to sanger. Checks if the record is correctly
+     * formatted on the fly
+     *
+     * @param record the record to update
+     */
+    @VisibleForTesting
+    static void toSanger(final SAMRecord record, final boolean allowHighQualities) {
+        try {
+            // get the base qualities as ascii bytes
+            byte[] qualities = record.getBaseQualityString().getBytes();
+            byte[] newQualities = new byte[qualities.length];
+            for (int i = 0; i < qualities.length; i++) {
+                final byte sangerQual = QualityUtils.byteToSanger(qualities[i]);
+                QualityUtils.checkStandardEncoding(sangerQual, allowHighQualities);
+                newQualities[i] = (byte) SAMUtils.fastqToPhred((char) sangerQual);
+            }
+            record.setBaseQualities(newQualities);
+        } catch (IllegalArgumentException e) {
+            throw new QualityUtils.QualityException(e);
         }
     }
 }

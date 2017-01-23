@@ -22,8 +22,7 @@
  */
 package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
 
-import org.magicdgs.readtools.utils.record.SequenceMatch;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.broadinstitute.hellbender.utils.BaseUtils;
 
 import java.util.Set;
@@ -148,7 +147,7 @@ public final class BarcodeMatch {
         final BarcodeMatch best = new BarcodeMatch(index, barcodeToMatch.length());
         for (final String b : barcodeSet) {
             final String subBarcode = barcodeToMatch.substring(0, b.length());
-            final int currentMismatch = SequenceMatch.hammingDistance(subBarcode, b, nAsMismatches);
+            final int currentMismatch = hammingDistance(subBarcode, b, nAsMismatches);
             // if the barcodeToMatch is longer but it is cut, this is not really the best barcode,
             // but the sorter one even if all of them have the same mismatches
             // we solve this outside the 'for' loop
@@ -178,5 +177,36 @@ public final class BarcodeMatch {
         best.numberOfNs = (int) toCount.chars().filter(i -> BaseUtils.isNBase((byte) i)).count();
 
         return best;
+    }
+
+    /**
+     * Computes Hamming distance (number of mismatches) between a test sequence and a target
+     * sequence.
+     *
+     * @param testSequence   test sequence.
+     * @param targetSequence target sequence.
+     * @param nAsMismatches  if {@code true} N bases are counted as mismatch; otherwise they are
+     *                       ignored.
+     *
+     * @return hamming distance between the two sequences.
+     */
+    @VisibleForTesting
+    static int hammingDistance(final String testSequence, final String targetSequence,
+            final boolean nAsMismatches) {
+        // logger.debug("Testing ", testSequence, " against ", targetSequence);
+        // if(testSequence.length() != barcode.length()) return testSequence.length();
+        int measuredDistance = 0;
+        for (int i = 0; i < testSequence.length(); i++) {
+            final byte test = (byte) testSequence.charAt(i);
+            final byte target = (byte) targetSequence.charAt(i);
+            // only count if n is a mismatch of none of the test/target bases is an N
+            final boolean shouldCount = nAsMismatches
+                    || !(BaseUtils.isNBase(test) || BaseUtils.isNBase(target));
+            // case-insensitive mismatches count for N or not N
+            if (shouldCount && !BaseUtils.basesAreEqual(test, target)) {
+                measuredDistance++;
+            }
+        }
+        return measuredDistance;
     }
 }

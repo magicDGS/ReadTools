@@ -40,10 +40,12 @@ import org.magicdgs.readtools.ProjectProperties;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
+import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
+import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.util.StringUtil;
 import org.broadinstitute.barclay.argparser.Argument;
@@ -296,4 +298,18 @@ public abstract class ReadToolsBaseTool extends PicardCommandLineProgram {
         }
     }
 
+
+    /**
+     * Add a barcode to a SAMRecord in the format recordName#barcode, but include previous barcodes
+     * that are already in recordName,
+     *
+     * @param record  the record to update
+     * @param barcode the barcode
+     */
+    protected static void addBarcodeToName(final SAMRecord record, final String barcode) {
+        String recordName = String
+                .format("%s%s%s", record.getReadName(), RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER,
+                        barcode);
+        record.setReadName(recordName);
+    }
 }

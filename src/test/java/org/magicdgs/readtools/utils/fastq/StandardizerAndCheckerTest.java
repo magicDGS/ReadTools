@@ -23,10 +23,10 @@
  */
 package org.magicdgs.readtools.utils.fastq;
 
-import org.magicdgs.readtools.utils.record.SAMRecordUtilsTest;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMException;
+import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -34,6 +34,8 @@ import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
 
 public class StandardizerAndCheckerTest extends BaseTest {
 
@@ -51,6 +53,18 @@ public class StandardizerAndCheckerTest extends BaseTest {
     private static final StandardizerAndChecker illuminaChecker =
             new StandardizerAndChecker(FastqQualityFormat.Illumina, false);
 
+    private static final SAMFileHeader emptyHeader = new SAMFileHeader();
+
+    private static SAMRecord createSamRecord(String readName, byte base, String quality) {
+        SAMRecord record = new SAMRecord(emptyHeader);
+        record.setReadName(readName);
+        byte[] bases = new byte[quality.length()];
+        Arrays.fill(bases, base);
+        record.setReadBases(bases);
+        record.setBaseQualityString(quality);
+        return record;
+    }
+
     @BeforeMethod
     public void setUp() throws Exception {
         // init FASTQ
@@ -61,10 +75,8 @@ public class StandardizerAndCheckerTest extends BaseTest {
                 new FastqRecord("Record1#ACGT/1", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "",
                         QualityUtilsTest.sangerQuality);
         // init SAMR
-        illuminaSAM = SAMRecordUtilsTest
-                .createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality);
-        sangerSAM = SAMRecordUtilsTest
-                .createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.sangerQuality);
+        illuminaSAM = createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.illuminaQuality);
+        sangerSAM = createSamRecord("Read1#ACTG/1", (byte) 'A', QualityUtilsTest.sangerQuality);
     }
 
     @Test
@@ -115,5 +127,11 @@ public class StandardizerAndCheckerTest extends BaseTest {
         // this should not throw errors, but return the exactly same result
         Assert.assertEquals(sangerChecker.standardize(illuminaFASTQ), illuminaFASTQ);
         Assert.assertEquals(sangerChecker.standardize(illuminaSAM), illuminaSAM);
+    }
+
+    @Test
+    public void testToSanger() throws Exception {
+        StandardizerAndChecker.toSanger(illuminaSAM, false);
+        Assert.assertEquals(illuminaSAM, sangerSAM);
     }
 }

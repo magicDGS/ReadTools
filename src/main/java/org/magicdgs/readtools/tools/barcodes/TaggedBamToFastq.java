@@ -37,13 +37,15 @@ import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.Formats;
 import org.magicdgs.readtools.utils.misc.IOUtils;
-import org.magicdgs.readtools.utils.record.SAMRecordUtils;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamReader;
+import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.CloserUtil;
+import htsjdk.samtools.util.SequenceUtil;
+import htsjdk.samtools.util.StringUtil;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -180,15 +182,15 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
             final String best = getBestBarcodeIfPassVQ(record1, barcodes);
             if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
                 final String toReadName = BarcodeMethods.joinBarcodes(barcodes);
-                SAMRecordUtils.addBarcodeToName(record1, toReadName);
-                SAMRecordUtils.addBarcodeToName(record2, toReadName);
+                addBarcodeToName(record1, toReadName);
+                addBarcodeToName(record2, toReadName);
             } else {
-                SAMRecordUtils.addBarcodeToName(record1, best);
-                SAMRecordUtils.addBarcodeToName(record2, best);
+                addBarcodeToName(record1, best);
+                addBarcodeToName(record2, best);
             }
             final FastqPairedRecord outputRecord = new FastqPairedRecord(
-                    SAMRecordUtils.toFastqRecord(record1, 1),
-                    SAMRecordUtils.toFastqRecord(record2, 2));
+                    toFastqRecord(record1, 1),
+                    toFastqRecord(record2, 2));
             writer.write(best, outputRecord);
             progress.record(record1);
         }
@@ -206,11 +208,11 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
             final String[] barcodes = getBarcodeFromTags(record, tags);
             final String best = getBestBarcodeIfPassVQ(record, barcodes);
             if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
-                SAMRecordUtils.addBarcodeToName(record, BarcodeMethods.joinBarcodes(barcodes));
+                addBarcodeToName(record, BarcodeMethods.joinBarcodes(barcodes));
             } else {
-                SAMRecordUtils.addBarcodeToName(record, best);
+                addBarcodeToName(record, best);
             }
-            writer.write(best, SAMRecordUtils.toFastqRecord(record, null));
+            writer.write(best, toFastqRecord(record, null));
             progress.record(record);
         }
         return pf;
@@ -271,5 +273,27 @@ public final class TaggedBamToFastq extends ReadToolsBaseTool {
     protected void onShutdown() {
         CloserUtil.close(writer);
         CloserUtil.close(reader);
+    }
+
+    /**
+     * Convert a SAMRecord to a FastqRecord (reverse complement if this flag is set)
+     *
+     * @param record     the record to convert
+     * @param mateNumber the number of the mate to add to the record; <code>null</code> if not
+     *                   wanted
+     *
+     * @return the record converted into fastq
+     */
+    private static FastqRecord toFastqRecord(final SAMRecord record, final Integer mateNumber) {
+        String seqName = (mateNumber == null) ?
+                record.getReadName() :
+                String.format("%s/%d", record.getReadName(), mateNumber);
+        String readString = record.getReadString();
+        String qualityString = record.getBaseQualityString();
+        if (record.getReadNegativeStrandFlag()) {
+            readString = SequenceUtil.reverseComplement(readString);
+            qualityString = StringUtil.reverseString(qualityString);
+        }
+        return new FastqRecord(seqName, readString, "", qualityString);
     }
 }

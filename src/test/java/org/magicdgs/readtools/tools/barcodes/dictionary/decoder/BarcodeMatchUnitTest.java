@@ -97,4 +97,29 @@ public class BarcodeMatchUnitTest extends BaseTest {
         Assert.assertEquals(barcodeMatch.isAssignable(2), isAssignableFor2, "wrong isAssignable");
     }
 
+    @DataProvider
+    public Object[][] hammingDistanceData() {
+        return new Object[][] {
+                // without Ns
+                {"ACTG", "ACCC", true, 2},
+                {"ACTG", "ACCC", false, 2},
+                // with missing bases
+                {"ACTG", "ACNN", true, 2},
+                {"ACTG", "ACNN", false, 0},
+                {"ACNN", "ACTG", true, 2},
+                {"ACNN", "ACTG", false, 0},
+                // case sensitivity
+                {"ACTG", "actg", true, 0},
+                {"ACTG", "accc", true, 2},
+                {"ACTG", "acnn", true, 2},
+                {"ACTG", "acnn", false, 0}
+        };
+    }
+
+    @Test(dataProvider = "hammingDistanceData")
+    public void testHammingDistance(String test, String target, boolean nAsMismatch,
+            int expectedDistance) throws Exception {
+        Assert.assertEquals(BarcodeMatch.hammingDistance(test, target, nAsMismatch),
+                expectedDistance);
+    }
 }

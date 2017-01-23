@@ -33,14 +33,15 @@ import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
+import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.logging.ProgressLoggerExtension;
 import org.magicdgs.readtools.utils.misc.Formats;
 import org.magicdgs.readtools.utils.misc.IOUtils;
-import org.magicdgs.readtools.utils.record.SAMRecordUtils;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMReadGroupRecord;
+import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.util.CloserUtil;
@@ -121,11 +122,11 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
         final ProgressLoggerExtension progress = new ProgressLoggerExtension(logger);
         final SAMRecordIterator it = reader.iterator();
         it.stream().forEach(record -> {
-            final String[] barcode = SAMRecordUtils.getBarcodesInName(record);
+            final String[] barcode = BarcodeMethods.getSeveralBarcodesFromName(record.getReadName());
             final String best = decoder.getBestBarcode(barcode);
             final SAMReadGroupRecord rg = decoder.getDictionary().getReadGroupFor(best);
             if (!rg.equals(unknownRg)) {
-                SAMRecordUtils.changeBarcodeInName(record, best);
+                changeBarcodeInName(record, best);
             }
             record.setAttribute("RG", rg.getId());
             writer.addAlignment(record);
@@ -176,4 +177,14 @@ public final class BamBarcodeDetector extends ReadToolsBaseTool {
         }
     }
 
+    /**
+     * Change the barcode in the name if it is present or set it if not; the mate number is removed
+     *
+     * @param record  the record to update
+     * @param barcode the barcode
+     */
+    private static void changeBarcodeInName(final SAMRecord record, final String barcode) {
+        record.setReadName(BarcodeMethods.getNameWithoutBarcode(record.getReadName()));
+        addBarcodeToName(record, barcode);
+    }
 }

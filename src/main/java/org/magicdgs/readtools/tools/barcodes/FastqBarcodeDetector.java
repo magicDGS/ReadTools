@@ -37,12 +37,13 @@ import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
+import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.logging.FastqLogger;
 import org.magicdgs.readtools.utils.misc.Formats;
 import org.magicdgs.readtools.utils.misc.IOUtils;
-import org.magicdgs.readtools.utils.record.FastqRecordUtils;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.barclay.argparser.Argument;
@@ -53,6 +54,7 @@ import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -146,13 +148,13 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
         final Iterator<FastqRecord> it = ((FastqReaderSingleInterface) reader).iterator();
         while (it.hasNext()) {
             final FastqRecord record = readNameBarcodeArguments.normalizeRecordName(it.next());
-            final String[] barcode = FastqRecordUtils.getBarcodesInName(record);
+            final String[] barcode = BarcodeMethods.getSeveralBarcodesFromName(record.getReadHeader());
             final String best = decoder.getBestBarcode(barcode);
             if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
                 // TODO: get the standard
                 writer.write(best, record);
             } else {
-                writer.write(best, FastqRecordUtils.changeBarcodeInSingle(record, best));
+                writer.write(best, changeBarcode(record, best, 0));
             }
             progress.add();
         }
@@ -166,13 +168,13 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
         while (it.hasNext()) {
             final FastqPairedRecord record =
                     readNameBarcodeArguments.normalizeRecordName(it.next());
-            final String[] barcode = FastqRecordUtils.getBarcodesInName(record);
+            final String[] barcode = pairedBarcodesConsensus(record);
             final String best = decoder.getBestBarcode(barcode);
             if (best.equals(BarcodeMatch.UNKNOWN_STRING)) {
                 // TODO: get the standard
                 writer.write(best, record);
             } else {
-                writer.write(best, FastqRecordUtils.changeBarcodeInPaired(record, best));
+                writer.write(best, changeBarcodeInPaired(record, best));
             }
             progress.add();
         }
@@ -182,5 +184,52 @@ public final class FastqBarcodeDetector extends ReadToolsBaseTool {
     protected void onShutdown() {
         CloserUtil.close(writer);
         CloserUtil.close(reader);
+    }
+
+    private static String[] pairedBarcodesConsensus(final FastqPairedRecord record) {
+        final String[] barcode1 = BarcodeMethods.getSeveralBarcodesFromName(record.getRecord1().getReadHeader());
+        final String[] barcode2 = BarcodeMethods.getSeveralBarcodesFromName(record.getRecord2().getReadHeader());
+        if (barcode1 == null) {
+            return barcode2;
+        }
+        if (Arrays.equals(barcode1, barcode2)) {
+            return barcode1;
+        }
+        throw new SAMException("Barcodes from FastqPairedRecord do not match: " +
+                Arrays.toString(barcode1) + "-" + Arrays.toString(barcode2));
+    }
+
+    /**
+     * Change the barcode name in a FASTQ record, adding the number of pair provided
+     *
+     * @param record       the record to update
+     * @param newBarcode   the new barcode to add
+     * @param numberOfPair the number of read for this record
+     *
+     * @return the updated record
+     */
+    private static FastqRecord changeBarcode(final FastqRecord record, final String newBarcode,
+            final int numberOfPair) {
+        return new FastqRecord(String
+                .format("%s%s%s%s%s",
+                        BarcodeMethods.getNameWithoutBarcode(record.getReadHeader()),
+                        RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER, newBarcode,
+                        BarcodeMethods.READ_PAIR_SEPARATOR, numberOfPair), record.getReadString(),
+                record.getBaseQualityHeader(), record.getBaseQualityString());
+    }
+
+    /**
+     * Change the barcode name in a pair record, adding the \1 and \2 indicating that they are
+     * paired
+     *
+     * @param record     the record to update
+     * @param newBarcode the new barcode to add
+     *
+     * @return the updated record
+     */
+    public static FastqPairedRecord changeBarcodeInPaired(final FastqPairedRecord record,
+            final String newBarcode) {
+        return new FastqPairedRecord(changeBarcode(record.getRecord1(), newBarcode, 1),
+                changeBarcode(record.getRecord2(), newBarcode, 2));
     }
 }
