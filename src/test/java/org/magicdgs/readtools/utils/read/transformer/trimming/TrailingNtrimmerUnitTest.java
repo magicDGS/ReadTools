@@ -50,4 +50,9 @@ public class TrailingNtrimmerUnitTest extends BaseTest {
         Assert.assertEquals(read.getAttributeAsInteger("te").intValue(), expected[1]);
     }
 
+    @Test
+    public void testValidateArgsNotThrown() throws Exception {
+        TRIMMER.validateArgs();
+    }
+
 }

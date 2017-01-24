@@ -57,10 +57,6 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
     /** If {@code false}, does not trim the 3' of the read. */
     private final boolean no3prime;
 
-    public ApplyTrimResultReadTransfomer() {
-        this(false, false);
-    }
-
     /**
      * Constructor for setting up if the 5' or 3' end should be hard-clipped or not.
      *

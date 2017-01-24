@@ -27,6 +27,9 @@ package org.magicdgs.readtools.utils.read.transformer.trimming;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
 
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
@@ -35,11 +38,15 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public final class MottQualityTrimmer implements TrimmingFunction {
+public final class MottQualityTrimmer extends TrimmingFunction {
     private static final long serialVersionUID = 1L;
 
-    // TODO: make parameter!
+    private static final String QUAL_THRESHOLD_LONG_NAME = "mottQualityThreshold";
+    private static final String QUAL_THRESHOLD_SHORT_NAME = "mottQual";
+    // TODO: improve doc
+
     /** The quality threshold to use for trimming. */
+    @Argument(fullName = QUAL_THRESHOLD_LONG_NAME, shortName = QUAL_THRESHOLD_SHORT_NAME, doc = "Minimum average quality for the modified Mott algorithm. The threshold is used for calculating a score: quality_at_base - threshold.", optional = true)
     public int qualThreshold = 20;
 
     /** Constructor with default quality. */
@@ -47,6 +54,8 @@ public final class MottQualityTrimmer implements TrimmingFunction {
 
     /** Constructor with a quality threshold. */
     public MottQualityTrimmer(final int qualThreshold) {
+        Utils.validateArg(qualThreshold >= 0,
+                () -> "qualityThreshold should be 0 or positive: " + qualThreshold);
         this.qualThreshold = qualThreshold;
     }
 
@@ -61,5 +70,13 @@ public final class MottQualityTrimmer implements TrimmingFunction {
         final int[] trimPoints =
                 TrimmingUtil.trimPointsMott(read.getBaseQualities(), qualThreshold);
         RTReadUtils.updateTrimmingPointTags(read, trimPoints[0], trimPoints[1]);
+    }
+
+    @Override
+    public void validateArgs() {
+        if (qualThreshold < 0) {
+            throw new CommandLineException.BadArgumentValue("--" + QUAL_THRESHOLD_LONG_NAME,
+                    String.valueOf(qualThreshold), "cannot be a negative value");
+        }
     }
 }

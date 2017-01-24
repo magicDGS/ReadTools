@@ -27,6 +27,7 @@ package org.magicdgs.readtools.utils.read.transformer.trimming;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
@@ -45,19 +46,22 @@ public class CutReadTrimmerUnitTest extends BaseTest {
     @DataProvider
     public Object[][] badArgs() {
         return new Object[][] {
-                {null, null},
-                {0, null},
-                {null, Integer.MAX_VALUE},
-                {0, Integer.MAX_VALUE},
-                {null, -1},
-                {-1, null},
+                {0, 0},
+                {0, -1},
+                {-1, 0},
         };
     }
 
     @Test(dataProvider = "badArgs", expectedExceptions = IllegalArgumentException.class)
-    public void testFailConstructor(final Integer fivePrime, final Integer threePrime)
+    public void testFailConstructor(final int fivePrime, final int threePrime)
             throws Exception {
         new CutReadTrimmer(fivePrime, threePrime);
+    }
+
+    @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
+    public void testFailedValidationOnDefaultConstructor() throws Exception {
+        final CutReadTrimmer trimmer = new CutReadTrimmer();
+        trimmer.validateArgs();
     }
 
     @DataProvider(name = "readLengthsToTrim")
@@ -99,7 +103,7 @@ public class CutReadTrimmerUnitTest extends BaseTest {
     public void testOnlyFivePrime(final int readLength, final Integer expectedStart,
             final Integer expectedEnd, final boolean completelyTrim) throws Exception {
         final GATKRead read = ArtificialReadUtils.createArtificialRead(readLength + "M");
-        final TrimmingFunction trimmer = new CutReadTrimmer(10, null);
+        final TrimmingFunction trimmer = new CutReadTrimmer(10, 0);
         trimmer.apply(read);
         Assert.assertEquals(read.getAttributeAsInteger("ts"), expectedStart, "wrong 'ts'");
         Assert.assertEquals(read.getAttributeAsInteger("te"), null, "wrong 'te'");
@@ -112,7 +116,7 @@ public class CutReadTrimmerUnitTest extends BaseTest {
     public void testOnlyThreePrime(final int readLength, final Integer expectedStart,
             final Integer expectedEnd, final boolean completelyTrim) throws Exception {
         final GATKRead read = ArtificialReadUtils.createArtificialRead(readLength + "M");
-        final TrimmingFunction trimmer = new CutReadTrimmer(null, 20);
+        final TrimmingFunction trimmer = new CutReadTrimmer(0, 20);
         trimmer.apply(read);
         Assert.assertEquals(read.getAttributeAsInteger("ts"), null, "wrong 'ts'");
         Assert.assertEquals(read.getAttributeAsInteger("te"), expectedEnd, "wrong 'te'");

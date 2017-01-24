@@ -26,7 +26,8 @@ package org.magicdgs.readtools.utils.read.transformer.trimming;
 
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
-import org.broadinstitute.hellbender.utils.Utils;
+import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
@@ -34,40 +35,44 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class CutReadTrimmer implements TrimmingFunction {
+public class CutReadTrimmer extends TrimmingFunction {
     private static final long serialVersionUID = 1L;
 
-    // TODO: make both parameters!
-    // TODO: the parameters should be mutually exclusive and required one of them
+    private static final String FIVE_PRIME_LONG_NAME = "cut5primeBases";
+    private static final String FIVE_PRIME_SHORT_NAME = "c5p";
+    private static final String THREE_PRIME_LONG_NAME = "cut3primeBases";
+    private static final String THREE_PRIME_SHORT_NAME = "c3p";
+
     /** The number of bases from the 5 prime of the read to trim. */
+    @Argument(fullName = FIVE_PRIME_LONG_NAME, shortName = FIVE_PRIME_SHORT_NAME, doc = "Number of bases (in bp) to cut in the 5 prime of the read. For disable, use 'null'.", optional = true)
     public Integer fivePrime;
     /** The number of bases from the 3 prime of the read to trim. */
+    @Argument(fullName = THREE_PRIME_LONG_NAME, shortName = THREE_PRIME_SHORT_NAME, doc = "Number of bases (in bp) to cut in the 3 prime of the read. For disable, use 'null'.", optional = true)
     public Integer threePrime;
+
+    /** Constructor with default values. */
+    public CutReadTrimmer() {}
 
     /**
      * Constructor with a 5/3 prime points.
      *
      * Note: at least one of the ends of the read should be trimmed.
      *
-     * @param fivePrime  5 prime number of bases to cut. May be {@code null} or
-     *                   {@code 0} for disable 5-prime cutting.
-     * @param threePrime 3 prime number of bases to cut. May be {@code null} or
-     *                   {@link Integer#MAX_VALUE} for disable 3-prime cutting.
+     * @param fivePrime  5 prime number of bases to cut. Use {@code 0} for disable 5-prime cutting.
+     * @param threePrime 3 prime number of bases to cut. Use {@code 0} for disable 3-prime cutting.
      */
-    public CutReadTrimmer(final Integer fivePrime, final Integer threePrime) {
-        // setup
-        this.fivePrime = (fivePrime == null || fivePrime == 0)
-                ? null : fivePrime;
-        this.threePrime = (threePrime == null || threePrime == Integer.MAX_VALUE)
-                ? null : threePrime;
+    // TODO: this have a bug and/or a design problem
+    public CutReadTrimmer(final int fivePrime, final int threePrime) {
+        // disable if the ints are 0
+        this.fivePrime = (fivePrime == 0) ? null : fivePrime;
+        this.threePrime = (threePrime == 0) ? null : threePrime;
 
         // validate args
-        Utils.validateArg(!(this.fivePrime == null && this.threePrime == null),
-                "at least one of the sides of the read should be trimmed");
-        Utils.validateArg(this.fivePrime == null || this.fivePrime > 0,
-                "fivePrime should be a positive integer");
-        Utils.validateArg(this.threePrime == null || this.threePrime > 0,
-                "threePrime should be a positive integer");
+        try {
+            validateArgs();
+        } catch (CommandLineException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     @Override
@@ -80,6 +85,22 @@ public class CutReadTrimmer implements TrimmingFunction {
         if (threePrime != null) {
             final int trimPoint = readLength - threePrime;
             RTReadUtils.updateTrimmingEndPointTag(read, (trimPoint < 0) ? 0 : trimPoint);
+        }
+    }
+
+    @Override
+    public void validateArgs() {
+        if (this.fivePrime == null && this.threePrime == null) {
+            throw new CommandLineException.BadArgumentValue(
+                    "Both ends of the read are disable for CutReadTrimmer.");
+        }
+        if (this.fivePrime != null && this.fivePrime < 0) {
+            throw new CommandLineException.BadArgumentValue("--" + FIVE_PRIME_LONG_NAME,
+                    fivePrime.toString(), "should be a positive integer");
+        }
+        if (this.threePrime != null && this.threePrime < 0) {
+            throw new CommandLineException.BadArgumentValue("--" + THREE_PRIME_LONG_NAME,
+                    threePrime.toString(), "threePrime should be a positive integer");
         }
     }
 }

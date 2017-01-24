@@ -30,14 +30,12 @@ import htsjdk.samtools.Cigar;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.TextCigarCodec;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
-import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.ReadUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.internal.junit.ArrayAsserts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +48,8 @@ import java.util.List;
 public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
 
     // transformer to test
-    private static final ReadTransformer transformer = new ApplyTrimResultReadTransfomer();
+    private static final ReadTransformer transformer =
+            new ApplyTrimResultReadTransfomer(false, false);
 
     private static final SAMFileHeader header = ArtificialReadUtils.createArtificialSamHeader();
 

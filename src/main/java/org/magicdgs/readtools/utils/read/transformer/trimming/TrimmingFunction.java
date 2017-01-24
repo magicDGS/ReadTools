@@ -30,6 +30,8 @@ import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
+import java.io.Serializable;
+
 /**
  * Trimming function is a especial {@link ReadTransformer} that updates in-place the trimming tags
  * on a read passed to it. If the read is already trimmed, the function will not be applied in the
@@ -42,15 +44,15 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  * @see org.magicdgs.readtools.utils.read.ReservedTags#ts
  * @see org.magicdgs.readtools.utils.read.ReservedTags#te
  */
-public interface TrimmingFunction extends ReadTransformer {
+public abstract class TrimmingFunction implements ReadTransformer, Serializable {
     public static final long serialVersionUID = 1L;
 
     /**
-     * Default implementation check if the read is already trimmed, and if so it skips the
+     * Check if the read is already trimmed, and if so it skips the {@link #update(GATKRead)}
      * implementation.
      */
     @Override
-    default GATKRead apply(final GATKRead read) {
+    public final GATKRead apply(final GATKRead read) {
         Utils.nonNull(read, "null read");
         if (!RTReadUtils.isCompletelyTrimRead(read)) {
             update(read);
@@ -59,6 +61,16 @@ public interface TrimmingFunction extends ReadTransformer {
     }
 
     /** Update the read with the result of this trim function. */
-    void update(final GATKRead read);
+    protected abstract void update(final GATKRead read);
 
+    /**
+     * Validates the arguments and throws a command line exception or user exception depending on
+     * the implementation.
+     *
+     * Default behaviour does not perform any validation.
+     *
+     * @throws org.broadinstitute.barclay.argparser.CommandLineException if arguments are invalid.
+     * @throws org.broadinstitute.hellbender.exceptions.UserException if arguments are invalid.
+     * */
+    public void validateArgs() { }
 }
