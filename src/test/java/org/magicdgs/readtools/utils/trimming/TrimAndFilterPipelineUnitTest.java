@@ -319,6 +319,18 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 }
             }
         }
+
+        // testing now with anonymous class
+        final TrimmingFunction anonymous = new TrimmingFunction() {
+            @Override
+            protected void update(GATKRead read) {
+                // do nothing
+            }
+        };
+        final TrimAndFilterPipeline.CollectingTrimmingMetricTransformer ctmt =
+                new TrimAndFilterPipeline.CollectingTrimmingMetricTransformer(anonymous,
+                        false, false);
+        testTrimmingMetric(ctmt.metric, "DEFAULT", 0, 0, 0, 0);
     }
 
     @Test
@@ -334,6 +346,17 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         testFilterMetric(cfmf.metric, filterName, 1, 0);
         Assert.assertTrue(cfmf.test(notFilterRead));
         testFilterMetric(cfmf.metric, filterName, 2, 1);
+
+        // testing now with anonymous class
+        final ReadFilter anonymous = new ReadFilter() {
+            @Override
+            public boolean test(GATKRead read) {
+                return false;
+            }
+        };
+        final TrimAndFilterPipeline.CollectingFilterMetricFilter cfmf2 =
+                new TrimAndFilterPipeline.CollectingFilterMetricFilter(anonymous);
+        testFilterMetric(cfmf2.metric, "DEFAULT", 0, 0);
     }
 
     // helper method for test filter metric

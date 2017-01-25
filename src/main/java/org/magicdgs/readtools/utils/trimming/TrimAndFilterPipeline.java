@@ -176,7 +176,11 @@ public class TrimAndFilterPipeline extends ReadFilter {
                 final boolean disable5pTrim, final boolean disable3pTrim) {
             // we don't need validation here for 5/3 prime disabling, because it was done before
             this.delegate = delegate;
-            this.metric = new TrimmingMetric(delegate.getClass().getSimpleName());
+            final String className = delegate.getClass().getSimpleName();
+            // anonymous classes have a 0-length simple name, but they should still be valid to
+            // apply to the pipeline. We use the default name for the metric in that case (unknown)
+            this.metric = (className.length() == 0)
+                    ? new TrimmingMetric() : new TrimmingMetric(className);
 
             this.fivePrimeUpdate = (disable5pTrim)
                     ? (read, previous) -> false
@@ -224,7 +228,11 @@ public class TrimAndFilterPipeline extends ReadFilter {
         @VisibleForTesting
         CollectingFilterMetricFilter(final ReadFilter delegate) {
             this.delegate = delegate;
-            this.metric = new FilterMetric(delegate.getClass().getSimpleName());
+            final String className = delegate.getClass().getSimpleName();
+            // anonymous classes have a 0-length simple name, but they should still be valid to
+            // apply to the pipeline. We use the default name for the metric in that case (unknown)
+            this.metric = (className.length() == 0)
+                    ? new FilterMetric() : new FilterMetric(className);
         }
 
         @Override

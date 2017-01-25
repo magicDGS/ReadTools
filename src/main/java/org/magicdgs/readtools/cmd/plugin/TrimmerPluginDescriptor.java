@@ -103,7 +103,6 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
                 // controlled by the user via the command line, but they should still be valid
                 // as default trimmers, so use the full name to ensure that their map entries
                 // don't clobber each other
-                // TODO: if we allow this, we should allow the same in the TrimAndFilterPipeline
                 String className = rfClass.getSimpleName();
                 if (className.length() == 0) {
                     className = rfClass.getName();

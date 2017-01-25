@@ -34,7 +34,7 @@ import htsjdk.samtools.metrics.MetricBase;
 public class TrimmingMetric extends MetricBase {
 
     /** Name of the trimmer applied to the reads. */
-    public String TRIMMER;
+    public String TRIMMER = "DEFAULT";
 
     /** Total number of reads passed to the trimmer. */
     public int TOTAL = 0;
@@ -48,10 +48,8 @@ public class TrimmingMetric extends MetricBase {
     /** Completely trimmed reads. */
     public int TRIMMED_COMPLETE = 0;
 
-    /** Constructor for unknown trimmer name. */
-    public TrimmingMetric() {
-        this("UNKNOWN");
-    }
+    /** Constructor for default trimmer name. */
+    public TrimmingMetric() { }
 
     /** Constructor for default trimmer name. */
     public TrimmingMetric(final String trimmer) {

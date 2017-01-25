@@ -34,7 +34,7 @@ import htsjdk.samtools.metrics.MetricBase;
 public class FilterMetric extends MetricBase {
 
     /** Name of the filter applied to the reads. */
-    public String FILTER;
+    public String FILTER = "DEFAULT";
 
     /** Total number reads reaching the filter. */
     public int TOTAL = 0;
@@ -42,10 +42,8 @@ public class FilterMetric extends MetricBase {
     /** Number of reads passing the filter. */
     public int PASSED = 0;
 
-    /** Constructor for unknown filter name. */
-    public FilterMetric() {
-        this("UNKNOWN");
-    }
+    /** Constructor for default filter name. */
+    public FilterMetric() { }
 
     /** Constructor for default filter name. */
     public FilterMetric(final String filter) {
