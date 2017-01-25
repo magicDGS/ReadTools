@@ -24,12 +24,15 @@
 
 package org.magicdgs.readtools.utils.tests;
 
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.text.XReadLines;
 import org.testng.Assert;
 import org.testng.Reporter;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * All tests for ReadTools should extend this class. It contains utilities for log results, and
@@ -88,10 +91,22 @@ public class BaseTest {
 
     /** Asserts that a file (compressed or not) is empty. */
     public static void assertFileIsEmpty(final File expectedEmptyFile) {
-        try (XReadLines lines = new XReadLines(expectedEmptyFile)) {
-            Assert.assertFalse(lines.hasNext());
-        } catch (Exception e) {
-            Assert.fail("File is not empty or IO error: " + e.getMessage());
+        try (final XReadLines lines = new XReadLines(expectedEmptyFile)) {
+            if (lines.hasNext()) {
+                Assert.fail("File is not empty: " + expectedEmptyFile.getAbsolutePath());
+            }
+        } catch (IOException e) {
+            Assert.fail("Failed with IO error: " + e.getMessage());
         }
     }
+
+    /** Asserts that a SAM/BAM file is empty (may contain a header). */
+    public static void assertEmptySamFile(final File samFile) {
+        try (final SamReader reader = SamReaderFactory.makeDefault().open(samFile)) {
+            Assert.assertFalse(reader.iterator().hasNext());
+        } catch (final IOException e) {
+            Assert.fail("Failed with IO error: " + e.getMessage());
+        }
+    }
+
 }

@@ -32,7 +32,7 @@ import org.magicdgs.io.writers.fastq.ReadToolsFastqWriter;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
 import org.magicdgs.readtools.cmd.argumentcollections.TrimmingLegacyArgumentCollection;
-import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.DeprecatedProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.tools.trimming.trimmers.Trimmer;
@@ -54,15 +54,19 @@ import java.nio.file.Path;
  * Class that implements the trimming algorithm from Kofler et al. 2011
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated this tool correspond to legacy elements.
  */
-@CommandLineProgramProperties(oneLineSummary = "Implementation of the trimming algorithm from Kofler et al. (2011).",
-        summary =  "The program removes 'N' - characters at the beginning and the end of the provided reads. If any remaining 'N' "
+@CommandLineProgramProperties(oneLineSummary = "DEPRECATED: USE 'TrimReads' for perform trimming of reads.",
+        summary = "DEPRECATED: USE 'TrimReads' instead.\n"
+                + "Implementation of the trimming algorithm from Kofler et al. (2011).\n"
+                + "The program removes 'N' - characters at the beginning and the end of the provided reads. If any remaining 'N' "
                 + "characters are found the read is discarded. Quality removal is done using a modified Mott-algorithm: for "
                 + "each base a score is calculated (score_base = quality_base - threshold). While scanning along the read "
                 + "a running sum of this score is calculated; If the score drops below zero the score is set to zero; The "
                 + "highest scoring region of the read is finally reported.\n\nCitation of the method: Kofler et al. (2011), "
                 + "PLoS ONE 6(1), e15925, doi:10.1371/journal.pone.0015925",
-        programGroup = RawDataProgramGroup.class)
+        programGroup = DeprecatedProgramGroup.class)
+@Deprecated
 public final class TrimFastq extends ReadToolsBaseTool {
 
     @Argument(fullName = ReadToolsLegacyArgumentDefinitions.INPUT_LONG_NAME + "1", shortName =

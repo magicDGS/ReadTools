@@ -1,0 +1,24 @@
+## htsjdk.samtools.metrics.StringHeader
+# org.magicdgs.readtools.tools.trimming.TrimReads  --output src/test/resources/org/magicdgs/readtools/tools/trimming/TrimReads/testTrimmingSingleEndLengthRange.sam --addOutputSAMProgramRecord false --forceOverwrite true --keepDiscarded true --input /Users/daniel/workspaces/ReadTools/src/test/resources/org/magicdgs/readtools/data/SRR1931701_1.fq --maxReadLength 75 --minReadLength 60  --createOutputBamIndex true --createOutputBamMD5 false --secondsBetweenProgressUpdates 10.0 --readValidationStringency SILENT --interleavedInput false --help false --version false --verbosity INFO --QUIET false --use_jdk_deflater false --disableAllDefaultTrimmers false --disable5pTrim false --disable3pTrim false --mottQualityThreshold 20 --disableToolDefaultReadFilters false
+## htsjdk.samtools.metrics.StringHeader
+# Started on: February 6, 2017 3:02:17 PM CET
+
+## METRICS CLASS	org.magicdgs.readtools.metrics.TrimmerMetric
+TRIMMER	TOTAL	TRIMMED_5_P	TRIMMED_3_P	TRIMMED_COMPLETE
+TrailingNtrimmer	103	1	1	0
+MottQualityTrimmer	103	0	2	1
+
+
+
+## METRICS CLASS	org.magicdgs.readtools.metrics.FilterMetric
+FILTER	TOTAL	PASSED
+CompletelyTrimReadFilter	103	102
+ReadLengthReadFilter	102	3
+
+## HISTOGRAM	java.lang.Integer
+length	before	after
+54	22	0
+69	0	1
+72	0	2
+76	81	0
+

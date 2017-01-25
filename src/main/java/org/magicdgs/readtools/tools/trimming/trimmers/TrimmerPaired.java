@@ -25,6 +25,7 @@ package org.magicdgs.readtools.tools.trimming.trimmers;
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.metrics.trimming.PairEndTrimming;
 import org.magicdgs.readtools.metrics.trimming.TrimStat;
+import org.magicdgs.readtools.tools.trimming.TrimAndFilterPipeline;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.metrics.MetricsFile;
@@ -40,7 +41,7 @@ import java.util.List;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @deprecated use {@link org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline} instead.
+ * @deprecated use {@link TrimAndFilterPipeline} instead.
  */
 public class TrimmerPaired extends Trimmer {
 

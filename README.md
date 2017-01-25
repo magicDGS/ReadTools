@@ -41,11 +41,11 @@ For getting the packaged version:
 
 The current pre-release includes the following tools:
 
-* __TrimFastq__: Implementation of the trimming algorithm from [Kofler _et al._ (2011)](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015925)
 * __QualityEncodingDetector__: Detects the quality encoding format for all kind of sources for ReadTools
 * __StandardizeReads__: Standardize quality and format for all kind of sources for ReadTools
 * __ReadsToFastq__: Converts any kind of ReadTools source to FASTQ format
 * __AssignReadGroupByBarcode__: Assigns read groups based on barcode tag(s) for all kind of sources for ReadTools
+* __TrimReads__: Applies a trimming pipeline to any kind of sources for ReadTools
 
 Legacy tools that will disapear in following releases:
 * __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
@@ -53,6 +53,7 @@ Legacy tools that will disapear in following releases:
 * __TaggedBamToFastq__: Convert an BAM file with BC tags into a FASTQ file
 * __FastqBarcodeDetector__: Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library
 * __BamBarcodeDetector__:	Identify barcodes in the read name for a BAM file and assign to the ones used on the library
+* __TrimFastq__: Implementation of the trimming algorithm from [Kofler _et al._ (2011)](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015925)
 
 ---
 

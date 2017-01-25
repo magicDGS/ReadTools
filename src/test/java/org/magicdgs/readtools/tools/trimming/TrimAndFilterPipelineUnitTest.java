@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.trimming;
+package org.magicdgs.readtools.tools.trimming;
 
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;

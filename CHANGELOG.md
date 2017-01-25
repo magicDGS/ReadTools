@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - New tools for quality checking/standardizing: `QualityEncodingDetector` and `StandardizeReads`
 - New tool for converting to other format: `ReadsToFastq`
 - New tool for barcode detection: `AssignReadGroupByBarcode`
+- New tool for trimming/filtering pipeline: `TrimReads`
 - Input formats for every tool (except specified) includes BAM/SAM/CRAM/FASTQ
 - Tools output is in a consistent BAM/SAM/CRAM format (except for conversion tools)
 - Walker framework for single/pair-end reads traversal
@@ -18,11 +19,12 @@ All notable changes to this project will be documented in this file.
 - BarcodeDictionary.getSampleReadGroups() returns an unmodifiable list
 
 ### Changed
-- Tool deprecation: `QualityChecker`, `StandardizeQuality`, `BamBarcodeDetector`, `FastqBarcodeDetector`, `TaggedBamToFastq`
+- Tool deprecation: `QualityChecker`, `StandardizeQuality`, `BamBarcodeDetector`, `FastqBarcodeDetector`, `TaggedBamToFastq`, `TrimFastq`
 - Barcode file format (for new tools): strict tab-delimited file and header for each column (Picard's ExtractIlluminaBarcodes style). Requires at least a sample/barcode name and a barcode sequence. Library is optional.
 - Metrics from barcode detection ordered as the input file (samples and barcodes).
 - For new barcode tools, several indexes are joined with hyphen instead of underscore.
 - Default values are provided in the command line for list arguments in BarcodeArgumentCollection. If the user provide an option, the arguments will be overridden.
+- `TrimReads` applies trimmers before filters (see [#101](https://github.com/magicDGS/ReadTools/issues/101))
 
 ## [0.2.3] - 2016-11-01
 

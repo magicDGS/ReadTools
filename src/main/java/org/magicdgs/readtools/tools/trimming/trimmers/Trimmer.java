@@ -24,6 +24,7 @@ package org.magicdgs.readtools.tools.trimming.trimmers;
 
 import org.magicdgs.io.FastqPairedRecord;
 import org.magicdgs.readtools.metrics.trimming.TrimStat;
+import org.magicdgs.readtools.tools.trimming.TrimAndFilterPipeline;
 import org.magicdgs.readtools.utils.read.FastqGATKRead;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.ReservedTags;
@@ -52,7 +53,7 @@ import java.util.List;
  * using the algorithms in {@link org.magicdgs.readtools.utils.trimming.TrimmingUtil}.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @deprecated use {@link org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline} instead with
+ * @deprecated use {@link TrimAndFilterPipeline} instead with
  * the trimmers {@link TrailingNtrimmer} and {@link MottQualityTrimmer}; and the filters
  * {@link AmbiguousBaseReadFilter} for 0% (if discardRemainingNs is {@code true}) and
  * {@link ReadLengthReadFilter}.
