@@ -30,6 +30,7 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.ClassFinder;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -40,9 +41,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -166,11 +169,21 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
 
     @Override
     public Set<String> getAllowedValuesForDescriptorArgument(String longArgName) {
-        if (longArgName.equals(RTStandardArguments.TRIMMER_LONG_NAME) ||
-                longArgName.equals(RTStandardArguments.DISABLE_TRIMMER_LONG_NAME)) {
-            // TODO: maybe this should return all possible TrimmingFunctions for the trimmer help
-            // TODO: and the default ones for the disable
-            return trimmers.keySet();
+        if (longArgName.equals(RTStandardArguments.TRIMMER_LONG_NAME)) {
+            // in the case of the trimmer argument, return all the names obtained by reflection
+            final ClassFinder finder = new ClassFinder();
+            for (final String packageName: getPackageNames()) {
+                finder.find(packageName, getPluginClass());
+            }
+            final Predicate<Class<?>> filter = getClassFilter();
+            return finder.getClasses().stream()
+                    .filter(filter) // filter only valid classes
+                    .map(Class::getSimpleName)
+                    .collect(Collectors.toCollection(TreeSet::new));
+        }
+        if (longArgName.equals(RTStandardArguments.DISABLE_TRIMMER_LONG_NAME)) {
+            // linked set to return then in order
+            return new LinkedHashSet<>(toolDefaultTrimmerNamesInOrder);
         }
         throw new IllegalArgumentException(
                 "Allowed values request for unrecognized string argument: " + longArgName);

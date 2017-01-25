@@ -42,13 +42,24 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class TrimmerPluginDescriptorUnitTest extends BaseTest {
+
+    // TODO: this set should be updated every time that a new trimmer is implemented
+    // TODO: we should come up with a way of testing this without this problem
+    private static final Set<String> ALL_TRIMMERS = new TreeSet<>(Arrays.asList(
+            "CutReadTrimmer",
+            "MottQualityTrimmer",
+            "TrailingNtrimmer"
+    ));
 
     @Test
     public void testAnonymousClassAsToolDefault() throws Exception {
@@ -86,16 +97,35 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
                 () -> pluginDescriptor.getInstance(MottQualityTrimmer.class));
     }
 
-    // TODO: this test my fail if we change to return all/default trimmers
-    @Test
-    public void testGetAllowedValuesForDescriptorArgument() throws Exception {
-        final TrimmerPluginDescriptor pluginDescriptor = new TrimmerPluginDescriptor(null);
+    @DataProvider(name = "defaultTrimmingFunctionsForHelp")
+    public Object[][] defaultTrimmingFunctionsForHelp() {
+        final TrimmingFunction cut = new CutReadTrimmer(1, 1);
+        final String cutName = "CutReadTrimmer";
+        final TrimmingFunction mott = new MottQualityTrimmer();
+        final String mottName = "MottQualityTrimmer";
+        return new Object[][] {
+                {null, Collections.emptySet()},
+                {Collections.emptyList(), Collections.emptySet()},
+                {Collections.singletonList(cut), Collections.singleton(cutName)},
+                {Collections.singletonList(mott), Collections.singleton(mottName)},
+                {Arrays.asList(cut, mott), new LinkedHashSet<>(Arrays.asList(cutName, mottName))},
+                {Arrays.asList(mott, cut), new LinkedHashSet<>(Arrays.asList(mottName, cutName))},
+        };
+    }
 
-        // test valid long names
-        Assert.assertTrue(pluginDescriptor.getAllowedValuesForDescriptorArgument("trimmer")
-                .isEmpty());
-        Assert.assertTrue(pluginDescriptor.getAllowedValuesForDescriptorArgument("disableTrimmer")
-                .isEmpty());
+    @Test(dataProvider = "defaultTrimmingFunctionsForHelp")
+    public void testGetAllowedValuesForDescriptorArgument(final List<TrimmingFunction> defaults,
+            final Set<String> expectedDefaults) throws Exception {
+        final TrimmerPluginDescriptor pluginDescriptor = new TrimmerPluginDescriptor(defaults);
+        // test valid trimmers
+        final Set<String> allowedTrimmers = pluginDescriptor
+                .getAllowedValuesForDescriptorArgument("trimmer");
+        Assert.assertEquals(allowedTrimmers, ALL_TRIMMERS);
+
+        // test default trimmers
+        final Set<String> allowedDisabledTrimmers = pluginDescriptor
+                .getAllowedValuesForDescriptorArgument("disableTrimmer");
+        Assert.assertEquals(allowedDisabledTrimmers, expectedDefaults);
 
         // test invalid long name
         Assert.assertThrows(IllegalArgumentException.class,
