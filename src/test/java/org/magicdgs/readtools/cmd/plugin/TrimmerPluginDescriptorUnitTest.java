@@ -45,7 +45,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -53,13 +52,10 @@ import java.util.stream.Collectors;
  */
 public class TrimmerPluginDescriptorUnitTest extends BaseTest {
 
-    // TODO: this set should be updated every time that a new trimmer is implemented
-    // TODO: we should come up with a way of testing this without this problem
-    private static final Set<String> ALL_TRIMMERS = new TreeSet<>(Arrays.asList(
-            "CutReadTrimmer",
-            "MottQualityTrimmer",
-            "TrailingNtrimmer"
-    ));
+    // TODO: maybe we should find another way of testing this
+    // this is the number of trimmers implemented to check if a returned value is correct
+    // it should be modified every time a new trimmer is implemented
+    private static final int NUMBER_OF_TRIMMERS_IMPLEMENTED = 3;
 
     @Test
     public void testAnonymousClassAsToolDefault() throws Exception {
@@ -114,13 +110,13 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
     }
 
     @Test(dataProvider = "defaultTrimmingFunctionsForHelp")
-    public void testGetAllowedValuesForDescriptorArgument(final List<TrimmingFunction> defaults,
+    public void testGetAllowedValuesForDisableTrimmer(final List<TrimmingFunction> defaults,
             final Set<String> expectedDefaults) throws Exception {
         final TrimmerPluginDescriptor pluginDescriptor = new TrimmerPluginDescriptor(defaults);
-        // test valid trimmers
+        // test valid trimmers -> without CMD they are not found by reflection
         final Set<String> allowedTrimmers = pluginDescriptor
                 .getAllowedValuesForDescriptorArgument("trimmer");
-        Assert.assertEquals(allowedTrimmers, ALL_TRIMMERS);
+        Assert.assertEquals(allowedTrimmers.size(), 0);
 
         // test default trimmers
         final Set<String> allowedDisabledTrimmers = pluginDescriptor
@@ -148,10 +144,13 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
             return Collections.singletonList(new TrimmerPluginDescriptor(defaultTrimmers));
         }
 
+        protected final TrimmerPluginDescriptor getTrimmerPluginDescriptor() {
+            return commandLineParser.getPluginDescriptor(TrimmerPluginDescriptor.class);
+        }
+
         @Override
         protected final Object doWork() {
-            return commandLineParser.getPluginDescriptor(TrimmerPluginDescriptor.class)
-                    .getAllInstances();
+            return getTrimmerPluginDescriptor().getAllInstances();
         }
     }
 
@@ -174,7 +173,7 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
                         Collections.singletonList(MottQualityTrimmer.class)},
                 // test disabling trimmers (all or specifically)
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
-                        .addBooleanArgument("disableAllTrimmers", true),
+                        .addBooleanArgument("disableAllDefaultTrimmers", true),
                         Collections.emptyList()},
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("disableTrimmer", "MottQualityTrimmer"),
@@ -202,6 +201,11 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
                 // providing a parameter for a default trimmer
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("mottQualityThreshold", "10"),
+                        Collections.singletonList(MottQualityTrimmer.class)},
+                // test disable all trimmers but provide the same
+                {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
+                        .addBooleanArgument("disableAllDefaultTrimmers", true)
+                        .addArgument("trimmer", "MottQualityTrimmer"),
                         Collections.singletonList(MottQualityTrimmer.class)}
         };
     }
@@ -223,6 +227,16 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
                         .collect(Collectors.toList()),
                 expectedClasses, "order not maintained");
     }
+
+    @Test
+    public void testAllTrimmersHelpAfterParsed() throws Exception {
+        final ClpWithTrimmingPlugin clp = getClpWithNotDefaultTrimmers();
+        clp.instanceMain(new String[] {"--QUIET", "true", "--verbosity", "ERROR"});
+        Assert.assertEquals(clp.getTrimmerPluginDescriptor()
+                        .getAllowedValuesForDescriptorArgument("trimmer").size(),
+                NUMBER_OF_TRIMMERS_IMPLEMENTED);
+    }
+
 
     @DataProvider(name = "incorrectArguments")
     public Object[][] getIncorrectArgumentsForTesting() throws Exception {
@@ -250,7 +264,10 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
                         .addArgument("trimmer", "CutReadTrimmer")
                         .addArgument("cut5primeBases", "2")
                         .addArgument("cut3primeBases", "1")},
-                // TODO: enable this test if it is implemented that a parameter is provided for a disable defaul trimmer
+                {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
+                        .addArgument("disableTrimmer", "MottQualityTrimmer")
+                        .addBooleanArgument("disableAllDefaultTrimmers", true)}
+                // TODO: enable this test if it is implemented that a parameter is provided for a disable default trimmer
                 // {new getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                 //        .addArgument("disableTrimmer", "MottQualityTrimmer")
                 //        .addArgument("mottQualityThreshold", "10")}

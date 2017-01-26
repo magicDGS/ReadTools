@@ -30,7 +30,6 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.barclay.argparser.Argument;
-import org.broadinstitute.barclay.argparser.ClassFinder;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -72,14 +71,19 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     @Argument(fullName = RTStandardArguments.TRIMMER_LONG_NAME, shortName = RTStandardArguments.TRIMMER_SHORT_NAME, doc = "Trimmers to be applied. Note: default trimmers are applied first and then the rest of them in order.", optional = true)
     public final List<String> userTrimmerNames = new ArrayList<>(); // preserve order
 
-    @Argument(fullName = RTStandardArguments.DISABLE_TRIMMER_LONG_NAME, shortName = RTStandardArguments.DISABLE_TRIMMER_SHORT_NAME, doc = "Default trimmers to be disabled.", optional = true)
+    // mutex because if we disable all, we cannot disable one by one
+    @Argument(fullName = RTStandardArguments.DISABLE_TRIMMER_LONG_NAME, shortName = RTStandardArguments.DISABLE_TRIMMER_SHORT_NAME, doc = "Default trimmers to be disabled.", optional = true, mutex = {
+            RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME})
     public final Set<String> disabledTrimmers = new HashSet<>();
 
-    @Argument(fullName = RTStandardArguments.DISABLE_ALL_TRIMMERS_NAME, shortName = RTStandardArguments.DISABLE_ALL_TRIMMERS_NAME, doc = "Disable all default trimmers.", optional = true)
+    @Argument(fullName = RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME, shortName = RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME, doc = "Disable all default trimmers. It may be useful to reorder the trimmers.", optional = true, mutex = {
+            RTStandardArguments.DISABLE_TRIMMER_LONG_NAME})
     public boolean disableAllDefaultTrimmers = false;
 
     // Map of read trimmers (simple) class names to the corresponding discovered plugin instance
     private Map<String, TrimmingFunction> trimmers = new HashMap<>();
+    // all the trimmer names after discovered
+    private final Set<String> allTrimmerNames = new TreeSet<>();
     // List of default trimmers in the order they were specified by the tool
     private List<String> toolDefaultTrimmerNamesInOrder = new ArrayList<>();
     // Map of read trimmers (simple) class names to the corresponding default plugin instance
@@ -107,7 +111,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
                 // as default trimmers, so use the full name to ensure that their map entries
                 // don't clobber each other
                 String className = rfClass.getSimpleName();
-                if (className.length() == 0) {
+                if (className.isEmpty()) {
                     className = rfClass.getName();
                 }
                 toolDefaultTrimmerNamesInOrder.add(className);
@@ -118,7 +122,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
 
     @Override
     public String getDisplayName() {
-        return "Trimmer";
+        return RTStandardArguments.TRIMMER_LONG_NAME;
     }
 
     @Override
@@ -143,7 +147,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     @Override
     public Object getInstance(Class<?> pluggableClass)
             throws IllegalAccessException, InstantiationException {
-        TrimmingFunction trimmingFunction = null;
+        TrimmingFunction trimmingFunction;
         final String simpleName = pluggableClass.getSimpleName();
 
         if (trimmers.containsKey(simpleName)) {
@@ -164,6 +168,8 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             trimmingFunction = (TrimmingFunction) pluggableClass.newInstance();
             trimmers.put(simpleName, trimmingFunction);
         }
+        // add to the trimmer names
+        allTrimmerNames.add(simpleName);
         return trimmingFunction;
     }
 
@@ -171,15 +177,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     public Set<String> getAllowedValuesForDescriptorArgument(String longArgName) {
         if (longArgName.equals(RTStandardArguments.TRIMMER_LONG_NAME)) {
             // in the case of the trimmer argument, return all the names obtained by reflection
-            final ClassFinder finder = new ClassFinder();
-            for (final String packageName: getPackageNames()) {
-                finder.find(packageName, getPluginClass());
-            }
-            final Predicate<Class<?>> filter = getClassFilter();
-            return finder.getClasses().stream()
-                    .filter(filter) // filter only valid classes
-                    .map(Class::getSimpleName)
-                    .collect(Collectors.toCollection(TreeSet::new));
+            return allTrimmerNames;
         }
         if (longArgName.equals(RTStandardArguments.DISABLE_TRIMMER_LONG_NAME)) {
             // linked set to return then in order
@@ -236,12 +234,13 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         });
 
         // warn on redundant enabling of trimmer already enabled by default
-        final Set<String> redundant = new HashSet<>(toolDefaultTrimmers.keySet());
-        redundant.retainAll(userTrimmerNames);
-        redundant.forEach(s ->
-                logger.warn("Redundant enabled trimmer ({}) is enabled for this tool by default", s)
-        );
-
+        if (!disableAllDefaultTrimmers) {
+            final Set<String> redundant = new HashSet<>(toolDefaultTrimmers.keySet());
+            redundant.retainAll(userTrimmerNames);
+            redundant.forEach(s -> logger
+                    .warn("Redundant enabled trimmer ({}) is enabled for this tool by default", s)
+            );
+        }
         // throw if args were specified for a trimmer that was also disabled
         disabledTrimmers.forEach(s -> {
             if (requiredPredecessors.contains(s)) {
@@ -284,6 +283,9 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
      * Gets all the instances that should be applied for trimming, including the default ones
      * if they are kept. It may return an empty list.
      *
+     * Note: if all default trimmers are disable, the rest of the trimmers are in the same order
+     * as specified, even if they are provided twice.
+     *
      * @implNote default trimmers are first in order, and then the ones provided by the user in the
      * order specified.
      */
@@ -311,6 +313,9 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             TrimmingFunction rf = trimmers.get(s);
             if (rf != null) {
                 finalTrimmers.add(rf);
+            } else if (disableAllDefaultTrimmers) {
+                // if all the default are disabled, add it here
+                finalTrimmers.add(toolDefaultTrimmers.get(s));
             }
         });
 
