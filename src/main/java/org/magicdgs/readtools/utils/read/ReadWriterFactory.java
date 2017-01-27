@@ -70,11 +70,9 @@ public final class ReadWriterFactory {
     public ReadWriterFactory() {
         this.samFactory = new SAMFileWriterFactory();
         this.fastqFactory = new FastqWriterFactory();
-        // setting defaults factory parameters
-        // TODO: I would like to have access to the defaults in SAMFileWriterFactory to have the same in the FastqWriter
-        // TODO: but this requires a change in htsjdk
-        setUseAsyncIo(Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS);
-        setCreateMd5File(Defaults.CREATE_MD5);
+        // setting the default create Md5 to the same as the samFactory default
+        // because this could be change statically and we would like to propagate to the FASTQ writer
+        this.fastqFactory.setCreateMd5(SAMFileWriterFactory.getDefaultCreateMd5File());
     }
 
     /** Sets asynchronous writing for any writer. */
