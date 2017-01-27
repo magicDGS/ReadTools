@@ -27,7 +27,6 @@ import org.magicdgs.readtools.metrics.trimming.TrimStat;
 import org.magicdgs.readtools.utils.read.FastqGATKRead;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.ReservedTags;
-import org.magicdgs.readtools.utils.read.filter.NoAmbiguousSequenceReadFilter;
 import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultReadTransfomer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
@@ -35,6 +34,7 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.Histogram;
+import org.broadinstitute.hellbender.engine.filters.AmbiguousBaseReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
@@ -54,12 +54,12 @@ import java.util.List;
  * @author Daniel Gomez-Sanchez (magicDGS)
  * @deprecated use {@link org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline} instead with
  * the trimmers {@link TrailingNtrimmer} and {@link MottQualityTrimmer}; and the filters
- * {@link NoAmbiguousSequenceReadFilter} (if discardRemainingNs is {@code true} and
+ * {@link AmbiguousBaseReadFilter} for 0% (if discardRemainingNs is {@code true}) and
  * {@link ReadLengthReadFilter}.
  */
 public abstract class Trimmer {
 
-    private final static ReadFilter noNsInSequence = new NoAmbiguousSequenceReadFilter();
+    private final static ReadFilter noNsInSequence = new AmbiguousBaseReadFilter(0);
 
     private static final ReadTransformer trailingNs = new TrailingNtrimmer();
 

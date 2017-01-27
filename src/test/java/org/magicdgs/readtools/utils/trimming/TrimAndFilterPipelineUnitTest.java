@@ -32,7 +32,6 @@ import org.magicdgs.readtools.tools.trimming.trimmers.Trimmer;
 import org.magicdgs.readtools.tools.trimming.trimmers.TrimmerBuilder;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
-import org.magicdgs.readtools.utils.read.filter.NoAmbiguousSequenceReadFilter;
 import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
@@ -41,6 +40,7 @@ import org.magicdgs.readtools.utils.tests.BaseTest;
 import org.magicdgs.readtools.utils.tests.TestResourcesUtils;
 
 import htsjdk.samtools.util.Histogram;
+import org.broadinstitute.hellbender.engine.filters.AmbiguousBaseReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
@@ -431,7 +431,7 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 Arrays.asList(new TrailingNtrimmer(), new MottQualityTrimmer(qualThreshold)),
                 no5p, false, // in the previous trimmer, it was false
                 (discardRemainingNsm)
-                        ? Arrays.asList(new NoAmbiguousSequenceReadFilter(), rlrf)
+                        ? Arrays.asList(new AmbiguousBaseReadFilter(0), rlrf)
                         : Collections.singletonList(rlrf)
         );
 
