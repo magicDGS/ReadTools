@@ -83,4 +83,8 @@ public class RTStandardArguments {
     public static final String DISABLE_TRIMMER_LONG_NAME = "disableTrimmer";
     public static final String DISABLE_TRIMMER_SHORT_NAME = "DTM";
     public static final String DISABLE_ALL_DEFAULT_TRIMMERS_NAME = "disableAllDefaultTrimmers";
+    public static final String DISABLE_5P_TRIMING_LONG_NAME = "disable5pTrim";
+    public static final String DISABLE_5P_TRIMING_SHORT_NAME = "D5PT";
+    public static final String DISABLE_3P_TRIMING_LONG_NAME = "disable3pTrim";
+    public static final String DISABLE_3P_TRIMING_SHORT_NAME = "D3PT";
 }

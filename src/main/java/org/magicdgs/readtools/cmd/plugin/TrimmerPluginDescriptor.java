@@ -280,25 +280,35 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     }
 
     /**
-     * Gets all the instances that should be applied for trimming, including the default ones
-     * if they are kept. It may return an empty list.
+     * Gets all the default instances provided; if disabling all the default instances is
+     * specified, returns an empty list.
      *
-     * Note: if all default trimmers are disable, the rest of the trimmers are in the same order
-     * as specified, even if they are provided twice.
+     * Note: only the enabled trimmers will be returned.
+     */
+    //
+    // TODO: to override, requires update of Barclay
+    // @Override TODO: the signature of the overridden method in Barclay is still Object
+    public List<TrimmingFunction> getDefaultInstances() {
+        return (disableAllDefaultTrimmers)
+                ? Collections.emptyList()
+                : toolDefaultTrimmerNamesInOrder.stream()
+                        .filter(s -> !disabledTrimmers.contains(s))
+                        .map(s -> toolDefaultTrimmers.get(s))
+                        .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets all the instances provided by the user. It may return an empty list if the user does
+     * not specify any tool or only the default ones (without disable then completely).
      *
-     * @implNote default trimmers are first in order, and then the ones provided by the user in the
-     * order specified.
+     * Note: if all default trimmers are disable, this list include all the command line ones;
+     * otherwise, the defaults will be excluded.
      */
     @Override
     public List<TrimmingFunction> getAllInstances() {
         // start with the tool's default trimmers in the order they were specified, and remove any
         // that were disabled on the command line
-        final List<TrimmingFunction> finalTrimmers = (disableAllDefaultTrimmers)
-                ? new ArrayList<>(userTrimmerNames.size())
-                : toolDefaultTrimmerNamesInOrder.stream()
-                        .filter(s -> !disabledTrimmers.contains(s))
-                        .map(s -> toolDefaultTrimmers.get(s))
-                        .collect(Collectors.toList());
+
         // Add the instances in the order they were specified on the command line
         // (use the order of userTrimmerNames list, so it preserves the order).
         //
@@ -309,17 +319,18 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         // uses the tool-supplied instance and doesn't add a separate one to the
         // trimmers list, but the name from the command line still appears in
         // userTrimmerNames.
-        userTrimmerNames.forEach(s -> {
-            TrimmingFunction rf = trimmers.get(s);
-            if (rf != null) {
-                finalTrimmers.add(rf);
-            } else if (disableAllDefaultTrimmers) {
-                // if all the default are disabled, add it here
-                finalTrimmers.add(toolDefaultTrimmers.get(s));
-            }
-        });
-
-        // if there is no trimmer, returns an empty list
-        return finalTrimmers;
+        return userTrimmerNames.stream()
+                .map(s -> {
+                    TrimmingFunction tf = trimmers.get(s);
+                    if (tf != null) {
+                        return tf;
+                    } else if (disableAllDefaultTrimmers) {
+                        return toolDefaultTrimmers.get(s);
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(tf -> tf != null)
+                .collect(Collectors.toList());
     }
 }

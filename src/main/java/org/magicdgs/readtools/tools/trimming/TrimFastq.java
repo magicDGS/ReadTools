@@ -31,7 +31,7 @@ import org.magicdgs.io.readers.fastq.single.FastqReaderSingleInterface;
 import org.magicdgs.io.writers.fastq.ReadToolsFastqWriter;
 import org.magicdgs.io.writers.fastq.SplitFastqWriter;
 import org.magicdgs.readtools.cmd.ReadToolsLegacyArgumentDefinitions;
-import org.magicdgs.readtools.cmd.argumentcollections.TrimmingArgumentCollection;
+import org.magicdgs.readtools.cmd.argumentcollections.TrimmingLegacyArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.RawDataProgramGroup;
 import org.magicdgs.readtools.tools.ReadToolsBaseTool;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
@@ -80,7 +80,8 @@ public final class TrimFastq extends ReadToolsBaseTool {
     public String outputPrefix = null;
 
     @ArgumentCollection(doc = "Trimming parameters")
-    public TrimmingArgumentCollection trimmingArgumentCollection = new TrimmingArgumentCollection();
+    public TrimmingLegacyArgumentCollection
+            trimmingArgumentCollection = new TrimmingLegacyArgumentCollection();
 
     private FastqReaderInterface reader;
     private ReadToolsFastqWriter writer;

@@ -33,11 +33,11 @@ import org.broadinstitute.barclay.argparser.CommandLineException;
 import java.io.Serializable;
 
 /**
- * Argument collection for trimming algorithm
+ * Legacy argument collection for trimming algorithm.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmingArgumentCollection implements Serializable {
+public class TrimmingLegacyArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String QUALITY_THRESHOLD_LONG_NAME = "quality-threshold";

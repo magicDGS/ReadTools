@@ -68,10 +68,14 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
 
         final TrimmerPluginDescriptor pluginDescriptor =
                 new TrimmerPluginDescriptor(Collections.singletonList(anonymous));
-        final List<TrimmingFunction> allInstances = pluginDescriptor.getAllInstances();
 
-        Assert.assertEquals(allInstances.size(), 1);
-        Assert.assertSame(allInstances.get(0), anonymous);
+        // test all instances is empty
+        Assert.assertTrue(pluginDescriptor.getAllInstances().isEmpty());
+
+        // test that default instances are not
+        final List<TrimmingFunction> defaultInsances = pluginDescriptor.getDefaultInstances();
+        Assert.assertEquals(defaultInsances.size(), 1);
+        Assert.assertSame(defaultInsances.get(0), anonymous);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -150,17 +154,19 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
 
         @Override
         protected final Object doWork() {
-            return getTrimmerPluginDescriptor().getAllInstances();
+            return null;
         }
     }
 
+    private static final List<TrimmingFunction> DEFAULT_TRIMMER_FOR_TEST =
+            Collections.singletonList(new MottQualityTrimmer());
 
     private static final ClpWithTrimmingPlugin getClpWithNotDefaultTrimmers() {
         return new ClpWithTrimmingPlugin(Collections.emptyList());
     }
 
     private static final ClpWithTrimmingPlugin getClpWithMottDefaultTrimmers() {
-        return new ClpWithTrimmingPlugin(Collections.singletonList(new MottQualityTrimmer()));
+        return new ClpWithTrimmingPlugin(DEFAULT_TRIMMER_FOR_TEST);
     }
 
     @DataProvider(name = "correctArguments")
@@ -168,64 +174,70 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
         return new Object[][] {
                 // no arguments
                 {getClpWithNotDefaultTrimmers(), new ArgumentsBuilder(),
-                        Collections.emptyList()},
+                        Collections.emptyList(), Collections.emptyList()},
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder(),
-                        Collections.singletonList(MottQualityTrimmer.class)},
+                        DEFAULT_TRIMMER_FOR_TEST, Collections.emptyList()},
                 // test disabling trimmers (all or specifically)
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addBooleanArgument("disableAllDefaultTrimmers", true),
-                        Collections.emptyList()},
+                        Collections.emptyList(), Collections.emptyList()},
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("disableTrimmer", "MottQualityTrimmer"),
-                        Collections.emptyList()},
+                        Collections.emptyList(), Collections.emptyList()},
                 // test adding a trimmer
                 {getClpWithNotDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("trimmer", "CutReadTrimmer")
                         .addArgument("cut5primeBases", "1"),
-                        Collections.singletonList(CutReadTrimmer.class)},
+                        Collections.emptyList(), Collections.singletonList(CutReadTrimmer.class)},
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("trimmer", "CutReadTrimmer")
                         .addArgument("cut3primeBases", "1"),
-                        Arrays.asList(MottQualityTrimmer.class, CutReadTrimmer.class)},
+                        DEFAULT_TRIMMER_FOR_TEST, Collections.singletonList(CutReadTrimmer.class)},
                 // providing an already defined one is not added twice
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("trimmer", "MottQualityTrimmer"),
-                        Collections.singletonList(MottQualityTrimmer.class)},
+                        DEFAULT_TRIMMER_FOR_TEST, Collections.emptyList()},
                 // disable a trimmer that is not in the defaults logs a warning
                 {getClpWithNotDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("disableTrimmer", "CutReadTrimmer"),
-                        Collections.emptyList()},
+                        Collections.emptyList(), Collections.emptyList()},
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("disableTrimmer", "CutReadTrimmer"),
-                        Collections.singletonList(MottQualityTrimmer.class)},
+                        DEFAULT_TRIMMER_FOR_TEST, Collections.emptyList()},
                 // providing a parameter for a default trimmer
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addArgument("mottQualityThreshold", "10"),
-                        Collections.singletonList(MottQualityTrimmer.class)},
+                        DEFAULT_TRIMMER_FOR_TEST, Collections.emptyList()},
                 // test disable all trimmers but provide the same
                 {getClpWithMottDefaultTrimmers(), new ArgumentsBuilder()
                         .addBooleanArgument("disableAllDefaultTrimmers", true)
                         .addArgument("trimmer", "MottQualityTrimmer"),
-                        Collections.singletonList(MottQualityTrimmer.class)}
+                        Collections.emptyList(), Collections.singletonList(MottQualityTrimmer.class)}
         };
     }
 
     @Test(dataProvider = "correctArguments")
     public void testArgumentsCorrectlyParsed(final ClpWithTrimmingPlugin clp,
-            final ArgumentsBuilder args, final List<Class> expectedClasses) throws Exception {
+            final ArgumentsBuilder args, final List<TrimmingFunction> expectedDefaults,
+            final List<Class> expectedClassesUser) throws Exception {
         // make test output silent except if an error occurs
         args.addArgument("verbosity", "ERROR").addBooleanArgument("QUIET", true);
-        // run the instance main
-        final List<TrimmingFunction> parsedTrimmers =
-                (List<TrimmingFunction>) clp.instanceMain(args.getArgsArray());
+        // run the instance main and get the descriptor after parsing
+        clp.instanceMain(args.getArgsArray());
+        final TrimmerPluginDescriptor tpd = clp.getTrimmerPluginDescriptor();
 
-        Assert.assertEquals(parsedTrimmers.size(), expectedClasses.size(),
-                "not equal number of classes: " + parsedTrimmers);
+        // test the defaults
+        Assert.assertEquals(tpd.getDefaultInstances(), expectedDefaults,
+                "defaults are wrong: " + tpd.getDefaultInstances());
 
+        // test the parsed by the user
+        final List<TrimmingFunction> parsedUser = tpd.getAllInstances();
+        Assert.assertEquals(parsedUser.size(), expectedClassesUser.size(),
+                "not equal number of classes: " + parsedUser);
         Assert.assertEquals(
-                parsedTrimmers.stream().map(TrimmingFunction::getClass)
+                parsedUser.stream().map(TrimmingFunction::getClass)
                         .collect(Collectors.toList()),
-                expectedClasses, "order not maintained");
+                expectedClassesUser, "order not maintained");
     }
 
     @Test
