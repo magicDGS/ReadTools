@@ -139,6 +139,12 @@ processResources {
         contact: contact) 
 }
 
+
+processTestResources {
+    // do not package our test data into the test jar
+    exclude "**/org/magicdgs/readtools/**"
+}
+
 shadowJar {
     zip64 true
     classifier = null
