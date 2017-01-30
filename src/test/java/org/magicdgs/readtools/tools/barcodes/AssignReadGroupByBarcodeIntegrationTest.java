@@ -54,6 +54,9 @@ public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegra
     private final File SINGLE_BAM_FILE = getTestFile("SRR1931701.single.tagged.sam");
     private final File PAIRED_BAM_FILE = getTestFile("SRR1931701.tagged.sam");
 
+    protected final File UNIQUE_BARCODE_FILE = getTestFile("unique.barcodes");
+    protected final File DUAL_BARCODE_FILE = getTestFile("dual.barcodes");
+
     // this is in sync with the input files
     private final static List<String> EXPECTED_BY_SAMPLE_EXT = IntStream.range(1, 10)
             .mapToObj(i -> "_sample" + i + ".sam").collect(Collectors.toList());

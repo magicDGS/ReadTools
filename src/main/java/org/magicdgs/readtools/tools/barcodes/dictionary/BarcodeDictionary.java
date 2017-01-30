@@ -92,7 +92,9 @@ public class BarcodeDictionary {
      * @param libraries     the library for each barcode; if <code>null</code>, the library is the
      *                      samples_combinedBarcodes
      * @param readGroupInfo the additional information for the read group
+     * @deprecated use the direct constructor instead.
      */
+    @Deprecated
     protected BarcodeDictionary(final String run, final List<String> samples,
             final List<List<String>> barcodes, final List<String> libraries,
             final SAMReadGroupRecord readGroupInfo) {
@@ -114,7 +116,9 @@ public class BarcodeDictionary {
      *                      samples_combinedBarcodes
      * @param samples       the sample name
      * @param readGroupInfo the read group information
+     * @deprecated only used in deprecated constructor.
      */
+    @Deprecated
     private void initReadGroups(final String run, final List<String> samples,
             final List<String> libraries, final SAMReadGroupRecord readGroupInfo) {
         for (int i = 0; i < samples.size(); i++) {

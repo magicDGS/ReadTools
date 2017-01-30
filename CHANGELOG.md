@@ -19,7 +19,9 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Tool deprecation: `QualityChecker`, `StandardizeQuality`, `BamBarcodeDetector`, `FastqBarcodeDetector`, `TaggedBamToFastq`
-- Metrics from barcode detection ordered as the input file (samples and barcodes)
+- Barcode file format (for new tools): strict tab-delimited file and header for each column (Picard's ExtractIlluminaBarcodes style). Requires at least a sample/barcode name and a barcode sequence. Library is optional.
+- Metrics from barcode detection ordered as the input file (samples and barcodes).
+- For new barcode tools, several indexes are joined with hyphen instead of underscore.
 - Default values are provided in the command line for list arguments in BarcodeArgumentCollection. If the user provide an option, the arguments will be overridden.
 
 ## [0.2.3] - 2016-11-01

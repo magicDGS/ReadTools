@@ -41,6 +41,9 @@ import java.io.Serializable;
  */
 public class ReadGroupArgumentCollection implements Serializable {
 
+    @Argument(fullName = AddOrReplaceReadGroups.RGLB_LONG_NAME, shortName = AddOrReplaceReadGroups.RGLB_SHORT_NAME, doc = "Read Group Library", optional = true)
+    public String readGroupLibrary;
+
     // This is a modification w.r.t. Picard, because there is an enum for platform values that may be useful for limiting this value
     @Argument(fullName = AddOrReplaceReadGroups.RGPL_LONG_NAME, shortName = AddOrReplaceReadGroups.RGPL_SHORT_NAME, doc = "Read Group platform (e.g. illumina, solid)", optional = true)
     public SAMReadGroupRecord.PlatformValue readGroupPlatform;
@@ -72,6 +75,9 @@ public class ReadGroupArgumentCollection implements Serializable {
         rg.setSample(sampleName);
         // the program group is the one in the project properties
         rg.setProgramGroup(ProjectProperties.getName());
+        if (readGroupLibrary != null) {
+            rg.setLibrary(readGroupLibrary);
+        }
         if (readGroupPlatform != null) {
             rg.setPlatform(readGroupPlatform.toString());
         }

@@ -27,9 +27,7 @@ package org.magicdgs.readtools.cmd.argumentcollections;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 
-import htsjdk.samtools.SAMReadGroupRecord;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -49,11 +47,11 @@ import java.util.stream.IntStream;
 public final class BarcodeDetectorArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // TODO: remove WARNING if a different pipeline is implemented
     /** Barcode file. A white-space delimited file with sampleName, libraryName and barcodes. */
     @Argument(fullName = "barcodeFile", shortName = "bc", optional = false, doc =
-            "White-space delimited file including in the first column the sample name, "
-                    + "in the second the library name and in the following the barcodes (1 or 2, depending on the barcoding method)."
+            BarcodeDictionaryFactory.BARCODE_FILE_FORMAT_DESCRIPTION
+                    + " Barcode file will overwrite any of Read Group arguments for the same information. "
+                    // TODO: remove WARNING if a different pipeline is implemented
                     + "WARNING: this file should contain all the barcodes present in the multiplexed file.")
     public String barcodeFile;
 
@@ -115,12 +113,9 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
     }
 
     public BarcodeDecoder getBarcodeDecoder() {
-        final SAMReadGroupRecord unknonwReadGroup = rgArguments
-                .getReadGroupFromArguments(BarcodeMatch.UNKNOWN_STRING,
-                        BarcodeMatch.UNKNOWN_STRING);
         final BarcodeDictionary dictionary = BarcodeDictionaryFactory
-                .createDefaultDictionary(runID, org.broadinstitute.hellbender.utils.io.IOUtils
-                        .getPath(barcodeFile), unknonwReadGroup);
+                .fromFile(org.broadinstitute.hellbender.utils.io.IOUtils
+                        .getPath(barcodeFile), runID, rgArguments);
 
         // checking number of barcodes
         final int numberOfBarcodes = dictionary.getNumberOfBarcodes();

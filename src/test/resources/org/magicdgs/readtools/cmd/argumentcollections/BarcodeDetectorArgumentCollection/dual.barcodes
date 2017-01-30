@@ -1,3 +1,4 @@
+sample_name	library_name	barcode_sequence	barcode_sequence_2
 sample1	lib1	ATTACTCG	ATAGAGGC
 sample2	lib2	TCCGGAGA	CCTATCCT
 sample3	lib3	CGCTCATT	GGCTCTGA
