@@ -39,7 +39,7 @@ public class TrimmingUtilTest extends BaseTest {
     public static Object[][] trimMottData() {
         return new Object[][] {
                 // this are test which mimics the ones in the perl script from PoPoolation
-                {new byte[] {20, 20, 20, 20}, 20, new int[] {4, 4}},
+                {new byte[] {20, 20, 20, 20}, 20, new int[] {4, 0}},
                 {new byte[] {21, 21, 21, 20, 19}, 20, new int[] {0, 3}},
                 {new byte[] {20, 20, 21, 21, 21, 21, 20, 20}, 20, new int[] {2, 6}},
                 {new byte[] {19, 19, 21, 21, 21, 21, 1, 1, 21, 21, 21, 21, 21}, 20,

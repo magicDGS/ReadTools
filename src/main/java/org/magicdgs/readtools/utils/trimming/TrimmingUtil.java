@@ -43,13 +43,16 @@ public class TrimmingUtil {
      * Implements quality trimming with the Mott algorithm. Takes in an array of quality values as
      * byte[] and return two indexes where the byte array should be clipped, such as that the
      * caller can then invoke things like:
+     *
      * int[] retval = trimPointsMott(quals, trimQual)
      * final byte[] trimmedQuals = Array.copyOfRange(quals, retval[0], retval[1])
      * final String trimmedBases = bases.substring(retval[0], retval[1])
      *
-     * If the entire read is of low quality this function may return [1uals.length, quals.length]!
-     * It is left to the caller to decide whether or not to trim reads down to 0-bases, or to
-     * enforce some minimum length.
+     * If the entire array is of low quality this function may return [quals.length, 0]. This will
+     * blow up if Array.copyOfRange is used with this values. This should be check before applying.
+     *
+     * It is left to the caller to decide whether or not to trim reads down to 0-bases,
+     * or to enforce some minimum length.
      *
      * @param quals    a byte[] of quality scores in phred scaling (i.e. integer values between 0
      *                 and ~60)
@@ -91,7 +94,7 @@ public class TrimmingUtil {
             hsps.put(highScore, positions); // this array is not going to be modified anymore
         }
         if (hsps.isEmpty()) {
-            return new int[] {quals.length, quals.length};
+            return new int[] {quals.length, 0};
         }
         return hsps.get(hsps.lastKey());
     }
