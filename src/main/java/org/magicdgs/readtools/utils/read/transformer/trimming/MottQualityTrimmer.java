@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
 
 import org.broadinstitute.barclay.argparser.Argument;
@@ -43,8 +42,8 @@ public final class MottQualityTrimmer extends TrimmingFunction {
 
     private static final String QUAL_THRESHOLD_LONG_NAME = "mottQualityThreshold";
     private static final String QUAL_THRESHOLD_SHORT_NAME = "mottQual";
-    // TODO: improve doc
 
+    // TODO: improve doc
     /** The quality threshold to use for trimming. */
     @Argument(fullName = QUAL_THRESHOLD_LONG_NAME, shortName = QUAL_THRESHOLD_SHORT_NAME, doc = "Minimum average quality for the modified Mott algorithm. The threshold is used for calculating a score: quality_at_base - threshold.", optional = true)
     public int qualThreshold = 20;
@@ -63,17 +62,18 @@ public final class MottQualityTrimmer extends TrimmingFunction {
      * {@inheritDoc}
      *
      * @see TrimmingUtil#trimPointsMott(byte[], int).
-     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int).
      */
     @Override
-    public void update(final GATKRead read) {
+    protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
         final int[] trimPoints =
                 TrimmingUtil.trimPointsMott(read.getBaseQualities(), qualThreshold);
-        RTReadUtils.updateTrimmingPointTags(read, trimPoints[0], trimPoints[1]);
+        toFill[0] = trimPoints[0];
+        toFill[1] = trimPoints[1];
     }
 
+    /** Throws if there the quality threshold is negative. */
     @Override
-    public void validateArgs() {
+    public void validateArgsUnsafe() {
         if (qualThreshold < 0) {
             throw new CommandLineException.BadArgumentValue("--" + QUAL_THRESHOLD_LONG_NAME,
                     String.valueOf(qualThreshold), "cannot be a negative value");

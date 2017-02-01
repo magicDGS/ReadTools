@@ -30,6 +30,7 @@ import org.magicdgs.readtools.utils.read.ReservedTags;
 import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultReadTransfomer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
+import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -39,7 +40,6 @@ import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
 import org.broadinstitute.hellbender.transformers.MisencodedBaseQualityReadTransformer;
-import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.ReadUtils;
 
@@ -61,7 +61,7 @@ public abstract class Trimmer {
 
     private final static ReadFilter noNsInSequence = new AmbiguousBaseReadFilter(0);
 
-    private static final ReadTransformer trailingNs = new TrailingNtrimmer();
+    private final TrimmingFunction trailingNs = new TrailingNtrimmer();
 
     private final boolean trimQuality;
 
@@ -86,11 +86,14 @@ public abstract class Trimmer {
     Trimmer(final boolean trimQuality, final int qualThreshold, final int minLength,
             final int maxLength, final boolean discardRemainingNs, final boolean no5ptrim) {
         this.trimQuality = trimQuality;
-        this.applyTrimming = new ApplyTrimResultReadTransfomer(no5ptrim, false);
+        this.applyTrimming = new ApplyTrimResultReadTransfomer();
         this.mottTrimmer.qualThreshold = qualThreshold;
         this.lengthFilter = new ReadLengthReadFilter(minLength, maxLength).negate();
         this.discardRemainingNsFilter = (discardRemainingNs)
                 ? noNsInSequence : ReadFilterLibrary.ALLOW_ALL_READS;
+        // set no5ptrim to ends
+        mottTrimmer.setDisableEnds(no5ptrim, false);
+        trailingNs.setDisableEnds(no5ptrim, false);
     }
 
     /**
@@ -208,7 +211,7 @@ public abstract class Trimmer {
     private boolean shouldUpdateStatistic(final GATKRead maybeTrimmed,
             final int previousStart, final int previousEnd) {
         return RTReadUtils.getTrimmingEndPoint(maybeTrimmed) != previousEnd
-                || (!applyTrimming.noTrim5p()
+                || (!trailingNs.isDisable5prime() // using trailingNs because is always available
                 && RTReadUtils.getTrimmingStartPoint(maybeTrimmed) != previousStart);
     }
 

@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
 
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -45,13 +44,11 @@ public final class TrailingNtrimmer extends TrimmingFunction {
      * {@inheritDoc}
      *
      * @see TrimmingUtil#trimPointsTrailingNs(byte[]).
-     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int).
      */
     @Override
-    public void update(final GATKRead read) {
+    protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
         final int[] points = TrimmingUtil.trimPointsTrailingNs(read.getBases());
-        RTReadUtils.updateTrimmingPointTags(read, points[0], points[1]);
+        toFill[0] = points[0];
+        toFill[1] = points[1];
     }
-
-
 }

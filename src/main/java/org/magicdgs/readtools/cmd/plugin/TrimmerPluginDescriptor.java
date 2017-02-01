@@ -80,6 +80,14 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             RTStandardArguments.DISABLE_TRIMMER_LONG_NAME})
     public boolean disableAllDefaultTrimmers = false;
 
+    @Argument(fullName = RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME, doc = "Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified by the 5' mapping position.", mutex = {
+            RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME}, optional = true)
+    public boolean disable5pTrim = false;
+
+    @Argument(fullName = RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME, doc = "Disable 3'-trimming.", mutex = {
+            RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME}, optional = true)
+    public boolean disable3pTrim = false;
+
     // Map of read trimmers (simple) class names to the corresponding discovered plugin instance
     private Map<String, TrimmingFunction> trimmers = new HashMap<>();
     // all the trimmer names after discovered
@@ -100,7 +108,8 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             toolDefaultTrimmers.forEach(f -> {
                 // validate the argument from the defaults
                 try {
-                    f.validateArgs();
+                    // should validate unsafely because it should set afterwards the validation
+                    f.validateArgsUnsafe();
                 } catch (CommandLineException | UserException e) {
                     throw new IllegalArgumentException("Not valid arguments in default trimmer: "
                             + f, e);
@@ -134,8 +143,9 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     @Override
     public Predicate<Class<?>> getClassFilter() {
         return c -> {
-            // don't use the base class
-            return !c.getName().equals(this.getPluginClass().getName());
+            // don't use the base class nor the unit test implementations
+            return !c.getName().equals(this.getPluginClass().getName())
+                    && !c.getName().contains("UnitTest$");
         };
     }
 
@@ -168,6 +178,8 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             trimmingFunction = (TrimmingFunction) pluggableClass.newInstance();
             trimmers.put(simpleName, trimmingFunction);
         }
+        // when all the instances are created, they should set the disabling parameters accordingly
+        trimmingFunction.setDisableEnds(disable5pTrim, disable3pTrim);
         // add to the trimmer names
         allTrimmerNames.add(simpleName);
         return trimmingFunction;

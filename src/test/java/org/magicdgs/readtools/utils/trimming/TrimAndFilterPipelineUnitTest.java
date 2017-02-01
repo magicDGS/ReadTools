@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.trimming;
 
+import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmingMetric;
@@ -40,7 +41,10 @@ import org.magicdgs.readtools.utils.tests.BaseTest;
 import org.magicdgs.readtools.utils.tests.TestResourcesUtils;
 
 import htsjdk.samtools.util.Histogram;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.AmbiguousBaseReadFilter;
+import org.broadinstitute.hellbender.engine.filters.PlatformReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
@@ -66,29 +70,26 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
     @DataProvider
     public Object[][] badParams() {
         return new Object[][] {
-                {null, true, false, Collections.emptyList()},
-                {Collections.emptyList(), true, true, Collections.emptyList()},
-                {Collections.emptyList(), false, true, null}
+                {null, Collections.emptyList()},
+                {Collections.emptyList(), Collections.emptyList()},
+                {Collections.emptyList(), null}
         };
     }
 
     @Test(dataProvider = "badParams", expectedExceptions = IllegalArgumentException.class)
-    public void testBadConstructorParams(List<TrimmingFunction> trimmers, boolean disable5p,
-            boolean disable3p, List<ReadFilter> filters) {
-        new TrimAndFilterPipeline(trimmers, disable5p, disable3p, filters);
+    public void testBadConstructorParams(List<TrimmingFunction> trimmers,
+            List<ReadFilter> filters) {
+        new TrimAndFilterPipeline(trimmers, filters);
     }
 
     @DataProvider
     public Object[][] listsForMetrics() throws Exception {
-        final TrimmingFunction cutRead = new CutReadTrimmer(1, 1);
-        final TrimmingFunction trimNs = new TrailingNtrimmer();
         return new Object[][] {
-                {Collections.emptyList(), Collections.emptyList()},
-                {Collections.singletonList(cutRead), Collections.emptyList()},
+                {Collections.singletonList(new CutReadTrimmer(1, 1)), Collections.emptyList()},
                 {Collections.emptyList(), Collections.singletonList(ReadFilterLibrary.MAPPED)},
-                {Collections.singletonList(cutRead),
+                {Collections.singletonList(new CutReadTrimmer(1, 1)),
                         Collections.singletonList(ReadFilterLibrary.MAPPED)},
-                {Arrays.asList(cutRead, trimNs),
+                {Arrays.asList(new CutReadTrimmer(1, 1), new TrailingNtrimmer()),
                         Arrays.asList(ReadFilterLibrary.MAPPED, ReadFilterLibrary.GOOD_CIGAR)}
         };
     }
@@ -97,7 +98,7 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
     public void testGetMetrics(final List<TrimmingFunction> trimmers,
             final List<ReadFilter> filters) {
         final TrimAndFilterPipeline pipeline =
-                new TrimAndFilterPipeline(trimmers, false, false, filters);
+                new TrimAndFilterPipeline(trimmers, filters);
         final List<TrimmingMetric> trimmingMetrics = pipeline.getTrimmingStats();
         final List<FilterMetric> filterMetrics = pipeline.getFilterStats();
 
@@ -130,10 +131,8 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         return data.iterator();
     }
 
-    // TODO: this test may fail for completely trimmed read if it takes into account disabling 3/5 prime
     @Test
     public void testCutReadTrimmerWithoutFilter() throws Exception {
-        final TrimmingFunction tf = new CutReadTrimmer(1, 1);
         final String trimmerName = "CutReadTrimmer";
         final boolean[] trueFalse = new boolean[] {true, false};
 
@@ -143,15 +142,21 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 final int expected3p = (disable3p) ? 0 : 1;
                 // don not test both disable
                 if (!(disable5p && disable3p)) {
+
+                    // should create each time for calling setDisableEnds
+                    final TrimmingFunction tf = new CutReadTrimmer(1, 1);
+                    tf.setDisableEnds(disable5p, disable3p);
+
                     final TrimAndFilterPipeline pipeline = new TrimAndFilterPipeline(
                             Collections.singletonList(tf),
-                            disable5p, disable3p,
                             Collections.emptyList());
 
                     final GATKRead trimmedRead = ArtificialReadUtils.createArtificialRead("10M");
                     final int lengthAfterTrimming = trimmedRead.getLength()
                             - ((disable5p) ? 0 : 1) - ((disable3p) ? 0 : 1);
                     final GATKRead completelyTrimRead =
+                            ArtificialReadUtils.createArtificialRead("1M");
+                    final GATKRead conditionalCompletelyTrim =
                             ArtificialReadUtils.createArtificialRead("2M");
 
                     // this is the actual object
@@ -170,12 +175,16 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                     Assert.assertNotNull(ctTag);
                     Assert.assertNotEquals(ctTag, "0");
                     testTrimmingMetric(metric, trimmerName, 2, expected5p, expected3p, 1);
+
+                    // apply to the conditional completely trim depends on the disabled primes
+                    // if one of then is disabled, it is not going to be completely trimmed and filter out
+                    Assert.assertEquals(pipeline.test(conditionalCompletelyTrim),
+                            disable5p || disable3p);
                 }
             }
         }
     }
 
-    // TODO: this test may fail for completely trimmed read if it takes into account disabling 3/5 prime
     @Test
     public void testNoTrimmerWithFilter() throws Exception {
         final ReadFilter rf = new ReadLengthReadFilter(5, 100);
@@ -188,7 +197,6 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 if (!(disable5p && disable3p)) {
                     final TrimAndFilterPipeline pipeline = new TrimAndFilterPipeline(
                             Collections.emptyList(),
-                            disable5p, disable3p,
                             Collections.singletonList(rf));
 
                     final GATKRead notFilterRead = ArtificialReadUtils.createArtificialRead("10M");
@@ -210,12 +218,9 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         }
     }
 
-    // TODO: this test may fail for completely trimmed read if it takes into account disabling 3/5 prime
     @Test
     public void testCutReadTrimmerWithFilter() throws Exception {
-        final TrimmingFunction tf = new CutReadTrimmer(1, 1);
         final String trimmerName = "CutReadTrimmer";
-        final ReadFilter rf = new ReadLengthReadFilter(5, 100);
         final String filterName = "ReadLengthReadFilter";
         final boolean[] trueFalse = new boolean[] {true, false};
 
@@ -223,15 +228,23 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
             final int expected5p = (disable5p) ? 0 : 1;
             for (final boolean disable3p : trueFalse) {
                 final int expected3p = (disable3p) ? 0 : 1;
+
+                final ReadFilter rf = new ReadLengthReadFilter(5, 100);
+
                 // don not test both disable
                 if (!(disable5p && disable3p)) {
+                    // should create each time for calling setDisableEnds
+                    final TrimmingFunction tf = new CutReadTrimmer(1, 1);
+                    tf.setDisableEnds(disable5p, disable3p);
+
                     final TrimAndFilterPipeline pipeline = new TrimAndFilterPipeline(
                             Collections.singletonList(tf),
-                            disable5p, disable3p,
                             Collections.singletonList(rf));
 
                     // completely trim read
                     final GATKRead completelyTrimAndFilteredRead =
+                            ArtificialReadUtils.createArtificialRead("1M");
+                    final GATKRead conditionalCompletelyTrim =
                             ArtificialReadUtils.createArtificialRead("2M");
                     // trimed and not filtered -> compute the length for assertion
                     final GATKRead trimmedReadNotFiltered =
@@ -278,15 +291,28 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                             expected5p + expected5p, expected3p + expected3p, 1);
                     testFilterMetric(filterMetric, filterName, 2, 1);
 
+
+                    // apply to the conditional completely trim is always filter out because of length
+                    Assert.assertEquals(pipeline.test(conditionalCompletelyTrim), false);
+                    // the completely trim flag depends on the disabled ends
+                    if (disable5p || disable3p) {
+                        // if one of then is disabled, it is going to be not completely trimmed
+                        Assert.assertEquals(conditionalCompletelyTrim.getAttributeAsString("ct"),
+                                "0");
+                    } else {
+                        // if both are disabled, it is completely trimmed
+                        Assert.assertNotEquals(conditionalCompletelyTrim.getAttributeAsString("ct"),
+                                "0");
+                    }
+
+
                 }
             }
         }
     }
 
-    // TODO: this test may fail for completely trimmed read if it takes into account disabling 3/5 prime
     @Test
     public void testCollectingTrimmingMetricTransformer() throws Exception {
-        final TrimmingFunction tf = new CutReadTrimmer(1, 1);
         final String trimmerName = "CutReadTrimmer";
         final boolean[] trueFalse = new boolean[] {true, false};
 
@@ -296,12 +322,15 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 final int expected3p = (disable3p) ? 0 : 1;
                 // dont test both disable
                 if (!(disable5p && disable3p)) {
+                    final TrimmingFunction tf = new CutReadTrimmer(1, 1);
+                    tf.setDisableEnds(disable5p, disable3p);
                     final TrimAndFilterPipeline.CollectingTrimmingMetricTransformer ctmt =
-                            new TrimAndFilterPipeline.CollectingTrimmingMetricTransformer(tf,
-                                    disable5p, disable3p);
+                            new TrimAndFilterPipeline.CollectingTrimmingMetricTransformer(tf);
 
                     final GATKRead trimmedRead = ArtificialReadUtils.createArtificialRead("10M");
                     final GATKRead completelyTrimRead =
+                            ArtificialReadUtils.createArtificialRead("1M");
+                    final GATKRead conditionalCompletelyTrim =
                             ArtificialReadUtils.createArtificialRead("2M");
 
                     testTrimmingMetric(ctmt.metric, trimmerName, 0, 0, 0, 0);
@@ -316,6 +345,15 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                     ctmt.apply(trimmedRead);
                     ctmt.apply(completelyTrimRead);
                     testTrimmingMetric(ctmt.metric, trimmerName, 4, expected5p, expected3p, 1);
+
+                    // apply to the conditional
+                    ctmt.apply(conditionalCompletelyTrim);
+                    // it is only completely trim if both are false
+                    final boolean ct = !(disable5p || disable3p);
+                    testTrimmingMetric(ctmt.metric, trimmerName, 5,
+                            (ct) ? expected5p : expected5p + expected5p,
+                            (ct) ? expected3p : expected3p + expected3p,
+                            (ct) ? 2 : 1);
                 }
             }
         }
@@ -323,13 +361,13 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         // testing now with anonymous class
         final TrimmingFunction anonymous = new TrimmingFunction() {
             @Override
-            protected void update(GATKRead read) {
+            protected void fillTrimPoints(GATKRead read, int[] toFill) {
                 // do nothing
             }
         };
+
         final TrimAndFilterPipeline.CollectingTrimmingMetricTransformer ctmt =
-                new TrimAndFilterPipeline.CollectingTrimmingMetricTransformer(anonymous,
-                        false, false);
+                new TrimAndFilterPipeline.CollectingTrimmingMetricTransformer(anonymous);
         testTrimmingMetric(ctmt.metric, "DEFAULT", 0, 0, 0, 0);
     }
 
@@ -381,7 +419,7 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
 
     @DataProvider(name = "concordanceData")
     public Iterator<Object[]> trimmerConcordanceData() throws Exception {
-        // TODO: these file will disappear at some point
+        // TODO: these files will disappear at some point
         final File input1 = TestResourcesUtils
                 .getReadToolsTestResource("org/magicdgs/readtools/data/SRR1931701_1.fq");
         final File input2 = TestResourcesUtils
@@ -425,11 +463,15 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
 
         // for reusing
         final ReadLengthReadFilter rlrf = new ReadLengthReadFilter(minLength, maxLength);
+        // in the previous pipeline, only two trimmers were applied
+        final List<TrimmingFunction> trimmers = Arrays
+                .asList(new TrailingNtrimmer(), new MottQualityTrimmer(qualThreshold));
+        // in the previous trimmer, 3 prime was never disabled
+        trimmers.forEach(tf -> tf.setDisableEnds(no5p, false));
+
         // setting the pipeline
         final TrimAndFilterPipeline pipeline = new TrimAndFilterPipeline(
-                // in the previous pipeline, only two trimmers were applied
-                Arrays.asList(new TrailingNtrimmer(), new MottQualityTrimmer(qualThreshold)),
-                no5p, false, // in the previous trimmer, it was false
+                trimmers,
                 (discardRemainingNsm)
                         ? Arrays.asList(new AmbiguousBaseReadFilter(0), rlrf)
                         : Collections.singletonList(rlrf)
@@ -492,6 +534,77 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         }
 
         handler.close();
+    }
+
+    @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
+    public void testGetEmptyPipelineBlowsUp() throws Exception {
+        // empty argument collection
+        TrimAndFilterPipeline.fromPluginDescriptors(
+                new TrimmerPluginDescriptor(null),
+                new GATKReadFilterPluginDescriptor(null));
+    }
+
+    @DataProvider(name = "mutexArgs")
+    public Object[][] getMutexArgs() {
+        return new Object[][] {
+                {false, false},
+                {true, false},
+                {false, true}
+        };
+    }
+
+    @DataProvider(name = "trimmersAndFilters")
+    public Object[][] getTrimmersAndFilter() throws Exception {
+        return new Object[][] {
+                {Collections.singletonList(new TrailingNtrimmer()),
+                        Collections.emptyList()},
+                {Collections.singletonList(new TrailingNtrimmer()),
+                        Collections.singletonList(new PlatformReadFilter())},
+                {Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
+                        Collections.emptyList()},
+                {Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
+                        Collections.singletonList(new PlatformReadFilter())},
+        };
+    }
+
+    @Test(dataProvider = "trimmersAndFilters")
+    public void testGetPipeline(final List<TrimmingFunction> defaultTrimmers,
+            final List<ReadFilter> userFilters) throws Exception {
+        // set up the GATKReadFilterPluginDescriptor -> defaults null because they does not matter
+        final GATKReadFilterPluginDescriptor filterDescriptor =
+                new GATKReadFilterPluginDescriptor(null);
+        // this is like parsing the arguments with Barclay
+        userFilters.stream().map(ReadFilter::getClass).forEach(rf -> {
+            filterDescriptor.userReadFilterNames.add(rf.getSimpleName());
+            try {
+                filterDescriptor.getInstance(rf);
+            } catch (IllegalAccessException | InstantiationException e) {
+                Assert.fail(e.getMessage());
+            }
+        });
+
+        // get the trimming pipeline arguments
+        final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
+                new TrimmerPluginDescriptor(defaultTrimmers), filterDescriptor);
+
+        // check that the pipeline contains the same number of trimmers/filters
+        Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
+        Assert.assertEquals(pipeline.getFilterStats().size(), userFilters.size());
+    }
+
+    @Test(dataProvider = "trimmersAndFilters")
+    public void testGetPipelineCompatibleWithGATKReadFilterPluginDescriptor(
+            final List<TrimmingFunction> defaultTrimmers,
+            final List<ReadFilter> defaultFilters) throws Exception {
+
+        // get the trimming pipeline arguments
+        final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
+                new TrimmerPluginDescriptor(defaultTrimmers),
+                new GATKReadFilterPluginDescriptor(defaultFilters));
+
+        // check that the pipeline contains the same number of trimmers/filters
+        Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
+        Assert.assertEquals(pipeline.getFilterStats().size(), defaultFilters.size());
     }
 
 }

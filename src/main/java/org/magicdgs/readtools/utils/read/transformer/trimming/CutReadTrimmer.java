@@ -24,8 +24,6 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.utils.read.RTReadUtils;
-
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -61,7 +59,7 @@ public class CutReadTrimmer extends TrimmingFunction {
      * @param fivePrime  5 prime number of bases to cut. Use {@code 0} for disable 5-prime cutting.
      * @param threePrime 3 prime number of bases to cut. Use {@code 0} for disable 3-prime cutting.
      */
-    // TODO: this have a bug and/or a design problem
+
     public CutReadTrimmer(final int fivePrime, final int threePrime) {
         // disable if the ints are 0
         this.fivePrime = (fivePrime == 0) ? null : fivePrime;
@@ -69,38 +67,61 @@ public class CutReadTrimmer extends TrimmingFunction {
 
         // validate args
         try {
-            validateArgs();
+            validateArgsUnsafe();
         } catch (CommandLineException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void update(final GATKRead read) {
+    protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
         final int readLength = read.getLength();
         if (fivePrime != null) {
-            final int trimPoint = (fivePrime > readLength) ? readLength : fivePrime;
-            RTReadUtils.updateTrimmingStartPointTag(read, trimPoint);
+            toFill[0] = (fivePrime > readLength) ? readLength : fivePrime;
         }
         if (threePrime != null) {
             final int trimPoint = readLength - threePrime;
-            RTReadUtils.updateTrimmingEndPointTag(read, (trimPoint < 0) ? 0 : trimPoint);
+            toFill[1] = (trimPoint < 0) ? 0 : trimPoint;
         }
     }
 
+    /**
+     * Validates the arguments and throws {@link CommandLineException.BadArgumentValue} if:
+     *
+     * - Both ends of the read are disabled.
+     * - Values for parameters are not positive integers.
+     * - A value is set for trimming when it is disabled.
+     */
     @Override
-    public void validateArgs() {
+    public void validateArgsUnsafe() {
+        // both ends cannot be disabled
         if (this.fivePrime == null && this.threePrime == null) {
             throw new CommandLineException.BadArgumentValue(
                     "Both ends of the read are disable for CutReadTrimmer.");
         }
-        if (this.fivePrime != null && this.fivePrime < 0) {
-            throw new CommandLineException.BadArgumentValue("--" + FIVE_PRIME_LONG_NAME,
-                    fivePrime.toString(), "should be a positive integer");
+        // if the five prime is not null, check its value
+        if (fivePrime != null) {
+            if (this.fivePrime < 0) {
+                throw new CommandLineException.BadArgumentValue("--" + FIVE_PRIME_LONG_NAME,
+                        fivePrime.toString(), "should be a positive integer");
+            } else if (isDisable5prime()) {
+                throw new CommandLineException.BadArgumentValue("--" + FIVE_PRIME_LONG_NAME,
+                        threePrime.toString(), "cannot be used in when 5 prime trimming is disabled");
+            }
         }
-        if (this.threePrime != null && this.threePrime < 0) {
-            throw new CommandLineException.BadArgumentValue("--" + THREE_PRIME_LONG_NAME,
-                    threePrime.toString(), "threePrime should be a positive integer");
+        // the same for three prime
+        if (this.threePrime != null) {
+            if (this.threePrime < 0) {
+                throw new CommandLineException.BadArgumentValue("--" + THREE_PRIME_LONG_NAME,
+                        threePrime.toString(), "should be a positive integer");
+            } else if (isDisable3prime()) {
+                throw new CommandLineException.BadArgumentValue("--" + THREE_PRIME_LONG_NAME,
+                        threePrime.toString(),
+                        "cannot be used in when 3 prime trimming is disabled");
+            }
         }
     }
 }

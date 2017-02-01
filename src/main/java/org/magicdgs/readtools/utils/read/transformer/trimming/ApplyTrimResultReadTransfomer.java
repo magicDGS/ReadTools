@@ -52,31 +52,6 @@ import java.util.Arrays;
 public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
     private static final long serialVersionUID = 1L;
 
-    /** If {@code true}, does not trim the 5' of the read. */
-    private final boolean no5prime;
-    /** If {@code false}, does not trim the 3' of the read. */
-    private final boolean no3prime;
-
-    /**
-     * Constructor for setting up if the 5' or 3' end should be hard-clipped or not.
-     *
-     * @param no5prime if {@code true}, does not hard-clip the 5' of the read.
-     * @param no3prime if {@code true}, does not hard-clip the 3' of the read.
-     *
-     * @throws IllegalArgumentException if both end are switch off.
-     */
-    public ApplyTrimResultReadTransfomer(final boolean no5prime, final boolean no3prime) {
-        Utils.validateArg(!(no5prime && no3prime), "at least one end (5' or 3') should be trimmed");
-        this.no5prime = no5prime;
-        this.no3prime = no3prime;
-    }
-
-    /** @deprecated used only in legacy code. */
-    @Deprecated
-    public boolean noTrim5p() {
-        return no5prime;
-    }
-
     /**
      * If the read is completely trimmed, does nothing. Otherwise, the read is hard-clipped based
      * on the trimming flags.
@@ -91,19 +66,24 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
         // use the safe version
         return (RTReadUtils.updateCompletelyTrimReadFlag(read))
                 ? handleCompletelyTrimmed(read)
-                : handleTrimmed(read, no5prime, no3prime);
+                : handleTrimmed(read);
     }
 
-    private static GATKRead handleTrimmed(final GATKRead read, boolean no5prime, boolean no3prime) {
-        final int readLength = read.getLength();
-        final int start = (no5prime) ? 0 : RTReadUtils.getTrimmingStartPoint(read);
-        final int end = (no3prime) ? readLength : RTReadUtils.getTrimmingEndPoint(read);
+    private static GATKRead handleTrimmed(final GATKRead read) {
+        // store the start and the end, and remove the tags
+        // the tags should be removed here because the completely trimmed flag is set
+        // before removing and thus if the read was trimmed the length is not longer the same
+        final int start = RTReadUtils.getTrimmingStartPoint(read);
+        final int end = RTReadUtils.getTrimmingEndPoint(read);
+        RTReadUtils.clearTrimmingPointTags(read);
+
         if (read.isUnmapped()) {
             final byte[] newBases = Arrays.copyOfRange(read.getBases(), start, end);
             final byte[] newQuals = Arrays.copyOfRange(read.getBaseQualities(), start, end);
             read.setBases(newBases);
             read.setBaseQualities(newQuals);
         } else {
+            final int readLength = read.getLength();
             final ReadClipper clipper = new ReadClipper(read);
             // we have to clip the end first, because the read clipper works in a step-wise way
             if (end != readLength) {
@@ -117,8 +97,7 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
             modifyWithClipped(read, clipper.clipRead(ClippingRepresentation.HARDCLIP_BASES));
             // return the same read
         }
-        // now remove the tags
-        RTReadUtils.clearTrimmingPointTags(read);
+
         // it is modified in place
         return read;
     }

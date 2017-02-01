@@ -48,8 +48,7 @@ import java.util.List;
 public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
 
     // transformer to test
-    private static final ReadTransformer transformer =
-            new ApplyTrimResultReadTransfomer(false, false);
+    private static final ReadTransformer transformer = new ApplyTrimResultReadTransfomer();
 
     private static final SAMFileHeader header = ArtificialReadUtils.createArtificialSamHeader();
 
@@ -175,69 +174,6 @@ public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
         // this should be exactly the same read, I guess
         Assert.assertSame(trimRead, read);
         testTrimmedRead(trimRead, length, bases, quals, cigar);
-    }
-
-
-    @DataProvider(name = "no5prime")
-    public Iterator<Object[]> no5primeData() {
-        final List<GATKRead> reads = Arrays.asList(
-                baseMappedRead(), baseMappedRead()
-        );
-        return reads.stream().map(read -> {
-            final int length = read.getLength();
-            final int finalLength = length - 1;
-            read.setAttribute("ts", 1);
-            read.setAttribute("te", finalLength);
-            final String cigar = (read.isUnmapped()) ? "*" : finalLength + "M1H";
-            return new Object[] {read, finalLength,
-                    Arrays.copyOfRange(read.getBases(), 0, finalLength),
-                    Arrays.copyOfRange(read.getBaseQualities(), 0, finalLength),
-                    cigar};
-        }).iterator();
-    }
-
-
-    @Test(dataProvider = "no5prime")
-    public void testSwithOff5primeMapped(final GATKRead read, final int length, final byte[] bases,
-            final byte[] quals, final String cigarString) throws Exception {
-        final ApplyTrimResultReadTransfomer no5prime =
-                new ApplyTrimResultReadTransfomer(true, false);
-        testTrimmedRead(no5prime.apply(read), length, bases, quals,
-                TextCigarCodec.decode(cigarString));
-    }
-
-
-    @DataProvider(name = "no3prime")
-    public Iterator<Object[]> no3primeData() {
-        final List<GATKRead> reads = Arrays.asList(
-                baseMappedRead(), baseMappedRead()
-        );
-        return reads.stream().map(read -> {
-            final int length = read.getLength();
-            final int finalLength = length - 1;
-            read.setAttribute("ts", 1);
-            read.setAttribute("te", finalLength);
-            final String cigar = (read.isUnmapped()) ? "*" : "1H" + finalLength + "M";
-            return new Object[] {read, finalLength,
-                    Arrays.copyOfRange(read.getBases(), 1, length),
-                    Arrays.copyOfRange(read.getBaseQualities(), 1, length),
-                    cigar};
-        }).iterator();
-    }
-
-
-    @Test(dataProvider = "no3prime")
-    public void testSwitchOff3primeMapped(final GATKRead read, final int length, final byte[] bases,
-            final byte[] quals, final String cigarString) throws Exception {
-        final ApplyTrimResultReadTransfomer no3prime =
-                new ApplyTrimResultReadTransfomer(false, true);
-        testTrimmedRead(no3prime.apply(read), length, bases, quals,
-                TextCigarCodec.decode(cigarString));
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testBadArgument() throws Exception {
-        new ApplyTrimResultReadTransfomer(true, true);
     }
 
     @Test(dataProvider = "trimmedMapped")

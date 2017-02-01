@@ -64,6 +64,22 @@ public class CutReadTrimmerUnitTest extends BaseTest {
         trimmer.validateArgs();
     }
 
+    @DataProvider
+    public Object[][] badDisableForArguments() {
+        return new Object[][] {
+                {1, 1, true, false},
+                {1, 1, false, true}
+        };
+    }
+
+    @Test(dataProvider = "badDisableForArguments", expectedExceptions = CommandLineException.BadArgumentValue.class)
+    public void testFailedValidation(final int fivePrime, final int threePrime,
+            final boolean disable5p, final boolean disable3p) {
+        final CutReadTrimmer trimmer = new CutReadTrimmer(fivePrime, threePrime);
+        trimmer.setDisableEnds(disable5p, disable3p);
+        trimmer.validateArgs();
+    }
+
     @DataProvider(name = "readLengthsToTrim")
     public Iterator<Object[]> getReadsLengthsToTrim() {
         final List<Object[]> data = new ArrayList<>(40);
@@ -106,7 +122,7 @@ public class CutReadTrimmerUnitTest extends BaseTest {
         final TrimmingFunction trimmer = new CutReadTrimmer(10, 0);
         trimmer.apply(read);
         Assert.assertEquals(read.getAttributeAsInteger("ts"), expectedStart, "wrong 'ts'");
-        Assert.assertEquals(read.getAttributeAsInteger("te"), null, "wrong 'te'");
+        Assert.assertEquals(read.getAttributeAsInteger("te").intValue(), readLength, "wrong 'te'");
         // this rely on our framework utils, which should be tested in other class
         Assert.assertEquals(RTReadUtils.updateCompletelyTrimReadFlag(read),
                 completelyTrim && expectedStart == readLength);
@@ -118,7 +134,7 @@ public class CutReadTrimmerUnitTest extends BaseTest {
         final GATKRead read = ArtificialReadUtils.createArtificialRead(readLength + "M");
         final TrimmingFunction trimmer = new CutReadTrimmer(0, 20);
         trimmer.apply(read);
-        Assert.assertEquals(read.getAttributeAsInteger("ts"), null, "wrong 'ts'");
+        Assert.assertEquals(read.getAttributeAsInteger("ts").intValue(), 0, "wrong 'ts'");
         Assert.assertEquals(read.getAttributeAsInteger("te"), expectedEnd, "wrong 'te'");
         // this rely on our framework utils, which should be tested in other class
         Assert.assertEquals(RTReadUtils.updateCompletelyTrimReadFlag(read),

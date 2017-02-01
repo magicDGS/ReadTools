@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.trimming;
 
+import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmingMetric;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
@@ -32,6 +33,8 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultRea
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.Utils;
@@ -71,19 +74,16 @@ public class TrimAndFilterPipeline extends ReadFilter {
     /**
      * Constructor.
      *
-     * @param trimmers      trimmers to apply in order.
-     * @param disable5pTrim disable trimming in the 5 prime.
-     * @param disable3pTrim disable trimming in the 3 prime.
-     * @param filters       filters to apply in order after trimming.
+     * @param trimmers trimmers to apply (in order).
+     * @param filters  filters to apply after trimming (in order).
      */
     public TrimAndFilterPipeline(final List<TrimmingFunction> trimmers,
-            final boolean disable5pTrim, final boolean disable3pTrim,
             final List<ReadFilter> filters) {
         // param checking
         Utils.nonNull(trimmers, "null trimmers");
         Utils.nonNull(filters, "null filters");
-        Utils.validateArg(!(disable5pTrim && disable3pTrim),
-                "at least one end (5' or 3') should be trimmed");
+        Utils.validateArg(!(trimmers.isEmpty() && filters.isEmpty()),
+                "no filter nor trimmer was provided");
 
         // setting simple params
         this.trimmingMetrics = new ArrayList<>(trimmers.size());
@@ -94,7 +94,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
             // we do not need to apply the trimming result
             this.trimmingPipeline = ReadTransformer.identity();
         } else {
-            this.trimmingPipeline = composeTrimmingFunction(trimmers, disable5pTrim, disable3pTrim);
+            this.trimmingPipeline = composeTrimmingFunction(trimmers);
         }
 
         // set up the filter pipeline
@@ -115,26 +115,24 @@ public class TrimAndFilterPipeline extends ReadFilter {
     }
 
     // helper function to compose the trimming functions into a single ReadTransformer
-    private ReadTransformer composeTrimmingFunction(final List<TrimmingFunction> trimmingFunctions,
-            final boolean disable5pTrim, final boolean disable3pTrim) {
+    private ReadTransformer composeTrimmingFunction(
+            final List<TrimmingFunction> trimmingFunctions) {
 
         // Reducing will leave an unnecessary identity function at the start, so iterate instead
         final CollectingTrimmingMetricTransformer first =
-                new CollectingTrimmingMetricTransformer(trimmingFunctions.get(0),
-                        disable5pTrim, disable3pTrim);
+                new CollectingTrimmingMetricTransformer(trimmingFunctions.get(0));
         trimmingMetrics.add(first.metric);
         ReadTransformer composed = first;
 
         // accumulate the rest
         for (int i = 1; i < trimmingFunctions.size(); i++) {
             final CollectingTrimmingMetricTransformer ctmt =
-                    new CollectingTrimmingMetricTransformer(trimmingFunctions.get(i),
-                            disable5pTrim, disable3pTrim);
+                    new CollectingTrimmingMetricTransformer(trimmingFunctions.get(i));
             trimmingMetrics.add(ctmt.metric);
             composed = composed.andThen(ctmt);
         }
 
-        return composed.andThen(new ApplyTrimResultReadTransfomer(disable5pTrim, disable3pTrim));
+        return composed.andThen(new ApplyTrimResultReadTransfomer());
     }
 
     /**
@@ -172,8 +170,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
         private final BiPredicate<GATKRead, Integer> threePrimeUpdate;
 
         @VisibleForTesting
-        CollectingTrimmingMetricTransformer(final TrimmingFunction delegate,
-                final boolean disable5pTrim, final boolean disable3pTrim) {
+        CollectingTrimmingMetricTransformer(final TrimmingFunction delegate) {
             // we don't need validation here for 5/3 prime disabling, because it was done before
             this.delegate = delegate;
             final String className = delegate.getClass().getSimpleName();
@@ -182,10 +179,10 @@ public class TrimAndFilterPipeline extends ReadFilter {
             this.metric = (className.length() == 0)
                     ? new TrimmingMetric() : new TrimmingMetric(className);
 
-            this.fivePrimeUpdate = (disable5pTrim)
+            this.fivePrimeUpdate = (delegate.isDisable5prime())
                     ? (read, previous) -> false
                     : (read, previous) -> RTReadUtils.getTrimmingStartPoint(read) != previous;
-            this.threePrimeUpdate = (disable3pTrim)
+            this.threePrimeUpdate = (delegate.isDisable3prime())
                     ? (read, previous) -> false
                     : (read, previous) -> RTReadUtils.getTrimmingEndPoint(read) != previous;
         }
@@ -246,5 +243,44 @@ public class TrimAndFilterPipeline extends ReadFilter {
             }
             return pass;
         }
+    }
+
+    /**
+     * Gets a trimming/filtering pipeline from the plugin descriptors.
+     *
+     * The list of trimmers/filters to apply is constructed first with the default ones and then
+     * with the user provided, in order.
+     *
+     * @param trimmingPlugin plugin to get the trimmer(s) from.
+     * @param filterPlugin   plugin to get the read filter(s) from.
+     *
+     * @return a trimming/filtering pipeline.
+     *
+     * @throws CommandLineException.BadArgumentValue if no trimmer and filter instances are
+     *                                               specified.
+     */
+    // TODO: change the signature once the new version of Barclay includes the method to get defaults
+    public static TrimAndFilterPipeline fromPluginDescriptors(
+            final TrimmerPluginDescriptor trimmingPlugin,
+            final GATKReadFilterPluginDescriptor filterPlugin) {
+
+        // add the default and afterwards the ones provided by the user
+        final List<TrimmingFunction> trimmers =
+                new ArrayList<>(trimmingPlugin.getDefaultInstances());
+        trimmers.addAll(trimmingPlugin.getAllInstances());
+
+        // the same for filters
+        final List<ReadFilter> filters = new ArrayList<>(filterPlugin.getDefaultInstances());
+        filters.addAll(filterPlugin.getAllInstances());
+
+        // throw if not pipeline is specified
+        if (trimmers.isEmpty() && filters.isEmpty()) {
+            throw new CommandLineException.BadArgumentValue(String
+                    .format("No trimmmer (--%s) nor filter (--%s) for pipeline was specified.",
+                            trimmingPlugin.getDisplayName(), filterPlugin.getDisplayName()));
+        }
+
+        // returns the new pipeline
+        return new TrimAndFilterPipeline(trimmers, filters);
     }
 }
