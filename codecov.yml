@@ -9,13 +9,9 @@ coverage:
   status:
     project:
       default:
-        # TODO: change once in beta (to auto)
-        target: 50%
         threshold: 1%
     patch:
       default:
-        # TODO: change once in alpha (to 80-90%)
-        target: 50%
         threshold: 1%
 
 comment:
