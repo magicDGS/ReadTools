@@ -43,7 +43,7 @@ public class TrimReadsIntegrationTest extends CommandLineProgramTest {
     private final static File TEST_TEMP_DIR =
             createTestTempDir(TrimReadsIntegrationTest.class.getSimpleName());
 
-    // TODO: this is from concordance with TrimFastq and should be removed eventually
+    // TODO: this is from concordance with legacy TrimFastq and should be removed eventually
     private static ArgumentsBuilder getRequiredArguments() {
         // input argument name changed -> same as GATK
         // added the argument to do not output the program group for easy checks
@@ -51,7 +51,7 @@ public class TrimReadsIntegrationTest extends CommandLineProgramTest {
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
     }
 
-    // TODO: this is from concordance with TrimFastq and should be removed eventually
+    // TODO: this is from concordance with legacy TrimFastq and should be removed eventually
     @DataProvider(name = "TrimmingDataFromTrimFastq")
     public Object[][] getTrimFastqConcordanceTrimmingData() throws Exception {
         return new Object[][] {
@@ -96,7 +96,7 @@ public class TrimReadsIntegrationTest extends CommandLineProgramTest {
         };
     }
 
-    // TODO: this is from concordance with TrimFastq and should be removed eventually
+    // TODO: this is from concordance with legacy TrimFastq and should be removed eventually
     // expected files were generated with StandardizeReads with the following modifications:
     // - Expected discarded single-en was merged with discarded
     // - Add FT tag to discarded

@@ -86,8 +86,8 @@ public final class TrimReads extends ReadToolsWalker {
     @Argument(fullName = RTStandardArguments.KEEP_DISCARDED_NAME, shortName = RTStandardArguments.KEEP_DISCARDED_NAME, optional = true, doc = "Keep discarded reads in a separate file. Note: For pair-end input, this file contain also mates of discarded reads (they do not have FT tag).")
     public boolean keepDiscarded = false;
 
-    // defaults filters as in the deprecated TrimFastq tool
-    // for discard the ambiguous sequences (--discard-internal-N in the deprecated TrimFastq)
+    // defaults filters as in the legacy TrimFastq tool (removed)
+    // for discard the ambiguous sequences (--discard-internal-N in previous tool)
     // use --readFilter AmbiguousBaseReadFilter --ambigFilterFrac 0
     @Override
     protected List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
