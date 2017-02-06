@@ -26,13 +26,14 @@ package org.magicdgs.readtools.utils.trimming;
 
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.metrics.FilterMetric;
-import org.magicdgs.readtools.metrics.TrimmingMetric;
+import org.magicdgs.readtools.metrics.TrimmerMetric;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.filter.CompletelyTrimReadFilter;
 import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultReadTransfomer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 
 import com.google.common.annotations.VisibleForTesting;
+import htsjdk.samtools.SAMTag;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
@@ -56,6 +57,7 @@ import java.util.function.BiPredicate;
  * - After all trimmers are applied, {@link ApplyTrimResultReadTransfomer} updates the read.
  * - A first filter is applied to check if the read is completely trimmed.
  * - A composed AND filter with the provided ones is applied and returned the value.
+ * - If a filter is applied to the read, the {@link SAMTag#FT} is updated to reflect it.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -68,7 +70,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
     private final ReadFilter filteringPipeline;
 
     // these are the metrics, accumulated on construction for the collecting wrappers
-    private final List<TrimmingMetric> trimmingMetrics;
+    private final List<TrimmerMetric> trimmerMetrics;
     private final List<FilterMetric> filterMetrics;
 
     /**
@@ -86,7 +88,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
                 "no filter nor trimmer was provided");
 
         // setting simple params
-        this.trimmingMetrics = new ArrayList<>(trimmers.size());
+        this.trimmerMetrics = new ArrayList<>(trimmers.size());
         this.filterMetrics = new ArrayList<>(filters.size());
 
         // set up the trimming pipeline
@@ -97,9 +99,14 @@ public class TrimAndFilterPipeline extends ReadFilter {
             this.trimmingPipeline = composeTrimmingFunction(trimmers);
         }
 
+        // completely trimmed is always added
+        final CollectingFilterMetricFilter completelyTrimmed =
+                new CollectingFilterMetricFilter(COMPLETELY_TRIM_READ_FILTER);
+        filterMetrics.add(completelyTrimmed.metric);
+
         // set up the filter pipeline
         if (filters.isEmpty()) {
-            this.filteringPipeline = COMPLETELY_TRIM_READ_FILTER;
+            this.filteringPipeline = completelyTrimmed;
         } else {
             // this should leave at the beginning the COMPLETELY_TRIM_READ_FILTER
             this.filteringPipeline = filters.stream()
@@ -109,7 +116,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
                         filterMetrics.add(cfmf.metric);
                         return (ReadFilter) cfmf;
                     })
-                    .reduce(COMPLETELY_TRIM_READ_FILTER, ReadFilter::and);
+                    .reduce(completelyTrimmed, ReadFilter::and);
         }
 
     }
@@ -121,14 +128,14 @@ public class TrimAndFilterPipeline extends ReadFilter {
         // Reducing will leave an unnecessary identity function at the start, so iterate instead
         final CollectingTrimmingMetricTransformer first =
                 new CollectingTrimmingMetricTransformer(trimmingFunctions.get(0));
-        trimmingMetrics.add(first.metric);
+        trimmerMetrics.add(first.metric);
         ReadTransformer composed = first;
 
         // accumulate the rest
         for (int i = 1; i < trimmingFunctions.size(); i++) {
             final CollectingTrimmingMetricTransformer ctmt =
                     new CollectingTrimmingMetricTransformer(trimmingFunctions.get(i));
-            trimmingMetrics.add(ctmt.metric);
+            trimmerMetrics.add(ctmt.metric);
             composed = composed.andThen(ctmt);
         }
 
@@ -149,8 +156,8 @@ public class TrimAndFilterPipeline extends ReadFilter {
     }
 
     /** Gets the trimming statistics as a unmodifiable list. */
-    public List<TrimmingMetric> getTrimmingStats() {
-        return Collections.unmodifiableList(trimmingMetrics);
+    public List<TrimmerMetric> getTrimmingStats() {
+        return Collections.unmodifiableList(trimmerMetrics);
     }
 
     /** Gets the filtering statistics as an unmodifiable list. */
@@ -159,12 +166,13 @@ public class TrimAndFilterPipeline extends ReadFilter {
     }
 
     // class for collect metrics for the trimming pipeline
+    // it also adds a FT tag to the read
     @VisibleForTesting
     static class CollectingTrimmingMetricTransformer implements ReadTransformer {
         public static final long serialVersionUID = 1L;
 
         @VisibleForTesting
-        final TrimmingMetric metric;
+        final TrimmerMetric metric;
         private final TrimmingFunction delegate;
         private final BiPredicate<GATKRead, Integer> fivePrimeUpdate;
         private final BiPredicate<GATKRead, Integer> threePrimeUpdate;
@@ -177,7 +185,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
             // anonymous classes have a 0-length simple name, but they should still be valid to
             // apply to the pipeline. We use the default name for the metric in that case (unknown)
             this.metric = (className.length() == 0)
-                    ? new TrimmingMetric() : new TrimmingMetric(className);
+                    ? new TrimmerMetric() : new TrimmerMetric(className);
 
             this.fivePrimeUpdate = (delegate.isDisable5prime())
                     ? (read, previous) -> false
@@ -198,7 +206,6 @@ public class TrimAndFilterPipeline extends ReadFilter {
             // trimming function modify in place the read
             delegate.apply(read);
             // update the metrics
-            // TODO: maybe this should check the disable 3/5 prime?
             if (!wasCompletelyTrim && RTReadUtils.updateCompletelyTrimReadFlag(read)) {
                 metric.TRIMMED_COMPLETE++;
             } else {
@@ -240,6 +247,9 @@ public class TrimAndFilterPipeline extends ReadFilter {
             // update the metrics
             if (pass) {
                 metric.PASSED++;
+            } else {
+                // if it does not pass, add a FT tag with the name of the filter
+                read.setAttribute(SAMTag.FT.name(), metric.FILTER);
             }
             return pass;
         }

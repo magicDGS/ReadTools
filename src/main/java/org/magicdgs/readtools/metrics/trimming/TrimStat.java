@@ -23,11 +23,13 @@
  */
 package org.magicdgs.readtools.metrics.trimming;
 
+import org.magicdgs.readtools.metrics.TrimmerMetric;
+
 import htsjdk.samtools.metrics.MetricBase;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @deprecated use {@link org.magicdgs.readtools.metrics.TrimmingMetric}
+ * @deprecated use {@link TrimmerMetric}
  * and {@link org.magicdgs.readtools.metrics.FilterMetric} instead.
  */
 @Deprecated

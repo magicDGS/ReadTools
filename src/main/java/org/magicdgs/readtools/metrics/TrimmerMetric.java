@@ -31,7 +31,7 @@ import htsjdk.samtools.metrics.MetricBase;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmingMetric extends MetricBase {
+public class TrimmerMetric extends MetricBase {
 
     /** Name of the trimmer applied to the reads. */
     public String TRIMMER = "DEFAULT";
@@ -49,10 +49,10 @@ public class TrimmingMetric extends MetricBase {
     public int TRIMMED_COMPLETE = 0;
 
     /** Constructor for default trimmer name. */
-    public TrimmingMetric() { }
+    public TrimmerMetric() { }
 
     /** Constructor for default trimmer name. */
-    public TrimmingMetric(final String trimmer) {
+    public TrimmerMetric(final String trimmer) {
         this.TRIMMER = trimmer;
     }
 }

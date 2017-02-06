@@ -27,7 +27,7 @@ package org.magicdgs.readtools.utils.trimming;
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.metrics.FilterMetric;
-import org.magicdgs.readtools.metrics.TrimmingMetric;
+import org.magicdgs.readtools.metrics.TrimmerMetric;
 import org.magicdgs.readtools.metrics.trimming.TrimStat;
 import org.magicdgs.readtools.tools.trimming.trimmers.Trimmer;
 import org.magicdgs.readtools.tools.trimming.trimmers.TrimmerBuilder;
@@ -99,24 +99,28 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
             final List<ReadFilter> filters) {
         final TrimAndFilterPipeline pipeline =
                 new TrimAndFilterPipeline(trimmers, filters);
-        final List<TrimmingMetric> trimmingMetrics = pipeline.getTrimmingStats();
+        final List<TrimmerMetric> trimmerMetrics = pipeline.getTrimmingStats();
         final List<FilterMetric> filterMetrics = pipeline.getFilterStats();
 
         // the same number of metrics than the passed lists
-        Assert.assertEquals(trimmingMetrics.size(), trimmers.size());
-        Assert.assertEquals(filterMetrics.size(), filters.size());
+        Assert.assertEquals(trimmerMetrics.size(), trimmers.size());
+        // +1 in filtering, because the completely trimmed read
+        Assert.assertEquals(filterMetrics.size(), filters.size() + 1);
+
+        // assert that the first filter metric is CompletelyTrimReadFilter
+        testFilterMetric(filterMetrics.get(0), "CompletelyTrimReadFilter", 0, 0);
 
         // assert that the metrics are initialized at 0
-        IntStream.range(0, trimmingMetrics.size()).forEach(index ->
-                testTrimmingMetric(trimmingMetrics.get(index),
+        IntStream.range(0, trimmerMetrics.size()).forEach(index ->
+                testTrimmingMetric(trimmerMetrics.get(index),
                         trimmers.get(index).getClass().getSimpleName(), 0, 0, 0, 0));
-        IntStream.range(0, filterMetrics.size()).forEach(index ->
+        IntStream.range(1, filterMetrics.size()).forEach(index ->
                 testFilterMetric(filterMetrics.get(index),
-                        filters.get(index).getClass().getSimpleName(), 0, 0));
+                        filters.get(index - 1).getClass().getSimpleName(), 0, 0));
 
         // returned lists should be unmodifiable for safety
         Assert.assertThrows(UnsupportedOperationException.class,
-                () -> trimmingMetrics.add(new TrimmingMetric()));
+                () -> trimmerMetrics.add(new TrimmerMetric()));
         Assert.assertThrows(UnsupportedOperationException.class,
                 () -> filterMetrics.add(new FilterMetric()));
     }
@@ -160,7 +164,7 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                             ArtificialReadUtils.createArtificialRead("2M");
 
                     // this is the actual object
-                    final TrimmingMetric metric = pipeline.getTrimmingStats().get(0);
+                    final TrimmerMetric metric = pipeline.getTrimmingStats().get(0);
                     testTrimmingMetric(metric, trimmerName, 0, 0, 0, 0);
 
                     // apply the trimmed read -> pass the filter and the length is less
@@ -203,7 +207,7 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                     final GATKRead filteredRead = ArtificialReadUtils.createArtificialRead("2M");
 
                     // this is the actual object
-                    final FilterMetric metric = pipeline.getFilterStats().get(0);
+                    final FilterMetric metric = pipeline.getFilterStats().get(1);
                     testFilterMetric(metric, filterName, 0, 0);
 
                     // apply the not filtered read
@@ -261,10 +265,10 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
 
 
                     // this is the actual object
-                    final TrimmingMetric trimMetric = pipeline.getTrimmingStats().get(0);
+                    final TrimmerMetric trimMetric = pipeline.getTrimmingStats().get(0);
                     testTrimmingMetric(trimMetric, trimmerName, 0, 0, 0, 0);
                     // this is the actual object
-                    final FilterMetric filterMetric = pipeline.getFilterStats().get(0);
+                    final FilterMetric filterMetric = pipeline.getFilterStats().get(1);
                     testFilterMetric(filterMetric, filterName, 0, 0);
 
                     // apply the trimmed read -> pass the filter and the length is less
@@ -379,11 +383,21 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                         ReadFilterLibrary.GOOD_CIGAR);
         final GATKRead notFilterRead = ArtificialReadUtils.createArtificialRead("10M");
         final GATKRead filterRead = ArtificialReadUtils.createArtificialRead("1M1I1I1M");
+
+        // test that no FT tags in the reads
+        Assert.assertNull(notFilterRead.getAttributeAsString("FT"));
+        Assert.assertNull(filterRead.getAttributeAsString("FT"));
+
+        // test filtering and the metrics
         testFilterMetric(cfmf.metric, filterName, 0, 0);
         Assert.assertFalse(cfmf.test(filterRead));
         testFilterMetric(cfmf.metric, filterName, 1, 0);
         Assert.assertTrue(cfmf.test(notFilterRead));
         testFilterMetric(cfmf.metric, filterName, 2, 1);
+
+        // test FT tags update
+        Assert.assertNull(notFilterRead.getAttributeAsString("FT"));
+        Assert.assertEquals(filterRead.getAttributeAsString("FT"), filterName);
 
         // testing now with anonymous class
         final ReadFilter anonymous = new ReadFilter() {
@@ -395,6 +409,8 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         final TrimAndFilterPipeline.CollectingFilterMetricFilter cfmf2 =
                 new TrimAndFilterPipeline.CollectingFilterMetricFilter(anonymous);
         testFilterMetric(cfmf2.metric, "DEFAULT", 0, 0);
+
+
     }
 
     // helper method for test filter metric
@@ -406,15 +422,15 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
     }
 
     // helper method for test trimming metric
-    private void testTrimmingMetric(final TrimmingMetric metric,
+    private void testTrimmingMetric(final TrimmerMetric metric,
             final String trimmerName, final int total,
             final int trimmed5p, final int trimmed3p, final int completelyTrim) {
-        Assert.assertEquals(metric.TRIMMER, trimmerName, "TrimmingMetric.TRIMMER");
-        Assert.assertEquals(metric.TOTAL, total, "TrimmingMetric.TOTAL");
-        Assert.assertEquals(metric.TRIMMED_5_P, trimmed5p, "TrimmingMetric.TRIMMED_5_P");
-        Assert.assertEquals(metric.TRIMMED_3_P, trimmed3p, "TrimmingMetric.TRIMMED_3_P");
+        Assert.assertEquals(metric.TRIMMER, trimmerName, "TrimmerMetric.TRIMMER");
+        Assert.assertEquals(metric.TOTAL, total, "TrimmerMetric.TOTAL");
+        Assert.assertEquals(metric.TRIMMED_5_P, trimmed5p, "TrimmerMetric.TRIMMED_5_P");
+        Assert.assertEquals(metric.TRIMMED_3_P, trimmed3p, "TrimmerMetric.TRIMMED_3_P");
         Assert.assertEquals(metric.TRIMMED_COMPLETE, completelyTrim,
-                "TrimmingMetric.TRIMMED_COMPLETE");
+                "TrimmerMetric.TRIMMED_COMPLETE");
     }
 
     @DataProvider(name = "concordanceData")
@@ -587,9 +603,10 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
                 new TrimmerPluginDescriptor(defaultTrimmers), filterDescriptor);
 
-        // check that the pipeline contains the same number of trimmers/filters
+        // check that the pipeline contains the same number of trimmers
         Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
-        Assert.assertEquals(pipeline.getFilterStats().size(), userFilters.size());
+        // and the same number of filters + 1 (completely trimmed)
+        Assert.assertEquals(pipeline.getFilterStats().size(), userFilters.size() + 1);
     }
 
     @Test(dataProvider = "trimmersAndFilters")
@@ -602,9 +619,28 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 new TrimmerPluginDescriptor(defaultTrimmers),
                 new GATKReadFilterPluginDescriptor(defaultFilters));
 
-        // check that the pipeline contains the same number of trimmers/filters
+        // check that the pipeline contains the same number of trimmers
         Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
-        Assert.assertEquals(pipeline.getFilterStats().size(), defaultFilters.size());
+        // and the same number of filters + 1 (completely trimmed)
+        Assert.assertEquals(pipeline.getFilterStats().size(), defaultFilters.size() + 1);
+    }
+
+    @Test
+    public void testFilterTagApplyForFirst() throws Exception {
+        // pipeline only with read filter
+        final TrimAndFilterPipeline pipeline = new TrimAndFilterPipeline(
+                Collections.emptyList(),
+                Collections.singletonList(new ReadLengthReadFilter(0, 10)));
+
+        // only 2 bases, filter by the read filter
+        final GATKRead read = ArtificialReadUtils.createArtificialRead("2M");
+        // set the completely trim read -> filtered by the complete read filter
+        read.setAttribute("ct", "1");
+
+        // in this case we would like to have in the FT tag the first tag only the first filter
+        // so in this case is the CompletelyTrimReadFilter
+        Assert.assertFalse(pipeline.test(read));
+        Assert.assertEquals(read.getAttributeAsString("FT"), "CompletelyTrimReadFilter");
     }
 
 }
