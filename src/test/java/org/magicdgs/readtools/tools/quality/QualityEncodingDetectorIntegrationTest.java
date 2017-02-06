@@ -59,9 +59,22 @@ public class QualityEncodingDetectorIntegrationTest extends CommandLineProgramTe
         runCommandLine(Arrays.asList("-I", fileName));
     }
 
-    // TODO: generate a new data provider when this class is removed
+    // TODO: generate a new data provider for this tool
     // TODO: this is a very simple test for check that we are not changing anything
-    @Test(dataProvider = "smallFiles", dataProviderClass = QualityCheckerIntegrationTest.class)
+    // TODO: but it is not required anymore
+    @DataProvider(name = "smallFiles")
+    public static Object[][] getTestFiles() {
+        return new Object[][] {
+                // test FASTQ file
+                {SMALL_FASTQ_1, FastqQualityFormat.Standard},
+                {getInputDataFile("small.illumina.fq"), FastqQualityFormat.Illumina},
+                // test SAM files
+                {PAIRED_BAM_FILE, FastqQualityFormat.Standard},
+                {getInputDataFile("small.illumina.sam"), FastqQualityFormat.Illumina}
+        };
+    }
+
+    @Test(dataProvider = "smallFiles")
     public void testQualityChecker(final File file, final FastqQualityFormat expectedFormat) {
         final Object format = runCommandLine(Arrays.asList("-I", file.getAbsolutePath()));
         Assert.assertEquals(format, expectedFormat);
