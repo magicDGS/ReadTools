@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Daniel Gómez-Sánchez
+ * Copyright (c) 2017 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.quality;
+package org.magicdgs.readtools.tools.conversion;
 
 import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
@@ -31,6 +31,7 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
+import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -114,24 +115,21 @@ public class StandardizeReadsIntegrationTest extends CommandLineProgramTest {
         };
     }
 
+    // expected output should be SAM
     @Test(dataProvider = "toStandardize")
     public void tesStandardizeReads(final String name, final ArgumentsBuilder args,
             final File expectedOutput)
             throws Exception {
+        // output is always in
         final File output = new File(TEST_TEMP_DIR, name + ".sam");
-        args.addOutput(output);
+        // add output and remove from tests the program record
+        args.addOutput(output)
+                .addBooleanArgument("addOutputSAMProgramRecord", false);
         runCommandLine(args);
-        final SamReader actual = SamReaderFactory.makeDefault().open(output);
-        final SamReader expected = SamReaderFactory.makeDefault().open(expectedOutput);
-        final Iterator<SAMRecord> actualIt = actual.iterator();
-        // we ignore the header in this test
-        for (final SAMRecord record : expected) {
-            Assert.assertTrue(actualIt.hasNext(), "output file has less reads than expected");
-            Assert.assertEquals(actualIt.next(), record, "different reads");
-        }
-        Assert.assertFalse(actualIt.hasNext(), "output file has more reads than expected");
-        actual.close();
-        expected.close();
+
+        // using text file concordance
+        // TODO: maybe we should find a different method
+        IntegrationTestSpec.assertEqualTextFiles(output, expectedOutput);
     }
 
 }

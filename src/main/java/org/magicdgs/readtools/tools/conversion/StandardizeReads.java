@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Daniel Gómez-Sánchez
+ * Copyright (c) 2017 Daniel Gómez-Sánchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,11 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.quality;
+package org.magicdgs.readtools.tools.conversion;
 
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
+import org.magicdgs.readtools.cmd.programgroups.ReadToolsConversionProgramGroup;
 import org.magicdgs.readtools.cmd.programgroups.ReadToolsProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
@@ -68,7 +69,7 @@ import java.util.List;
                 + "header in the CO tag and the PF binary tag if the read name is in the Casava "
                 + "format. The raw barcode (BC) is extracted from the read name if present "
                 + "(does not require any barcode option).",
-        programGroup = ReadToolsProgramGroup.class)
+        programGroup = ReadToolsConversionProgramGroup.class)
 public final class StandardizeReads extends ReadToolsWalker {
 
     @ArgumentCollection
