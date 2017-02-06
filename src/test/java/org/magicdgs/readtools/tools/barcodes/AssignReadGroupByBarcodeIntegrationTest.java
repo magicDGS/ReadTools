@@ -66,7 +66,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegra
     public Object[][] addByReadGroupData() {
         // the metrics file are the same
         return new Object[][] {
-                // CONCORDANCE with deprecated TaggedBamToFastq
+                // CONCORDANCE with legacy TaggedBamToFastq (removed)
                 // the input file is the same, but without header
 
                 // single end
@@ -112,7 +112,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegra
                                 .addBooleanArgument("interleaved", true),
                         false},
 
-                // CONCORDANCE with deprecated FastqBarcode
+                // CONCORDANCE with legacy FastqBarcodeDetector (removed)
                 // the input files are the same except dual-barcoded ones, which have the new separator
 
 
@@ -151,7 +151,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegra
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
 
-                // CONCORDANCE with BamBarcodeDetector
+                // CONCORDANCE with legacy BamBarcodeDetector (removed)
                 {"testBamBarcodeDetector", "BamBarcodeDetector",
                         new ArgumentsBuilder()
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)
