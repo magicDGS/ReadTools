@@ -80,12 +80,24 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             RTStandardArguments.DISABLE_TRIMMER_LONG_NAME})
     public boolean disableAllDefaultTrimmers = false;
 
-    @Argument(fullName = RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME, doc = "Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified by the 5' mapping position.", mutex = {
-            RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME}, optional = true)
+    @Argument(fullName = RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME,
+            doc = "Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified by the 5' mapping position."
+                    // This is a custom mutex argument, specify as in Barclay but it could be specify in the command line
+                    // TODO: see also https://github.com/broadinstitute/barclay/issues/26
+                    + " Cannot be true when argument "
+                    + RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME
+                    + "(" + RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME + ") is true.",
+            optional = true)
     public boolean disable5pTrim = false;
 
-    @Argument(fullName = RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME, doc = "Disable 3'-trimming.", mutex = {
-            RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME}, optional = true)
+    @Argument(fullName = RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME,
+            doc = "Disable 3'-trimming."
+                    // This is a custom mutex argument, specify as in Barclay but it could be specify in the command line
+                    // TODO: see also https://github.com/broadinstitute/barclay/issues/26
+                    + " Cannot be true when argument "
+                    + RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME
+                    + "(" + RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME + ") is true.",
+            optional = true)
     public boolean disable3pTrim = false;
 
     // Map of read trimmers (simple) class names to the corresponding discovered plugin instance
@@ -178,8 +190,6 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             trimmingFunction = (TrimmingFunction) pluggableClass.newInstance();
             trimmers.put(simpleName, trimmingFunction);
         }
-        // when all the instances are created, they should set the disabling parameters accordingly
-        trimmingFunction.setDisableEnds(disable5pTrim, disable3pTrim);
         // add to the trimmer names
         allTrimmerNames.add(simpleName);
         return trimmingFunction;
@@ -216,6 +226,16 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
 
     @Override
     public void validateArguments() throws CommandLineException {
+        // validate here the arguments for disabling 5/3 prime
+        if (disable3pTrim && disable5pTrim) {
+            // TODO: contribute to Barclay to create special CommandLineException for this cases
+            // TODO: to be able to apply them in other parts of the code
+            throw new CommandLineException("Argument '"
+                    + RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME
+                    + "' cannot be used in conjunction with argument(s)"
+                    + RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME);
+        }
+
 
         // throw if any trimmer is specified twice
         final List<String> moreThanOnce = userTrimmerNames.stream()
@@ -280,15 +300,27 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
                 requestedTrimmers.put(s, trf);
             }
         });
-        // validates tool default trimmers arguments (maybe overriden in command line)
-        toolDefaultTrimmers.values().forEach(TrimmingFunction::validateArgs);
-        // validate all the requested trimmers arguments
-        requestedTrimmers.values().forEach(TrimmingFunction::validateArgs);
+        // validates tool default trimmers arguments (maybe overridden in command line)
+        // and set the disable5pTrim and disable3primeTrim for the trimmers in use (tool/requested)
+        validateAndSetDisablingEnds(toolDefaultTrimmers);
+        validateAndSetDisablingEnds(requestedTrimmers);
 
         // update the trimmers list with the final list of trimmer specified on the
         // command line; do not include tool defaults as these will be merged in at merge
         // time if they were not disabled
         trimmers = requestedTrimmers;
+    }
+
+    // validates the arguments and also set the disable ends for all trimmers in the list
+    private void validateAndSetDisablingEnds(final Map<String, TrimmingFunction> nameTrimmerMap) {
+        nameTrimmerMap.forEach((name, trimmer) -> {
+            // first set, because they may be used in the validation
+            logger.debug("{} trimmer: 5 prime {} and 3 prime {}", () -> name,
+                    () -> (disable5pTrim) ? "disabled" : "not disabled",
+                    () -> (disable3pTrim) ? "disabled" : "not disabled");
+            trimmer.setDisableEnds(disable5pTrim, disable3pTrim);
+            trimmer.validateArgs();
+        });
     }
 
     /**

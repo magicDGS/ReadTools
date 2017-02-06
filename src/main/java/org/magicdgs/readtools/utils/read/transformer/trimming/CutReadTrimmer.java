@@ -106,21 +106,21 @@ public class CutReadTrimmer extends TrimmingFunction {
         if (fivePrime != null) {
             if (this.fivePrime < 0) {
                 throw new CommandLineException.BadArgumentValue("--" + FIVE_PRIME_LONG_NAME,
-                        fivePrime.toString(), "should be a positive integer");
+                        fivePrime.toString(), "Should be a positive integer");
             } else if (isDisable5prime()) {
                 throw new CommandLineException.BadArgumentValue("--" + FIVE_PRIME_LONG_NAME,
-                        threePrime.toString(), "cannot be used in when 5 prime trimming is disabled");
+                        fivePrime.toString(), "Cannot be used in when 5 prime trimming is disabled");
             }
         }
         // the same for three prime
         if (this.threePrime != null) {
             if (this.threePrime < 0) {
                 throw new CommandLineException.BadArgumentValue("--" + THREE_PRIME_LONG_NAME,
-                        threePrime.toString(), "should be a positive integer");
+                        threePrime.toString(), "Should be a positive integer");
             } else if (isDisable3prime()) {
                 throw new CommandLineException.BadArgumentValue("--" + THREE_PRIME_LONG_NAME,
                         threePrime.toString(),
-                        "cannot be used in when 3 prime trimming is disabled");
+                        "Cannot be used in when 3 prime trimming is disabled");
             }
         }
     }
