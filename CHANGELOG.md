@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.3.0] - 2017-02-06
 
 ### Added
 - New tools for quality checking/standardizing: `QualityEncodingDetector` and `StandardizeReads`
@@ -107,6 +107,7 @@ All notable changes to this project will be documented in this file.
 First pre-release
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+[0.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.3.0
 [0.2.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.2.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.1

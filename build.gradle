@@ -24,7 +24,7 @@ startScripts {
 }
 
 group = 'org.magicdgs'
-version = '0.2.3-SNAPSHOT'
+version = '0.3.0-SNAPSHOT'
 description = """Tools for sequencing barcoded read data (in FASTQ/BAM format)"""
 
 def developer = "Daniel Gomez-Sanchez"
