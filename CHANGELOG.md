@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - 0.3.0
+
 ## [0.3.0] - 2017-02-06
 
 ### Added
@@ -106,7 +108,8 @@ All notable changes to this project will be documented in this file.
 ## [0.1.0] - 2015-11-20
 First pre-release
 
-[Unreleased]: https://github.com/magicDGS/ReadTools/tree/develop
+<tag links>
+[Unreleased]: https://github.com/magicDGS/ReadTools/tree/master
 [0.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.3.0
 [0.2.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.2.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2

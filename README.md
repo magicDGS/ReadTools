@@ -6,82 +6,95 @@
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-# ReadTools
+# _ReadTools_: Standardizing Sources For Sequencing Data 
 
-Tools for sequencing reads data sources (SAM/BAM/CRAM/FASTQ files)
+ReadTools provides a consistent and highly tested set of tools for processing any kind of source of sequencing data.
 
----
+For more information about the program from the user side, go to the [Wiki Page].
+Download main releases in the [Releases] section. Changes for every release could be found in the [CHANGELOG].
 
-Tools contained in this software are develop for work with different sources of reads data, in different formats. The aim is to provide a set of tools for:
-
-- Pre-processing raw reads from any kind of sources (SAM/BAM/CRAM/FASTQ), as trimming and sample-barcode assignation.
-- Standardize read sources to follow the [SAM specs](http://samtools.github.io/hts-specs/), as fixing quality encoding or barcode tags.
+_Note: to use unreleased changes it is required to install from source. See the Building section for more details._
 
 ---
 
-### Download
+## Bug reports
 
-Packaged jar files could be found in [Releases](https://github.com/magicDGS/ReadTools/releases). For install from source, see bellow.
-
----
-
-### Usage
-
-To obtain a list of implemented tools run the following command:
-
-`java -jar ReadTools.jar`
-
-For a long description of each tool:
-
-`java -jar ReadTools.jar <toolName> --help`
-
-For getting the packaged version:
-
-`java -jar ReadTools.jar --version` or `java -jar ReadTools.jar -v`
-
-The current pre-release includes the following tools:
-
-* __QualityEncodingDetector__: Detects the quality encoding format for all kind of sources for ReadTools
-* __StandardizeReads__: Standardize quality and format for all kind of sources for ReadTools
-* __ReadsToFastq__: Converts any kind of ReadTools source to FASTQ format
-* __AssignReadGroupByBarcode__: Assigns read groups based on barcode tag(s) for all kind of sources for ReadTools
-* __TrimReads__: Applies a trimming pipeline to any kind of sources for ReadTools
-
-Legacy tools that will disapear in following releases:
-* __QualityChecker__: Get the quality encoding for a BAM/FASTQ file
-* __StandardizeQuality__: Convert an Illumina BAM/FASTQ file into a Sanger
-* __TaggedBamToFastq__: Convert an BAM file with BC tags into a FASTQ file
-* __FastqBarcodeDetector__: Identify barcodes in the read name for a FASTQ file and assign to the ones used on the library
-* __BamBarcodeDetector__:	Identify barcodes in the read name for a BAM file and assign to the ones used on the library
-* __TrimFastq__: Implementation of the trimming algorithm from [Kofler _et al._ (2011)](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015925)
+Please, if you find any problem add a new [Issue] or contact by email <daniel.gomez.sanchez@hotmail.es>
 
 ---
 
-### Installation from source
+## DEVELOPERS
 
-Master branch is guarantee to compile successfully and contain the latest release changes. For installation, run:
+### Requirements
 
-```
+* Java 8
+* Git (developers)
+* Gradle 3.3 or greater (developers)
 
-git clone https://github.com/magicDGS/ReadTools.git
-cd ReadTools
-./gradlew shadowJar
+## Dependencies
 
-```
+- [HTSJDK] library
+- [GATK v.4] framework
 
-Executable jar file will be under the __build/libs/ReadTools.jar__ path. This packaged jar contains all needed dependencies, and could be used independently of the repository folder.
+## Building
+
+Clone the git repository using `git clone https://github.com/magicDGS/ReadTools.git` and change to the __ReadTools__ directory.
+If you want a specific version, change the branch using `git checkout ${version_number}`;
+otherwise, the master branch contains unreleased changes.
+
+For building an executavle jar, run `./gradlew shadowJar`. The __ReadTools.jar__ will be under the __build/libs/__ directory.
+
+
+## Testing
+
+Code coverage reports for the project can be found in the [Codecov project page](https://codecov.io/gh/magicDGS/ReadTools).
+If you want to evaluate _ReadTools_ locally:
+* To run all tests, run `./gradlew test`. Test reports will be in __build/reports/tests/index.html__
+* To compute a coverage report, run `./gradlew jacocoTestReport`. The report will be in __build/reports/jacoco/test/html/index.html__
+
+## Guidelines
+
+* __Pushing directly to master branch is not allowed.__
+* It is recommended to name branches with a short form of your name and a explanatory name. Example: _dgs_fix_issue30_.
+* Pull Requests should be reviewed before merging by other developer.
+* Any new code will require unit/integration tests.
+* Use [org.apache.logging.log4j.Logger](https://logging.apache.org/log4j/2.0/log4j-api/apidocs/org/apache/logging/log4j/Logger.html) for logging.
+* Use [TestNG](http://testng.org/doc/index.html) for testing.
+* Use [magicDGS Style Guide](https://github.com/magicDGS/styleguide) for code formatting.
+
+## Versioning and changelog
+
+We use [semantic versioning](http://semver.org/) (_MAJOR.MINOR.PATCH_).
+[build.gradle] and Unreleased tag (within [CHANGELOG]) should be updated accordingly in Pull Request to follow the convention:
+
+1. Backwards-compatible bug fixes: increase _PATCH_ number. Add a __Fixed__ entry to [CHANGELOG].
+2. Backwards-compatible changes: increase _MINOR_ number and reset _PATCH_ to 0. Add a __Added__ entry to [CHANGELOG].
+3. Backwards-incompatible changes: only if the current unreleased version _MAJOR_ number is the same as the last release, increase _MAJOR_ number and reset _MINOR_ and _PATCH_ to 0;
+otherwise apply the backwards-compatible rules (1 or 2). Add a __Changed__ entry to [CHANGELOG] in any case.
+
+Please, distinguish within every category (__Fixed__/__Added__/__Changed__) if a change 
+correspond only to API changes or it have some effect to the user side.
 
 ---
 
-### License and citing
+## License
+Licensed under the [MIT License]. See [LICENSE] file.
 
-The software is provided with a copy of the [MIT License](http://opensource.org/licenses/MIT), but is build with several Java libraries that have different licenses. Information for the libraries used in the software is available in the [build.gradle](https://github.com/magicDGS/ReadTools/blob/master/build.gradle) file.
+## Citing
 
 If you use this software, please add the citation as following:
 
-&nbsp;&nbsp;&nbsp;&nbsp;Gómez-Sánchez D (2015): ReadTools ${version}, Institut für Populationsgenetik, Vetmeduni Vienna.
+>Gómez-Sánchez D (2017): ReadTools ${version}, Institut für Populationsgenetik, Vetmeduni Vienna.
 
-If some of the tools is a (re)implementation of a method described in a different place, the citation for the method is provided under the long description. Please, cite the method in addition to this software to give credit to the original authors.
 
----
-*Please, if you find any problem add a new [issue](https://github.com/magicDGS/ReadTools/issues) or contact by email: <daniel.gomez.sanchez@hotmail.es>
+
+<references>
+[MIT License]: https://opensource.org/licenses/MIT
+[Wiki Page]: https://github.com/magicDGS/ReadTools/wiki
+[Releases]: https://github.com/magicDGS/ReadTools/releases
+[Issue]: https://github.com/magicDGS/ReadTools/issues
+[HTSJDK]: https://samtools.github.io/htsjdk/
+[GATK v.4]: https://github.com/broadinstitute/gatk
+[CHANGELOG]: https://github.com/magicDGS/ReadTools/blob/master/CHANGELOG.md
+[LICENSE]: https://github.com/magicDGS/ReadTools/blob/master/LICENSE
+[build.gradle]:  https://github.com/magicDGS/ReadTools/blob/master/build.gradle
