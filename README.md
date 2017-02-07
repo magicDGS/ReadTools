@@ -67,9 +67,10 @@ If you want to evaluate _ReadTools_ locally:
 We use [semantic versioning](http://semver.org/) (MAJOR.MINOR.PATCH).
 [build.gradle] and Unreleased tag (within [CHANGELOG]) should be updated accordingly in Pull Request to follow the convention:
 
-* Backwards-compatible bug fixes: increase PATCH number. Add a __Fixed__ entry to [CHANGELOG].
-* Backwards-compatible changes: increase MINOR number and reset PATCH to 0. Add a __Added__ entry to [CHANGELOG].
-* Backwards-incompatible changes: increase MAJOR number and reset MINOR and PATCH to 0. Add a __Changed__ entry to [CHANGELOG].
+1. Backwards-compatible bug fixes: increase PATCH number. Add a __Fixed__ entry to [CHANGELOG].
+2. Backwards-compatible changes: increase MINOR number and reset PATCH to 0. Add a __Added__ entry to [CHANGELOG].
+3. Backwards-incompatible changes: only if the current unreleased version MAJOR number is the same as the last release, increase MAJOR number and reset MINOR and PATCH to 0;
+otherwise apply the backwards-compatible rules (1 or 2). Add a __Changed__ entry to [CHANGELOG] in any case.
 
 Please, distinguish within every category (__Fixed__/__Added__/__Changed__) if a change 
 correspond only to API changes or it have some effect to the user side.
@@ -96,4 +97,4 @@ If you use this software, please add the citation as following:
 [GATK v.4]: https://github.com/broadinstitute/gatk
 [CHANGELOG]: https://github.com/magicDGS/ReadTools/blob/master/CHANGELOG.md
 [LICENSE]: https://github.com/magicDGS/ReadTools/blob/master/LICENSE
-[build.gradle]: 
+[build.gradle]:  https://github.com/magicDGS/ReadTools/blob/master/build.gradle
