@@ -26,9 +26,11 @@ package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
+import org.magicdgs.readtools.utils.distmap.DistmapGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
+import hdfs.jsr203.HadoopPath;
 import htsjdk.samtools.Defaults;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
@@ -43,6 +45,10 @@ import htsjdk.samtools.util.CustomGzipOutputStream;
 import htsjdk.samtools.util.IOUtil;
 import htsjdk.samtools.util.Md5CalculatingOutputStream;
 import htsjdk.tribble.AbstractFeatureReader;
+import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.io.compress.BZip2Codec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.exceptions.GATKException;
@@ -53,6 +59,7 @@ import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,6 +89,12 @@ public final class ReadWriterFactory {
     private boolean useAsyncIo;
     private int asyncOutputBufferSize = AbstractAsyncWriter.DEFAULT_QUEUE_SIZE;
     private int bufferSize = Defaults.BUFFER_SIZE;
+
+    // block-size for HDFS; if null, use the default
+    private Integer hdfsBlockSize = null;
+
+    // bzip2 codec, initialized on demand
+    private BZip2Codec bzip2 = null;
 
     /** Creates a default factory. */
     public ReadWriterFactory() {
@@ -156,6 +169,12 @@ public final class ReadWriterFactory {
         return this;
     }
 
+    /** Sets the block-size for HDFS output files. */
+    public ReadWriterFactory setHdfsBlockSize(final Integer hdfsBlockSize) {
+        this.hdfsBlockSize = hdfsBlockSize;
+        return this;
+    }
+
     ////////////////////////////////////////////
     // PUBLIC METHODS FOR GET WRITERS
 
@@ -208,6 +227,14 @@ public final class ReadWriterFactory {
         return new FastqGATKWriter(openFastqWriter(output));
     }
 
+    /** Creates a GATKWriter for Distmap output. */
+    public GATKReadWriter createDistmapWriter(final String output, final boolean isPaired) {
+        final Path outputPath = newOutputFile(output);
+        logger.debug("Distmap output: {}", outputPath::toUri);
+        return new DistmapGATKWriter(new OutputStreamWriter(getOutputStream(outputPath)),
+                outputPath.toString(), isPaired);
+    }
+
     /** Creates a GATKReadWriter based on the path extension. */
     public GATKReadWriter createWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
@@ -228,9 +255,8 @@ public final class ReadWriterFactory {
         try {
             // the same as in the SAMFileWriterFactory
             // 1. get the output stream for the file (maybe buffered)
-            OutputStream os = IOUtil.maybeBufferOutputStream(
-                    Files.newOutputStream(outputPath),
-                    bufferSize);
+            // Note: hadoop paths are handled differently
+            OutputStream os = getMaybeBufferedOutputStream(outputPath);
 
             // 2. Wraps the stream to compute MD5 digest if createMd5file is provided
             os = (createMd5file)
@@ -247,15 +273,57 @@ public final class ReadWriterFactory {
         throw new GATKException.ShouldNeverReachHereException("getOutputStream");
     }
 
+    /**
+     * Creates a maybe buffered output stream from a Path.
+     * In addition, if the Path is from the Hadoop Filesystem, it sets other characteristics for the
+     * output stream:
+     *
+     * - HDFS Block-size: {@link #hdfsBlockSize}
+     * - Buffer-size: {@link #bufferSize}, instead of wrapping in a buffered stream.
+     * - bzip2 compression if the path ends with bz2.
+     */
+    private OutputStream getMaybeBufferedOutputStream(final Path path) throws IOException {
+        // iif there is a block-size to change and the path is from Hadoop
+        if (hdfsBlockSize != null && path instanceof HadoopPath) {
+            final HadoopPath hadoopPath = (HadoopPath) path;
+            // gets the HDFS to create the output stream with custom block-size
+            final FileSystem hdfs = hadoopPath.getFileSystem().getHDFS();
+            // gets the the path (extracted here to get the default replication)
+            final org.apache.hadoop.fs.Path hdfsPath =  hadoopPath.getRawResolvedPath();
+
+            // construct the output stream already buffered here
+            return hdfs.create(hdfsPath, forceOverwrite,
+                    // buffer size
+                    bufferSize,
+                    // replication is using the default
+                    hdfs.getDefaultReplication(hdfsPath),
+                    // block-size is the one set here
+                    hdfsBlockSize);
+        }
+        logger.debug("Block-size is ignored: {}", () -> hdfsBlockSize);
+        return IOUtil.maybeBufferOutputStream(Files.newOutputStream(path), bufferSize);
+    }
+
     // wraps the output stream if it ends with a compression extension:
     // - gzip is handled with HTSJDK
     private OutputStream maybeCompressedWrap(final OutputStream outputStream,
             final Path outputPath) throws IOException {
         // handle the gzip format with the CustomGzipOutputStream from HTSJDK for backwards-compatibility
         if (AbstractFeatureReader.hasBlockCompressedExtension(outputPath.toUri())) {
+            logger.debug("Using gzip compression for {}", outputPath::toUri);
             return new CustomGzipOutputStream(outputStream, IOUtil.getCompressionLevel());
+        } else if (BZip2Utils.isCompressedFilename(outputPath.toString())) {
+            // for being compatible with Hadoop, we use the BZipCodec from Hadoop
+            logger.debug("Using bzip2 compression for {}", outputPath::toUri);
+            if (bzip2 == null) {
+                // require initialize with a default configuration
+                // initialize only if required for the output
+                bzip2 = new BZip2Codec();
+                bzip2.setConf(new Configuration());
+            }
+            return bzip2.createOutputStream(outputStream);
         } else {
-            logger.debug("Not using GZIP output for {}", outputPath::toUri);
+            logger.debug("Not using compression for {}", outputPath::toUri);
             return outputStream;
         }
     }
