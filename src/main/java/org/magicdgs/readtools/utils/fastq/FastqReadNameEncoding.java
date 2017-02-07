@@ -101,33 +101,6 @@ public enum FastqReadNameEncoding {
     }
 
     /**
-     * Normalizes the read name, including the pair-end information.
-     *
-     * @param readName the read name to normalize with this encoding.
-     *
-     * @return the normalized read name.
-     *
-     * @deprecated in the new framework this won't be necessary.
-     */
-    @Deprecated
-    public String normalizeReadName(final String readName) {
-        final StringBuilder normalizedName =
-                new StringBuilder(getPlainName(readName));
-        final String barcode =
-                String.join(RTDefaults.BARCODE_INDEX_DELIMITER, getBarcodes(readName));
-        if (!barcode.isEmpty()) {
-            normalizedName.append(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER)
-                    .append(barcode);
-        }
-        final String pairInfo = getPairedState(readName);
-        if (!"0".equals(pairInfo)) {
-            normalizedName.append(BarcodeMethods.READ_PAIR_SEPARATOR)
-                    .append(pairInfo);
-        }
-        return normalizedName.toString();
-    }
-
-    /**
      * Gets the PF flag from the read name.
      *
      * Note: this is only encoded int the {@link #CASAVA} formatting.

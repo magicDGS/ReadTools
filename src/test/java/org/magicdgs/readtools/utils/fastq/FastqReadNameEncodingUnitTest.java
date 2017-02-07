@@ -104,13 +104,6 @@ public class FastqReadNameEncodingUnitTest extends BaseTest {
     }
 
     @Test(dataProvider = "encodingData")
-    public void testNormalizeName(final FastqReadNameEncoding encoding,
-            final String readName, final String expectedNormalize, final boolean first,
-            final boolean second, final boolean pf, final String[] barcode) throws Exception {
-        Assert.assertEquals(encoding.normalizeReadName(readName), expectedNormalize);
-    }
-
-    @Test(dataProvider = "encodingData")
     public void testUpdateReadFromReadName(final FastqReadNameEncoding encoding,
             final String readName, final String expextedNormalize, final boolean first,
             final boolean second, final boolean pf, final String[] barcode) throws Exception {
