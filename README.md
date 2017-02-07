@@ -42,7 +42,7 @@ Clone the git repository using `git clone https://github.com/magicDGS/ReadTools.
 If you want a specific version, change the branch using `git checkout ${version_number}`;
 otherwise, the master branch contains unreleased changes.
 
-For building an executavle jar, run ./gradlew shadowJar. The __ReadTools.jar__ will be under the __build/libs/__ directory.
+For building an executavle jar, run `./gradlew shadowJar`. The __ReadTools.jar__ will be under the __build/libs/__ directory.
 
 
 ## Testing
@@ -55,7 +55,7 @@ If you want to evaluate _ReadTools_ locally:
 ## Guidelines
 
 * __Pushing directly to master branch is not allowed.__
-* It is recommended to name branches with a short form of your name and a explanatory name. Example: dgs_fix_issue30.
+* It is recommended to name branches with a short form of your name and a explanatory name. Example: _dgs_fix_issue30_.
 * Pull Requests should be reviewed before merging by other developer.
 * Any new code will require unit/integration tests.
 * Use [org.apache.logging.log4j.Logger](https://logging.apache.org/log4j/2.0/log4j-api/apidocs/org/apache/logging/log4j/Logger.html) for logging.
@@ -64,12 +64,12 @@ If you want to evaluate _ReadTools_ locally:
 
 ## Versioning and changelog
 
-We use [semantic versioning](http://semver.org/) (MAJOR.MINOR.PATCH).
+We use [semantic versioning](http://semver.org/) (_MAJOR.MINOR.PATCH_).
 [build.gradle] and Unreleased tag (within [CHANGELOG]) should be updated accordingly in Pull Request to follow the convention:
 
-1. Backwards-compatible bug fixes: increase PATCH number. Add a __Fixed__ entry to [CHANGELOG].
-2. Backwards-compatible changes: increase MINOR number and reset PATCH to 0. Add a __Added__ entry to [CHANGELOG].
-3. Backwards-incompatible changes: only if the current unreleased version MAJOR number is the same as the last release, increase MAJOR number and reset MINOR and PATCH to 0;
+1. Backwards-compatible bug fixes: increase _PATCH_ number. Add a __Fixed__ entry to [CHANGELOG].
+2. Backwards-compatible changes: increase _MINOR_ number and reset _PATCH_ to 0. Add a __Added__ entry to [CHANGELOG].
+3. Backwards-incompatible changes: only if the current unreleased version _MAJOR_ number is the same as the last release, increase _MAJOR_ number and reset _MINOR_ and _PATCH_ to 0;
 otherwise apply the backwards-compatible rules (1 or 2). Add a __Changed__ entry to [CHANGELOG] in any case.
 
 Please, distinguish within every category (__Fixed__/__Added__/__Changed__) if a change 
