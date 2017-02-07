@@ -31,7 +31,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
  * Fix barcodes stored in the read read name (Illumina formatted) putting them into the
- * default barcode tag ({@link htsjdk.samtools.SAMTag#BC}), and removing them from the name.
+ * default barcode tag ({@link RTReadUtils#RAW_BARCODE_TAG}), and removing them from the name.
  *
  * This may be useful when reading a BAM file mapped from a FASTQ file where the barcodes are keep
  * in the read name. For example, <a href=http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0072614>Distmap</a>

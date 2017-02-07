@@ -25,27 +25,18 @@
 package org.magicdgs.readtools.tools.conversion;
 
 import org.magicdgs.readtools.cmd.RTStandardArguments;
+import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.ReadToolsConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
-import org.magicdgs.readtools.utils.read.RTReadUtils;
-import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
-import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcodesReadTransformer;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.util.CloserUtil;
-import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
-import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import scala.Tuple2;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Converts to the FASTQ format any kind of ReadTools source. See the summary for more information.
@@ -66,27 +57,16 @@ import java.util.List;
         programGroup = ReadToolsConversionProgramGroup.class)
 public final class ReadsToFastq extends ReadToolsWalker {
 
-    // this tags are already handled in the FASTQ writer
-    private final static List<String> RAW_BARCODES_FASTQ_TAGS =
-            Collections.singletonList(SAMTag.BC.name());
-
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =
             RTOutputArgumentCollection.fastqOutput();
 
-    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, doc = "Include the barcodes encoded in this tag(s) in the read name. Note: this is not necessary for input FASTQ files.", optional = true,
-            mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
-    public List<String> rawBarcodeTags = new ArrayList<>(RAW_BARCODES_FASTQ_TAGS);
-
-    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, doc = "Use the barcode encoded in SAM/BAM/CRAM read names. Note: this is not necessary for input FASTQ files.", optional = true,
-            mutex = {RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME})
-    public boolean useReadNameBarcode = false;
+    @ArgumentCollection
+    public FixBarcodeAbstractArgumentCollection fixBarcodeArguments =
+            FixBarcodeAbstractArgumentCollection.getArgumentCollection(false);
 
     // the writer for the reads
     private GATKReadWriter writer;
-
-    // the transformer for fixing the reads
-    private ReadTransformer transformer;
 
     @Override
     public void onTraversalStart() {
@@ -105,21 +85,11 @@ public final class ReadsToFastq extends ReadToolsWalker {
         writer = outputBamArgumentCollection.outputWriter(headerFromReads,
                 () -> getProgramRecord(headerFromReads), true, getReferenceFile()
         );
-        if (useReadNameBarcode) {
-            logger.debug("Using barcodes from read names");
-            transformer = new FixReadNameBarcodesReadTransformer();
-        } else if (rawBarcodeTags.isEmpty() || RAW_BARCODES_FASTQ_TAGS.equals(rawBarcodeTags)) {
-            logger.debug("Not using barcode tags: {}", rawBarcodeTags);
-            transformer = ReadTransformer.identity();
-        } else {
-            logger.debug("Using barcode tags: {}", rawBarcodeTags);
-            transformer = new FixRawBarcodeTagsReadTransformer(rawBarcodeTags);
-        }
     }
 
     @Override
     protected void apply(final GATKRead read) {
-        writer.addRead(transformer.apply(read));
+        writer.addRead(fixBarcodeArguments.fixBarcodeTags(read));
     }
 
     @Override
@@ -127,12 +97,9 @@ public final class ReadsToFastq extends ReadToolsWalker {
         logger.debug("First: {}", pair._1);
         logger.debug("Second: {}", pair._2);
         // this only works if it is modified in place
-        final GATKRead read1 = transformer.apply(pair._1);
-        final GATKRead read2 = transformer.apply(pair._2);
-        // now we have to fix the barcode tags
-        RTReadUtils.fixPairTag(SAMTag.BC.name(), read1, read2);
-        writer.addRead(read1);
-        writer.addRead(read2);
+        fixBarcodeArguments.fixBarcodeTags(pair);
+        writer.addRead(pair._1);
+        writer.addRead(pair._2);
     }
 
     @Override

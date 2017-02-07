@@ -27,35 +27,28 @@ package org.magicdgs.readtools.tools.barcodes;
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeDetectorArgumentCollection;
+import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.ReadToolsProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
-import org.magicdgs.readtools.utils.read.RTReadUtils;
-import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
-import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcodesReadTransformer;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.exceptions.UserException;
-import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import scala.Tuple2;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Tool for assign barcodes to any kind of input and output a standard ReadTools read.
@@ -82,14 +75,6 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
     public RTOutputArgumentCollection outputBamArgumentCollection =
             RTOutputArgumentCollection.splitOutput();
 
-    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, doc = "Include the barcodes encoded in this tag(s) in the read name. Note: this is not necessary for input FASTQ files.", optional = true,
-            mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
-    public List<String> rawBarcodeTags = new ArrayList<>(Collections.singleton(SAMTag.BC.name()));
-
-    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, doc = "Use the barcode encoded in SAM/BAM/CRAM read names. Note: this is not necessary for input FASTQ files.", optional = true,
-            mutex = {RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME})
-    public boolean useReadNameBarcode = false;
-
     @ArgumentCollection
     public BarcodeDetectorArgumentCollection barcodeDetectorArgumentCollection =
             new BarcodeDetectorArgumentCollection();
@@ -97,18 +82,20 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
     @Argument(fullName = RTStandardArguments.KEEP_DISCARDED_NAME, shortName = RTStandardArguments.KEEP_DISCARDED_NAME, doc = "Keep reads does not assigned to any record in a separate file.")
     public boolean keepDiscarded = false;
 
+    @ArgumentCollection
+    public FixBarcodeAbstractArgumentCollection fixBarcodeArguments =
+            FixBarcodeAbstractArgumentCollection.getArgumentCollection(false);
+
     // the writer for the reads
     private GATKReadWriter writer;
 
     private GATKReadWriter discardedWriter;
 
-    // the transformer for fixing the reads
-    private ReadTransformer transformer;
-
     private BarcodeDecoder decoder;
 
     // validate the barcode detector arguments
     protected String[] customCommandLineValidation() {
+        fixBarcodeArguments.validateArguments();
         barcodeDetectorArgumentCollection.validateArguments();
         return super.customCommandLineValidation();
     }
@@ -121,17 +108,6 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
      */
     @Override
     public void onTraversalStart() {
-        if (useReadNameBarcode) {
-            logger.debug("Using barcodes from read names");
-            transformer = new FixReadNameBarcodesReadTransformer();
-        } else if (rawBarcodeTags.isEmpty()
-                || (rawBarcodeTags.size() == 1 && rawBarcodeTags.get(0).equals(SAMTag.BC.name()))) {
-            logger.debug("Not using barcode tags: {}", rawBarcodeTags);
-            transformer = ReadTransformer.identity();
-        } else {
-            logger.debug("Using barcode tags: {}", rawBarcodeTags);
-            transformer = new FixRawBarcodeTagsReadTransformer(rawBarcodeTags);
-        }
         // setting up the barcode decoder engine
         decoder = barcodeDetectorArgumentCollection.getBarcodeDecoder();
 
@@ -163,17 +139,15 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
      */
     @Override
     protected void apply(final GATKRead read) {
-        logger.debug("Read = {}", () -> read);
         // assumes that the transformed read is modified in place
-        transformer.apply(read);
-        decoder.assignReadGroupByBarcode(read);
+        decoder.assignReadGroupByBarcode(fixBarcodeArguments.fixBarcodeTags(read));
         writeRead(read);
     }
 
     /**
      * Applies the transformer for fix the barcode, assigns the read group by barcode and writes
      * the read to the output using {@link #writeRead(GATKRead)}. In addition, the reads
-     * {@link SAMTag#BC} tag are coupled in case they are not present.
+     * barcode tags are coupled in case they are not present.
      *
      * Note: the second read read group is identified using the information from the first read.
      */
@@ -183,17 +157,14 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
         logger.debug("First: {}", () -> pair._1);
         logger.debug("Second: {}", () -> pair._2);
         // this only works if it is modified in place
-        final GATKRead read1 = transformer.apply(pair._1);
-        final GATKRead read2 = transformer.apply(pair._2);
-        // now we have to fix the barcode tags
-        RTReadUtils.fixPairTag(SAMTag.BC.name(), read1, read2);
-        decoder.assignReadGroupByBarcode(read1);
+        fixBarcodeArguments.fixBarcodeTags(pair);
+        decoder.assignReadGroupByBarcode(pair._1);
         // now use the read1 information for read2
         // assuming that the barcodes are the same for both reads
-        read2.setReadGroup(read1.getReadGroup());
+        pair._2.setReadGroup(pair._1.getReadGroup());
         // and write the reads
-        writeRead(read1);
-        writeRead(read2);
+        writeRead(pair._1);
+        writeRead(pair._2);
     }
 
     /**
