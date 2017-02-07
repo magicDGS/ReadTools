@@ -33,7 +33,6 @@ import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
-import org.magicdgs.readtools.utils.misc.Formats;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcodesReadTransformer;
@@ -221,7 +220,7 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
         try {
             final Collection<MatcherStat> stats = decoder.outputStats(metricsFile);
             stats.forEach(s -> logger.info("Found {} records for {} ({}).",
-                    Formats.commaFmt.format(s.RECORDS), s.SAMPLE, s.BARCODE));
+                    s.RECORDS, s.SAMPLE, s.BARCODE));
             return null;
         } catch (final IOException e) {
             // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
