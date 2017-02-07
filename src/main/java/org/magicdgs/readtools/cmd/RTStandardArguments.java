@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Daniel Gómez-Sánchez
+ * Copyright (c) 2017 Daniel Gomez-Sanchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package org.magicdgs.readtools.cmd;
 
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
