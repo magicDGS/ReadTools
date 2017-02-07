@@ -25,25 +25,15 @@
 package org.magicdgs.readtools.tools.trimming;
 
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
-import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmerMetric;
-import org.magicdgs.readtools.metrics.trimming.TrimStat;
-import org.magicdgs.readtools.tools.trimming.trimmers.Trimmer;
-import org.magicdgs.readtools.tools.trimming.trimmers.TrimmerBuilder;
-import org.magicdgs.readtools.utils.read.RTReadUtils;
-import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
-import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 import org.magicdgs.readtools.utils.tests.BaseTest;
-import org.magicdgs.readtools.utils.tests.TestResourcesUtils;
 
-import htsjdk.samtools.util.Histogram;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
-import org.broadinstitute.hellbender.engine.filters.AmbiguousBaseReadFilter;
 import org.broadinstitute.hellbender.engine.filters.PlatformReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
@@ -54,7 +44,6 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -431,125 +420,6 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         Assert.assertEquals(metric.TRIMMED_3_P, trimmed3p, "TrimmerMetric.TRIMMED_3_P");
         Assert.assertEquals(metric.TRIMMED_COMPLETE, completelyTrim,
                 "TrimmerMetric.TRIMMED_COMPLETE");
-    }
-
-    @DataProvider(name = "concordanceData")
-    public Iterator<Object[]> trimmerConcordanceData() throws Exception {
-        // TODO: these files will disappear at some point
-        final File input1 = TestResourcesUtils
-                .getReadToolsTestResource("org/magicdgs/readtools/data/SRR1931701_1.fq");
-        final File input2 = TestResourcesUtils
-                .getReadToolsTestResource("org/magicdgs/readtools/data/SRR1931701_2.fq");
-        final List<Object[]> data = new ArrayList<>();
-        final boolean[] trueFalse = new boolean[] {true, false};
-        for (final int qualThreshold : new int[] {18, 20}) {
-            for (final int minLength : new int[] {40, 60}) {
-                for (final int maxLength : new int[] {75, Integer.MAX_VALUE}) {
-                    for (final boolean discardRemainingNs : trueFalse) {
-                        for (final boolean no5p : trueFalse) {
-                            data.add(new Object[] {input1,
-                                    qualThreshold, minLength, maxLength, discardRemainingNs, no5p});
-                            data.add(new Object[] {input2,
-                                    qualThreshold, minLength, maxLength, discardRemainingNs, no5p});
-                        }
-                    }
-                }
-            }
-        }
-        return data.iterator();
-    }
-
-    // TODO: this test should be removed
-    // this test only reads a file and check that the pipeline provides the same result as the previous pipeline
-    @Test(dataProvider = "concordanceData")
-    public void testEqualTrimmingWithOldTrimmer(final File inputFile, final int qualThreshold,
-            final int minLength, final int maxLength,
-            final boolean discardRemainingNsm, final boolean no5p) throws Exception {
-        // setting the trimmer
-        final Trimmer trimmer = new TrimmerBuilder(true)
-                .setTrimQuality(true)
-                .setQualityThreshold(qualThreshold)
-                .setMinLength(minLength)
-                .setMaxLength(maxLength)
-                .setDiscardRemainingNs(discardRemainingNsm)
-                .setNo5pTrimming(no5p)
-                .build();
-
-        final Histogram<Integer> lengthHistogram = new Histogram<>();
-
-        // for reusing
-        final ReadLengthReadFilter rlrf = new ReadLengthReadFilter(minLength, maxLength);
-        // in the previous pipeline, only two trimmers were applied
-        final List<TrimmingFunction> trimmers = Arrays
-                .asList(new TrailingNtrimmer(), new MottQualityTrimmer(qualThreshold));
-        // in the previous trimmer, 3 prime was never disabled
-        trimmers.forEach(tf -> tf.setDisableEnds(no5p, false));
-
-        // setting the pipeline
-        final TrimAndFilterPipeline pipeline = new TrimAndFilterPipeline(
-                trimmers,
-                (discardRemainingNsm)
-                        ? Arrays.asList(new AmbiguousBaseReadFilter(0), rlrf)
-                        : Collections.singletonList(rlrf)
-        );
-
-        // open the file with default factory
-        final ReadsSourceHandler handler = ReadsSourceHandler
-                .getHandler(inputFile.getAbsolutePath(), new ReadReaderFactory());
-        final Iterable<GATKRead> readsIt = handler::toIterator;
-
-        // for using trimRead
-        final TrimStat trimStat = trimmer.getTrimStats().get(0);
-
-        int totalDiscardedInternalNs = 0;
-        int checkedDiscardedInternalNs = 0;
-        for (final GATKRead readForTrimmer : readsIt) {
-            // copy and trim both independentlt
-            final GATKRead readForPipeline = readForTrimmer.deepCopy();
-            trimmer.trimRead(readForTrimmer, trimStat, lengthHistogram);
-            final boolean passFilter = pipeline.test(readForPipeline);
-
-            // this is a known bug in the previous trimmer
-            // see https://github.com/magicDGS/ReadTools/issues/101 for more details
-            if (discardRemainingNsm && readForTrimmer.getAttributeAsInteger("ct") == 11) {
-                totalDiscardedInternalNs++;
-                // if the length is the same, we can check concordance
-                if (readForTrimmer.getLength() == readForPipeline.getLength()) {
-                    checkedDiscardedInternalNs++;
-                    // it should not pass the filter
-                    Assert.assertFalse(passFilter,
-                            "not filtering by remaining Ns in the same way (trimmer vs. pipeline):\n"
-                                    + readForTrimmer.getSAMString() + "\n"
-                                    + readForPipeline.getSAMString() + "\n");
-                    Assert.assertEquals(readForPipeline.getBases(),
-                            readForTrimmer.getBases(), "wrong bases");
-                    Assert.assertEquals(readForPipeline.getBaseQualities(),
-                            readForTrimmer.getBaseQualities(), "wrong quals");
-                }
-            } else {
-                // check the trimming
-                Assert.assertEquals(passFilter, !RTReadUtils.isCompletelyTrimRead(readForTrimmer),
-                        "no filter in the same way (trimer vs. pipeline):\n"
-                                + readForTrimmer.getSAMString() + "\n"
-                                + readForPipeline.getSAMString() + "\n");
-                Assert.assertEquals(readForPipeline.getLength(),
-                        readForTrimmer.getLength(), "wrong length");
-                Assert.assertEquals(readForPipeline.getBases(),
-                        readForTrimmer.getBases(), "wrong bases");
-                Assert.assertEquals(readForPipeline.getBaseQualities(),
-                        readForTrimmer.getBaseQualities(), "wrong quals");
-            }
-        }
-
-        // log to the test output that this is not considered
-        if (totalDiscardedInternalNs != checkedDiscardedInternalNs) {
-            log(String.format(
-                    "%s/%s internal Ns discarded reads were not checked due to a known issue.",
-                    totalDiscardedInternalNs - checkedDiscardedInternalNs,
-                    totalDiscardedInternalNs));
-        }
-
-        handler.close();
     }
 
     @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)

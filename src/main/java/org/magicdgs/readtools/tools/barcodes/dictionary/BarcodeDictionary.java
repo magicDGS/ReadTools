@@ -83,61 +83,6 @@ public class BarcodeDictionary {
     }
 
     /**
-     * Protected constructor. For get an instance of a dictionary, use {@link
-     * BarcodeDictionaryFactory}
-     *
-     * @param run           the run name for the samples; if <code>null</code> it will be igonored
-     * @param samples       the sample names
-     * @param barcodes      the barcodes
-     * @param libraries     the library for each barcode; if <code>null</code>, the library is the
-     *                      samples_combinedBarcodes
-     * @param readGroupInfo the additional information for the read group
-     * @deprecated use the direct constructor instead.
-     */
-    @Deprecated
-    protected BarcodeDictionary(final String run, final List<String> samples,
-            final List<List<String>> barcodes, final List<String> libraries,
-            final SAMReadGroupRecord readGroupInfo) {
-        this(new ArrayList<>(samples.size()), barcodes, readGroupInfo);
-        initReadGroups(run, samples, libraries, readGroupInfo);
-    }
-
-    /**
-     * Create the read group for the samples: the sample name will be in the SM tag, the
-     * sampleName_combinedBarcode the
-     * ID and the rest of tags will come from the read group. The barcode field should be
-     * initialized before calling
-     * this method
-     *
-     * @param run           the run name for the samples; if <code>null</code> it will be igonored
-     * @param libraries     the library for each barcode; if <code>null</code> or empty, the
-     *                      library
-     *                      is the
-     *                      samples_combinedBarcodes
-     * @param samples       the sample name
-     * @param readGroupInfo the read group information
-     * @deprecated only used in deprecated constructor.
-     */
-    @Deprecated
-    private void initReadGroups(final String run, final List<String> samples,
-            final List<String> libraries, final SAMReadGroupRecord readGroupInfo) {
-        for (int i = 0; i < samples.size(); i++) {
-            final String sampleBarcode =
-                    String.format("%s_%s", samples.get(i), getCombinedBarcodesFor(i));
-            final SAMReadGroupRecord rg = new SAMReadGroupRecord(
-                    (run == null) ? sampleBarcode : String.format("%s_%s", run, sampleBarcode),
-                    readGroupInfo);
-            rg.setSample(samples.get(i));
-            if (libraries != null && !libraries.isEmpty()) {
-                rg.setLibrary(libraries.get(i));
-            } else {
-                rg.setLibrary(sampleBarcode);
-            }
-            sampleRecord.add(rg);
-        }
-    }
-
-    /**
      * Initialize the barcode-RG map for the dictionary to cached
      */
     private void initBarcodeRGmap() {

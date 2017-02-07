@@ -22,7 +22,6 @@
  */
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
-import org.magicdgs.io.readers.SpaceDelimitedReader;
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupArgumentCollection;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
@@ -40,7 +39,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -282,70 +280,5 @@ public class BarcodeDictionaryFactory {
             super(path.toFile(), "barcode file does not include the following required columns: "
                     + String.join(", ", missingColumns));
         }
-    }
-
-    /**
-     * Reads a barcode dictionary from a file. Each of the barcodes is stored independently.
-     *
-     * @param run              run name. May be {@code null}.
-     * @param barcodeFile      file to read the barcode information from.
-     * @param unknownReadGroup read group record for unknown samples. The tags will be used
-     *                         (except ID and SN) for the rest of barcodes.
-     *
-     * @return the barcode dictionary
-     *
-     * @deprecated use {@link #fromFile(Path, String, ReadGroupArgumentCollection)} instead.
-     */
-    @Deprecated
-    public static BarcodeDictionary createDefaultDictionary(final String run,
-            final Path barcodeFile, final SAMReadGroupRecord unknownReadGroup) {
-        try (final SpaceDelimitedReader reader = new SpaceDelimitedReader(barcodeFile)) {
-            // read the first line
-            String[] nextLine = reader.next();
-            if (nextLine == null) {
-                throwWrongFormatException(barcodeFile);
-            }
-            final int numberOfBarcodes = nextLine.length - 2;
-            if (numberOfBarcodes < 1) {
-                throwWrongFormatException(barcodeFile);
-            }
-            logger.debug("Detected {} barcodes.", numberOfBarcodes);
-            // at this point, we know the number of barcodes
-            final List<List<String>> barcodes = new ArrayList<>(numberOfBarcodes);
-            // initialize all the barcodes
-            for (int i = 0; i < numberOfBarcodes; i++) {
-                barcodes.add(new ArrayList<>());
-            }
-            // create the lists with samples and libraries
-            final List<String> samples = new ArrayList<>();
-            final List<String> libraries = new ArrayList<>();
-            // reading the rest of the lines
-            while (nextLine != null) {
-                logger.debug(Arrays.toString(nextLine));
-                if (numberOfBarcodes != nextLine.length - 2) {
-                    throwWrongFormatException(barcodeFile);
-                }
-                // the first item is the sample name
-                samples.add(nextLine[0]);
-                libraries.add(nextLine[1]);
-                // get the barcodes
-                for (int i = 2; i < nextLine.length; i++) {
-                    barcodes.get(i - 2).add(nextLine[i]);
-                }
-                nextLine = reader.next();
-            }
-            // construct the barcode dictionary
-            return new BarcodeDictionary(run, samples, barcodes, libraries, unknownReadGroup);
-        } catch (final IOException e) {
-            // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
-            throw new UserException.CouldNotReadInputFile(barcodeFile.toFile(), e);
-        }
-    }
-
-    @Deprecated // no longer in use
-    private static void throwWrongFormatException(final Path barcodeFile) {
-        // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
-        throw new UserException.MalformedFile(barcodeFile.toFile(),
-                "wrong barcode file format: Each line should have two first columns (for the sample and the library) and the same number of barcodes after them.");
     }
 }

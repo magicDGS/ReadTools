@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.barcodes;
 
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
+import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
@@ -45,7 +46,7 @@ import java.util.stream.IntStream;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegrationTests {
+public class AssignReadGroupByBarcodeIntegrationTest extends CommandLineProgramTest {
 
     // old test files in FASTQ format -> they are modified to have the correct separator
     private final File DUAL_FASTQ_1 = getTestFile("SRR1931701.dual.barcoded_1.fq");
@@ -66,7 +67,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegra
     public Object[][] addByReadGroupData() {
         // the metrics file are the same
         return new Object[][] {
-                // CONCORDANCE with deprecated TaggedBamToFastq
+                // CONCORDANCE with legacy TaggedBamToFastq (removed)
                 // the input file is the same, but without header
 
                 // single end
@@ -112,7 +113,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegra
                                 .addBooleanArgument("interleaved", true),
                         false},
 
-                // CONCORDANCE with deprecated FastqBarcode
+                // CONCORDANCE with legacy FastqBarcodeDetector (removed)
                 // the input files are the same except dual-barcoded ones, which have the new separator
 
 
@@ -151,7 +152,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends BarcodeToolsIntegra
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
 
-                // CONCORDANCE with BamBarcodeDetector
+                // CONCORDANCE with legacy BamBarcodeDetector (removed)
                 {"testBamBarcodeDetector", "BamBarcodeDetector",
                         new ArgumentsBuilder()
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)

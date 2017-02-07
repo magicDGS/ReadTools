@@ -1,7 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 0.3.0
+## [Unreleased] - 1.0.0
+
+### Changed
+- Removed legacy tools
+- (Developer) Removed legacy IO system
+- (Developer) Removed some deprecated code
 
 ## [0.3.0] - 2017-02-06
 
