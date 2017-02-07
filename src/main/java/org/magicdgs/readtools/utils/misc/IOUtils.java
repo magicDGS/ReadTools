@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 /**
  * Utils for the inputs FASTQ and BAM/SAM files.
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class IOUtils {
 

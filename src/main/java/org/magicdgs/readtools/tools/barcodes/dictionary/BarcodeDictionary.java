@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Classs for store a barcode dictionary
  *
- * @author Daniel Gómez-Sánchez
+ * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class BarcodeDictionary {
 
