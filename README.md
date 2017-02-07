@@ -18,6 +18,7 @@ _Note: to use unreleased changes it is required to install from source. See the 
 ---
 
 ## Bug reports
+
 Please, if you find any problem add a new [Issue] or contact by email <daniel.gomez.sanchez@hotmail.es>
 
 ---
@@ -55,11 +56,23 @@ If you want to evaluate _ReadTools_ locally:
 
 * __Pushing directly to master branch is not allowed.__
 * It is recommended to name branches with a short form of your name and a explanatory name. Example: dgs_fix_issue30.
-* Pull requests should be reviewed before merging by other developer.
+* Pull Requests should be reviewed before merging by other developer.
 * Any new code will require unit/integration tests.
 * Use [org.apache.logging.log4j.Logger](https://logging.apache.org/log4j/2.0/log4j-api/apidocs/org/apache/logging/log4j/Logger.html) for logging.
 * Use [TestNG](http://testng.org/doc/index.html) for testing.
 * Use [magicDGS Style Guide](https://github.com/magicDGS/styleguide) for code formatting.
+
+## Versioning and changelog
+
+We use [semantic versioning](http://semver.org/) (MAJOR.MINOR.PATCH).
+[build.gradle] and Unreleased tag (within [CHANGELOG]) should be updated accordingly in Pull Request to follow the convention:
+
+* Backwards-compatible bug fixes: increase PATCH number. Add a __Fixed__ entry to [CHANGELOG].
+* Backwards-compatible changes: increase MINOR number and reset PATCH to 0. Add a __Added__ entry to [CHANGELOG].
+* Backwards-incompatible changes: increase MAJOR number and reset MINOR and PATCH to 0. Add a __Changed__ entry to [CHANGELOG].
+
+Please, distinguish within every category (__Fixed__/__Added__/__Changed__) if a change 
+correspond only to API changes or it have some effect to the user side.
 
 ---
 
@@ -83,3 +96,4 @@ If you use this software, please add the citation as following:
 [GATK v.4]: https://github.com/broadinstitute/gatk
 [CHANGELOG]: https://github.com/magicDGS/ReadTools/blob/master/CHANGELOG.md
 [LICENSE]: https://github.com/magicDGS/ReadTools/blob/master/LICENSE
+[build.gradle]: 
