@@ -25,10 +25,9 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.cmd.RTStandardArguments;
-import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.writer.PairEndSplitter;
-import org.magicdgs.readtools.utils.read.writer.ReadToolsOutputFormat;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -58,7 +57,7 @@ final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
     public String outputPrefix;
 
     @Argument(fullName = RTStandardArguments.OUTPUT_FORMAT_NAME, shortName = RTStandardArguments.OUTPUT_FORMAT_NAME, doc = "FASTQ output format.", optional = true)
-    public ReadToolsOutputFormat.FastqFormat outputFormat = ReadToolsOutputFormat.FastqFormat.GZIP;
+    public ReadToolsIOFormat.FastqFormat outputFormat = ReadToolsIOFormat.FastqFormat.GZIP;
 
     // TODO: this creates the MD5 not for the gzipped file, but for the FASTQ contents themselves
     @Argument(fullName = RTStandardArguments.CREATE_OUTPUT_FASTQ_MD5_LONG_NAME, shortName = RTStandardArguments.CREATE_OUTPUT_FASTQ_MD5_SHORT_NAME, doc = "If true, create a MD5 digest for FASTQ file(s) content.", optional = true)
@@ -82,7 +81,7 @@ final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
     @Override
     public Path makeMetricsFile(final String suffix) {
         final String prefix = (suffix == null) ? outputPrefix : outputPrefix + suffix;
-        return IOUtils.makeMetricsFile(prefix);
+        return ReadToolsIOFormat.makeMetricsFile(prefix);
     }
 
     @Override

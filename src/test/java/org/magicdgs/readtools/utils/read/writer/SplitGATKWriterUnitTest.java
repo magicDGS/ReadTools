@@ -74,20 +74,20 @@ public class SplitGATKWriterUnitTest extends BaseTest {
                 Collections.singletonList(new PairEndSplitter());
         final List<String> expectedSuffixesPairSplitter = Arrays.asList("_1.fq", "_2.fq", "_SE.fq");
         return new Object[][] {
-                {"singleEnd", ReadToolsOutputFormat.FastqFormat.PLAIN, pairEndSplitter, true,
+                {"singleEnd", ReadToolsIOFormat.FastqFormat.PLAIN, pairEndSplitter, true,
                         expectedSuffixesPairSplitter},
-                {"singleEnd", ReadToolsOutputFormat.FastqFormat.PLAIN, pairEndSplitter, false,
+                {"singleEnd", ReadToolsIOFormat.FastqFormat.PLAIN, pairEndSplitter, false,
                         expectedSuffixesPairSplitter},
-                {"pairEnd", ReadToolsOutputFormat.FastqFormat.PLAIN, pairEndSplitter, true,
+                {"pairEnd", ReadToolsIOFormat.FastqFormat.PLAIN, pairEndSplitter, true,
                         expectedSuffixesPairSplitter},
-                {"pairEnd", ReadToolsOutputFormat.FastqFormat.PLAIN, pairEndSplitter, false,
+                {"pairEnd", ReadToolsIOFormat.FastqFormat.PLAIN, pairEndSplitter, false,
                         expectedSuffixesPairSplitter}
         };
     }
 
 
     @Test(dataProvider = "writers")
-    public void testSplitGATKWriter(final String outputPrefix, final ReadToolsOutputFormat format,
+    public void testSplitGATKWriter(final String outputPrefix, final ReadToolsIOFormat format,
             final List<ReaderSplitter<?>> splitter, final boolean onDemand,
             final List<String> expectedSuffixes) throws Exception {
         final List<File> expectedFiles =
@@ -163,7 +163,7 @@ public class SplitGATKWriterUnitTest extends BaseTest {
 
         // open the writer and create files
         final SplitGATKWriter writer = new SplitGATKWriter(testPrefix.getAbsolutePath(),
-                ReadToolsOutputFormat.BamFormat.SAM,
+                ReadToolsIOFormat.BamFormat.SAM,
                 Collections.singletonList(new SampleNameSplitter()),
                 header, true, new ReadWriterFactory(), false);
 

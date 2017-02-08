@@ -30,6 +30,7 @@ import org.magicdgs.readtools.utils.tests.BaseTest;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
@@ -55,6 +56,11 @@ public class ReadsSourceHandlerUnitTest extends BaseTest {
     // this is the factory for tests, including reference sequence for CRAM
     private final ReadReaderFactory FACTORY_FOR_TEST = new ReadReaderFactory()
             .setReferenceSequence(new File(sourcesFolder, "2L.fragment.fa"));
+
+    @Test(expectedExceptions = UserException.CouldNotReadInputFile.class)
+    public void testNotFoundHandler() throws Exception {
+        ReadsSourceHandler.getHandler("unknown", FACTORY_FOR_TEST);
+    }
 
     @DataProvider(name = "fastqSources")
     public Object[][] fastqDataSources() {

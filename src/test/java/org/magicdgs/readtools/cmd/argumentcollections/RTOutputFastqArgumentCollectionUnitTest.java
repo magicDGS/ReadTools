@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
-import org.magicdgs.readtools.utils.read.writer.ReadToolsOutputFormat;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
@@ -86,7 +86,7 @@ public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
         final RTOutputFastqArgumentCollection args = new RTOutputFastqArgumentCollection();
         args.outputPrefix = outputPrefix;
         args.interleaved = true;
-        args.outputFormat = ReadToolsOutputFormat.FastqFormat.PLAIN;
+        args.outputFormat = ReadToolsIOFormat.FastqFormat.PLAIN;
         testOutputs(args, FastqGATKWriter.class, expectedFiles);
     }
 
@@ -107,7 +107,7 @@ public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
     @DataProvider
     public Iterator<Object[]> outputWithSuffix() throws Exception {
         final List<Object[]> data = new ArrayList<>();
-        for (final ReadToolsOutputFormat.FastqFormat format : ReadToolsOutputFormat.FastqFormat
+        for (final ReadToolsIOFormat.FastqFormat format : ReadToolsIOFormat.FastqFormat
                 .values()) {
             data.add(new Object[] {"prefix", format, "_suffix",
                     "prefix_suffix" + format.getExtension()});
@@ -121,7 +121,7 @@ public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
 
     @Test(dataProvider = "outputWithSuffix")
     public void testGetOutputNameWithSuffix(final String outputPrefix,
-            ReadToolsOutputFormat.FastqFormat format, final String suffix,
+            ReadToolsIOFormat.FastqFormat format, final String suffix,
             final String expectedOutputName) throws Exception {
         final RTOutputFastqArgumentCollection args = new RTOutputFastqArgumentCollection();
         args.outputPrefix = outputPrefix;

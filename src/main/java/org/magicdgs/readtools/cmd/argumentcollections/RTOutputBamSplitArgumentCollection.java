@@ -25,9 +25,8 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.cmd.RTStandardArguments;
-import org.magicdgs.readtools.utils.misc.IOUtils;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
-import org.magicdgs.readtools.utils.read.writer.ReadToolsOutputFormat;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -56,8 +55,7 @@ class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentColl
     public String outputPrefix;
 
     @Argument(fullName = RTStandardArguments.OUTPUT_FORMAT_NAME, shortName = RTStandardArguments.OUTPUT_FORMAT_NAME, doc = "SAM/BAM/CRAM output format.", optional = true)
-    public ReadToolsOutputFormat.BamFormat outputFormat = ReadToolsOutputFormat.BamFormat.BAM;
-
+    public ReadToolsIOFormat.BamFormat outputFormat = ReadToolsIOFormat.BamFormat.BAM;
 
     @Argument(fullName = "splitBySample", shortName = "splitSM", doc = "Split file by sample.", optional = true)
     public boolean splitBySample = false;
@@ -76,7 +74,7 @@ class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentColl
     @Override
     public Path makeMetricsFile(String suffix) {
         final String prefix = (suffix == null) ? outputPrefix : outputPrefix + suffix;
-        return IOUtils.makeMetricsFile(prefix);
+        return ReadToolsIOFormat.makeMetricsFile(prefix);
     }
 
     @Override
