@@ -149,4 +149,5 @@ shadowJar {
     zip64 true
     classifier = null
     version = null
+    mergeServiceFiles()
 }
