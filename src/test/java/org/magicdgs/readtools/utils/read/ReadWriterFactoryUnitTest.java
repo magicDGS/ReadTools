@@ -93,4 +93,14 @@ public class ReadWriterFactoryUnitTest extends BaseTest {
                 .createWriter(existantFile.getAbsolutePath(), new SAMFileHeader(), true);
     }
 
+    @Test
+    public void testNonAbsolute() throws Exception {
+        final String nonAbsolute = "nonAbsolute.fq";
+        final File file = new File(nonAbsolute);
+        file.deleteOnExit();
+        Assert.assertFalse(file.exists(), "test implementation error");
+        new ReadWriterFactory()
+                .createWriter(nonAbsolute, null, true);
+        Assert.assertTrue(file.exists(), "file was not generated");
+    }
 }
