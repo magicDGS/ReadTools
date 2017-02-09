@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 1.0.0
 
+### Added
+- HDFS support for input and output. The URI should specify the schema (__hdfs__) and the host.
+
 ### Changed
 - Removed legacy tools
 - (Developer) Removed legacy IO system
