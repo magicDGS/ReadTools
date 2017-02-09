@@ -25,8 +25,9 @@
 package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.RTDefaults;
-import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
@@ -39,7 +40,6 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -142,13 +142,13 @@ public final class ReadWriterFactory {
 
     /** Open a new FASTQ writer based from a String path. */
     public FastqWriter openFastqWriter(final String output) {
-        return openFastqWriter(IOUtils.newOutputFile(output, !forceOverwrite));
+        return openFastqWriter(newOutputFile(output));
     }
 
     /** Open a new SAM/BAM/CRAM writer from a String path. */
     public SAMFileWriter openSAMWriter(final SAMFileHeader header, final boolean presorted,
             final String output) {
-        return openSAMWriter(header, presorted, IOUtils.newOutputFile(output, !forceOverwrite));
+        return openSAMWriter(header, presorted, newOutputFile(output));
     }
 
     /** Open a new SAM/BAM/CRAM writer from a Path. */
@@ -164,7 +164,8 @@ public final class ReadWriterFactory {
     public GATKReadWriter createSAMWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
         if (null == referenceFile && output.endsWith(CramIO.CRAM_FILE_EXTENSION)) {
-            throw new UserException.MissingReference("A reference file is required for writing CRAM files");
+            throw new UserException.MissingReference(
+                    "A reference file is required for writing CRAM files");
         }
         return new SAMFileGATKReadWriter(openSAMWriter(header, presorted, output));
     }
@@ -177,27 +178,45 @@ public final class ReadWriterFactory {
     /** Creates a GATKReadWriter based on the path extension. */
     public GATKReadWriter createWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
-        if (IOUtils.isSamBamOrCram(output)) {
+        if (ReadToolsIOFormat.isSamBamOrCram(output)) {
             return createSAMWriter(output, header, presorted);
-        } else if (IOUtils.isFastq(output)) {
+        } else if (ReadToolsIOFormat.isFastq(output)) {
             return createFASTQWriter(output);
         }
-        throw new UserException.CouldNotCreateOutputFile(new File(output),
-                "not supported output format based on the extension");
+        throw new RTUserExceptions.InvalidOutputFormat(output,
+                "not supported output format based on the extension.");
+    }
+
+    /**
+     * Creates a new output file, generating all the sub-directories and checking for the existence
+     * of the file if requested.
+     *
+     * @param output the output file name.
+     *
+     * @return the path object.
+     *
+     * @throws UserException if the file already exists or an I/O error occurs.
+     */
+    private Path newOutputFile(final String output) {
+        final Path path = org.broadinstitute.hellbender.utils.io.IOUtils.getPath(output);
+        // check if the file already exists and create the directories
+        checkOutputAndCreateDirs(path);
+        // return the file
+        return path;
     }
 
     /**
      * Checks the existence of the file if the factory should do it and generate all the
      * intermediate directories.
      */
-    private void checkOutputAndCreateDirs(final Path outputFile) {
+    private void checkOutputAndCreateDirs(final Path outputPath) {
+        if (!forceOverwrite && Files.exists(outputPath)) {
+            throw new RTUserExceptions.OutputFileExists(outputPath);
+        }
         try {
-            if (!forceOverwrite) {
-                IOUtils.exceptionIfExists(outputFile);
-            }
-            Files.createDirectories(outputFile.getParent());
-        } catch (IOException e) {
-            throw new UserException.CouldNotCreateOutputFile(outputFile.toFile(), e.getMessage(),
+            Files.createDirectories(outputPath.getParent());
+        } catch (final Exception e) {
+            throw new UserException.CouldNotCreateOutputFile(outputPath.toFile(), e.getMessage(),
                     e);
         }
     }
@@ -211,5 +230,4 @@ public final class ReadWriterFactory {
             throw new UserException.CouldNotCreateOutputFile(source.get(), e.getMessage(), e);
         }
     }
-
 }

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.utils.read.writer.ReadToolsOutputFormat;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
@@ -65,10 +65,10 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
     public Iterator<Object[]> outputsData() throws Exception {
         final List<Object[]> data = new ArrayList<>();
         final boolean[] trueFalse = new boolean[] {true, false};
-        for (final ReadToolsOutputFormat.BamFormat format : ReadToolsOutputFormat.BamFormat
+        for (final ReadToolsIOFormat.BamFormat format : ReadToolsIOFormat.BamFormat
                 .values()) {
             // TODO: test cram format -> requires a reference
-            if (!format.equals(ReadToolsOutputFormat.BamFormat.CRAM)) {
+            if (!format.equals(ReadToolsIOFormat.BamFormat.CRAM)) {
                 for (final boolean sample : trueFalse) {
                     for (final boolean id : trueFalse) {
                         for (final boolean library : trueFalse) {
@@ -82,7 +82,7 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
     }
 
     @Test(dataProvider = "outputsData")
-    public void testOutputs(final ReadToolsOutputFormat.BamFormat format,
+    public void testOutputs(final ReadToolsIOFormat.BamFormat format,
             final boolean sample, final boolean id, final boolean library) throws Exception {
         // creates output prefix
         final File outputPrefix = new File(
@@ -133,7 +133,7 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
     @DataProvider
     public Iterator<Object[]> outputWithSuffix() throws Exception {
         final List<Object[]> data = new ArrayList<>();
-        for (final ReadToolsOutputFormat.BamFormat format : ReadToolsOutputFormat.BamFormat
+        for (final ReadToolsIOFormat.BamFormat format : ReadToolsIOFormat.BamFormat
                 .values()) {
             data.add(new Object[] {"prefix", format, "_suffix",
                     "prefix_suffix" + format.getExtension()});
@@ -147,7 +147,7 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
 
     @Test(dataProvider = "outputWithSuffix")
     public void testGetOutputNameWithSuffix(final String outputPrefix,
-            ReadToolsOutputFormat.BamFormat format, final String suffix,
+            ReadToolsIOFormat.BamFormat format, final String suffix,
             final String expectedOutputName) throws Exception {
         final RTOutputBamSplitArgumentCollection args = new RTOutputBamSplitArgumentCollection();
         args.outputPrefix = outputPrefix;

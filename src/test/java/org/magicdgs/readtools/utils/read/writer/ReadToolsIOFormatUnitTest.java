@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.misc;
+package org.magicdgs.readtools.utils.read.writer;
 
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
@@ -30,12 +30,28 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.nio.file.Path;
-
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class IOUtilsUnitTest extends BaseTest {
+public class ReadToolsIOFormatUnitTest extends BaseTest {
+
+    @DataProvider(name = "formats")
+    public Object[][] getFormats() {
+        return new Object[][] {
+                {ReadToolsIOFormat.FastqFormat.PLAIN, ".fq"},
+                {ReadToolsIOFormat.FastqFormat.GZIP, ".fq.gz"},
+                {ReadToolsIOFormat.BamFormat.BAM, ".bam"},
+                {ReadToolsIOFormat.BamFormat.SAM, ".sam"},
+                {ReadToolsIOFormat.BamFormat.CRAM, ".cram"}
+        };
+    }
+
+    @Test(dataProvider = "formats")
+    public void testOutputFormats(final ReadToolsIOFormat format, final String extension)
+            throws Exception {
+        Assert.assertEquals(format.getExtension(), extension);
+    }
+
 
     @DataProvider(name = "bamFiles")
     public Object[][] bamFileNames() {
@@ -62,55 +78,38 @@ public class IOUtilsUnitTest extends BaseTest {
                 {"example.fq"},
                 {"example.fastq.gz"},
                 {"example.fq.gz"},
-                {"example.bfq"},
                 {"/folder/example.fastq"},
                 {"/folder/example.fq"},
                 {"/folder/example.fastq.gz"},
                 {"/folder/example.fq.gz"},
-                {"/folder/example.bfq"},
                 {"folder/example.fastq"},
                 {"folder/example.fq"},
                 {"folder/example.fastq.gz"},
                 {"folder/example.fq.gz"},
-                {"folder/example.bfq"},
                 {"/folder/example.fastq"},
                 {"file:///folder/example.fq"},
                 {"file:///folder/example.fastq.gz"},
                 {"file:///folder/example.fq.gz"},
-                {"file:///folder/example.bfq"},
         };
     }
 
     @Test(dataProvider = "bamFiles")
     public void testIsSamBamOrCram(final String fileName) throws Exception {
-        Assert.assertTrue(IOUtils.isSamBamOrCram(fileName));
+        Assert.assertTrue(ReadToolsIOFormat.isSamBamOrCram(fileName));
     }
 
     @Test(dataProvider = "fastqFiles")
     public void testIsFastq(final String fileName) throws Exception {
-        Assert.assertTrue(IOUtils.isFastq(fileName));
+        Assert.assertTrue(ReadToolsIOFormat.isFastq(fileName));
     }
 
     @Test(dataProvider = "fastqFiles")
     public void testNotIsSamBamOrCram(final String fileName) throws Exception {
-        Assert.assertFalse(IOUtils.isSamBamOrCram(fileName));
+        Assert.assertFalse(ReadToolsIOFormat.isSamBamOrCram(fileName));
     }
 
     @Test(dataProvider = "bamFiles")
     public void testNotIsFastq(final String fileName) throws Exception {
-        Assert.assertFalse(IOUtils.isFastq(fileName));
+        Assert.assertFalse(ReadToolsIOFormat.isFastq(fileName));
     }
-
-    @Test(dataProvider = "bamFiles")
-    public void testIsSamBamOrCramPath(final String fileName) throws Exception {
-        final Path path = org.broadinstitute.hellbender.utils.io.IOUtils.getPath(fileName);
-        Assert.assertTrue(IOUtils.isSamBamOrCram(path));
-    }
-
-    @Test(dataProvider = "fastqFiles")
-    public void testNotIsSamBamOrCramPath(final String fileName) throws Exception {
-        final Path path = org.broadinstitute.hellbender.utils.io.IOUtils.getPath(fileName);
-        Assert.assertFalse(IOUtils.isSamBamOrCram(path));
-    }
-
 }

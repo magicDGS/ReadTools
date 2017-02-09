@@ -24,17 +24,16 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.utils.misc.IOUtils;
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.apache.commons.io.FilenameUtils;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
-import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
-import java.io.File;
 import java.nio.file.Path;
 
 /**
@@ -52,10 +51,9 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
     public String getOutputNameWithSuffix(final String suffix) {
         final String outputNameWithSuffix = FilenameUtils.removeExtension(outputName) + suffix
                 + "." + FilenameUtils.getExtension(outputName);
-        if (!IOUtils.isSamBamOrCram(outputNameWithSuffix)) {
-            // TODO: update after https://github.com/broadinstitute/gatk/pull/2282
-            throw new UserException.CouldNotCreateOutputFile(new File(outputNameWithSuffix),
-                    "The output file should have a BAM/SAM/CRAM extension.");
+        if (!ReadToolsIOFormat.isSamBamOrCram(outputNameWithSuffix)) {
+            throw new RTUserExceptions.InvalidOutputFormat(outputNameWithSuffix,
+                    ReadToolsIOFormat.BamFormat.values());
         }
         return outputNameWithSuffix;
     }
@@ -66,7 +64,7 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
         if (suffix != null) {
             prefix += suffix;
         }
-        return IOUtils.makeMetricsFile(prefix);
+        return ReadToolsIOFormat.makeMetricsFile(prefix);
     }
 
     /**
@@ -76,10 +74,9 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
     @Override
     protected GATKReadWriter createWriter(final ReadWriterFactory factory,
             final SAMFileHeader header, final boolean presorted) {
-        if (!IOUtils.isSamBamOrCram(outputName)) {
-            // TODO: update after https://github.com/broadinstitute/gatk/pull/2282
-            throw new UserException.CouldNotCreateOutputFile(new File(outputName),
-                    "The output file should have a BAM/SAM/CRAM extension.");
+        if (!ReadToolsIOFormat.isSamBamOrCram(outputName)) {
+            throw new RTUserExceptions.InvalidOutputFormat(outputName,
+                    ReadToolsIOFormat.BamFormat.values());
         }
         return factory.createSAMWriter(outputName, header, presorted);
     }

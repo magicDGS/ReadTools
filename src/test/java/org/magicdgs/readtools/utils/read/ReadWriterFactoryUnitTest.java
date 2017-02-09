@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.read;
 
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
@@ -82,6 +83,14 @@ public class ReadWriterFactoryUnitTest extends BaseTest {
                 .setReferenceFile(new File("notExisting.fasta"))
                 .createWriter(new File(testDir, "example.cram").getAbsolutePath(),
                         new SAMFileHeader(), true);
+    }
+
+    @Test(expectedExceptions = RTUserExceptions.OutputFileExists.class)
+    public void testExistantFileBlowsUp() throws Exception {
+        final File existantFile = new File(testDir, "exists.sam");
+        Assert.assertTrue(existantFile.createNewFile(), "unable to create test file");
+        new ReadWriterFactory()
+                .createWriter(existantFile.getAbsolutePath(), new SAMFileHeader(), true);
     }
 
 }

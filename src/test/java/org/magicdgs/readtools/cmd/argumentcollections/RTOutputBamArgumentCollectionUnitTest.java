@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -52,7 +53,7 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
         };
     }
 
-    @Test(dataProvider = "badOutputNames", expectedExceptions = UserException.CouldNotCreateOutputFile.class)
+    @Test(dataProvider = "badOutputNames", expectedExceptions = RTUserExceptions.InvalidOutputFormat.class)
     public void testIllegalOutputName(final String outputName) throws Exception {
         final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
         args.outputName = outputName;
@@ -129,7 +130,7 @@ public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
         Assert.assertEquals(args.getOutputNameWithSuffix(suffix), expectedOutputName);
     }
 
-    @Test(dataProvider = "badOutputNames", expectedExceptions = UserException.CouldNotCreateOutputFile.class)
+    @Test(dataProvider = "badOutputNames", expectedExceptions = RTUserExceptions.InvalidOutputFormat.class)
     public void testIllegalOutputNameWithSuffix(final String outputName) throws Exception {
         final RTOutputBamArgumentCollection args = new RTOutputBamArgumentCollection();
         args.outputName = outputName;

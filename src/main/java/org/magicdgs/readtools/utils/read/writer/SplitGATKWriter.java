@@ -60,7 +60,7 @@ public final class SplitGATKWriter implements GATKReadWriter {
     private final Map<String, GATKReadWriter> outs;
 
     private final String outputPrefix;
-    private final ReadToolsOutputFormat format;
+    private final ReadToolsIOFormat format;
 
     // the header for all the writers
     private final SAMFileHeader header;
@@ -83,7 +83,7 @@ public final class SplitGATKWriter implements GATKReadWriter {
      * @param onDemand     if {@code true}, creates the readers on demand; otherwise, all the
      *                     writers will be generated except the unknown.
      */
-    public SplitGATKWriter(final String outputPrefix, final ReadToolsOutputFormat format,
+    public SplitGATKWriter(final String outputPrefix, final ReadToolsIOFormat format,
             final List<ReaderSplitter<?>> splitters, final SAMFileHeader header,
             final boolean presorted, final ReadWriterFactory factory, final boolean onDemand) {
         // storing all parameters
