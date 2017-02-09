@@ -40,6 +40,7 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -214,8 +215,8 @@ public final class ReadWriterFactory {
             throw new RTUserExceptions.OutputFileExists(outputPath);
         }
         try {
-            Files.createDirectories(outputPath.getParent());
-        } catch (final Exception e) {
+            Files.createDirectories(outputPath.toAbsolutePath().getParent());
+        } catch (final IOException e) {
             throw new UserException.CouldNotCreateOutputFile(outputPath.toFile(), e.getMessage(),
                     e);
         }
