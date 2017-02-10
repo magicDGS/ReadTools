@@ -29,22 +29,35 @@ import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
+import htsjdk.samtools.Defaults;
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.cram.build.CramIO;
+import htsjdk.samtools.fastq.AsyncFastqWriter;
+import htsjdk.samtools.fastq.BasicFastqWriter;
 import htsjdk.samtools.fastq.FastqWriter;
-import htsjdk.samtools.fastq.FastqWriterFactory;
+import htsjdk.samtools.util.AbstractAsyncWriter;
+import htsjdk.samtools.util.IOUtil;
+import htsjdk.samtools.util.Md5CalculatingOutputStream;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipParameters;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 
 /**
  * Factory for generate writers for all sources of reads with the same parameters. Before opening a
@@ -58,7 +71,9 @@ import java.util.function.Supplier;
  */
 public final class ReadWriterFactory {
 
-    private final FastqWriterFactory fastqFactory;
+    private static final Logger logger = LogManager.getLogger(ReadWriterFactory.class);
+    private static final CompressorStreamFactory compressorFactory = new CompressorStreamFactory();
+
     private final SAMFileWriterFactory samFactory;
 
     // the reference file to use with CRAM
@@ -66,26 +81,30 @@ public final class ReadWriterFactory {
     // false if we do not check for existence
     private boolean forceOverwrite = RTDefaults.FORCE_OVERWRITE;
 
+    private boolean createMd5file;
+    private boolean setUseAsyncIo;
+    private int asyncOutputBufferSize = AbstractAsyncWriter.DEFAULT_QUEUE_SIZE;
+    private int bufferSize = Defaults.BUFFER_SIZE;
+
     /** Creates a default factory. */
     public ReadWriterFactory() {
         this.samFactory = new SAMFileWriterFactory();
-        this.fastqFactory = new FastqWriterFactory();
         // setting the default create Md5 to the same as the samFactory default
-        // because this could be change statically and we would like to propagate to the FASTQ writer
-        this.fastqFactory.setCreateMd5(SAMFileWriterFactory.getDefaultCreateMd5File());
+        this.createMd5file = SAMFileWriterFactory.getDefaultCreateMd5File();
+        this.setUseAsyncIo = Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS;
     }
 
     /** Sets asynchronous writing for any writer. */
     public ReadWriterFactory setUseAsyncIo(final boolean useAsyncIo) {
         this.samFactory.setUseAsyncIo(useAsyncIo);
-        this.fastqFactory.setUseAsyncIo(useAsyncIo);
+        this.setUseAsyncIo = useAsyncIo;
         return this;
     }
 
     /** Sets if the factory should create a MD5 file for any writer. */
     public ReadWriterFactory setCreateMd5File(final boolean createMd5File) {
         this.samFactory.setCreateMd5File(createMd5File);
-        this.fastqFactory.setCreateMd5(createMd5File);
+        this.createMd5file = createMd5File;
         return this;
     }
 
@@ -97,34 +116,35 @@ public final class ReadWriterFactory {
 
     /** Sets maximum records in RAM for sorting SAM/BAM/CRAM writers. */
     public ReadWriterFactory setMaxRecordsInRam(final int maxRecordsInRam) {
-        // TODO: change when supporting sorting of FASTQ files
+        logger.debug("Maximum records in RAM for FASTQ writers is ignored");
         this.samFactory.setMaxRecordsInRam(maxRecordsInRam);
         return this;
     }
 
     /** Sets the temp directory for sorting SAM/BAM/CRAM writers. */
     public ReadWriterFactory setTempDirectory(final File tmpDir) {
-        // TODO: change when supporting sorting og FASTQ files
+        logger.debug("Temp directory for FASTQ writers is ignored");
         this.samFactory.setTempDirectory(tmpDir);
         return this;
     }
 
-    /** Sets asynchronous buffer size for SAM/BAM/CRAM writers. */
+    /** Sets asynchronous buffer size for any writers. */
     public ReadWriterFactory setAsyncOutputBufferSize(final int asyncOutputBufferSize) {
-        // TODO: this should be change for FastqWriters
         this.samFactory.setAsyncOutputBufferSize(asyncOutputBufferSize);
+        this.asyncOutputBufferSize = asyncOutputBufferSize;
         return this;
     }
 
     /** Sets buffer size for SAM/BAM/CRAM writers. */
     public ReadWriterFactory setBufferSize(final int bufferSize) {
-        // TODO: this should be change for FastqWriters as well
         this.samFactory.setBufferSize(bufferSize);
+        this.bufferSize = bufferSize;
         return this;
     }
 
     /** Sets the reference file. This is required for CRAM writers. */
     public ReadWriterFactory setReferenceFile(final File referenceFile) {
+        logger.debug("Reference file for FASTQ writers is ignored");
         this.referenceFile = referenceFile;
         return this;
     }
@@ -138,7 +158,11 @@ public final class ReadWriterFactory {
     /** Open a new FASTQ writer from a Path. */
     public FastqWriter openFastqWriter(final Path path) {
         checkOutputAndCreateDirs(path);
-        return createWrappingException(() -> fastqFactory.newWriter(path.toFile()), path::toString);
+        final PrintStream writer = new PrintStream(getOutputStream(path));
+        final FastqWriter fastqWriter = new BasicFastqWriter(writer);
+        return (this.setUseAsyncIo)
+                ? new AsyncFastqWriter(fastqWriter, asyncOutputBufferSize)
+                : fastqWriter;
     }
 
     /** Open a new FASTQ writer based from a String path. */
@@ -156,9 +180,12 @@ public final class ReadWriterFactory {
     public SAMFileWriter openSAMWriter(final SAMFileHeader header, final boolean presorted,
             final Path output) {
         checkOutputAndCreateDirs(output);
-        return createWrappingException(
-                () -> samFactory.makeWriter(header, presorted, output.toFile(), referenceFile),
-                output::toString);
+        try {
+            return samFactory.makeWriter(header, presorted, output.toFile(), referenceFile);
+        } catch (final SAMException e) {
+            // catch SAM exceptions as IO errors -> this are the ones that may fail
+            throw new UserException.CouldNotCreateOutputFile(output.toFile(), e.getMessage(), e);
+        }
     }
 
     /** Creates a SAM/BAM/CRAM writer from a String path. */
@@ -186,6 +213,64 @@ public final class ReadWriterFactory {
         }
         throw new RTUserExceptions.InvalidOutputFormat(output,
                 "not supported output format based on the extension.");
+    }
+
+    private OutputStream getOutputStream(final Path outputPath) {
+        try {
+            // get the output stream for the file
+            OutputStream outputStream = Files.newOutputStream(outputPath);
+
+            // wrap to a compressed one based on the extension
+            outputStream = maybeCompressedWrap(outputStream, outputPath);
+
+            // maybe wraps the stream to compute MD5 digest
+            outputStream = maybeMd5Wrap(outputStream, outputPath);
+
+            // make maybe buffered depending on the buffer size
+            return IOUtil.maybeBufferOutputStream(outputStream, bufferSize);
+        } catch (IOException e) {
+            throw new UserException.CouldNotCreateOutputFile(outputPath.toString(), e.getMessage(),
+                    e);
+        }
+    }
+
+    private OutputStream maybeCompressedWrap(final OutputStream outputStream, final Path outputPath) {
+        try {
+            // extension to determine the compression
+            final String ext = FilenameUtils.getExtension(outputPath.toString());
+
+            // handle differently the gzip format, to set the compression level
+            if (CompressorStreamFactory.GZIP.equals(ext)) {
+                final GzipParameters gzipParams = new GzipParameters();
+                gzipParams.setCompressionLevel(IOUtil.getCompressionLevel());
+                return new GzipCompressorOutputStream(outputStream, gzipParams);
+            }
+
+            // fallback in other compression algorithms
+            return compressorFactory.createCompressorOutputStream(ext, outputStream);
+        } catch (final CompressorException | IOException e) {
+            // log for pinpoint errors
+            logger.debug("Not using compression for output stream {}: {}", () -> outputPath, () -> e.getMessage());
+        }
+
+        // return the same stream if some error occurs
+        return outputStream;
+    }
+
+    private OutputStream maybeMd5Wrap(final OutputStream outputStream, final Path outputPath) {
+        if (createMd5file) {
+            // TODO: this requires an htsjdk method for wrap also a Path or outputStream
+            // TODO: instead of only a digest file
+            // create the file
+            final File digestFile = new File(outputPath.toString() + ".md5");
+            // log a warning if it exists
+            if (digestFile.exists()) {
+                logger.warn("MD5 file will be overridden: {}", () -> digestFile.getAbsolutePath());
+            }
+            return new Md5CalculatingOutputStream(outputStream, digestFile);
+        } else {
+            return outputStream;
+        }
     }
 
     /**
@@ -219,16 +304,6 @@ public final class ReadWriterFactory {
         } catch (final IOException e) {
             throw new UserException.CouldNotCreateOutputFile(outputPath.toFile(), e.getMessage(),
                     e);
-        }
-    }
-
-    // any exception caused by open a file for will thrown a could not read input file exception
-    private static <T> T createWrappingException(final Callable<T> opener,
-            final Supplier<String> source) {
-        try {
-            return opener.call();
-        } catch (Exception e) {
-            throw new UserException.CouldNotCreateOutputFile(source.get(), e.getMessage(), e);
         }
     }
 }
