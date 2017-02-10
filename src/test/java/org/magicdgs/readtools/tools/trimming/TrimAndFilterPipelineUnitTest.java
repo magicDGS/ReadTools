@@ -464,7 +464,7 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 new GATKReadFilterPluginDescriptor(null);
         // this is like parsing the arguments with Barclay
         userFilters.stream().map(ReadFilter::getClass).forEach(rf -> {
-            filterDescriptor.userReadFilterNames.add(rf.getSimpleName());
+            filterDescriptor.userEnabledReadFilterNames.add(rf.getSimpleName());
             try {
                 filterDescriptor.getInstance(rf);
             } catch (IllegalAccessException | InstantiationException e) {

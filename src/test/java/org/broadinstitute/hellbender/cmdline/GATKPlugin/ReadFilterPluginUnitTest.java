@@ -1,30 +1,20 @@
-package org.broadinstitute.hellbender.cmdline.GATKPlugin;
+package org.broadinstitute.hellbender.engine.filters;
 
 import htsjdk.samtools.Cigar;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.TextCigarCodec;
+import org.apache.commons.io.output.NullOutputStream;
 import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLineParser;
-import org.broadinstitute.hellbender.engine.filters.LibraryReadFilter;
-import org.broadinstitute.hellbender.engine.filters.MappingQualityReadFilter;
-import org.broadinstitute.hellbender.engine.filters.PlatformReadFilter;
-import org.broadinstitute.hellbender.engine.filters.PlatformUnitReadFilter;
-import org.broadinstitute.hellbender.engine.filters.ReadFilter;
-import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
-import org.broadinstitute.hellbender.engine.filters.ReadFilterUnitTest;
-import org.broadinstitute.hellbender.engine.filters.ReadGroupBlackListReadFilter;
-import org.broadinstitute.hellbender.engine.filters.ReadGroupReadFilter;
-import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
-import org.broadinstitute.hellbender.engine.filters.ReadNameReadFilter;
-import org.broadinstitute.hellbender.engine.filters.SampleReadFilter;
-import org.broadinstitute.hellbender.engine.filters.WellformedReadFilter;
+import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,13 +23,14 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 // TODO: this is a hack for testing the custom GATK-plugin
+// TODO: from https://github.com/broadinstitute/gatk/pull/2401 (latest commit 01-03-2017)
 public class ReadFilterPluginUnitTest {
 
-    ////////////////////////////////
-    //// Tests included in https://github.com/broadinstitute/gatk/pull/2360
+    // null print stream for the tests
+    private static final PrintStream nullMessageStream = new PrintStream(new NullOutputStream());
 
     @DataProvider(name = "defaultFiltersForAllowedValues")
-     public Object[][] defaultFiltersForAllowedValues() {
+    public Object[][] defaultFiltersForAllowedValues() {
         return new Object[][] {
                 {Collections.emptyList()},
                 {Collections.singletonList(ReadFilterLibrary.GOOD_CIGAR)},
@@ -47,18 +38,23 @@ public class ReadFilterPluginUnitTest {
                 {Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED)}
         };
     }
+
     @Test(dataProvider = "defaultFiltersForAllowedValues")
     public void testGetAllowedValuesForDescriptorArgument(final List<ReadFilter> defaultFilters) {
         final CommandLineParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(defaultFilters)));
-        clp.parseArguments(System.out, new String[]{});
-        Assert.assertEquals(clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class).getAllowedValuesForDescriptorArgument("disableReadFilter"),
+        clp.parseArguments(nullMessageStream, new String[]{});
+
+        final GATKReadFilterPluginDescriptor pluginDescriptor = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+
+        // the help for disableReadFilter should point out to the default filters in the order provided
+        Assert.assertEquals(pluginDescriptor.getAllowedValuesForDescriptorArgument("disableReadFilter"),
                 defaultFilters.stream().map(rf -> rf.getClass().getSimpleName()).collect(Collectors.toSet()));
+
+        // test if the help for readFilter is not empty after parsing: if custom validation throws, the help should print the readFilter available
+        // the complete set could not checked because that requires to discover all the implemented filters
+        Assert.assertFalse(pluginDescriptor.getAllowedValuesForDescriptorArgument("readFilter").isEmpty());
     }
-
-    ////////////////////////////////
-    /// ORIGINAL TESTS
-
 
     //Filters with arguments to verify filter test method actually filters
     @DataProvider(name="filtersWithFilteringArguments")
@@ -96,7 +92,7 @@ public class ReadFilterPluginUnitTest {
                 "--readFilter", filter,
                 argName, argValue
         };
-        clp.parseArguments(System.out, args);
+        clp.parseArguments(nullMessageStream, args);
         ReadFilter rf = instantiateFilter(clp, header);
 
         // to ensure that the filter is actually working, verify that the test record
@@ -136,7 +132,7 @@ public class ReadFilterPluginUnitTest {
                 "--readFilter", filter  // no args, just enable filters
         };
 
-        clp.parseArguments(System.out, args);
+        clp.parseArguments(nullMessageStream, args);
     }
 
     // fail if a filter's arguments are passed but the filter itself is not enabled
@@ -152,18 +148,17 @@ public class ReadFilterPluginUnitTest {
         String[] args = { argName, argValue }; // no read filter set
 
         // no need to instantiate the filters - dependency errors are caught by the command line parser
-        clp.parseArguments(System.out, args);
+        clp.parseArguments(nullMessageStream, args);
     }
 
     @Test
     public void testNoFiltersSpecified() {
         CommandLineParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(null)));
-        clp.parseArguments(System.out, new String[]{});
+        clp.parseArguments(nullMessageStream, new String[]{});
 
         // get the command line read filters
-        final GATKReadFilterPluginDescriptor
-                readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+        final GATKReadFilterPluginDescriptor readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
         final List<ReadFilter> readFilters = readFilterPlugin.getAllInstances();
         Assert.assertEquals(readFilters.size(), 0);
     }
@@ -182,7 +177,7 @@ public class ReadFilterPluginUnitTest {
                 "--readFilter", ReadNameReadFilter.class.getSimpleName(),
                 "--readName", "fred"
         };
-        clp.parseArguments(System.out, args);
+        clp.parseArguments(nullMessageStream, args);
         ReadFilter rf = instantiateFilter(clp, header);
 
         // default read name is rejected by the readName filter
@@ -201,7 +196,46 @@ public class ReadFilterPluginUnitTest {
     public void testEnableNonExistentFilter() {
         CommandLineParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(null)));
-        clp.parseArguments(System.out, new String[] {"--RF", "fakeFilter"});
+        clp.parseArguments(nullMessageStream, new String[] {"--RF", "fakeFilter"});
+    }
+
+    @DataProvider(name = "duplicateFilters")
+    public Object[][] duplicateFilters() {
+        return new Object[][] {
+                {new String[] {
+                        "--RF", ReadLengthReadFilter.class.getSimpleName(),
+                        "--RF", ReadLengthReadFilter.class.getSimpleName()}},
+                {new String[] {
+                        "--RF", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
+                        "--RF", ReadLengthReadFilter.class.getSimpleName(),
+                        "--RF", ReadLengthReadFilter.class.getSimpleName()}
+                }
+        };
+    }
+
+    @Test(dataProvider = "duplicateFilters", expectedExceptions = CommandLineException.BadArgumentValue.class)
+    public void testEnableDuplicateFilter(final String[] arguments) {
+        CommandLineParser clp = new CommandLineArgumentParser(new Object(),
+                Collections.singletonList(new GATKReadFilterPluginDescriptor(null)));
+        clp.parseArguments(nullMessageStream, arguments);
+    }
+
+    @DataProvider(name = "duplicateDisabledFilters")
+    public Object[][] duplicateDisabledFilters() {
+        return new Object[][] {
+                {Collections.singletonList(ReadFilterLibrary.MAPPED),
+                        new String[]{
+                                "--DF", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
+                                "--DF", ReadFilterLibrary.MAPPED.getClass().getSimpleName()}
+                }
+        };
+    }
+
+    @Test(dataProvider = "duplicateDisabledFilters", expectedExceptions = CommandLineException.BadArgumentValue.class)
+    public void testDisableDuplicateFilter(final List<ReadFilter> defaults, final String[] arguments) {
+        CommandLineParser clp = new CommandLineArgumentParser(new Object(),
+                Collections.singletonList(new GATKReadFilterPluginDescriptor(defaults)));
+        clp.parseArguments(nullMessageStream, arguments);
     }
 
     @Test
@@ -211,14 +245,13 @@ public class ReadFilterPluginUnitTest {
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(
                         Collections.singletonList(ReadFilterLibrary.GOOD_CIGAR)
                 )));
-        clp.parseArguments(System.out, new String[] {
+        clp.parseArguments(nullMessageStream, new String[] {
                 "--RF", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
                 "--RF", ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS.getClass().getSimpleName(),
                 "-disableReadFilter", ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName()});
 
         // get the command line read filters
-        GATKReadFilterPluginDescriptor
-                readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+        GATKReadFilterPluginDescriptor readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
         List<ReadFilter> readFilters = readFilterPlugin.getAllInstances();
 
         Assert.assertEquals(readFilters.size(), 2);
@@ -227,11 +260,34 @@ public class ReadFilterPluginUnitTest {
         Assert.assertEquals(readFilters.get(1).getClass().getSimpleName(),
                 ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS.getClass().getSimpleName());
 
-        Assert.assertEquals(readFilterPlugin.disableFilters.size(), 1);
-        Assert.assertTrue(readFilterPlugin.disableFilters.contains(
+        Assert.assertEquals(readFilterPlugin.userDisabledReadFilterNames.size(), 1);
+        Assert.assertTrue(readFilterPlugin.userDisabledReadFilterNames.contains(
                 ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName()));
         Assert.assertTrue(readFilterPlugin.isDisabledFilter(
                 ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName()));
+    }
+
+    @Test
+    public void testDisableNotEnabledFilter() {
+        GATKReadFilterPluginDescriptor rfDesc = new GATKReadFilterPluginDescriptor(null);
+        final CommandLineParser clp = new CommandLineArgumentParser(new Object(),
+                Collections.singletonList(rfDesc));
+        final String filterName = ReadFilterLibrary.MAPPED.getClass().getSimpleName();
+        clp.parseArguments(nullMessageStream, new String[]{
+                "-disableReadFilter", filterName
+        });
+        // Make sure mapped filter got disabled with no exception
+        Assert.assertTrue(rfDesc.userDisabledReadFilterNames.contains(filterName));
+        Assert.assertTrue(rfDesc.isDisabledFilter(filterName));
+    }
+
+    @Test(expectedExceptions = CommandLineException.class)
+    public void tesDisableNonExistentReadFilter() {
+        final CommandLineParser clp = new CommandLineArgumentParser(new Object(),
+                Collections.singletonList(new GATKReadFilterPluginDescriptor(null)));
+        clp.parseArguments(nullMessageStream, new String[] {
+                "-disableReadFilter", "asdfasdf"
+        });
     }
 
     @Test
@@ -241,24 +297,23 @@ public class ReadFilterPluginUnitTest {
         defaultFilters.add(ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS);
         CommandLineParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(defaultFilters)));
-        clp.parseArguments(System.out, new String[] {
+        clp.parseArguments(nullMessageStream, new String[] {
                 "--RF", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
                 "-disableReadFilter", ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName(),
                 "-disableReadFilter", ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS.getClass().getSimpleName()});
 
         // get the command line read filters
-        GATKReadFilterPluginDescriptor
-                readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+        GATKReadFilterPluginDescriptor readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
         List<ReadFilter> readFilters = readFilterPlugin.getAllInstances();
 
         Assert.assertEquals(readFilters.size(), 1);
         Assert.assertEquals(readFilters.get(0).getClass().getSimpleName(),
                 ReadFilterLibrary.MAPPED.getClass().getSimpleName());
 
-        Assert.assertEquals(readFilterPlugin.disableFilters.size(), 2);
-        Assert.assertTrue(readFilterPlugin.disableFilters.contains(
+        Assert.assertEquals(readFilterPlugin.userDisabledReadFilterNames.size(), 2);
+        Assert.assertTrue(readFilterPlugin.userDisabledReadFilterNames.contains(
                 ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName()));
-        Assert.assertTrue(readFilterPlugin.disableFilters.contains(
+        Assert.assertTrue(readFilterPlugin.userDisabledReadFilterNames.contains(
                 ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS.getClass().getSimpleName()));
 
         ReadFilter rf = instantiateFilter(clp, createHeaderWithReadGroups());
@@ -267,56 +322,54 @@ public class ReadFilterPluginUnitTest {
                 ReadFilterLibrary.MAPPED.getClass().getSimpleName());
     }
 
-    @Test
-    public void testDisableAllFilters() {
+    @DataProvider(name = "disableToolDefaulFiltersArguments")
+    public Object[][] disableToolDefaulFiltersArguments() {
         List<ReadFilter> defaultFilters = new ArrayList<>();
         defaultFilters.add(ReadFilterLibrary.GOOD_CIGAR);
         defaultFilters.add(ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS);
+        return new Object[][] {
+                {new String[]{
+                        "--disableToolDefaultReadFilters"},
+                        defaultFilters, null},
+                {new String[]{
+                        "--disableToolDefaultReadFilters",
+                        "--RF", ReadFilterLibrary.MAPPED.getClass().getSimpleName()},
+                        defaultFilters, ReadFilterLibrary.MAPPED},
+                {new String[]{
+                        "--disableToolDefaultReadFilters",
+                        "--RF", ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName()},
+                        defaultFilters, ReadFilterLibrary.GOOD_CIGAR}
+        };
+    }
+
+    @Test(dataProvider = "disableToolDefaulFiltersArguments")
+    public void testDisableToolDefaultFilters(final String[] args, final List<ReadFilter> defaultFilters, final ReadFilter expectedFilter) {
         CommandLineParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(defaultFilters)));
-        clp.parseArguments(System.out, new String[] {
-                "--disableToolDefaultReadFilters"});
 
-        GATKReadFilterPluginDescriptor
-                readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+        clp.parseArguments(nullMessageStream, args);
+
+        GATKReadFilterPluginDescriptor readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
         Assert.assertTrue(readFilterPlugin.disableToolDefaultReadFilters);
 
+        // no instances because no readFilter was provided
         List<ReadFilter> readFilters = readFilterPlugin.getAllInstances();
-        Assert.assertEquals(readFilters.size(), 0); // allow all
+        Assert.assertEquals(readFilters.size(), (expectedFilter == null) ? 0 : 1);
+
+        // all the default filters returns true for isDisabledFilter if it is not the expected
+        defaultFilters.stream().map(df -> df.getClass().getSimpleName()).filter(df -> expectedFilter == null || expectedFilter.getClass().getSimpleName().equals(df))
+                .forEach(df -> Assert.assertTrue(readFilterPlugin.isDisabledFilter(df.getClass().getSimpleName())));
 
         ReadFilter rf = instantiateFilter(clp, createHeaderWithReadGroups());
         Assert.assertEquals(
                 rf.getClass().getSimpleName(),
-                ReadFilterLibrary.ALLOW_ALL_READS.getClass().getSimpleName());
+                (expectedFilter == null) ? ReadFilterLibrary.ALLOW_ALL_READS.getClass().getSimpleName()
+                                         : expectedFilter.getClass().getSimpleName());
     }
 
-    // TODO: this test is included in https://github.com/broadinstitute/gatk/pull/2365
-    @Test
-    public void testDisableAllFiltersKeepsUserProvided() {
-        List<ReadFilter> defaultFilters = new ArrayList<>();
-        defaultFilters.add(ReadFilterLibrary.GOOD_CIGAR);
-        defaultFilters.add(ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS);
-        CommandLineParser clp = new CommandLineArgumentParser(new Object(),
-                Collections.singletonList(new GATKReadFilterPluginDescriptor(defaultFilters)));
-        clp.parseArguments(System.out, new String[] {
-                "--RF", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
-                "--disableToolDefaultReadFilters"});
-
-        GATKReadFilterPluginDescriptor
-                readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
-        Assert.assertTrue(readFilterPlugin.disableToolDefaultReadFilters);
-
-        List<ReadFilter> readFilters = readFilterPlugin.getAllInstances();
-        Assert.assertEquals(readFilters.size(), 1); // mapped
-
-        ReadFilter rf = instantiateFilter(clp, createHeaderWithReadGroups());
-        Assert.assertEquals(
-                rf.getClass().getSimpleName(),
-                ReadFilterLibrary.MAPPED.getClass().getSimpleName());
-    }
-
-    // TODO: this is disabled because of https://github.com/broadinstitute/gatk/pull/2359
-    @Test(expectedExceptions = CommandLineException.class, enabled = false)
+    // Disabled due to https://github.com/broadinstitute/barclay/issues/23
+    // For now this will just generate a warning, but it should throw
+    @Test(expectedExceptions = CommandLineException.class, enabled=false)
     public void testDisabledDefaultWithArgsProvided() {
         // test for arguments provided for a default filter that is also disabled
         CommandLineParser clp = new CommandLineArgumentParser(
@@ -324,7 +377,7 @@ public class ReadFilterPluginUnitTest {
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(
                         Collections.singletonList(new SampleReadFilter())
                 )));
-        clp.parseArguments(System.out, new String[] {
+        clp.parseArguments(nullMessageStream, new String[] {
                 "--sample", "fred",
                 "-disableReadFilter", SampleReadFilter.class.getSimpleName()});
 
@@ -332,11 +385,78 @@ public class ReadFilterPluginUnitTest {
         clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
     }
 
+    @Test
+    public void testDisabledDefaultWithArgsNotProvided() {
+        // test for disabling a default filter that has arguments, but they are not provided
+        GATKReadFilterPluginDescriptor rfDesc = new GATKReadFilterPluginDescriptor(
+                Collections.singletonList(new ReadLengthReadFilter(1, 10)));
+        CommandLineParser clp = new CommandLineArgumentParser(new Object(), Collections.singletonList(rfDesc));
+        final String filterName = ReadLengthReadFilter.class.getSimpleName();
+        clp.parseArguments(nullMessageStream, new String[] {
+                "-disableReadFilter", filterName});
+
+        // Make sure ReadLengthReadFilter got disabled without an exception
+        Assert.assertTrue(rfDesc.userDisabledReadFilterNames.contains(filterName));
+        Assert.assertTrue(rfDesc.isDisabledFilter(filterName));
+    }
+
+    @Test(expectedExceptions = CommandLineException.class)
+    public void testDisabledNonDefaultFilterWithArgsProvided() {
+        // test for arguments provided for a non-default filter that is also disabled
+        CommandLineParser clp = new CommandLineArgumentParser(new Object(),
+                Collections.singletonList(new GATKReadFilterPluginDescriptor(Collections.emptyList())));
+        clp.parseArguments(nullMessageStream, new String[] {
+                "--disableReadFilter", SampleReadFilter.class.getSimpleName(),
+                "--sample", "fred"
+        });
+        // get the command line read filters
+        clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+    }
+
+    @Test
+    public void testDisableDefaultsAndReenableWithDifferentArgs() {
+        GATKReadFilterPluginDescriptor rfDesc = new GATKReadFilterPluginDescriptor(
+                Collections.singletonList(new ReadLengthReadFilter(1, 10)));
+        CommandLineParser clp = new CommandLineArgumentParser(new Object(), Collections.singletonList(rfDesc));
+        clp.parseArguments(nullMessageStream, new String[] {
+                "--disableToolDefaultReadFilters",
+                "--readFilter", ReadLengthReadFilter.class.getSimpleName(),
+                "--maxReadLength", "13"}
+        );
+        List<ReadFilter> allFilters = rfDesc.getAllInstances();
+        ReadLengthReadFilter rf = (ReadLengthReadFilter) allFilters.get(0);
+        Assert.assertEquals(rf.maxReadLength.intValue(), 13);
+    }
+
+    @Test
+    public void testDisableDefaultsAndReorderWithUserEnabledFirts() {
+        final ReadLengthReadFilter rlrf = new ReadLengthReadFilter(2, 10);
+        GATKReadFilterPluginDescriptor rfDesc = new GATKReadFilterPluginDescriptor(
+                Arrays.asList(rlrf, ReadFilterLibrary.MAPPED));
+        CommandLineParser clp = new CommandLineArgumentParser(new Object(), Collections.singletonList(rfDesc));
+        clp.parseArguments(nullMessageStream, new String[] {
+                "--disableToolDefaultReadFilters",
+                "--readFilter", ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName(),
+                "--readFilter", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
+                "--readFilter", ReadLengthReadFilter.class.getSimpleName()}
+        );
+        List<ReadFilter> allFilters = rfDesc.getAllInstances();
+        // User filter is first according to the command line
+        Assert.assertSame(allFilters.get(0).getClass(), ReadFilterLibrary.GOOD_CIGAR.getClass());
+        // default filters are exactly the same object
+        Assert.assertSame(allFilters.get(1), ReadFilterLibrary.MAPPED);
+        ReadLengthReadFilter rf = (ReadLengthReadFilter) allFilters.get(2);
+        Assert.assertSame(rf, rlrf);
+        // and the state is the same as in the provided default
+        Assert.assertEquals(rf.minReadLength, 2);
+        Assert.assertEquals(rf.maxReadLength.intValue(), 10);
+    }
+
     @Test(expectedExceptions = CommandLineException.class)
     public void testEnableDisableConflict() {
         CommandLineParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(null)));
-        clp.parseArguments(System.out, new String[] {
+        clp.parseArguments(nullMessageStream, new String[] {
                 "--RF", "GoodCigarReadFilter",
                 "--disableReadFilter", "GoodCigarReadFilter"});
     }
@@ -350,13 +470,12 @@ public class ReadFilterPluginUnitTest {
 
         CommandLineParser clp = new CommandLineArgumentParser(new Object(),
               Collections.singletonList(new GATKReadFilterPluginDescriptor(orderedDefaults)));
-        clp.parseArguments(System.out, new String[] {
+        clp.parseArguments(nullMessageStream, new String[] {
                 "-readFilter", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
                 "-readFilter", ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS.getClass().getSimpleName(),
                 "-readFilter", ReadFilterLibrary.GOOD_CIGAR.getClass().getSimpleName()});
 
-        GATKReadFilterPluginDescriptor
-                readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+        GATKReadFilterPluginDescriptor readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
 
         // get and verify the list of filters enabled on the command line (not including defaults)
         List<ReadFilter> orderedFilters = readFilterPlugin.getAllInstances();
@@ -403,7 +522,7 @@ public class ReadFilterPluginUnitTest {
 
         CommandLineParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new GATKReadFilterPluginDescriptor(orderedDefaults)));
-        clp.parseArguments(System.out, new String[] {
+        clp.parseArguments(nullMessageStream, new String[] {
                 //disable one just to mix things up
                 "-disableReadFilter", ReadFilterLibrary.MAPPED.getClass().getSimpleName(),
                 "-readFilter", ReadFilterLibrary.HAS_MATCHING_BASES_AND_QUALS.getClass().getSimpleName(),
@@ -445,7 +564,7 @@ public class ReadFilterPluginUnitTest {
                 "--minReadLength", "10",
                 "--maxReadLength", "20"
         };
-        clp.parseArguments(System.out, args);
+        clp.parseArguments(nullMessageStream, args);
         ReadFilter rf = instantiateFilter(clp, header);
 
         read.setBases(new byte[5]);
@@ -482,7 +601,7 @@ public class ReadFilterPluginUnitTest {
                     new GATKReadFilterPluginDescriptor(Collections.singletonList(new ReadGroupReadFilter()))
             )
         );
-        clp.parseArguments(System.out, args);
+        clp.parseArguments(nullMessageStream, args);
 
         SAMFileHeader samHeader = createHeaderWithReadGroups();
         ReadFilter rf = instantiateFilter(clp, samHeader);
@@ -504,15 +623,14 @@ public class ReadFilterPluginUnitTest {
 
         // ReadGroupReadFilter has a required "keepReadGroup" arg; don't provide it and fail
         String[] args = {};
-        clp.parseArguments(System.out, args);
+        clp.parseArguments(nullMessageStream, args);
     }
 
     private ReadFilter instantiateFilter(
             final CommandLineParser clp,
             final SAMFileHeader header)
     {
-        GATKReadFilterPluginDescriptor
-                readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
+        GATKReadFilterPluginDescriptor readFilterPlugin = clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class);
         return readFilterPlugin.getMergedReadFilter(header);
     }
 
@@ -522,8 +640,7 @@ public class ReadFilterPluginUnitTest {
     private static final int GROUP_COUNT = 5;
 
     private SAMFileHeader createHeaderWithReadGroups() {
-        return ArtificialReadUtils
-                .createArtificialSamHeaderWithGroups(CHR_COUNT, CHR_START, CHR_SIZE, GROUP_COUNT);
+        return ArtificialReadUtils.createArtificialSamHeaderWithGroups(CHR_COUNT, CHR_START, CHR_SIZE, GROUP_COUNT);
     }
 
     /**
