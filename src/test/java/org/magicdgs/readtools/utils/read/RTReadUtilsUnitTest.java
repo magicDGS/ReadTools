@@ -377,4 +377,22 @@ public class RTReadUtilsUnitTest extends BaseTest {
         Assert.assertEquals(read1.getAttributeAsString(tag), expectedTagValue1);
         Assert.assertEquals(read2.getAttributeAsString(tag), expectedTagValue2);
     }
+
+    @DataProvider(name = "illuminaNames")
+    public Object[][] getReadWithIlluminaNames() {
+        final GATKRead readWithBarcodes = ArtificialReadUtils.createArtificialRead("1M");
+        readWithBarcodes.setName("readWithBarcodes");
+        readWithBarcodes.setAttribute("BC", "ACTG-ACCC");
+        final GATKRead readWithNoBarcodes = ArtificialReadUtils.createArtificialRead("1M");
+        readWithNoBarcodes.setName("readWithNoBarcodes");
+        return new Object[][] {
+                {readWithBarcodes, "readWithBarcodes#ACTG-ACCC"},
+                {readWithNoBarcodes, readWithNoBarcodes.getName()}
+        };
+    }
+
+    @Test(dataProvider = "illuminaNames")
+    public void testGetReadNameWithIlluminaBarcode(final GATKRead read, final String expectedName) {
+        Assert.assertEquals(RTReadUtils.getReadNameWithIlluminaBarcode(read), expectedName);
+    }
 }

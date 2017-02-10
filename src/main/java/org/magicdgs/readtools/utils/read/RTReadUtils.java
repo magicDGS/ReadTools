@@ -236,7 +236,8 @@ public class RTReadUtils {
      * Removes trimming point tags ({@link ReservedTags#ts} and {@link ReservedTags#te}) on the
      * read.
      *
-     * Note: The completely trim tag ({@link ReservedTags#ct}) will be updated, but not removed to keep
+     * Note: The completely trim tag ({@link ReservedTags#ct}) will be updated, but not removed to
+     * keep
      * track of completely trim reads.
      *
      * @param read the read to update.
@@ -417,5 +418,24 @@ public class RTReadUtils {
             read2.setAttribute(tag, tagVal1);
         }
         // TODO: should we also check if they are the same?
+    }
+
+    /**
+     * Gets the read name with the raw barcode included into it if they are present (separated with
+     * {@link RTFastqContstants#ILLUMINA_NAME_BARCODE_DELIMITER}) if present.
+     *
+     * @param read the read to get the information from.
+     */
+    public static String getReadNameWithIlluminaBarcode(final GATKRead read) {
+        // get the raw barcode information
+        final String[] barcodes = RTReadUtils.getRawBarcodes(read);
+        // if not found, returns the name directly
+        if (barcodes.length == 0) {
+            return read.getName();
+        }
+        // if not, add them
+        return read.getName()
+                + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
+                + String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes);
     }
 }
