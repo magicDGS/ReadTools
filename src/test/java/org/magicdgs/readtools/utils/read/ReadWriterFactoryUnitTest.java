@@ -64,12 +64,12 @@ public class ReadWriterFactoryUnitTest extends BaseTest {
     public void testCorrectGATKWriter(final File outputFile,
             final Class<? extends GATKReadWriter> writerClass) {
         Assert.assertFalse(outputFile.exists());
+        outputFile.deleteOnExit();
         // TODO: add a FASTA file as reference to test CRAM writer creation
         Assert.assertEquals(new ReadWriterFactory()
                         .createWriter(outputFile.getAbsolutePath(), new SAMFileHeader(), true).getClass(),
                 writerClass);
         Assert.assertTrue(outputFile.exists());
-        outputFile.delete();
     }
 
     @Test(expectedExceptions = UserException.MissingReference.class)
@@ -93,4 +93,23 @@ public class ReadWriterFactoryUnitTest extends BaseTest {
                 .createWriter(existantFile.getAbsolutePath(), new SAMFileHeader(), true);
     }
 
+    @Test
+    public void testNonAbsolute() throws Exception {
+        final String nonAbsolute = "nonAbsolute.fq";
+        final File file = new File(nonAbsolute);
+        file.deleteOnExit();
+        Assert.assertFalse(file.exists(), "test implementation error");
+        new ReadWriterFactory()
+                .createWriter(nonAbsolute, null, true);
+        Assert.assertTrue(file.exists(), "file was not generated");
+    }
+
+    @Test(expectedExceptions = UserException.CouldNotCreateOutputFile.class)
+    public void testIOException() throws Exception {
+        final File fileAsDirectory = new File(testDir, "fileAsDirectory");
+        fileAsDirectory.deleteOnExit();
+        fileAsDirectory.createNewFile();
+        new ReadWriterFactory()
+                .createWriter(new File(fileAsDirectory, "example.fq").toString(), null, true);
+    }
 }
