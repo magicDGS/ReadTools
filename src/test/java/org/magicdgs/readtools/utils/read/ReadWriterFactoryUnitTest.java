@@ -29,14 +29,23 @@ import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.util.IOUtil;
 import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
+import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -111,5 +120,40 @@ public class ReadWriterFactoryUnitTest extends BaseTest {
         fileAsDirectory.createNewFile();
         new ReadWriterFactory()
                 .createWriter(new File(fileAsDirectory, "example.fq").toString(), null, true);
+    }
+
+    @DataProvider(name = "filesForMd5")
+    public Object[][] getFilesForMd5() {
+        return new Object[][] {
+                {getTestFile("singleRead.fq")},
+                // the level of compression 5 is the default in IOUtil
+                {getTestFile("singleRead.fq.gz")}
+        };
+    }
+
+    // the md5 should change with the compression
+    @Test(dataProvider = "filesForMd5")
+    public void testMd5AndCompressionLevel(final File expectedFile)
+            throws Exception {
+        // creates a file to test
+        final File writedFile = new File(testDir, expectedFile.getName());
+
+        // open the writer
+        final GATKReadWriter writer = new ReadWriterFactory()
+                .setCreateMd5File(true)
+                .createFASTQWriter(writedFile.getAbsolutePath());
+
+        // this is the test read with 5 bases (default one)
+        final GATKRead read = ArtificialReadUtils.createArtificialRead("5M");
+        // write and close the writer
+        writer.addRead(read);
+        writer.close();
+
+        // now check the output files
+        IntegrationTestSpec.assertEqualTextFiles(writedFile, expectedFile);
+        // and the MD5
+        IntegrationTestSpec.assertEqualTextFiles(
+                new File(writedFile.getAbsolutePath() + ".md5"),
+                new File(expectedFile.getAbsolutePath() + ".md5"));
     }
 }
