@@ -39,12 +39,11 @@ import htsjdk.samtools.fastq.AsyncFastqWriter;
 import htsjdk.samtools.fastq.BasicFastqWriter;
 import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.util.AbstractAsyncWriter;
+import htsjdk.samtools.util.CustomGzipOutputStream;
 import htsjdk.samtools.util.IOUtil;
 import htsjdk.samtools.util.Md5CalculatingOutputStream;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -217,17 +216,20 @@ public final class ReadWriterFactory {
 
     private OutputStream getOutputStream(final Path outputPath) {
         try {
-            // get the output stream for the file
-            OutputStream outputStream = Files.newOutputStream(outputPath);
+            // the same as in the SAMFileWriterFactory
+            // 1. get the output stream for the file (maybe buffered)
+            OutputStream os = IOUtil.maybeBufferOutputStream(
+                    Files.newOutputStream(outputPath),
+                    bufferSize);
 
-            // wrap to a compressed one based on the extension
-            outputStream = maybeCompressedWrap(outputStream, outputPath);
+            // 2. Wraps the stream to compute MD5 digest if createMd5file is provided
+            os = (createMd5file)
+                    ? new Md5CalculatingOutputStream(os, new File(outputPath.toString() + ".md5"))
+                    : os;
 
-            // maybe wraps the stream to compute MD5 digest
-            outputStream = maybeMd5Wrap(outputStream, outputPath);
+            // 3. apply a compressor if the extension is correct
+            return maybeCompressedWrap(os, outputPath);
 
-            // make maybe buffered depending on the buffer size
-            return IOUtil.maybeBufferOutputStream(outputStream, bufferSize);
         } catch (IOException e) {
             throw new UserException.CouldNotCreateOutputFile(outputPath.toString(), e.getMessage(),
                     e);
@@ -239,11 +241,9 @@ public final class ReadWriterFactory {
             // extension to determine the compression
             final String ext = FilenameUtils.getExtension(outputPath.toString());
 
-            // handle differently the gzip format, to set the compression level
+            // handle the gzip format with the CustomGzipOutputStream from HTSJDK for backwards-compatibility
             if (CompressorStreamFactory.GZIP.equals(ext)) {
-                final GzipParameters gzipParams = new GzipParameters();
-                gzipParams.setCompressionLevel(IOUtil.getCompressionLevel());
-                return new GzipCompressorOutputStream(outputStream, gzipParams);
+                return new CustomGzipOutputStream(outputStream, IOUtil.getCompressionLevel());
             }
 
             // fallback in other compression algorithms
@@ -255,22 +255,6 @@ public final class ReadWriterFactory {
 
         // return the same stream if some error occurs
         return outputStream;
-    }
-
-    private OutputStream maybeMd5Wrap(final OutputStream outputStream, final Path outputPath) {
-        if (createMd5file) {
-            // TODO: this requires an htsjdk method for wrap also a Path or outputStream
-            // TODO: instead of only a digest file
-            // create the file
-            final File digestFile = new File(outputPath.toString() + ".md5");
-            // log a warning if it exists
-            if (digestFile.exists()) {
-                logger.warn("MD5 file will be overridden: {}", () -> digestFile.getAbsolutePath());
-            }
-            return new Md5CalculatingOutputStream(outputStream, digestFile);
-        } else {
-            return outputStream;
-        }
     }
 
     /**
