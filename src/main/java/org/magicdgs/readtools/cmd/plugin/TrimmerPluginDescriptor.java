@@ -330,9 +330,9 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
      * Note: only the enabled trimmers will be returned.
      */
     //
-    // TODO: to override, requires update of Barclay
-    // @Override TODO: the signature of the overridden method in Barclay is still Object
-    public List<TrimmingFunction> getDefaultInstances() {
+    // TODO: the signature should be change in Barclay: https://github.com/broadinstitute/barclay/pull/32
+    @Override
+    public List<Object> getDefaultInstances() {
         return (disableAllDefaultTrimmers)
                 ? Collections.emptyList()
                 : toolDefaultTrimmerNamesInOrder.stream()
@@ -376,5 +376,10 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
                 })
                 .filter(tf -> tf != null)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Class<?> getClassForInstance(String pluginName) {
+        return trimmers.get(pluginName).getClass();
     }
 }

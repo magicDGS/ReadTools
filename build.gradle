@@ -42,8 +42,8 @@ repositories {
     }
 }
 // versions for the dependencies
-final gatkVersion = '4.alpha.2-146-g2c85e82-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
-final htsjdkVersion = '2.8.1-25-g8b9d5d5-SNAPSHOT' // TODO: bring back to the HTSJDK release
+final gatkVersion = '4.alpha.2-178-g5211285-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
+final htsjdkVersion = '2.9.1-9-g6d22658-SNAPSHOT' // TODO: bring back to the HTSJDK release
 final testngVersion = "6.9.10"
 
 dependencies {
@@ -54,12 +54,16 @@ dependencies {
         // TODO: remove this line once the GKL is working
         // TODO: see https://github.com/broadinstitute/gatk/issues/2315
         exclude module: 'gkl'
+        // TODO: remove this line once the Barclay version of GATK includes the changes of the current Barclay snapshot
+        exclude module: 'barclay'
     }
     compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
     compile group: 'org.testng', name: 'testng', version: testngVersion
     // TODO: remove this line once the GKL is working
     // TODO: see https://github.com/broadinstitute/gatk/issues/2315
     compile "com.intel.gkl:gkl:0.2.0"
+    // TODO: remove this line once the Barclay version of GATK includes the changes of this snapshot
+    compile "org.broadinstitute:barclay:1.0.0-24-g87c3fa2-SNAPSHOT"
 }
 
 // for managing the wrapper task
