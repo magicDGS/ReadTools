@@ -93,6 +93,9 @@ public final class ReadWriterFactory {
         this.setUseAsyncIo = Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS;
     }
 
+    ////////////////////////////////////////////
+    // PUBLIC METHODS FOR SET OPTIONS
+
     /** Sets asynchronous writing for any writer. */
     public ReadWriterFactory setUseAsyncIo(final boolean useAsyncIo) {
         this.samFactory.setUseAsyncIo(useAsyncIo);
@@ -109,6 +112,7 @@ public final class ReadWriterFactory {
 
     /** Sets index creation for BAM/CRAM writers. */
     public ReadWriterFactory setCreateIndex(final boolean createIndex) {
+        logger.debug("Create index for FASTQ writers is ignored");
         this.samFactory.setCreateIndex(createIndex);
         return this;
     }
@@ -153,6 +157,10 @@ public final class ReadWriterFactory {
         this.forceOverwrite = forceOverwrite;
         return this;
     }
+
+    ////////////////////////////////////////////
+    // PUBLIC METHODS FOR GET WRITERS
+
 
     /** Open a new FASTQ writer from a Path. */
     public FastqWriter openFastqWriter(final Path path) {
@@ -214,6 +222,10 @@ public final class ReadWriterFactory {
                 "not supported output format based on the extension.");
     }
 
+    ////////////////////////////////////
+    // PRIVATE HELPERS
+
+    // get the output stream wrapped as necessary based on the params and path extension
     private OutputStream getOutputStream(final Path outputPath) {
         try {
             // the same as in the SAMFileWriterFactory
@@ -236,6 +248,8 @@ public final class ReadWriterFactory {
         }
     }
 
+    // wraps the output stream if it ends with a compression extension
+    // gzip is handled with HTSJDK; other formats are handled with the compressor factory
     private OutputStream maybeCompressedWrap(final OutputStream outputStream,
             final Path outputPath) {
         try {
