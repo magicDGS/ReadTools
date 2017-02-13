@@ -236,7 +236,8 @@ public final class ReadWriterFactory {
         }
     }
 
-    private OutputStream maybeCompressedWrap(final OutputStream outputStream, final Path outputPath) {
+    private OutputStream maybeCompressedWrap(final OutputStream outputStream,
+            final Path outputPath) {
         try {
             // extension to determine the compression
             final String ext = FilenameUtils.getExtension(outputPath.toString());
@@ -250,7 +251,8 @@ public final class ReadWriterFactory {
             return compressorFactory.createCompressorOutputStream(ext, outputStream);
         } catch (final CompressorException | IOException e) {
             // log for pinpoint errors
-            logger.debug("Not using compression for output stream {}: {}", () -> outputPath, () -> e.getMessage());
+            logger.debug("Not using compression for output stream {}: {}",
+                    () -> outputPath, () -> e.getMessage());
         }
 
         // return the same stream if some error occurs
