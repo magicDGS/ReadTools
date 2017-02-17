@@ -237,8 +237,7 @@ public class RTReadUtils {
      * read.
      *
      * Note: The completely trim tag ({@link ReservedTags#ct}) will be updated, but not removed to
-     * keep
-     * track of completely trim reads.
+     * keep track of completely trim reads.
      *
      * @param read the read to update.
      */
