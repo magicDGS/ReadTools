@@ -30,18 +30,29 @@ import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
+import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class ReadWriterFactoryUnitTest extends BaseTest {
+
+    // this is the test read with 5 bases (default one)
+    private final static GATKRead DEFAULT_READ_TO_TEST = ArtificialReadUtils
+            .createArtificialRead("5M");
 
     // temp directory for this tests
     private final File testDir = createTestTempDir(this.getClass().getSimpleName());
@@ -112,4 +123,107 @@ public class ReadWriterFactoryUnitTest extends BaseTest {
         new ReadWriterFactory()
                 .createWriter(new File(fileAsDirectory, "example.fq").toString(), null, true);
     }
+
+    @DataProvider(name = "defaultReadFiles")
+    public Object[][] getFilesForMd5() {
+        return new Object[][] {
+                {getTestFile("singleRead.fq")},
+                // the level of compression 5 is the default in IOUtil
+                {getTestFile("singleRead.fq.gz")}
+        };
+    }
+
+    // the md5 should change with the compression
+    @Test(dataProvider = "defaultReadFiles")
+    public void testMd5AndCompressionLevel(final File expectedFile)
+            throws Exception {
+        // creates a file to test
+        final File writedFile = new File(testDir, expectedFile.getName());
+
+        // open the writer
+        final GATKReadWriter writer = new ReadWriterFactory()
+                .setCreateMd5File(true)
+                .createFASTQWriter(writedFile.getAbsolutePath());
+
+        // write and close the writer
+        writer.addRead(DEFAULT_READ_TO_TEST);
+        writer.close();
+
+        // now check the output files
+        IntegrationTestSpec.assertEqualTextFiles(writedFile, expectedFile);
+        // and the MD5
+        IntegrationTestSpec.assertEqualTextFiles(
+                new File(writedFile.getAbsolutePath() + ".md5"),
+                new File(expectedFile.getAbsolutePath() + ".md5"));
+    }
+
+    @DataProvider(name = "allSetterValues")
+    public Iterator<Object[]> allSetterValues() {
+        final File tempDir = createTestTempDir("temp_directory");
+        final List<Object[]> data = new ArrayList<>();
+        final boolean[] trueOrFalse = new boolean[] {true, false};
+        for (final boolean useAsyncIo : trueOrFalse) {
+            for (final boolean createMd5File : trueOrFalse) {
+                for (final boolean createIndex : trueOrFalse) {
+                    final int maxRecordsInRam = 2;
+                    final int asyncOutputBufferSize = 10;
+                    final int bufferSize = 10;
+                    data.add(new Object[] {useAsyncIo, createMd5File, createIndex,
+                            maxRecordsInRam, tempDir,
+                            asyncOutputBufferSize, bufferSize});
+                }
+            }
+
+        }
+        return data.iterator();
+    }
+
+    @Test(dataProvider = "allSetterValues")
+    public void testWriteDefaultReadWithAllSetters(
+            final boolean useAsyncIo,
+            final boolean createMd5File,
+            final boolean createIndex,
+            final int maxRecordsInRam,
+            final File tmpDir,
+            final int asyncOutputBufferSize,
+            final int bufferSize)
+            throws Exception {
+        // get the factory
+        final ReadWriterFactory factory = new ReadWriterFactory()
+                .setUseAsyncIo(useAsyncIo)
+                .setCreateMd5File(createMd5File)
+                .setCreateIndex(createIndex)
+                .setMaxRecordsInRam(maxRecordsInRam)
+                .setTempDirectory(tmpDir)
+                .setAsyncOutputBufferSize(asyncOutputBufferSize)
+                .setBufferSize(bufferSize);
+
+        // get temp files -> one FASTQ and one SAM
+        final List<File> filesToTest = Arrays.asList(
+                new File(tmpDir, factory.toString() + ".fq"),
+                new File(tmpDir, factory.toString() + ".bam"));
+
+        final File samIndex = new File(filesToTest.get(1).getAbsolutePath()
+                .replace(".bam", ".bai"));
+        Assert.assertFalse(samIndex.exists());
+
+        // creates the artifitial header
+        final SAMFileHeader header = ArtificialReadUtils.createArtificialSamHeader();
+
+        for (final File testFile : filesToTest) {
+            // get the writers, write the default record and close them
+            final GATKReadWriter writer = factory.createWriter(testFile.toString(), header, true);
+            writer.addRead(DEFAULT_READ_TO_TEST);
+            writer.close();
+
+            // check existence of the file and the MD5 if requested
+            Assert.assertTrue(testFile.exists());
+            Assert.assertEquals(new File(testFile.getAbsolutePath() + ".md5").exists(),
+                    createMd5File);
+        }
+
+        // for the SAM file, check if the index is created
+        Assert.assertEquals(samIndex.exists(), createIndex);
+    }
+
 }

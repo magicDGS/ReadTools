@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.utils.read.writer;
 
-import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
@@ -44,9 +43,6 @@ import java.io.IOException;
  */
 public class FastqGATKWriter implements GATKReadWriter {
 
-    // TODO: this is just a wrapper for now, but I would like to have more control
-    // TODO: to allow using Path and set buffer size and other parameters not available
-    // TODO: in the HTSJDK implementation
     private final FastqWriter writer;
 
     /** Constructor from a wrapped writer. */
@@ -56,19 +52,14 @@ public class FastqGATKWriter implements GATKReadWriter {
 
     @Override
     public void addRead(final GATKRead read) {
-        final StringBuilder readName = new StringBuilder(read.getName());
         // adding the raw barcode information if found
-        final String[] barcodes = RTReadUtils.getRawBarcodes(read);
-        if (barcodes.length != 0) {
-            readName.append(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER)
-                    .append(String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes));
-        }
+        String readName = RTReadUtils.getReadNameWithIlluminaBarcode(read);
         // adding the pair information
         if (read.isPaired()) {
-            readName.append((read.isFirstOfPair())
-                    ? RTFastqContstants.FIRST_OF_PAIR : RTFastqContstants.SECOND_OF_PAIR);
+            readName += (read.isFirstOfPair())
+                    ? RTFastqContstants.FIRST_OF_PAIR : RTFastqContstants.SECOND_OF_PAIR;
         }
-        writer.write(new FastqRecord(readName.toString(),
+        writer.write(new FastqRecord(readName,
                 read.getBasesString(),
                 read.getAttributeAsString(SAMTag.CO.name()),
                 ReadUtils.getBaseQualityString(read)));
