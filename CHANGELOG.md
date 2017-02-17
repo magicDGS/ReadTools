@@ -3,8 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 1.0.0
 
+### Fixed
+- MD5 file digest for FASTQ is for the file itself and not its content.
+- FASTQ writing honors buffer parameters
+
 ### Added
 - HDFS support for input and output. The URI should specify the schema (__hdfs__) and the host.
+- Developer: `ReadWriterFactory` support other compression formats.
 
 ### Changed
 - Removed legacy tools
