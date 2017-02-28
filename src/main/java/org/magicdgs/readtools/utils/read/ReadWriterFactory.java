@@ -81,7 +81,7 @@ public final class ReadWriterFactory {
     private boolean forceOverwrite = RTDefaults.FORCE_OVERWRITE;
 
     private boolean createMd5file;
-    private boolean setUseAsyncIo;
+    private boolean useAsyncIo;
     private int asyncOutputBufferSize = AbstractAsyncWriter.DEFAULT_QUEUE_SIZE;
     private int bufferSize = Defaults.BUFFER_SIZE;
 
@@ -90,7 +90,7 @@ public final class ReadWriterFactory {
         this.samFactory = new SAMFileWriterFactory();
         // setting the default create Md5 to the same as the samFactory default
         this.createMd5file = SAMFileWriterFactory.getDefaultCreateMd5File();
-        this.setUseAsyncIo = Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS;
+        this.useAsyncIo = Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS;
     }
 
     ////////////////////////////////////////////
@@ -99,7 +99,7 @@ public final class ReadWriterFactory {
     /** Sets asynchronous writing for any writer. */
     public ReadWriterFactory setUseAsyncIo(final boolean useAsyncIo) {
         this.samFactory.setUseAsyncIo(useAsyncIo);
-        this.setUseAsyncIo = useAsyncIo;
+        this.useAsyncIo = useAsyncIo;
         return this;
     }
 
@@ -167,7 +167,7 @@ public final class ReadWriterFactory {
         checkOutputAndCreateDirs(path);
         final PrintStream writer = new PrintStream(getOutputStream(path));
         final FastqWriter fastqWriter = new BasicFastqWriter(writer);
-        return (this.setUseAsyncIo)
+        return (this.useAsyncIo)
                 ? new AsyncFastqWriter(fastqWriter, asyncOutputBufferSize)
                 : fastqWriter;
     }
