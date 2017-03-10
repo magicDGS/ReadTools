@@ -32,9 +32,10 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
+import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
 import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.argparser.CommandLineParser;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
-import org.broadinstitute.hellbender.engine.filters.PlatformReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
@@ -445,11 +446,13 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 {Collections.singletonList(new TrailingNtrimmer()),
                         Collections.emptyList()},
                 {Collections.singletonList(new TrailingNtrimmer()),
-                        Collections.singletonList(new PlatformReadFilter())},
+                        Collections.singletonList(ReadFilterLibrary.MAPPED)},
                 {Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
                         Collections.emptyList()},
                 {Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Collections.singletonList(new PlatformReadFilter())},
+                        Collections.singletonList(ReadFilterLibrary.GOOD_CIGAR)},
+                {Collections.singletonList(new TrailingNtrimmer()),
+                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED)}
         };
     }
 
@@ -493,6 +496,69 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
         // and the same number of filters + 1 (completely trimmed)
         Assert.assertEquals(pipeline.getFilterStats().size(), defaultFilters.size() + 1);
+    }
+
+    @Test(dataProvider = "trimmersAndFilters")
+    public void testGetPipelineCompatibleWithGATKReadFilterPluginDescriptorWithUserDuplicated(
+            final List<TrimmingFunction> defaultTrimmers,
+            final List<ReadFilter> defaultFilters) throws Exception {
+
+        final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
+                new GATKReadFilterPluginDescriptor(defaultFilters),
+                new TrimmerPluginDescriptor(defaultTrimmers)));
+
+        if (defaultFilters.isEmpty()) {
+            clp.parseArguments(System.err, new String[]{});
+        } else {
+            clp.parseArguments(System.err, new String[] {"--RF",
+                    defaultFilters.get(0).getClass().getSimpleName()});
+        }
+
+        // get the trimming pipeline arguments
+        final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
+                clp.getPluginDescriptor(TrimmerPluginDescriptor.class),
+                clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class));
+
+        // check that the pipeline contains the same number of trimmers
+        Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
+        // and the same number of filters + 1 (completely trimmed)
+        Assert.assertEquals(pipeline.getFilterStats().size(), defaultFilters.size() + 1);
+    }
+
+    @Test(dataProvider = "trimmersAndFilters")
+    public void testGetPipelineCompatibleWithGATKReadFilterPluginDescriptorDisableAll(
+            final List<TrimmingFunction> defaultTrimmers,
+            final List<ReadFilter> defaultFilters) throws Exception {
+
+        final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
+                new GATKReadFilterPluginDescriptor(defaultFilters),
+                new TrimmerPluginDescriptor(defaultTrimmers)));
+
+        final int expectedFilters;
+        if (defaultFilters.isEmpty()) {
+            // parse arguments with disabling all the read filters
+            clp.parseArguments(System.err, new String[] {"--disableToolDefaultReadFilters"});
+            // we only expect the completely trimmed one
+            expectedFilters = 1;
+        } else {
+            // parse arguments with disabling all the read filters and adding the first one
+            clp.parseArguments(System.err, new String[] {
+                    "--disableToolDefaultReadFilters",
+                    "--readFilter", defaultFilters.get(0).getClass().getSimpleName()});
+            // in this case we expect two filters, the first one and the completely trimmed
+            expectedFilters = 2;
+        }
+
+        // get the trimming pipeline arguments
+        final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
+                clp.getPluginDescriptor(TrimmerPluginDescriptor.class),
+                clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class));
+
+        // check that the pipeline contains the same number of trimmers
+        Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
+        // and the filters
+        Assert.assertEquals(pipeline.getFilterStats().size(), expectedFilters);
+
     }
 
     @Test
