@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - MD5 file digest for FASTQ is for the file itself and not its content.
-- Fixed elative path handling in writers
+- Fixed relative path handling in writers
 - FASTQ writing honors buffer parameters
 
 ### Added
