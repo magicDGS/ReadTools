@@ -558,7 +558,6 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
         // and the filters
         Assert.assertEquals(pipeline.getFilterStats().size(), expectedFilters);
-
     }
 
     @Test
