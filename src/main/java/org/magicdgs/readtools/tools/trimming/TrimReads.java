@@ -43,7 +43,6 @@ import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.Histogram;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
-import org.broadinstitute.barclay.argparser.CommandLineParser;
 import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
@@ -91,7 +90,7 @@ public final class TrimReads extends ReadToolsWalker {
     // for discard the ambiguous sequences (--discard-internal-N in previous tool)
     // use --readFilter AmbiguousBaseReadFilter --ambigFilterFrac 0
     @Override
-    public List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
+    protected List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
         return Arrays.asList(
                 new TrimmerPluginDescriptor(
                         Arrays.asList(new TrailingNtrimmer(), new MottQualityTrimmer())),
@@ -128,7 +127,6 @@ public final class TrimReads extends ReadToolsWalker {
         }
 
         // initialize the pipeline with the plugin descriptors
-        final CommandLineParser commandLineParser = getCommandLineParser();
         pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
                 commandLineParser.getPluginDescriptor(TrimmerPluginDescriptor.class),
                 commandLineParser.getPluginDescriptor(GATKReadFilterPluginDescriptor.class));

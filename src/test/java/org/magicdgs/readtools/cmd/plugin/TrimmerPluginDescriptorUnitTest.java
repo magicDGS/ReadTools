@@ -72,7 +72,7 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
         Assert.assertTrue(pluginDescriptor.getAllInstances().isEmpty());
 
         // test that default instances are not
-        final List<Object> defaultInsances = pluginDescriptor.getDefaultInstances();
+        final List<TrimmingFunction> defaultInsances = pluginDescriptor.getDefaultInstances();
         Assert.assertEquals(defaultInsances.size(), 1);
         Assert.assertSame(defaultInsances.get(0), anonymous);
     }
@@ -220,7 +220,7 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
 
         // test the defaults classes
         Assert.assertEquals(
-                tpd.getDefaultInstances().stream().map(Object::getClass)
+                tpd.getDefaultInstances().stream().map(TrimmingFunction::getClass)
                         .collect(Collectors.toList()), expectedDefaults,
                 "defaults are wrong: " + tpd.getDefaultInstances());
 
