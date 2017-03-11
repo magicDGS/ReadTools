@@ -22,6 +22,8 @@ install:
 
 script:
     - java -jar ./build/libs/ReadTools.jar --version
+    # running also the version of a tool to test CMD parsing
+    - java -jar ./build/libs/ReadTools.jar StandardizeReads --version
     - ./gradlew jacocoTestReport
 
 after_success:
