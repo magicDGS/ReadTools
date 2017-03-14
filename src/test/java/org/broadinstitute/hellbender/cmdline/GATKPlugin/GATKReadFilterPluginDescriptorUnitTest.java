@@ -28,7 +28,7 @@ public class GATKReadFilterPluginDescriptorUnitTest {
             this.defaultFilters = defaultFilters;
         }
 
-        protected List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
+        public List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
             return Collections.singletonList(new GATKReadFilterPluginDescriptor(defaultFilters));
         }
 

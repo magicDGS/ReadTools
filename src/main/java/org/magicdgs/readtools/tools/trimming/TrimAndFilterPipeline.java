@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 /**
  * Implements a pipeline for trimming in place (through {@link TrimmingFunction}) and filter
@@ -275,12 +276,14 @@ public class TrimAndFilterPipeline extends ReadFilter {
             final GATKReadFilterPluginDescriptor filterPlugin) {
 
         // add the default and afterwards the ones provided by the user
-        final List<TrimmingFunction> trimmers =
-                new ArrayList<>(trimmingPlugin.getDefaultInstances());
-        trimmers.addAll(trimmingPlugin.getAllInstances());
+        final List<TrimmingFunction> trimmers = trimmingPlugin.getDefaultInstances().stream()
+                .map(tf -> (TrimmingFunction) tf) // TODO: this is necessary because it is now a set of filters
+                .collect(Collectors.toList());
 
         // the same for filters
-        final List<ReadFilter> filters = new ArrayList<>(filterPlugin.getDefaultInstances());
+        final List<ReadFilter> filters = filterPlugin.getDefaultInstances().stream()
+                .map(rf -> (ReadFilter) rf) // TODO: this is necessary because it is now a set of filters
+                .collect(Collectors.toList());
         filters.addAll(filterPlugin.getAllInstances());
 
         // throw if not pipeline is specified

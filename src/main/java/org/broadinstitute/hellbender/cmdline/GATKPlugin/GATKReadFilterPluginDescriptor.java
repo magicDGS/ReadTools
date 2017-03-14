@@ -175,11 +175,9 @@ public class GATKReadFilterPluginDescriptor extends CommandLinePluginDescriptor<
         return isAllowed;
     }
 
-    // TODO: this will be included in GATK after Barclay is updated, because now it have this method
-    // TODO: https://github.com/broadinstitute/barclay/blob/976fafea23216cf0577b8e3fe635b115c7975a76/src/main/java/org/broadinstitute/barclay/argparser/CommandLinePluginDescriptor.java#L164
-    // TODO: although there is a change in the signature, because I require that this is a list over T
-    // @Override
-    public List<ReadFilter> getDefaultInstances() {
+    // TODO: the signature should be change in Barclay: https://github.com/broadinstitute/barclay/pull/32
+    @Override
+    public List<Object> getDefaultInstances() {
         return (disableToolDefaultReadFilters)
                 ? new ArrayList<>()
                 : toolDefaultReadFilterNamesInOrder
@@ -220,6 +218,11 @@ public class GATKReadFilterPluginDescriptor extends CommandLinePluginDescriptor<
             }
         });
         return filters;
+    }
+
+    @Override
+    public Class<?> getClassForInstance(final String pluginName) {
+        return readFilters.get(pluginName).getClass();
     }
 
     // Return the allowable values for readFilterNames/disableReadFilter
