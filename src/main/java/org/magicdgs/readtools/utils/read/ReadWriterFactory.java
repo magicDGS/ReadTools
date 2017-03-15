@@ -236,7 +236,8 @@ public final class ReadWriterFactory {
 
             // 2. Wraps the stream to compute MD5 digest if createMd5file is provided
             os = (createMd5file)
-                    ? new Md5CalculatingOutputStream(os, new File(outputPath.toString() + ".md5"))
+                    ? new Md5CalculatingOutputStream(
+                            os, outputPath.getFileSystem().getPath(outputPath.toString() + ".md5"))
                     : os;
 
             // 3. apply a compressor if the extension is correct
