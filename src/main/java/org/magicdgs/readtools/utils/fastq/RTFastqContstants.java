@@ -36,9 +36,4 @@ public class RTFastqContstants {
 
     /** Barcode delimiter in read names for Illumina encoding (e.g. readName#barcode). */
     public static final String ILLUMINA_NAME_BARCODE_DELIMITER = "#";
-
-    // TODO: this will be in HTSJDK FastqConstants after https://github.com/samtools/htsjdk/pull/572
-    public static final String FIRST_OF_PAIR = "/1";
-    public static final String SECOND_OF_PAIR = "/2";
-
 }

@@ -24,10 +24,10 @@
 
 package org.magicdgs.readtools.utils.read.writer;
 
-import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.SAMTag;
+import htsjdk.samtools.fastq.FastqConstants;
 import htsjdk.samtools.fastq.FastqRecord;
 import htsjdk.samtools.fastq.FastqWriter;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -57,7 +57,7 @@ public class FastqGATKWriter implements GATKReadWriter {
         // adding the pair information
         if (read.isPaired()) {
             readName += (read.isFirstOfPair())
-                    ? RTFastqContstants.FIRST_OF_PAIR : RTFastqContstants.SECOND_OF_PAIR;
+                    ? FastqConstants.FIRST_OF_PAIR : FastqConstants.SECOND_OF_PAIR;
         }
         writer.write(new FastqRecord(readName,
                 read.getBasesString(),
