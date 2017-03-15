@@ -30,9 +30,7 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.fastq.FastqRecord;
-import htsjdk.samtools.util.StringUtil;
 import org.broadinstitute.hellbender.utils.Utils;
-import org.broadinstitute.hellbender.utils.read.ReadUtils;
 import org.broadinstitute.hellbender.utils.read.SAMRecordToGATKReadAdapter;
 
 /**
@@ -64,11 +62,11 @@ public class FastqGATKRead extends SAMRecordToGATKReadAdapter {
         super(new SAMRecord(header));
         Utils.nonNull(record, "null record");
         // update the record with the read name information
-        FastqReadNameEncoding.updateReadFromReadName(this, record.getReadHeader());
+        FastqReadNameEncoding.updateReadFromReadName(this, record.getReadName());
         // set the bases and the qualities
         // TODO: this could be change when the changes of htsjdk includes the methods for String->byte transformation
-        this.setBases(StringUtil.stringToBytes(record.getReadString()));
-        ReadUtils.setBaseQualityString(this, record.getBaseQualityString());
+        this.setBases(record.getReadBases());
+        this.setBaseQualities(record.getBaseQualities());
         // add the comments in the quality header to the comment if present
         final String baseQualHeader = record.getBaseQualityHeader();
         if (baseQualHeader != null) {
