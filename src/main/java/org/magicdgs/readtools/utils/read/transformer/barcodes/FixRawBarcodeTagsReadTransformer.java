@@ -35,15 +35,15 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Use different tags to encode and update the {@link htsjdk.samtools.SAMTag#BC} tag (and
- * {@link htsjdk.samtools.SAMTag#QT} if requested). In addition, used tags are discarded because
- * they are already encoded in the raw BC/QT tags and they are not longer needed.
+ * Use different tags to encode and update the {@link RTReadUtils#RAW_BARCODE_TAG} tag
+ * (and {@link RTReadUtils#RAW_BARCODE_QUALITY_TAG} if requested). In addition, used tags are
+ * discarded because they are already encoded in the raw raw tags and they are not longer needed.
  *
  * This may be useful only in several cases:
  *
  * - When output a FASTQ file, some other tags want to be used into the read name.
- * - For old BAM data where barcodes where stored in the deprecated tag {@link
- * htsjdk.samtools.SAMTag#RT}.
+ * - For old BAM data where barcodes where stored in the deprecated tag
+ * {@link htsjdk.samtools.SAMTag#RT}.
  * - When other tools were used to encode a read. For example,
  * <a href=http://gq1.github.io/illumina2bam/index.html>illumina2bam</a> uses BC/QT to encode the
  * first index/quality, and B2/Q2 to encode the second. By providing to this transformer a list

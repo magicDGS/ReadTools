@@ -50,30 +50,6 @@ public class StandardizeReadsIntegrationTest extends CommandLineProgramTest {
     private final File expectedPaired = getTestFile("expected_paired_standard.sam");
     private final File expectedSingle = getTestFile("expected_single_standard.sam");
 
-    @DataProvider(name = "badArgs")
-    public Object[][] getBadArguments() {
-        final ArgumentsBuilder builder = new ArgumentsBuilder()
-                .addInput(getTestFile("small_1.illumina.fq"))
-                .addOutput(new File(TEST_TEMP_DIR, "example.bam"));
-        return new Object[][] {
-                // only quality
-                {builder.addArgument("rawBarcodeQualityTag", "B2")
-                        .getArgsArray()},
-                // different length of arguments
-                {builder.addArgument("rawBarcodeSequenceTags", "B1")
-                        .addArgument("rawBarcodeQualityTag", "B3")
-                        .getArgsArray()},
-                {builder.addBooleanArgument("barcodeInReadName", true)
-                        .addArgument("rawBarcodeSequenceTags", "B4")
-                        .getArgsArray()}
-        };
-    }
-
-    @Test(dataProvider = "badArgs", expectedExceptions = CommandLineException.class)
-    public void testBadArguments(final String[] args) throws Exception {
-        runCommandLine(args);
-    }
-
     @DataProvider(name = "toStandardize")
     public Object[][] tesStandardizeReadsData() {
         return new Object[][] {

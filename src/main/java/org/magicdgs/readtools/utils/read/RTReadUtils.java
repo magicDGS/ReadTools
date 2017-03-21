@@ -52,9 +52,21 @@ public class RTReadUtils {
     /** Zero quality character. */
     public final static char ZERO_QUALITY_CHAR = '!';
 
-    // this is for avoid re-instantation
-    private final static List<String> RAW_BARCODE_TAGS =
-            Collections.singletonList(SAMTag.BC.name());
+    /**
+     * Default raw barcode tag (as defined in the SAM specs).
+     * Corresponds to {@link SAMTag#BC}.
+     */
+    public final static String RAW_BARCODE_TAG = SAMTag.BC.name();
+
+    /**
+     * Default raw barcode tag for qualities (as defined in the SAM specs).
+     * Corresponds to {@link SAMTag#QT}.
+     */
+    public final static String RAW_BARCODE_QUALITY_TAG = SAMTag.QT.name();
+
+    /** Default raw barcode tag ({@link #RAW_BARCODE_TAG}) as a singleton list. */
+    public final static List<String> RAW_BARCODE_TAG_LIST =
+            Collections.singletonList(RAW_BARCODE_TAG);
 
     /**
      * Extract and remove the barcode from the read name, splitting the barcodes in the read name
@@ -166,18 +178,18 @@ public class RTReadUtils {
     }
 
     /**
-     * Returns the raw barcodes from the {@link SAMTag#BC} tag.
+     * Returns the raw barcodes from the {@link #RAW_BARCODE_TAG} tag.
      *
      * @param read the read to extract the barcodes from.
      *
      * @return the barcodes in the provided tags (in order) if any; empty array otherwise.
      */
     public static String[] getRawBarcodes(final GATKRead read) {
-        return getBarcodesFromTags(read, RAW_BARCODE_TAGS);
+        return getBarcodesFromTags(read, RAW_BARCODE_TAG_LIST);
     }
 
     /**
-     * Sets the {@link SAMTag#BC} tag for a read, joining the barcodes with {@link
+     * Sets the {@link #RAW_BARCODE_TAG} tag for a read, joining the barcodes with {@link
      * RTDefaults#BARCODE_INDEX_DELIMITER}.
      *
      * @param read     the read to update with the barcodes.
@@ -188,15 +200,15 @@ public class RTReadUtils {
         Utils.nonNull(barcodes, "null barcodes");
         // only update if there are barcodes
         if (barcodes.length != 0) {
-            read.setAttribute(SAMTag.BC.name(),
+            read.setAttribute(RAW_BARCODE_TAG,
                     String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes));
         }
     }
 
 
     /**
-     * Sets the {@link SAMTag#BC} and {@link SAMTag#QT} tags for a read, joining the
-     * barcodes/qualities with {@link RTDefaults#BARCODE_INDEX_DELIMITER}.
+     * Sets the {@link #RAW_BARCODE_TAG} and {@link #RAW_BARCODE_QUALITY_TAG} tags for a read,
+     * joining the barcodes/qualities with {@link RTDefaults#BARCODE_INDEX_DELIMITER}.
      *
      * Note: barcodes and qualities should have the same length.
      *
@@ -217,11 +229,11 @@ public class RTReadUtils {
             final String qualityString = String.join(RTDefaults.BARCODE_INDEX_DELIMITER, qualities);
             // perform extra validation of lengths
             if (barcodeString.length() != qualityString.length()) {
-                throwExceptionForDifferentBarcodeQualityLenghts(SAMTag.BC.name(), barcodeString,
-                        SAMTag.QT.name(), qualityString);
+                throwExceptionForDifferentBarcodeQualityLenghts(RAW_BARCODE_TAG, barcodeString,
+                        RAW_BARCODE_QUALITY_TAG, qualityString);
             }
-            read.setAttribute(SAMTag.BC.name(), barcodeString);
-            read.setAttribute(SAMTag.QT.name(), qualityString);
+            read.setAttribute(RAW_BARCODE_TAG, barcodeString);
+            read.setAttribute(RAW_BARCODE_QUALITY_TAG, qualityString);
         }
     }
 

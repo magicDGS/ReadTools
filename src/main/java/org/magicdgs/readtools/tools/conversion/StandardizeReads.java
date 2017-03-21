@@ -24,28 +24,18 @@
 
 package org.magicdgs.readtools.tools.conversion;
 
-import org.magicdgs.readtools.cmd.RTStandardArguments;
+import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.ReadToolsConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
-import org.magicdgs.readtools.utils.read.RTReadUtils;
-import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
-import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcodesReadTransformer;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.util.CloserUtil;
-import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
-import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
-import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import scala.Tuple2;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * General tool for standardize any kind of input if the format is different from the expected by
@@ -75,45 +65,16 @@ public final class StandardizeReads extends ReadToolsWalker {
     public RTOutputArgumentCollection outputBamArgumentCollection =
             RTOutputArgumentCollection.defaultOutput();
 
-    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, doc = "Use the barcode encoded in this tag(s) as raw barcodes. WARNING: this tag(s) will be removed.", optional = true,
-            mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
-    public List<String> rawBarcodeTags = new ArrayList<>();
-
-    @Argument(fullName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, doc =
-            "Use the qualities encoded in this tag(s) as raw barcode qualities. Requires --"
-                    + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
-                    + ". WARNING: this tag(s) will be removed.", optional = true,
-            mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
-    public List<String> rawBarcodeQualsTags = new ArrayList<>();
-
-    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, doc = "Use the barcode encoded in the read name as raw barcodes. WARNING: the read name will be modified.", optional = true,
-            mutex = {RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME,
-                    RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME})
-    public boolean useReadNameBarcode = false;
+    @ArgumentCollection
+    public FixBarcodeAbstractArgumentCollection fixBarcodeArguments =
+            FixBarcodeAbstractArgumentCollection.getArgumentCollection(true);
 
     // the writer for the reads
     private GATKReadWriter writer;
 
-    // the transformer for fixing the reads
-    private ReadTransformer transformer;
-
     @Override
     public String[] customCommandLineValidation() {
-        if (rawBarcodeTags.isEmpty() && !rawBarcodeQualsTags.isEmpty()) {
-            throw new CommandLineException.MissingArgument(
-                    RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME,
-                    "required if --" + RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME
-                            + "is specified.");
-        }
-        if (!rawBarcodeQualsTags.isEmpty() && rawBarcodeTags.size() != rawBarcodeQualsTags.size()) {
-            // TODO: I don't know if we should allow different number of tags
-            // TODO: but this requires a change in the implementation on how to handle them
-            // TODO: let's see if some user request it
-            throw new CommandLineException(
-                    "--" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
-                            + " and --" + RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME
-                            + " should be provided the same number of times.");
-        }
+        fixBarcodeArguments.validateArguments();
         return super.customCommandLineValidation();
     }
 
@@ -123,22 +84,11 @@ public final class StandardizeReads extends ReadToolsWalker {
         writer = outputBamArgumentCollection.outputWriter(headerFromReads,
                 () -> getProgramRecord(headerFromReads), true, getReferenceFile()
         );
-        if (useReadNameBarcode) {
-            transformer = new FixReadNameBarcodesReadTransformer();
-        } else if (!rawBarcodeTags.isEmpty()) {
-            logger.debug("BC tags: {}; QT tags: {}",
-                    () -> rawBarcodeTags, () -> rawBarcodeQualsTags);
-            transformer = (rawBarcodeQualsTags.isEmpty())
-                    ? new FixRawBarcodeTagsReadTransformer(rawBarcodeTags)
-                    : new FixRawBarcodeTagsReadTransformer(rawBarcodeTags, rawBarcodeQualsTags);
-        } else {
-            transformer = ReadTransformer.identity();
-        }
     }
 
     @Override
     protected void apply(final GATKRead read) {
-        writer.addRead(transformer.apply(read));
+        writer.addRead(fixBarcodeArguments.fixBarcodeTags(read));
     }
 
     @Override
@@ -146,13 +96,9 @@ public final class StandardizeReads extends ReadToolsWalker {
         logger.debug("First: {}", pair._1);
         logger.debug("Second: {}", pair._2);
         // this only works if it is modified in place
-        final GATKRead read1 = transformer.apply(pair._1);
-        final GATKRead read2 = transformer.apply(pair._2);
-        // now we have to fix the barcode tags
-        RTReadUtils.fixPairTag(SAMTag.BC.name(), read1, read2);
-        RTReadUtils.fixPairTag(SAMTag.QT.name(), read1, read2);
-        writer.addRead(read1);
-        writer.addRead(read2);
+        fixBarcodeArguments.fixBarcodeTags(pair);
+        writer.addRead(pair._1);
+        writer.addRead(pair._2);
     }
 
     @Override
