@@ -110,7 +110,8 @@ public class FixBarcodeAbstractArgumentCollectionTest extends BaseTest {
         data.add(new Object[] {
                 new ArgumentsBuilder()
                         .addBooleanArgument("barcodeInReadName", true)
-                        .addArgument("rawBarcodeQualityTag", "Q2")});
+                        .addArgument("rawBarcodeQualityTag", "Q2"),
+                true});
 
         // repeat quality tag
         data.add(new Object[] {
