@@ -39,6 +39,11 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -69,109 +74,83 @@ public class FixBarcodeAbstractArgumentCollectionTest extends BaseTest {
     }
 
     @DataProvider(name = "badArgs")
-    public Object[][] getBadArguments() {
-        return new Object[][] {
-                // Without fixing quality
-                // incompatible arguments
-                {new ArgumentsBuilder()
-                        .addBooleanArgument("barcodeInReadName", true)
-                        .addArgument("rawBarcodeSequenceTags", "B1"),
-                        false},
-                // repeating barcodes should fail
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeSequenceTags", "B1")
-                        .addArgument("rawBarcodeSequenceTags", "B1"),
-                        false},
-                // invalid tag names
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeSequenceTags", "1A"),
-                        false},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeSequenceTags", "B1A"),
-                        false},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeSequenceTags", "A+"),
-                        false},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeSequenceTags", "+A"),
-                        false},
+    public Iterator<Object[]> getBadArguments() {
+        final List<Object[]> data = new ArrayList<>(20);
 
-                // With fixing quality bad arguments
-                // incompatible arguments (in read name and sequence tag)
-                {new ArgumentsBuilder()
+        final List<String> invalidTagNames = Arrays.asList("1A", "B1A", "A+", "+A");
+
+        // common failing arguments
+        for (boolean fixQuals : new boolean[] {true, false}) {
+            // incompatible arguments (read name and barcode sequence)
+            data.add(new Object[] {
+                    new ArgumentsBuilder()
+                            .addBooleanArgument("barcodeInReadName", true)
+                            .addArgument("rawBarcodeSequenceTags", "B1"),
+                    fixQuals});
+            // repeat barcode sequences
+            data.add(new Object[] {
+                    new ArgumentsBuilder()
+                            .addArgument("rawBarcodeSequenceTags", "B1")
+                            .addArgument("rawBarcodeSequenceTags", "B1"),
+                    fixQuals});
+            // invalid tag names in barcode sequence
+            invalidTagNames.forEach(tag -> data.add(new Object[] {
+                    new ArgumentsBuilder()
+                            .addArgument("rawBarcodeSequenceTags", tag),
+                    fixQuals}));
+        }
+
+        // invalid tag names in quality tag
+        invalidTagNames.forEach(tag -> data.add(new Object[] {
+                new ArgumentsBuilder()
+                        .addArgument("rawBarcodeQualityTag", tag),
+                true}));
+
+        // incompatible arguments (read name and quality tag)
+        data.add(new Object[] {
+                new ArgumentsBuilder()
                         .addBooleanArgument("barcodeInReadName", true)
-                        .addArgument("rawBarcodeSequenceTags", "B1"),
-                        true},
-                // incompatible arguments (in read name and quality tag)
-                {new ArgumentsBuilder()
-                        .addBooleanArgument("barcodeInReadName", true)
-                        .addArgument("rawBarcodeQualityTag", "Q2"),
-                        true},
-                // repeating barcodes should fail
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeSequenceTags", "B1")
-                        .addArgument("rawBarcodeSequenceTags", "B1"),
-                        true},
-                // repeating qualities should fail
-                {new ArgumentsBuilder()
+                        .addArgument("rawBarcodeQualityTag", "Q2")});
+
+        // repeat quality tag
+        data.add(new Object[] {
+                new ArgumentsBuilder()
                         .addArgument("rawBarcodeSequenceTags", "B1")
                         .addArgument("rawBarcodeSequenceTags", "B2")
                         .addArgument("rawBarcodeQualityTag", "Q1")
                         .addArgument("rawBarcodeQualityTag", "Q1"),
-                        true},
-                // only quality
-                {new ArgumentsBuilder()
+                true});
+
+        // only quality (setting to null barcode sequence tags
+        data.add(new Object[] {
+                new ArgumentsBuilder()
                         .addArgument("rawBarcodeSequenceTags", "null")
                         .addArgument("rawBarcodeQualityTag", "Q2"),
-                        true},
-                // two quality tags and only one barcode quality (default)
-                {new ArgumentsBuilder()
+                true});
+
+        // different length of sequence/quality tag (default sequence)
+        data.add(new Object[] {
+                new ArgumentsBuilder()
                         .addArgument("rawBarcodeQualityTag", "Q1")
                         .addArgument("rawBarcodeQualityTag", "Q2"),
-                        true},
-                // two quality tags and only one barcode quality (overridden)
-                {new ArgumentsBuilder()
+                true});
+
+        // different length of sequence/quality tag (overridden sequence)
+        data.add(new Object[] {
+                new ArgumentsBuilder()
                         .addArgument("rawBarcodeQualityTag", "Q1")
                         .addArgument("rawBarcodeQualityTag", "Q2")
                         .addArgument("rawBarcodeSequenceTags", "B1"),
-                        true},
-                // two barcode tags and only one quality (overridden)
-                {new ArgumentsBuilder()
+                true});
+        // and in the other way around
+        data.add(new Object[] {
+                new ArgumentsBuilder()
                         .addArgument("rawBarcodeSequenceTags", "B1")
                         .addArgument("rawBarcodeSequenceTags", "B2")
                         .addArgument("rawBarcodeQualityTag", "Q1"),
-                        true},
-                // incompatible arguments
-                {new ArgumentsBuilder()
-                        .addBooleanArgument("barcodeInReadName", true)
-                        .addArgument("rawBarcodeSequenceTags", "B1"),
-                        true},
-                // invalid qual tag names
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "1A"),
-                        true},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "A1A"),
-                        true},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "A+"),
-                        true},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "+A"),
-                        true},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "1A"),
-                        true},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "A1A"),
-                        true},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "A+"),
-                        true},
-                {new ArgumentsBuilder()
-                        .addArgument("rawBarcodeQualityTag", "+A"),
-                        true}
-        };
+                true});
+
+        return data.iterator();
     }
 
     @Test(dataProvider = "badArgs", expectedExceptions = CommandLineException.class)

@@ -139,6 +139,7 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
      */
     @Override
     protected void apply(final GATKRead read) {
+        logger.debug("Read = {}", () -> read);
         // assumes that the transformed read is modified in place
         decoder.assignReadGroupByBarcode(fixBarcodeArguments.fixBarcodeTags(read));
         writeRead(read);

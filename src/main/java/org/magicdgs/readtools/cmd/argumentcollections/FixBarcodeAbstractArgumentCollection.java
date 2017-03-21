@@ -29,6 +29,7 @@ import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcodesReadTransformer;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.barclay.argparser.Argument;
@@ -46,7 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Abstract rgument collection for fixing barcodes that are encoded in different places than the
+ * Abstract argument collection for fixing barcodes that are encoded in different places than the
  * {@link RTReadUtils#RAW_BARCODE_TAG} tag.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -54,11 +55,13 @@ import java.util.Set;
 public abstract class FixBarcodeAbstractArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, doc = "Include the barcodes encoded in this tag(s) in the read name. Note: this is not necessary for input FASTQ files.", optional = true,
+    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, optional = true,
+            doc = "Include the barcodes encoded in this tag(s) in the read name. Note: this is not necessary for input FASTQ files. WARNING: this tag(s) will be removed/updated as necessary.",
             mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
     public List<String> rawBarcodeTags = new ArrayList<>(RTReadUtils.RAW_BARCODE_TAG_LIST);
 
-    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, doc = "Use the barcode encoded in SAM/BAM/CRAM read names. Note: this is not necessary for input FASTQ files.", optional = true,
+    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, optional = true,
+            doc = "Use the barcode encoded in SAM/BAM/CRAM read names. Note: this is not necessary for input FASTQ files.",
             mutex = {RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME})
     public boolean useReadNameBarcode = false;
 
@@ -66,8 +69,7 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
     private ReadTransformer transformer = null;
 
     /** Logger for the class. */
-    protected final Logger logger =
-            LogManager.getLogger(FixBarcodeAbstractArgumentCollection.class);
+    protected final Logger logger = LogManager.getLogger(this.getClass());
 
     /** Gets the raw barcode quality tags if they are provided by the command line. */
     protected abstract List<String> getRawBarcodeQualityTags();
@@ -109,8 +111,10 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
     }
 
     /**
-     * Validate the arguments after parsing. Default implementation check for repeated barcode
-     * tags.
+     * Validate the arguments after parsing, and throw a CommandLineException if:
+     *
+     * - Repeated raw barcode sequence tag(s) are found.
+     * - No valid tag name(s) are provided.
      */
     public void validateArguments() {
         // non-duplicated tags
@@ -127,7 +131,8 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
     }
 
     /** Gets a ReadTransformer to fix the barcodes. */
-    protected final ReadTransformer getFixBarcodeReadTransformer() {
+    @VisibleForTesting
+    final ReadTransformer getFixBarcodeReadTransformer() {
         if (transformer == null) {
             // if it is using the read names, apply the simplest fix
             if (useReadNameBarcode) {
@@ -179,6 +184,7 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
 
         @Override
         protected List<String> getRawBarcodeQualityTags() {
+            logger.debug("No barcode quality tags are allowed in this argument collection");
             return Collections.emptyList();
         }
     }
@@ -187,10 +193,10 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
     private static final class FixBarcodeWithQualitiesArgumentCollection
             extends FixBarcodeAbstractArgumentCollection {
 
-        @Argument(fullName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, doc =
-                "Use the qualities encoded in this tag(s) as raw barcode qualities. Requires --"
+        @Argument(fullName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, optional = true,
+                doc = "Use the qualities encoded in this tag(s) as raw barcode qualities. Requires --"
                         + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
-                        + ". WARNING: this tag(s) will be removed.", optional = true,
+                        + ". WARNING: this tag(s) will be removed/updated as necessary.",
                 mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
         public List<String> rawBarcodeQualsTags = new ArrayList<>();
 
@@ -206,7 +212,13 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
             RTReadUtils.fixPairTag(RTReadUtils.RAW_BARCODE_QUALITY_TAG, read1, read2);
         }
 
-        /** Calls supper and afterwards check barcode tags. */
+        /**
+         * {@inheritDoc}
+         * In addition, it validates the raw barcode quality tag(s) and throws if:
+         *
+         * - Barcode qualities tag(s) were provided for no barcode sequence tag(s).
+         * - If barcode sequence and quality tag(s) have different lengths.
+         */
         @Override
         public void validateArguments() {
             super.validateArguments();
@@ -231,8 +243,7 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
             }
 
             // the same number of barcode/quals tags
-            // TODO 20-03-2017: maybe we should allow different number of tags
-            // TODO           : this will require a new implementation, but we do not see any use-case yet
+            // TODO 20-03-2017: maybe we should allow different number of tags (see issue https://github.com/magicDGS/ReadTools/issues/157)
             if (!rawBarcodeQualsTags.isEmpty()
                     && rawBarcodeTags.size() != rawBarcodeQualsTags.size()) {
                 throw new CommandLineException.BadArgumentValue(

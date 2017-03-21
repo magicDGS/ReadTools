@@ -52,9 +52,16 @@ public class RTReadUtils {
     /** Zero quality character. */
     public final static char ZERO_QUALITY_CHAR = '!';
 
-    /** Default raw barcode tag (as defined in the SAM specs). Corresponds to {@link SAMTag#BC}. */
+    /**
+     * Default raw barcode tag (as defined in the SAM specs).
+     * Corresponds to {@link SAMTag#BC}.
+     */
     public final static String RAW_BARCODE_TAG = SAMTag.BC.name();
 
+    /**
+     * Default raw barcode tag for qualities (as defined in the SAM specs).
+     * Corresponds to {@link SAMTag#QT}.
+     */
     public final static String RAW_BARCODE_QUALITY_TAG = SAMTag.QT.name();
 
     /** Default raw barcode tag ({@link #RAW_BARCODE_TAG}) as a singleton list. */
