@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - HDFS support for input and output. The URI should specify the schema (__hdfs__) and the host.
-- Developer: `ReadWriterFactory` support other compression formats.
 
 ### Changed
 - Removed legacy tools
