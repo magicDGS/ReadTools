@@ -32,6 +32,7 @@ import org.magicdgs.readtools.cmd.programgroups.ReadToolsProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmerMetric;
+import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.ReservedTags;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
@@ -227,7 +228,7 @@ public final class TrimReads extends ReadToolsWalker {
     @Override
     public void closeTool() {
         // close the three writers
-        CloserUtil.close(writer);
-        CloserUtil.close(discardedWriter);
+        ReadWriterFactory.closeWriter(writer);
+        ReadWriterFactory.closeWriter(discardedWriter);
     }
 }

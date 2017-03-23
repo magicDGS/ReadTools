@@ -34,6 +34,7 @@ import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
+import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -203,7 +204,7 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
 
     @Override
     public void closeTool() {
-        CloserUtil.close(writer);
-        CloserUtil.close(discardedWriter);
+        ReadWriterFactory.closeWriter(writer);
+        ReadWriterFactory.closeWriter(discardedWriter);
     }
 }

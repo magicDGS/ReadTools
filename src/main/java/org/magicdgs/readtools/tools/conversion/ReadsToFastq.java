@@ -29,6 +29,7 @@ import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgument
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.ReadToolsConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
+import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.util.CloserUtil;
@@ -104,6 +105,6 @@ public final class ReadsToFastq extends ReadToolsWalker {
 
     @Override
     public void closeTool() {
-        CloserUtil.close(writer);
+        ReadWriterFactory.closeWriter(writer);
     }
 }

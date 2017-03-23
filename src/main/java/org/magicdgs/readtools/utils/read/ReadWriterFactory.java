@@ -47,6 +47,7 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
@@ -237,16 +238,16 @@ public final class ReadWriterFactory {
             // 2. Wraps the stream to compute MD5 digest if createMd5file is provided
             os = (createMd5file)
                     ? new Md5CalculatingOutputStream(
-                            os, outputPath.getFileSystem().getPath(outputPath.toString() + ".md5"))
+                    os, outputPath.getFileSystem().getPath(outputPath.toString() + ".md5"))
                     : os;
 
             // 3. apply a compressor if the extension is correct
             return maybeCompressedWrap(os, outputPath);
 
         } catch (IOException e) {
-            throw new UserException.CouldNotCreateOutputFile(outputPath.toString(), e.getMessage(),
-                    e);
+            trowCouldNotCreateOutputPath(outputPath, e);
         }
+        throw new GATKException.ShouldNeverReachHereException("getOutputStream");
     }
 
     // wraps the output stream if it ends with a compression extension
@@ -303,8 +304,40 @@ public final class ReadWriterFactory {
         try {
             Files.createDirectories(outputPath.toAbsolutePath().getParent());
         } catch (final IOException e) {
-            throw new UserException.CouldNotCreateOutputFile(outputPath.toFile(), e.getMessage(),
-                    e);
+            trowCouldNotCreateOutputPath(outputPath, e);
+        }
+    }
+
+    /**
+     * Helper method to throw a {@link UserException.CouldNotCreateOutputFile} exception for a
+     * path. This method should be used in the ReadWriterFactory for consistency in thrown
+     * exceptions with informative messages.
+     */
+    private static final void trowCouldNotCreateOutputPath(final Path path,
+            final Exception e) {
+        throw new UserException.CouldNotCreateOutputFile(
+                // using URI to be more informative
+                path.toUri().toString(),
+                // use the class name, because the exception message is printed anyway
+                e.getClass().getSimpleName(),
+                e);
+    }
+
+    /**
+     * Close the writer if it is not {@code null}, throwing if it is not possible to close.
+     */
+    public static final void closeWriter(final GATKReadWriter writer) {
+        // if the writer is null, just log
+        if (writer == null) {
+            logger.debug("Writer is null.");
+        } else {
+            try {
+                writer.close();
+            } catch (final IOException e) {
+                throw new UserException.CouldNotCreateOutputFile(
+                        String.format("Couldn't close output file: %s", e.getMessage()),
+                        e);
+            }
         }
     }
 }
