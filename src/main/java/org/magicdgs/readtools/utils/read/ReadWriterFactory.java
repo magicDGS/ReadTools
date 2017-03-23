@@ -245,7 +245,7 @@ public final class ReadWriterFactory {
             return maybeCompressedWrap(os, outputPath);
 
         } catch (IOException e) {
-            trowCouldNotCreateOutputPath(outputPath, e);
+            throwCouldNotCreateOutputPath(outputPath, e);
         }
         throw new GATKException.ShouldNeverReachHereException("getOutputStream");
     }
@@ -304,7 +304,7 @@ public final class ReadWriterFactory {
         try {
             Files.createDirectories(outputPath.toAbsolutePath().getParent());
         } catch (final IOException e) {
-            trowCouldNotCreateOutputPath(outputPath, e);
+            throwCouldNotCreateOutputPath(outputPath, e);
         }
     }
 
@@ -313,7 +313,7 @@ public final class ReadWriterFactory {
      * path. This method should be used in the ReadWriterFactory for consistency in thrown
      * exceptions with informative messages.
      */
-    private static final void trowCouldNotCreateOutputPath(final Path path,
+    private static final void throwCouldNotCreateOutputPath(final Path path,
             final Exception e) {
         throw new UserException.CouldNotCreateOutputFile(
                 // using URI to be more informative
