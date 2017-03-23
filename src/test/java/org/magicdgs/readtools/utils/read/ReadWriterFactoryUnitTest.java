@@ -26,6 +26,7 @@ package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
+import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -35,13 +36,15 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -224,6 +227,43 @@ public class ReadWriterFactoryUnitTest extends BaseTest {
         // check if the SAM index was created if createIndex is specified only if it is a bam
         if (bam) {
             Assert.assertEquals(samIndex.exists(), createIndex);
+        }
+    }
+
+    @DataProvider(name = "writersToClose")
+    public Object[][] getWritersToClose() {
+        return new Object[][] {{null}, {new NullGATKWriter()}};
+    }
+
+    @Test(dataProvider = "writersToClose")
+    public void testCloseCorrectlyWriter(final GATKReadWriter writer) throws Exception {
+        ReadWriterFactory.closeWriter(writer);
+    }
+
+    @DataProvider(name = "closingException")
+    public Object[][] getClosingExceptions() throws Exception {
+        return new Object[][] {
+                {IOException.class, true},
+                {FileNotFoundException.class, true},
+                {NullPointerException.class, false},
+                {IllegalStateException.class, false}
+        };
+    }
+
+    @Test(dataProvider = "closingException")
+    public void failWhileClosingWriter(final Class<Exception> exceptionClass,
+            final boolean isHandled) throws Exception {
+        // test using a mocked writer, which the close method throws the provided exception
+        final GATKReadWriter mocked = Mockito.mock(GATKReadWriter.class);
+        Mockito.doThrow(exceptionClass).when(mocked).close();
+        if (isHandled) {
+            // handled exceptions throws an user exception
+            Assert.assertThrows(UserException.CouldNotCreateOutputFile.class,
+                    () -> ReadWriterFactory.closeWriter(mocked));
+        } else {
+            // otherwise, they do not catch and throw the one by the method call
+            Assert.assertThrows(exceptionClass,
+                    () -> ReadWriterFactory.closeWriter(mocked));
         }
     }
 
