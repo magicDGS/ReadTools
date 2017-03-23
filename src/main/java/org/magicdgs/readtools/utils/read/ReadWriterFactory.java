@@ -247,8 +247,8 @@ public final class ReadWriterFactory {
         throw new GATKException.ShouldNeverReachHereException("getOutputStream");
     }
 
-    // wraps the output stream if it ends with a compression extension
-    // gzip is handled with HTSJDK; other formats are handled with the compressor factory
+    // wraps the output stream if it ends with a compression extension:
+    // - gzip is handled with HTSJDK
     private OutputStream maybeCompressedWrap(final OutputStream outputStream,
             final Path outputPath) throws IOException {
         // handle the gzip format with the CustomGzipOutputStream from HTSJDK for backwards-compatibility
