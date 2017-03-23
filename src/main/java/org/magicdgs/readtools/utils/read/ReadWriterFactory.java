@@ -42,9 +42,7 @@ import htsjdk.samtools.util.AbstractAsyncWriter;
 import htsjdk.samtools.util.CustomGzipOutputStream;
 import htsjdk.samtools.util.IOUtil;
 import htsjdk.samtools.util.Md5CalculatingOutputStream;
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.io.FilenameUtils;
+import htsjdk.tribble.AbstractFeatureReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.exceptions.GATKException;
@@ -72,7 +70,6 @@ import java.nio.file.Path;
 public final class ReadWriterFactory {
 
     private static final Logger logger = LogManager.getLogger(ReadWriterFactory.class);
-    private static final CompressorStreamFactory compressorFactory = new CompressorStreamFactory();
 
     private final SAMFileWriterFactory samFactory;
 
@@ -253,26 +250,14 @@ public final class ReadWriterFactory {
     // wraps the output stream if it ends with a compression extension
     // gzip is handled with HTSJDK; other formats are handled with the compressor factory
     private OutputStream maybeCompressedWrap(final OutputStream outputStream,
-            final Path outputPath) {
-        try {
-            // extension to determine the compression
-            final String ext = FilenameUtils.getExtension(outputPath.toString());
-
-            // handle the gzip format with the CustomGzipOutputStream from HTSJDK for backwards-compatibility
-            if (CompressorStreamFactory.GZIP.equals(ext)) {
-                return new CustomGzipOutputStream(outputStream, IOUtil.getCompressionLevel());
-            }
-
-            // fallback in other compression algorithms
-            return compressorFactory.createCompressorOutputStream(ext, outputStream);
-        } catch (final CompressorException | IOException e) {
-            // log for pinpoint errors
-            logger.debug("Not using compression for output stream {}: {}",
-                    () -> outputPath, () -> e.getMessage());
+            final Path outputPath) throws IOException {
+        // handle the gzip format with the CustomGzipOutputStream from HTSJDK for backwards-compatibility
+        if (AbstractFeatureReader.hasBlockCompressedExtension(outputPath.toUri())) {
+            return new CustomGzipOutputStream(outputStream, IOUtil.getCompressionLevel());
+        } else {
+            logger.debug("Not using GZIP output for {}", outputPath::toUri);
+            return outputStream;
         }
-
-        // return the same stream if some error occurs
-        return outputStream;
     }
 
     /**
