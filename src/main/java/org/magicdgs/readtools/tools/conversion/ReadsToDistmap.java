@@ -41,6 +41,9 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 /**
+ * Converts to the Distmap format any kind of ReadTools source. See the summary for more
+ * information.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 @CommandLineProgramProperties(oneLineSummary = "Converts any kind of ReadTools source to Distmap format.",
@@ -65,7 +68,7 @@ public final class ReadsToDistmap extends ReadToolsWalker {
     public String output;
 
     @Advanced
-    @Argument(fullName = "hdfsBlockSize", shortName = "hdfsBlockSize", doc = "Block-size (in bytes) for files in HDFS. If not provided, use default configuration.", optional = true)
+    @Argument(fullName = RTStandardArguments.HDFS_BLOCK_SIZE_NAME, shortName = RTStandardArguments.HDFS_BLOCK_SIZE_NAME, doc = "Block-size (in bytes) for files in HDFS. If not provided, use default configuration.", optional = true)
     public Integer blockSize = null;
 
     @ArgumentCollection
@@ -102,6 +105,8 @@ public final class ReadsToDistmap extends ReadToolsWalker {
         try {
             ReadWriterFactory.closeWriter(writer);
         } catch (final DistmapException e) {
+            // this exception is expected if there is a pair-end writer
+            // and the second read has not being added to the writer
             throw new UserException.MalformedFile(e.getMessage());
         }
     }

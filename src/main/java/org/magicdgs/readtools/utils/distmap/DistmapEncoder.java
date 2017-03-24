@@ -91,8 +91,6 @@ public final class DistmapEncoder {
     /**
      * Encodes a pair-end read into a Distmap string.
      *
-     * Note: barcode information is not maintained yet.
-     *
      * @param pair tuple with the first and the second reads in the pair.
      *
      * @throws DistmapException if the pairs have different names.
@@ -114,7 +112,7 @@ public final class DistmapEncoder {
     }
 
     /**
-     * Check if a Distmap String represents paired or unpaired data.
+     * Checks if a Distmap String represents paired or unpaired data.
      *
      * @param distmapString the string encoded in the Distmap format.
      *
