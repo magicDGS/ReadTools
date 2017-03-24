@@ -88,4 +88,10 @@ public class RTStandardArguments {
     public static final String DISABLE_5P_TRIMING_SHORT_NAME = "D5PT";
     public static final String DISABLE_3P_TRIMING_LONG_NAME = "disable3pTrim";
     public static final String DISABLE_3P_TRIMING_SHORT_NAME = "D3PT";
+
+    // ARGUMENTS FOR HDFS
+
+    /** HDFS block-size for output files. */
+    public static final String HDFS_BLOCK_SIZE_NAME = "hdfsBlockSize";
+
 }
