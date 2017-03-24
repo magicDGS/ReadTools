@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.distmap;
 
+import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -100,7 +101,8 @@ public class DistmapGATKWriter implements GATKReadWriter {
 
     // helper method to print and with the writer and check if an error occurs to throw an exception
     // uses a supplier to do not store the String
-    private void printAndCheckError(final Supplier<String> toPrint) {
+    @VisibleForTesting
+    void printAndCheckError(final Supplier<String> toPrint) {
         try {
             writer.write(toPrint.get());
             writer.write("\n");

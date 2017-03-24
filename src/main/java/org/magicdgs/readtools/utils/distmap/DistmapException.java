@@ -37,10 +37,6 @@ public final class DistmapException extends RuntimeException {
         super(msg);
     }
 
-    public DistmapException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-
     /**
      * If {@code condition} is not {@code true}, throw a Distmap exception with the message
      * provided.

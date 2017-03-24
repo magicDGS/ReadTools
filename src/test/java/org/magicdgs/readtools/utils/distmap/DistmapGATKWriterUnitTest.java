@@ -27,14 +27,22 @@ package org.magicdgs.readtools.utils.distmap;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.tests.BaseTest;
 
+import org.apache.commons.io.output.NullWriter;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.function.Supplier;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -59,7 +67,8 @@ public class DistmapGATKWriterUnitTest extends BaseTest {
     public Object[][] distmapFiles() {
         return new Object[][] {
                 {getTestFile("single_end.distmap"), false},
-                {getTestFile("pair_end.distmap"), true}
+                {getTestFile("pair_end.distmap"), true},
+                {getTestFile("pair_end.distmap.bz2"), true}
         };
     }
 
@@ -81,6 +90,23 @@ public class DistmapGATKWriterUnitTest extends BaseTest {
                 .createDistmapWriter(broken.getAbsolutePath(), true);
         writer.addRead(READ_1);
         writer.close();
+    }
+
+    @DataProvider(name = "userExceptions")
+    public Object[][] userExceptionCachedWhilePrinting() {
+        return new Object[][] {
+                {new IOException()},
+                {new DistmapException("test")}
+        };
+    }
+
+    @Test(dataProvider = "userExceptions", expectedExceptions = UserException.CouldNotCreateOutputFile.class)
+    public void testUserExceptionWhilePrinting(final Exception exception) throws Exception {
+        // creates a mocked writer throwing IOExceptions
+        final Writer ioExceptionWriter = Mockito.mock(Writer.class,
+                (Answer) (invocation -> {throw exception;}));
+        // check if it throws
+        new DistmapGATKWriter(ioExceptionWriter, "test", true).printAndCheckError(() -> null);
     }
 
 }
