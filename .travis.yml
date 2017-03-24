@@ -5,8 +5,11 @@ jdk:
     - oraclejdk8
 
 env:
+    global:
     # disable gradle daemon
     - GRADLE_OPTS="-Dorg.gradle.daemon=false"
+    # test verbosity to minimal
+    - TEST_VERBOSITY=minimal
 
 # gradle cache
 before_cache:
@@ -18,7 +21,7 @@ cache:
         - $HOME/.gradle/wrapper/
 
 install:
-    - ./gradlew shadowJar
+    - ./gradlew assemble shadowJar
 
 script:
     - java -jar ./build/libs/ReadTools.jar --version
