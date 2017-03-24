@@ -61,6 +61,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -275,12 +276,12 @@ public final class ReadWriterFactory {
 
     /**
      * Creates a maybe buffered output stream from a Path.
-     * In addition, if the Path is from the Hadoop Filesystem, it sets other characteristics for the
-     * output stream:
      *
-     * - HDFS Block-size: {@link #hdfsBlockSize}
+     * In addition, if the Path is from the Hadoop Filesystem, it sets other characteristics for
+     * the output stream:
+     *
+     * - HDFS Block-size: {@link #hdfsBlockSize}.
      * - Buffer-size: {@link #bufferSize}, instead of wrapping in a buffered stream.
-     * - bzip2 compression if the path ends with bz2.
      */
     private OutputStream getMaybeBufferedOutputStream(final Path path) throws IOException {
         // iif there is a block-size to change and the path is from Hadoop
@@ -289,7 +290,7 @@ public final class ReadWriterFactory {
             // gets the HDFS to create the output stream with custom block-size
             final FileSystem hdfs = hadoopPath.getFileSystem().getHDFS();
             // gets the the path (extracted here to get the default replication)
-            final org.apache.hadoop.fs.Path hdfsPath =  hadoopPath.getRawResolvedPath();
+            final org.apache.hadoop.fs.Path hdfsPath = hadoopPath.getRawResolvedPath();
 
             // construct the output stream already buffered here
             return hdfs.create(hdfsPath, forceOverwrite,
@@ -303,9 +304,15 @@ public final class ReadWriterFactory {
         logger.debug("Block-size is ignored: {}", () -> hdfsBlockSize);
         return IOUtil.maybeBufferOutputStream(Files.newOutputStream(path), bufferSize);
     }
-
-    // wraps the output stream if it ends with a compression extension:
-    // - gzip is handled with HTSJDK
+    /**
+     * Wraps teh output stream into a compressed stream in case that it is detected by the
+     * following:
+     *
+     * - {@link AbstractFeatureReader#hasBlockCompressedExtension(URI)}: handled as GZIP compressed
+     * using {@link CustomGzipOutputStream}.
+     * - {@link BZip2Utils#isCompressedFilename(String)}: handled as Bzip2 compressed using
+     * {@link #bzip2} codec (loaded on demand). This allows to split on the disk easier for HDFS.
+     */
     private OutputStream maybeCompressedWrap(final OutputStream outputStream,
             final Path outputPath) throws IOException {
         // handle the gzip format with the CustomGzipOutputStream from HTSJDK for backwards-compatibility

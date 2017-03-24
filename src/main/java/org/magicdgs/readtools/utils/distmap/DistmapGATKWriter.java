@@ -52,9 +52,9 @@ public class DistmapGATKWriter implements GATKReadWriter {
     private final Consumer<GATKRead> singleEndHandler;
 
     /**
-     * Private constructor with a OutputStremWriter.
+     * Public constructor.
      *
-     * @param writer     output stream to write the reads on.
+     * @param writer     output to write the reads on.
      * @param paired     if {@code true}, the file will be written as paired; otherwise,
      *                   it will be written as single.
      * @param sourceName the name for the source where we are writing to.
@@ -99,9 +99,10 @@ public class DistmapGATKWriter implements GATKReadWriter {
     }
 
     // helper method to print and with the writer and check if an error occurs to throw an exception
+    // uses a supplier to do not store the String
     private void printAndCheckError(final Supplier<String> toPrint) {
         try {
-            writer.append(toPrint.get());
+            writer.write(toPrint.get());
             writer.write("\n");
             // catch exceptions due to formatting too
         } catch (final IOException | DistmapException e) {
