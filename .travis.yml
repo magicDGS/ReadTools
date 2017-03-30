@@ -5,8 +5,16 @@ jdk:
     - oraclejdk8
 
 env:
+    matrix:
+    ## shadow runs the shadowJar with some commands for test the uber-jar jar
+    - TYPE=shadow
+    ## test runs all the unit/integration tests
+    - TYPE=test
+    global:
     # disable gradle daemon
     - GRADLE_OPTS="-Dorg.gradle.daemon=false"
+    # test verbosity to minimal
+    - TEST_VERBOSITY=minimal
 
 # gradle cache
 before_cache:
@@ -18,15 +26,20 @@ cache:
         - $HOME/.gradle/wrapper/
 
 install:
-    - ./gradlew shadowJar
+    - ./gradlew assemble installDist
 
 script:
-    - java -jar ./build/libs/ReadTools.jar --version
-    # running also the version of a tool to test CMD parsing
-    - java -jar ./build/libs/ReadTools.jar StandardizeReads --version
-    # and runing the tool with a small dataset
-    - java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input ./src/test/resources/org/magicdgs/readtools/tools/conversion/StandardizeReads/small_se.illumina.fq --output ./tmp/test.sam
-    - ./gradlew jacocoTestReport
+    - if [[ $TYPE == shadow ]]; then
+          ./gradlew shadowJar;
+          java -jar ./build/libs/ReadTools.jar --version;
+          java -jar ./build/libs/ReadTools.jar StandardizeReads --version;
+          java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input ./src/test/resources/org/magicdgs/readtools/tools/conversion/StandardizeReads/small_se.illumina.fq --output ./tmp/test.sam;
+      elif [[ $TYPE == test ]]; then
+          ./gradlew jacocoTestReport;
+      else
+          echo "Test type not recognized $TYPE";
+          exit 1;
+      fi
 
 after_success:
     - bash <(curl -s https://codecov.io/bash) -X gcov -X coveragepy

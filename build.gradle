@@ -80,6 +80,7 @@ tasks.withType(Test) {
 
     // tests could be always re-run
     outputs.upToDateWhen { false }
+    String TEST_VERBOSITY = "$System.env.TEST_VERBOSITY"
 
     useTestNG()
 
@@ -96,15 +97,28 @@ tasks.withType(Test) {
     // TODO: set JVM arguments for the test JVM(s)
     // TODO: example -> jvmArgs '-XX:MaxPermSize=256m'
 
-    // log the test that is running
-    beforeTest { descriptor ->
-        logger.lifecycle("Running Test: " +  descriptor)
-    }
+    if (TEST_VERBOSITY == "minimal") {
+        int count = 0
+        // listen to events in the test execution lifecycle
+        logger.lifecycle("Minimal test verbosity");
 
-    // listen to standarrd out and standard error of the test JVM(s)
-    def testOutput = ""
-    onOutput { descriptor, event ->
-        logger.lifecycle("Test: " + descriptor + " standard out/err -> " + event.message)
+        beforeTest { descriptor ->
+            count++
+            if( count % 100 == 0) {
+                logger.lifecycle("Finished "+ Integer.toString(count) + " tests")
+            }
+        }
+    } else {
+        // log the test that is running
+        beforeTest { descriptor ->
+            logger.lifecycle("Running Test: " + descriptor)
+        }
+
+        // listen to standarrd out and standard error of the test JVM(s)
+        def testOutput = ""
+        onOutput { descriptor, event ->
+            logger.lifecycle("Test: " + descriptor + " standard out/err -> " + event.message)
+        }
     }
 
     // logging after the tests
