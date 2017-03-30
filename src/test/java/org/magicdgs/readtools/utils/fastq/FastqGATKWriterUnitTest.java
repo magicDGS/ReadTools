@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.read.writer;
+package org.magicdgs.readtools.utils.fastq;
 
 import org.magicdgs.readtools.utils.iterators.FastqToReadIterator;
 import org.magicdgs.readtools.RTBaseTest;

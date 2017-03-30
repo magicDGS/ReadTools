@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.read;
+package org.magicdgs.readtools.utils.fastq;
 
 import org.magicdgs.readtools.utils.fastq.FastqReadNameEncoding;
 
@@ -64,7 +64,6 @@ public class FastqGATKRead extends SAMRecordToGATKReadAdapter {
         // update the record with the read name information
         FastqReadNameEncoding.updateReadFromReadName(this, record.getReadName());
         // set the bases and the qualities
-        // TODO: this could be change when the changes of htsjdk includes the methods for String->byte transformation
         this.setBases(record.getReadBases());
         this.setBaseQualities(record.getBaseQualities());
         // add the comments in the quality header to the comment if present
