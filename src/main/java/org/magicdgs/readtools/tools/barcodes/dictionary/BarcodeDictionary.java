@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
-import org.magicdgs.readtools.utils.fastq.BarcodeMethods;
+import org.magicdgs.readtools.RTDefaults;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 
@@ -192,7 +192,7 @@ public class BarcodeDictionary {
      * @return the combined barcodes for the sample
      */
     public String getCombinedBarcodesFor(final int sampleIndex) {
-        return BarcodeMethods.joinBarcodes(getBarcodesFor(sampleIndex));
+        return String.join(RTDefaults.BARCODE_INDEX_DELIMITER, getBarcodesFor(sampleIndex));
     }
 
     /**
