@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read.writer;
 
 import org.magicdgs.readtools.utils.iterators.FastqToReadIterator;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqWriterFactory;

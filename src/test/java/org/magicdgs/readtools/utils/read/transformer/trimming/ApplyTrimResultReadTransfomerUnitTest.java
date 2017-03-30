@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.Cigar;
 import htsjdk.samtools.SAMFileHeader;

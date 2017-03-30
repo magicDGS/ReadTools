@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.engine;
 
-import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.CommandLineProgramTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;

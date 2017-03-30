@@ -27,7 +27,7 @@ package org.magicdgs.readtools.utils.read;
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.hellbender.exceptions.UserException;

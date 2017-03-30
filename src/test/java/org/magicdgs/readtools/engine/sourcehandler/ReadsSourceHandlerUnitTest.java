@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.engine.sourcehandler;
 
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;

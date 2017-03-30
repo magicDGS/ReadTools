@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.tests;
+package org.magicdgs.readtools;
 
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;

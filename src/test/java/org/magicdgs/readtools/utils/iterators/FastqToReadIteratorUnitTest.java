@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.iterators;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;

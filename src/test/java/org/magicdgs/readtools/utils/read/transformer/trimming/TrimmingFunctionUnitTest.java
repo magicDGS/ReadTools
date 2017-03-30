@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
 import org.magicdgs.readtools.utils.read.RTReadUtils;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMUtils;

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.apache.commons.lang3.tuple.Pair;

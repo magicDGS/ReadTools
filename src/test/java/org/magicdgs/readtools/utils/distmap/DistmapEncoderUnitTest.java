@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.distmap;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;

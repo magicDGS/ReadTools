@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtilTest;
 
 import org.broadinstitute.barclay.argparser.CommandLineException;

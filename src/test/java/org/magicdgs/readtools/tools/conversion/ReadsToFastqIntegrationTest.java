@@ -24,8 +24,8 @@
 
 package org.magicdgs.readtools.tools.conversion;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
-import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.CommandLineProgramTest;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;

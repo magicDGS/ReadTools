@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupArgumentCollection;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.testng.Assert;

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.trimming;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;

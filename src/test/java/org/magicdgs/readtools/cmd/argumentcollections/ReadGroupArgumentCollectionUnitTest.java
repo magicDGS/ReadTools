@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.util.Iso8601Date;

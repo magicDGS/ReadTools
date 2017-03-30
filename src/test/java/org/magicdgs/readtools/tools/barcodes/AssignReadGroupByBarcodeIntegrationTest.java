@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.tools.barcodes;
 
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
-import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.CommandLineProgramTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.writer;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.testng.annotations.Test;

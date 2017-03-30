@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;

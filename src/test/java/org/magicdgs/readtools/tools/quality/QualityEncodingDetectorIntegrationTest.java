@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.quality;
 
-import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.CommandLineProgramTest;
 
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.barclay.argparser.CommandLineException;

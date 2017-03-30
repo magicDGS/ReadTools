@@ -27,7 +27,7 @@ package org.magicdgs.readtools.utils.fastq;
 import static org.magicdgs.readtools.utils.fastq.BarcodeMethods.getNameWithoutBarcode;
 import static org.magicdgs.readtools.utils.fastq.BarcodeMethods.getOnlyBarcodeFromName;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.BaseTest;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
