@@ -10,11 +10,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - HDFS support for input and output. The URI should specify the schema (__hdfs__) and the host.
+- Support for convert any input to the Distmap format.
 
 ### Changed
 - Removed legacy tools
 - (Developer) Removed legacy IO system
 - (Developer) Removed some deprecated code
+- (Developer) Repackaged some classes
 
 ## [0.3.0] - 2017-02-06
 
@@ -121,7 +123,7 @@ All notable changes to this project will be documented in this file.
 ## [0.1.0] - 2015-11-20
 First pre-release
 
-<tag links>
+
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/master
 [0.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.3.0
 [0.2.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
