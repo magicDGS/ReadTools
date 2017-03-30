@@ -33,6 +33,9 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -56,17 +59,17 @@ public class ReadToolsWalkerUnitTest extends CommandLineProgramTest {
     @DataProvider(name = "arguments")
     public Object[][] walkerArguments() {
         return new Object[][] {
-                {new String[] {"-I", getTestFileName("small.mapped.bam")}, 206, false},
-                {new String[] {"-I", getTestFileName("small_1.illumina.fq"),
-                        "-I2", getTestFileName("small_2.illumina.fq")}, 10, true}
+                {Arrays.asList("-I", getTestFileName("small.mapped.bam")), 206, false},
+                {Arrays.asList("-I", getTestFileName("small_1.illumina.fq"),
+                        "-I2", getTestFileName("small_2.illumina.fq")), 10, true}
         };
     }
 
     @Test(dataProvider = "arguments")
-    public void testReadToolsSimpleWalker(final String[] args, final int expectedReads,
+    public void testReadToolsSimpleWalker(final List<String> args, final int expectedReads,
             final boolean isPaired) throws Exception {
         final TestWalker walker = new TestWalker();
-        Assert.assertNull(walker.instanceMain(args));
+        Assert.assertNull(walker.instanceMain(injectDefaultVerbosity(args).toArray(new String[0])));
         Assert.assertEquals(walker.isPaired(), isPaired);
         Assert.assertEquals(walker.nReads, expectedReads);
         // get the program record

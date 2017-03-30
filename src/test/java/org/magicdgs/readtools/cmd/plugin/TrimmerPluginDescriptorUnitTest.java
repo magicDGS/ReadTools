@@ -215,7 +215,7 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
                 Collections.singletonList(new TrimmerPluginDescriptor(
                         (withDefault) ? makeDefaultTrimmerForTest() : null)));
 
-        Assert.assertTrue(clp.parseArguments(System.out, args.getArgsArray()));
+        Assert.assertTrue(clp.parseArguments(NULL_PRINT_STREAM, args.getArgsArray()));
         final TrimmerPluginDescriptor tpd = clp.getPluginDescriptor(TrimmerPluginDescriptor.class);
 
         // test the defaults classes
@@ -245,7 +245,7 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
     public void testAllTrimmersHelpAfterParsed() throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new TrimmerPluginDescriptor(null)));
-        clp.parseArguments(System.out, new String[] {});
+        clp.parseArguments(NULL_PRINT_STREAM, new String[] {});
         Assert.assertEquals(clp.getPluginDescriptor(TrimmerPluginDescriptor.class)
                         .getAllowedValuesForDescriptorArgument("trimmer").size(),
                 NUMBER_OF_TRIMMERS_IMPLEMENTED);
@@ -303,7 +303,7 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new TrimmerPluginDescriptor(
                         (withDefault) ? makeDefaultTrimmerForTest() : null)));
-        clp.parseArguments(System.out, args.getArgsArray());
+        clp.parseArguments(NULL_PRINT_STREAM, args.getArgsArray());
     }
 
     @DataProvider(name = "mutexArgs")
@@ -320,7 +320,7 @@ public class TrimmerPluginDescriptorUnitTest extends BaseTest {
             throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new TrimmerPluginDescriptor(null)));
-        final boolean parsed = clp.parseArguments(System.out,
+        final boolean parsed = clp.parseArguments(NULL_PRINT_STREAM,
                 new ArgumentsBuilder()
                         .addBooleanArgument("disable5pTrim", disable5pTrim)
                         .addBooleanArgument("disable3pTrim", disable3pTrim)

@@ -26,13 +26,18 @@ package org.magicdgs.readtools.utils.tests;
 
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.util.Log;
+import org.apache.commons.io.output.NullOutputStream;
+import org.broadinstitute.hellbender.utils.LoggingUtils;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.text.XReadLines;
 import org.testng.Assert;
 import org.testng.Reporter;
+import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * All tests for ReadTools should extend this class. It contains utilities for log results, and
@@ -45,6 +50,15 @@ public class BaseTest {
     /** Log this message so that it shows up inline during output as well as in html reports. */
     public static void log(final String message) {
         Reporter.log(message, true);
+    }
+
+    /** Print stream used for tests which requires it, such as CLP parsing. */
+    public static final PrintStream NULL_PRINT_STREAM = new PrintStream(new NullOutputStream());
+
+    /** All the tests will have only the error verbosity. */
+    @BeforeSuite
+    public void setTestVerbosity() {
+        LoggingUtils.setLoggingLevel(Log.LogLevel.ERROR);
     }
 
     /**
