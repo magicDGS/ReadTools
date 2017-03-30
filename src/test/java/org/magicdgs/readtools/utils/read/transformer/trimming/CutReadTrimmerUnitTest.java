@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
 import org.magicdgs.readtools.utils.read.RTReadUtils;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class CutReadTrimmerUnitTest extends BaseTest {
+public class CutReadTrimmerUnitTest extends RTBaseTest {
 
     @DataProvider
     public Object[][] badArgs() {

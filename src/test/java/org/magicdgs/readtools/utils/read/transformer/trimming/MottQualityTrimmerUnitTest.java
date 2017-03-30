@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtilTest;
 
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -38,7 +38,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class MottQualityTrimmerUnitTest extends BaseTest {
+public class MottQualityTrimmerUnitTest extends RTBaseTest {
 
     @DataProvider(name = "badArgs")
     public Object[][] badQualityThresholds() {

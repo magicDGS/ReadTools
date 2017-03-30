@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.RTCommandLineProgramTest;
 
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeDetectorArgumentCollectionUnitTest extends CommandLineProgramTest {
+public class BarcodeDetectorArgumentCollectionUnitTest extends RTCommandLineProgramTest {
 
     @CommandLineProgramProperties(oneLineSummary = "BarcodeDetectorArgumentCollection", summary = "BarcodeDetectorArgumentCollection", programGroup = TestProgramGroup.class)
     private final static class BarcodeDetectorArgumentCollectionTool extends CommandLineProgram {

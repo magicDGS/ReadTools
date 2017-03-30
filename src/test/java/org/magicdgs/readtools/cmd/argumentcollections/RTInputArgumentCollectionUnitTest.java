@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.engine.RTDataSource;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTInputArgumentCollectionUnitTest extends BaseTest {
+public class RTInputArgumentCollectionUnitTest extends RTBaseTest {
 
     private static RTInputArgumentCollection getWithRequiredArguments() {
         final RTInputArgumentCollection args = new RTInputArgumentCollection();

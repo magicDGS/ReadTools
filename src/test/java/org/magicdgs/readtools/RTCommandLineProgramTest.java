@@ -22,16 +22,9 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.tests;
+package org.magicdgs.readtools;
 
-import org.magicdgs.readtools.Main;
-
-import htsjdk.samtools.util.Log;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.broadinstitute.hellbender.utils.LoggingUtils;
 import org.broadinstitute.hellbender.utils.test.CommandLineProgramTester;
-import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,7 +35,7 @@ import java.util.List;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public abstract class CommandLineProgramTest extends BaseTest implements CommandLineProgramTester {
+public abstract class RTCommandLineProgramTest extends RTBaseTest implements CommandLineProgramTester {
 
     /** Test FASTQ file (pair 1). */
     public static final File SMALL_FASTQ_1 = getInputDataFile("SRR1931701_1.fq");

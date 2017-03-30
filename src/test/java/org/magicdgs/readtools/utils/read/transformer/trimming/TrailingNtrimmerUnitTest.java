@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtilTest;
 
 import org.broadinstitute.hellbender.utils.Utils;
@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrailingNtrimmerUnitTest extends BaseTest {
+public class TrailingNtrimmerUnitTest extends RTBaseTest {
 
     // trimmmer to test
     private final static TrimmingFunction TRIMMER = new TrailingNtrimmer();

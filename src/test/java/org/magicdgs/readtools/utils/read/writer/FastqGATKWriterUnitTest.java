@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read.writer;
 
 import org.magicdgs.readtools.utils.iterators.FastqToReadIterator;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqWriterFactory;
@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FastqGATKWriterUnitTest extends BaseTest {
+public class FastqGATKWriterUnitTest extends RTBaseTest {
 
     @DataProvider(name = "readsToWrite")
     public Object[][] getReadList() throws Exception {

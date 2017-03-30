@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.engine.sourcehandler;
 
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
@@ -47,7 +47,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadsSourceHandlerUnitTest extends BaseTest {
+public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     private final static SimpleInterval INTERVAL_TO_QUERY = new SimpleInterval("2L");
 

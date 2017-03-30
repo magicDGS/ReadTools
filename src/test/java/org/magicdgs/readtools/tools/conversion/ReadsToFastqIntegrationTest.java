@@ -24,8 +24,8 @@
 
 package org.magicdgs.readtools.tools.conversion;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
-import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.RTBaseTest;
+import org.magicdgs.readtools.RTCommandLineProgramTest;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadsToFastqIntegrationTest extends CommandLineProgramTest {
+public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
 
     private static final File TEST_TEMP_DIR =
             createTestTempDir(ReadsToFastqIntegrationTest.class.getSimpleName());
@@ -130,7 +130,7 @@ public class ReadsToFastqIntegrationTest extends CommandLineProgramTest {
             assertFileIsEmpty(singleEndFile);
         } else {
             testFiles(Collections.singletonList(singleEndFile), expectedFiles);
-            pairedFiles.forEach(BaseTest::assertFileIsEmpty);
+            pairedFiles.forEach(RTBaseTest::assertFileIsEmpty);
         }
     }
 

@@ -27,7 +27,7 @@ package org.magicdgs.readtools.utils.read;
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -51,7 +51,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadWriterFactoryUnitTest extends BaseTest {
+public class ReadWriterFactoryUnitTest extends RTBaseTest {
 
     // this is the test read with 5 bases (default one)
     private final static GATKRead DEFAULT_READ_TO_TEST = ArtificialReadUtils

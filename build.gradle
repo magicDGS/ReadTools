@@ -44,7 +44,6 @@ repositories {
 // versions for the dependencies
 final gatkVersion = '4.alpha.2-181-g987e2f9-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
 final htsjdkVersion = '2.9.1-9-g6d22658-SNAPSHOT' // TODO: bring back to the HTSJDK release
-final testngVersion = "6.11"
 
 dependencies {
     compile (group: 'org.broadinstitute', name: 'gatk', version: gatkVersion) {
@@ -53,10 +52,10 @@ dependencies {
         exclude module: 'testng'
     }
     compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
-    compile group: 'org.testng', name: 'testng', version: testngVersion
 
     // compilation for testing
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.testng:testng:6.11'
+    testCompile 'org.mockito:mockito-core:2.7.19'
 }
 
 // for managing the wrapper task

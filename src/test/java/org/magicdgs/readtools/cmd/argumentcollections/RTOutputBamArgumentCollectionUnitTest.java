@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
@@ -41,7 +41,7 @@ import java.io.File;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTOutputBamArgumentCollectionUnitTest extends BaseTest {
+public class RTOutputBamArgumentCollectionUnitTest extends RTBaseTest {
 
     @DataProvider(name = "badOutputNames")
     public Object[][] getBadOutputNames() {

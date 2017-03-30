@@ -27,7 +27,7 @@ package org.magicdgs.readtools.utils.read.writer;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -58,7 +58,7 @@ import java.util.stream.IntStream;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class SplitGATKWriterUnitTest extends BaseTest {
+public class SplitGATKWriterUnitTest extends RTBaseTest {
 
     // test directory for outputs
     private final static File TEMP_TEST_DIR =

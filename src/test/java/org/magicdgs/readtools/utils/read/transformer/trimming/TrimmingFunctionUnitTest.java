@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
 import org.magicdgs.readtools.utils.read.RTReadUtils;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmingFunctionUnitTest extends BaseTest {
+public class TrimmingFunctionUnitTest extends RTBaseTest {
 
     /** Use for testing methods with trimming functions that does not require an implementation. */
     public static class NoOpTrimmingFunction extends TrimmingFunction {

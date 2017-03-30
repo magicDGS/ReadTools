@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read.writer;
 
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class PairEndSplitterUnitTest extends BaseTest {
+public class PairEndSplitterUnitTest extends RTBaseTest {
 
     private final static PairEndSplitter SPLITTER = new PairEndSplitter();
 

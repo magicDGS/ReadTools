@@ -27,7 +27,7 @@ package org.magicdgs.readtools.cmd.argumentcollections;
 import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTOutputFastqArgumentCollectionUnitTest extends BaseTest {
+public class RTOutputFastqArgumentCollectionUnitTest extends RTBaseTest {
 
     @Test
     public void testSplitOutput() throws Exception {

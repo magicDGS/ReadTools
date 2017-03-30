@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.trimming;
 
-import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
+import org.magicdgs.readtools.RTCommandLineProgramTest;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
@@ -37,7 +37,7 @@ import java.io.File;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimReadsIntegrationTest extends CommandLineProgramTest {
+public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
 
     // temp directory for all the tests
     private final static File TEST_TEMP_DIR =

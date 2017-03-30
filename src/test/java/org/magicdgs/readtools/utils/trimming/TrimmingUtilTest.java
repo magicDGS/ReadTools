@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.trimming;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmingUtilTest extends BaseTest {
+public class TrimmingUtilTest extends RTBaseTest {
 
     @DataProvider(name = "trimMottData")
     public static Object[][] trimMottData() {

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.fastq;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.util.SequenceUtil;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FastqReadNameEncodingUnitTest extends BaseTest {
+public class FastqReadNameEncodingUnitTest extends RTBaseTest {
 
     @DataProvider
     public Object[][] encodingData() throws Exception {
