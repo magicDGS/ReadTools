@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.distmap;
 
-import org.magicdgs.readtools.utils.read.FastqGATKRead;
+import org.magicdgs.readtools.utils.fastq.FastqGATKRead;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.fastq.FastqRecord;

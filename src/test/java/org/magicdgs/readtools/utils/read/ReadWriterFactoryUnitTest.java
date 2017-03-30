@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
-import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
+import org.magicdgs.readtools.utils.fastq.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 import org.magicdgs.readtools.RTBaseTest;
 

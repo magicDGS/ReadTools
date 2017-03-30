@@ -27,7 +27,7 @@ package org.magicdgs.readtools.utils.read;
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.distmap.DistmapGATKWriter;
-import org.magicdgs.readtools.utils.read.writer.FastqGATKWriter;
+import org.magicdgs.readtools.utils.fastq.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
 import hdfs.jsr203.HadoopPath;

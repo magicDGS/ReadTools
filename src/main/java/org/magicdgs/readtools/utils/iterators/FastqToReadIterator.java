@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.iterators;
 
-import org.magicdgs.readtools.utils.read.FastqGATKRead;
+import org.magicdgs.readtools.utils.fastq.FastqGATKRead;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.fastq.FastqRecord;
