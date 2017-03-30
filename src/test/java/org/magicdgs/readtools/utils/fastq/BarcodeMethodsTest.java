@@ -27,13 +27,13 @@ package org.magicdgs.readtools.utils.fastq;
 import static org.magicdgs.readtools.utils.fastq.BarcodeMethods.getNameWithoutBarcode;
 import static org.magicdgs.readtools.utils.fastq.BarcodeMethods.getOnlyBarcodeFromName;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class BarcodeMethodsTest extends BaseTest {
+public class BarcodeMethodsTest extends RTBaseTest {
 
     private static final String basename = "Record1";
 

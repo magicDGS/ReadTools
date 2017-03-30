@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.util.Iso8601Date;
@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadGroupArgumentCollectionUnitTest extends BaseTest {
+public class ReadGroupArgumentCollectionUnitTest extends RTBaseTest {
 
     @Test
     public void testGetNoArgumentsReadGroup() throws Exception {

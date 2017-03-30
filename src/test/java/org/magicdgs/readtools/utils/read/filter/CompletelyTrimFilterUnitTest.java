@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.filter;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class CompletelyTrimFilterUnitTest extends BaseTest {
+public class CompletelyTrimFilterUnitTest extends RTBaseTest {
 
     @DataProvider(name  = "reads")
     public Object[][] toFilterReads() {

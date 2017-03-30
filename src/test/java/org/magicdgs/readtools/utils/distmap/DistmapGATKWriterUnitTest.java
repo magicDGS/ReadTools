@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.distmap;
 
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -44,7 +44,7 @@ import java.io.Writer;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class DistmapGATKWriterUnitTest extends BaseTest {
+public class DistmapGATKWriterUnitTest extends RTBaseTest {
 
     private static final File TEST_TMP_DIR = createTestTempDir("DistmapGATKWriterUnitTest");
 

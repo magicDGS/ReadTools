@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,7 +45,7 @@ import java.util.UUID;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTReadUtilsUnitTest extends BaseTest {
+public class RTReadUtilsUnitTest extends RTBaseTest {
 
     private static final SAMFileHeader header = ArtificialReadUtils.createArtificialSamHeader();
     private static final List<String> twoTags = Arrays.asList("B1", "B2");

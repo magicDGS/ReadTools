@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public abstract class CommandLineProgramTest extends BaseTest implements CommandLineProgramTester {
+public abstract class RTCommandLineProgramTest extends RTBaseTest implements CommandLineProgramTester {
 
     /** Test FASTQ file (pair 1). */
     public static final File SMALL_FASTQ_1 = getInputDataFile("SRR1931701_1.fq");

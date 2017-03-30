@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMUtils;
@@ -42,7 +42,7 @@ import java.util.Iterator;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class SolexaToSangerReadTransformerUnitTest extends BaseTest {
+public class SolexaToSangerReadTransformerUnitTest extends RTBaseTest {
 
     private static final SolexaToSangerReadTransformer transformer =
             new SolexaToSangerReadTransformer();

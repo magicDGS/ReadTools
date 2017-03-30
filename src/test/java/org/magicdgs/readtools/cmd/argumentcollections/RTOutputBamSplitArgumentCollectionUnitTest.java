@@ -26,7 +26,7 @@ package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTOutputBamSplitArgumentCollectionUnitTest extends BaseTest {
+public class RTOutputBamSplitArgumentCollectionUnitTest extends RTBaseTest {
 
     private static final List<SAMReadGroupRecord> READ_GROUPS = Arrays.asList(
             new SAMReadGroupRecord("1"), new SAMReadGroupRecord("2"), new SAMReadGroupRecord("3"));

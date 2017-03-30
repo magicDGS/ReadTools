@@ -26,7 +26,7 @@ package org.magicdgs.readtools.tools.barcodes.dictionary;
 
 import org.magicdgs.readtools.ProjectProperties;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.testng.Assert;
@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BarcodeDictionaryTest extends BaseTest {
+public class BarcodeDictionaryTest extends RTBaseTest {
 
     private static BarcodeDictionary dictionarySingle, dictionaryDouble;
 

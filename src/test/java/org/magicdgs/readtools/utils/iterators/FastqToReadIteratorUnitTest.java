@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.iterators;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -41,7 +41,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FastqToReadIteratorUnitTest extends BaseTest {
+public class FastqToReadIteratorUnitTest extends RTBaseTest {
 
     @DataProvider(name = "iterators")
     public Object[][] iteratorDataProvider() throws Exception {

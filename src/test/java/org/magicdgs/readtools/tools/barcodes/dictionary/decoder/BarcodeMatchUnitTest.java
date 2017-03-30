@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
@@ -41,7 +41,7 @@ import java.util.Set;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeMatchUnitTest extends BaseTest {
+public class BarcodeMatchUnitTest extends RTBaseTest {
 
     private final static Set<String> ALL_BARCODES = new LinkedHashSet<>(
             Arrays.asList("AAAA", "TTTT", "CCCC", "AATC"));

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.iterators.paired;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -45,7 +45,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class GATKReadPairedIteratorUnitTest extends BaseTest {
+public class GATKReadPairedIteratorUnitTest extends RTBaseTest {
 
     private final static SAMFileHeader header = ArtificialReadUtils.createArtificialSamHeader();
 

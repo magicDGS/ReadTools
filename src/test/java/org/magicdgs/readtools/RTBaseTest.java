@@ -45,7 +45,7 @@ import java.io.PrintStream;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BaseTest {
+public class RTBaseTest {
 
     /** Log this message so that it shows up inline during output as well as in html reports. */
     public static void log(final String message) {

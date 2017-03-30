@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.engine;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMTextHeaderCodec;
@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTDataSourceUnitTest extends BaseTest {
+public class RTDataSourceUnitTest extends RTBaseTest {
 
     private final static SAMFileHeader minimalPairedHeader = new SAMFileHeader();
 

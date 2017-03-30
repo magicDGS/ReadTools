@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.quality;
 
-import org.magicdgs.readtools.CommandLineProgramTest;
+import org.magicdgs.readtools.RTCommandLineProgramTest;
 
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -39,7 +39,7 @@ import java.util.Arrays;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class QualityEncodingDetectorIntegrationTest extends CommandLineProgramTest {
+public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgramTest {
 
     @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testBadArgument() throws Exception {

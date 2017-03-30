@@ -26,7 +26,7 @@ package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixRawBarcodeTagsReadTransformer;
 import org.magicdgs.readtools.utils.read.transformer.barcodes.FixReadNameBarcodesReadTransformer;
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -47,7 +47,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FixBarcodeAbstractArgumentCollectionTest extends BaseTest {
+public class FixBarcodeAbstractArgumentCollectionTest extends RTBaseTest {
 
     @CommandLineProgramProperties(
             oneLineSummary = "Fix barcodes CLP test",

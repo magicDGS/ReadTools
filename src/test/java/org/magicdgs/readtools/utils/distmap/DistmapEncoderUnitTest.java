@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.distmap;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
@@ -35,7 +35,7 @@ import scala.Tuple2;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class DistmapEncoderUnitTest extends BaseTest {
+public class DistmapEncoderUnitTest extends RTBaseTest {
 
     @DataProvider(name = "singleEnd")
     public Object[][] getDistmapSinleReadStrings() {

@@ -30,7 +30,7 @@ import org.magicdgs.readtools.metrics.TrimmerMetric;
 import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -55,7 +55,7 @@ import java.util.stream.IntStream;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimAndFilterPipelineUnitTest extends BaseTest {
+public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
     @DataProvider
     public Object[][] badParams() {

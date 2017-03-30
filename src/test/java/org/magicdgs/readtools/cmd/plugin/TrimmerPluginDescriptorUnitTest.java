@@ -27,7 +27,7 @@ package org.magicdgs.readtools.cmd.plugin;
 import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimmerPluginDescriptorUnitTest extends BaseTest {
+public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
 
     // TODO: maybe we should find another way of testing this
     // this is the number of trimmers implemented to check if a returned value is correct

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.Cigar;
 import htsjdk.samtools.SAMFileHeader;
@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ApplyTrimResultReadTransfomerUnitTest extends BaseTest {
+public class ApplyTrimResultReadTransfomerUnitTest extends RTBaseTest {
 
     // transformer to test
     private static final ReadTransformer transformer = new ApplyTrimResultReadTransfomer();

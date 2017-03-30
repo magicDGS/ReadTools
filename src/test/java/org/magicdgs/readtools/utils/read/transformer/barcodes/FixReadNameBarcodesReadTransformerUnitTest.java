@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.transformer.barcodes;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -35,7 +35,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FixReadNameBarcodesReadTransformerUnitTest extends BaseTest {
+public class FixReadNameBarcodesReadTransformerUnitTest extends RTBaseTest {
 
     private static final GATKRead READ = ArtificialReadUtils.createArtificialUnmappedRead(
             ArtificialReadUtils.createArtificialSamHeader(),

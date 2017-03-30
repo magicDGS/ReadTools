@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.writer;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.testng.annotations.Test;
@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class NullGATKWriterUnitTest extends BaseTest {
+public class NullGATKWriterUnitTest extends RTBaseTest {
 
     // this is only going through the code, but doing nothing else
     @Test

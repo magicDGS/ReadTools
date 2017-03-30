@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.tools.barcodes;
 
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
-import org.magicdgs.readtools.CommandLineProgramTest;
+import org.magicdgs.readtools.RTCommandLineProgramTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
@@ -46,7 +46,7 @@ import java.util.stream.IntStream;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class AssignReadGroupByBarcodeIntegrationTest extends CommandLineProgramTest {
+public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgramTest {
 
     // old test files in FASTQ format -> they are modified to have the correct separator
     private final File DUAL_FASTQ_1 = getTestFile("SRR1931701.dual.barcoded_1.fq");

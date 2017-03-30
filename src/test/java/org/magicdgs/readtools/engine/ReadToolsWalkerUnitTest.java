@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.engine;
 
-import org.magicdgs.readtools.CommandLineProgramTest;
+import org.magicdgs.readtools.RTCommandLineProgramTest;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadToolsWalkerUnitTest extends CommandLineProgramTest {
+public class ReadToolsWalkerUnitTest extends RTCommandLineProgramTest {
 
     // test class
     private static class TestWalker extends ReadToolsWalker {

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.conversion;
 
-import org.magicdgs.readtools.CommandLineProgramTest;
+import org.magicdgs.readtools.RTCommandLineProgramTest;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
@@ -36,7 +36,7 @@ import java.io.File;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class StandardizeReadsIntegrationTest extends CommandLineProgramTest {
+public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
 
     private final static File TEST_TEMP_DIR =
             createTestTempDir(StandardizeReadsIntegrationTest.class.getSimpleName());

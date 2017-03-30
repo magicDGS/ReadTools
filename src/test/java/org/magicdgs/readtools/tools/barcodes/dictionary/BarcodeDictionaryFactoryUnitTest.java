@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupArgumentCollection;
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.testng.Assert;
@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeDictionaryFactoryUnitTest extends BaseTest {
+public class BarcodeDictionaryFactoryUnitTest extends RTBaseTest {
 
     private final static ReadGroupArgumentCollection RG_INFO = new ReadGroupArgumentCollection();
 

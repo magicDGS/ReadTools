@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.utils.read.writer;
 
-import org.magicdgs.readtools.BaseTest;
+import org.magicdgs.readtools.RTBaseTest;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadToolsIOFormatUnitTest extends BaseTest {
+public class ReadToolsIOFormatUnitTest extends RTBaseTest {
 
     @DataProvider(name = "formats")
     public Object[][] getFormats() {
