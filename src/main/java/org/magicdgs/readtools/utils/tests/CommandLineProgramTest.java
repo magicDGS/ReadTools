@@ -34,6 +34,7 @@ import org.broadinstitute.hellbender.utils.test.CommandLineProgramTester;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,9 +43,6 @@ import java.util.List;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public abstract class CommandLineProgramTest extends BaseTest implements CommandLineProgramTester {
-
-    /** Logger for the PAToK package for the tests. */
-    public static final Logger logger = LogManager.getLogger("org.magicdgs.readtools");
 
     /** Test FASTQ file (pair 1). */
     public static final File SMALL_FASTQ_1 = getInputDataFile("SRR1931701_1.fq");
@@ -65,12 +63,6 @@ public abstract class CommandLineProgramTest extends BaseTest implements Command
         return TestResourcesUtils.getReadToolsTestResource("org/magicdgs/readtools/data/" + fileName);
     }
 
-    /** All the tests will have only the debug verbosity. */
-    @BeforeSuite
-    public void setTestVerbosity() {
-        LoggingUtils.setLoggingLevel(Log.LogLevel.DEBUG);
-    }
-
     /** @return {@link #getTestedClassName()} */
     @Override
     public String getTestedToolName() {
@@ -81,5 +73,20 @@ public abstract class CommandLineProgramTest extends BaseTest implements Command
     @Override
     public Object runCommandLine(final List<String> args) {
         return new Main().instanceMain(makeCommandLineArgs(args));
+    }
+
+    /** Includes also setting QUIET=true if not present. */
+    @Override
+    public List<String> injectDefaultVerbosity(final List<String> args) {
+        // call the super
+        final List<String> verbArgs = CommandLineProgramTester.super.injectDefaultVerbosity(args);
+        for (String arg : verbArgs) {
+            if ("--QUIET".equals(arg)) {
+                return verbArgs;
+            }
+        }
+        final List<String> quietArgs = new ArrayList<>(verbArgs);
+        quietArgs.add("--QUIET");
+        return quietArgs;
     }
 }

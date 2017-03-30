@@ -508,9 +508,9 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
                 new TrimmerPluginDescriptor(defaultTrimmers)));
 
         if (defaultFilters.isEmpty()) {
-            clp.parseArguments(System.err, new String[]{});
+            clp.parseArguments(NULL_PRINT_STREAM, new String[]{});
         } else {
-            clp.parseArguments(System.err, new String[] {"--RF",
+            clp.parseArguments(NULL_PRINT_STREAM, new String[] {"--RF",
                     defaultFilters.get(0).getClass().getSimpleName()});
         }
 
@@ -537,12 +537,12 @@ public class TrimAndFilterPipelineUnitTest extends BaseTest {
         final int expectedFilters;
         if (defaultFilters.isEmpty()) {
             // parse arguments with disabling all the read filters
-            clp.parseArguments(System.err, new String[] {"--disableToolDefaultReadFilters"});
+            clp.parseArguments(NULL_PRINT_STREAM, new String[] {"--disableToolDefaultReadFilters"});
             // we only expect the completely trimmed one
             expectedFilters = 1;
         } else {
             // parse arguments with disabling all the read filters and adding the first one
-            clp.parseArguments(System.err, new String[] {
+            clp.parseArguments(NULL_PRINT_STREAM, new String[] {
                     "--disableToolDefaultReadFilters",
                     "--readFilter", defaultFilters.get(0).getClass().getSimpleName()});
             // in this case we expect two filters, the first one and the completely trimmed

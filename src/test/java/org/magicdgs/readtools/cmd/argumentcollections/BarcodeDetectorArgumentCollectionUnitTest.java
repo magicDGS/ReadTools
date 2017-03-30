@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.utils.tests.BaseTest;
+import org.magicdgs.readtools.utils.tests.CommandLineProgramTest;
 
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeDetectorArgumentCollectionUnitTest extends BaseTest {
+public class BarcodeDetectorArgumentCollectionUnitTest extends CommandLineProgramTest {
 
     @CommandLineProgramProperties(oneLineSummary = "BarcodeDetectorArgumentCollection", summary = "BarcodeDetectorArgumentCollection", programGroup = TestProgramGroup.class)
     private final static class BarcodeDetectorArgumentCollectionTool extends CommandLineProgram {
@@ -91,7 +91,7 @@ public class BarcodeDetectorArgumentCollectionUnitTest extends BaseTest {
 
     // test the validation while running a tool with customCommandLineValidation
     // should thrown
-    private static Object runBarcodeDetectorArgumentCollectionToolWithArgs(final File barcodeFile,
+    private Object runBarcodeDetectorArgumentCollectionToolWithArgs(final File barcodeFile,
             final Integer maxN, final List<Integer> maxMismatches,
             final List<Integer> minDistance) {
         final ArgumentsBuilder args = new ArgumentsBuilder()
@@ -109,7 +109,7 @@ public class BarcodeDetectorArgumentCollectionUnitTest extends BaseTest {
         }
         final BarcodeDetectorArgumentCollectionTool tool =
                 new BarcodeDetectorArgumentCollectionTool();
-        return tool.instanceMain(args.getArgsArray());
+        return tool.instanceMain(injectDefaultVerbosity(args.getArgsList()).toArray(new String[0]));
     }
 
     @DataProvider(name = "badArgumentsForGetBarcodeDecoder")
