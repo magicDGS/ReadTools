@@ -88,7 +88,6 @@ If you use this software, please add the citation as following:
 
 
 
-<references>
 [MIT License]: https://opensource.org/licenses/MIT
 [Wiki Page]: https://github.com/magicDGS/ReadTools/wiki
 [Releases]: https://github.com/magicDGS/ReadTools/releases
