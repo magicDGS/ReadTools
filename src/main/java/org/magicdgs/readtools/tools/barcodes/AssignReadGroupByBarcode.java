@@ -38,6 +38,7 @@ import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 
 import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.metrics.MetricsFile;
 import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
@@ -48,6 +49,8 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import scala.Tuple2;
 
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -189,15 +192,28 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
      */
     @Override
     public Object onTraversalSuccess() {
-        final Path metricsFile = outputBamArgumentCollection.makeMetricsFile(null);
-        try {
-            final Collection<MatcherStat> stats = decoder.outputStats(metricsFile);
-            stats.forEach(s -> logger.info("Found {} records for {} ({}).",
+        // TODO: maybe we should create a metric file per statistic
+        // writing the metrics file
+        final Path path = outputBamArgumentCollection.makeMetricsFile(null);
+        try (final Writer metricsWriter = Files.newBufferedWriter(path)) {
+            getMetricsFile().write(metricsWriter);
+            // get the matcher statistics (for writing and logging)
+            final MetricsFile<MatcherStat, Integer> matcherStatMetrics = decoder.getMatcherStatMetrics();
+            // write matcher statistics
+            matcherStatMetrics.write(metricsWriter);
+            // write barcode statistics
+            decoder.getBarcodeStatMetrics().write(metricsWriter);
+            // close the metrics file
+            metricsWriter.close();
+
+            // log the metrics
+            matcherStatMetrics.getMetrics()
+                    .forEach(s -> logger.info("Found {} records for {} ({}).",
                     s.RECORDS, s.SAMPLE, s.BARCODE));
             return null;
         } catch (final IOException e) {
             // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
-            throw new UserException.CouldNotCreateOutputFile(metricsFile.toString(), e.getMessage(),
+            throw new UserException.CouldNotCreateOutputFile(path.toUri().toString(), e.getMessage(),
                     e);
         }
     }

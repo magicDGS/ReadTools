@@ -46,9 +46,15 @@ public class MatcherStat extends MetricBase {
      */
     public int RECORDS;
 
+    /**
+     * Percentage of records for this sequence.
+     */
+    public double PCT_RECORDS;
+
     public MatcherStat(String barcode, String sample) {
         this.BARCODE = barcode;
         this.SAMPLE = sample;
         this.RECORDS = 0;
+        this.PCT_RECORDS = 0.0;
     }
 }
