@@ -25,8 +25,11 @@
 package org.magicdgs.readtools;
 
 import org.broadinstitute.hellbender.utils.test.CommandLineProgramTester;
+import org.broadinstitute.hellbender.utils.text.XReadLines;
+import org.testng.Assert;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,5 +84,48 @@ public abstract class RTCommandLineProgramTest extends RTBaseTest implements Com
         final List<String> quietArgs = new ArrayList<>(verbArgs);
         quietArgs.add("--QUIET");
         return quietArgs;
+    }
+
+    // classes names for ReadTools are sited in this package
+    private static final String METRIC_CLASS_HEADER = "# org.magicdgs.readtools";
+    // this is the header for the date of analysis
+    private static final String METRIC_START_HEADER = "# Started on:";
+
+    /**
+     * Tests concordance of metrics files. It handles the following special cases:
+     *
+     * - Header lines containing ReadTools class names at the beginning.
+     * - Date of start of command line program.
+     */
+    public static void metricsFileConcordance(final File resultFile, final File expectedFile)
+            throws IOException {
+        try (final XReadLines actualReader = new XReadLines(resultFile);
+                final XReadLines expectedReader = new XReadLines(expectedFile)) {
+            final List<String> actualLines = actualReader.readLines();
+            final List<String> expectedLines = expectedReader.readLines();
+            //For ease of debugging, we look at the lines first and only then check their counts
+            final int minLen = Math.min(actualLines.size(), expectedLines.size());
+            for (int i = 0; i < minLen; i++) {
+                final String actual = actualLines.get(i);
+                final String expected = expectedLines.get(i);
+                // handle the CMD line
+                if (expected.startsWith(METRIC_CLASS_HEADER)) {
+                    final int indexOfSpace = expected.indexOf(" ", METRIC_CLASS_HEADER.length());
+                    final String expectedClassLine = (indexOfSpace == -1)
+                            ? expected : expected.substring(0, indexOfSpace + 1);
+                    Assert.assertTrue(actual.indexOf(expectedClassLine) != 1, String.format(
+                            "Wrong class header at line %s: expected (partial) %s vs. %s",
+                            i, expectedClassLine, actual));
+                } else if (expected.startsWith(METRIC_START_HEADER)) {
+                    Assert.assertTrue(actual.startsWith(METRIC_START_HEADER), String.format(
+                            "Missing starting time header at line %s: expected %s vs. %s",
+                            i, expected, actual));
+                } else {
+                    Assert.assertEquals(actualLines.get(i), expectedLines.get(i),
+                            "Line number " + i + " (no special header line)");
+                }
+            }
+            Assert.assertEquals(actualLines.size(), expectedLines.size(), "line counts");
+        }
     }
 }

@@ -191,7 +191,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
         Assert.assertNull(runCommandLine(builder));
 
         // first check the metrics file -> the metrics file is the same
-        IntegrationTestSpec.assertEqualTextFiles(new File(actualOutputPrefix + ".metrics"),
+        metricsFileConcordance(new File(actualOutputPrefix + ".metrics"),
                 getTestFile(testName + ".metrics"));
 
         testSamFileEquivalentForBarcodeDetection(new File(actualOutputPrefix + "_discarded.sam"),

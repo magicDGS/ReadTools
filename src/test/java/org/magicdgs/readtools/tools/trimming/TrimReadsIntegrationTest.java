@@ -119,11 +119,8 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
         // running the command line
         runCommandLine(args);
 
-        // check the metrics file -> all the headers are removed as comments
-        // this prevents for failing when the metrics are changing the package (discouraged)
-        // and failing because of the header -> this is really necessary for the metrics files
-        IntegrationTestSpec.assertEqualTextFiles(metricsOutput,getTestFile(testName + ".metrics"),
-                "#");
+        // check the metrics file
+        metricsFileConcordance(metricsOutput,getTestFile(testName + ".metrics"));
 
         // TODO: we are checking files as text files, but maybe we shouldn't
         // check the output file
