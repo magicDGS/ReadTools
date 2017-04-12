@@ -279,6 +279,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
         final List<TrimmingFunction> trimmers = trimmingPlugin.getDefaultInstances().stream()
                 .map(tf -> (TrimmingFunction) tf) // TODO: this is necessary because it is now a set of filters
                 .collect(Collectors.toList());
+        trimmers.addAll(trimmingPlugin.getAllInstances());
 
         // the same for filters
         final List<ReadFilter> filters = filterPlugin.getDefaultInstances().stream()
