@@ -36,6 +36,7 @@ targetCompatibility = 1.8
 mainClassName = group + "." + rootProject.name.toLowerCase() + ".Main"
 
 // method for defining the version using the build-number from git-hash
+// TODO: this should be removed for https://github.com/magicDGS/ReadTools/issues/184
 def hashedVersion(String semVer) {
     def hashedVersion = semVer + "-" + versionDetails().gitHash
     return (gitVersion().contains("dirty")) ? hashedVersion + "-SNAPSHOT" : hashedVersion
