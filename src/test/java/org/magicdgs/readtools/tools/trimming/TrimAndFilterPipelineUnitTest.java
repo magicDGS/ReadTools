@@ -555,8 +555,8 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
         final List<String> filterNames = pipeline.getFilterStats().stream()
                 .map(fs -> fs.FILTER).collect(Collectors.toList());
 
-        Assert.assertEquals(trimmerNames, expectedTrimmerName, trimmerNames.toString() + "vs. " + expectedTrimmerName.toString());
-        Assert.assertEquals(filterNames, expectedFilterNames, filterNames.toString() + "vs. " + expectedFilterNames.toString());
+        Assert.assertEquals(trimmerNames, expectedTrimmerName, trimmerNames.toString());
+        Assert.assertEquals(filterNames, expectedFilterNames, filterNames.toString());
     }
 
     @DataProvider(name = "trimmersAndFilters")
