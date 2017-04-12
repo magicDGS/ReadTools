@@ -62,6 +62,8 @@ public class BarcodeDictionaryFactory {
      *
      * It may contain also the following columns used for include information in the read group:
      * - Library name ({@link #LIBRARY_NAME_COLUMN}).
+     * - Platform name ({@link #PLATFORM_COLUMN}). TODO: add to the help string
+     * - Description ({@link #DESCRIPTION_COLUMN}). TODO: add to the help string
      *
      * Note: order of the columns is not required.
      */
@@ -107,6 +109,16 @@ public class BarcodeDictionaryFactory {
      * Column header name for the library.
      */
     public static final String LIBRARY_NAME_COLUMN = "library_name";
+
+    /**
+     * Column header name for the platform.
+     */
+    public static final String PLATFORM_COLUMN = "platform_name";
+
+    /**
+     * Column header name for the description.
+     */
+    public static final String DESCRIPTION_COLUMN = "description";
 
     /**
      * Gets a barcode dictionary from a file in the format defined in
@@ -220,11 +232,24 @@ public class BarcodeDictionaryFactory {
     // helper funciton to update the record
     private static final BiConsumer<TabbedTextFileWithHeaderParser.Row, SAMReadGroupRecord> getRecordUpdater(
             final TabbedTextFileWithHeaderParser barcodesParser) {
-        // TODO: update more stuff
-        return (barcodesParser.hasColumn(LIBRARY_NAME_COLUMN))
-                ? (row, rg) -> rg.setLibrary(row.getField(LIBRARY_NAME_COLUMN))
-                // TODO: this should be changed and do not output anything?
-                : (row, rg) -> rg.setLibrary(rg.getId());
+        BiConsumer<TabbedTextFileWithHeaderParser.Row, SAMReadGroupRecord> consumer =
+                (barcodesParser.hasColumn(LIBRARY_NAME_COLUMN))
+                        ? (row, rg) -> rg.setLibrary(row.getField(LIBRARY_NAME_COLUMN))
+                        // TODO: this should be changed and do not output anything?
+                        : (row, rg) -> rg.setLibrary(rg.getId());
+
+        if (barcodesParser.hasColumn(PLATFORM_COLUMN)) {
+            // TODO: only allow SAMReadGroupRecord.PlatformValue values?
+            consumer = consumer.andThen((row, rg) -> rg.setPlatform(row.getField(PLATFORM_COLUMN)));
+        }
+
+        if (barcodesParser.hasColumn(DESCRIPTION_COLUMN)) {
+            consumer = consumer.andThen((row, rg) -> rg.setDescription(row.getField(DESCRIPTION_COLUMN)));
+        }
+
+        // TODO: add even more
+
+        return consumer;
     }
 
     // validates the barcode parser columns, if all required are set and if the optional are present
