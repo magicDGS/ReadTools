@@ -1,6 +1,5 @@
 name=${name}
 version=${version}
-build=${buildNumber}
 timestamp=${timestamp}
 contact_person=${developer}
 contact_email=${contact}

@@ -24,7 +24,7 @@ startScripts {
 }
 
 group = 'org.magicdgs'
-version = '1.0.0-SNAPSHOT'
+version = hashedVersion('1.0.0')
 description = """Tools for sequencing barcoded read data (in FASTQ/BAM format)"""
 
 def developer = "Daniel Gomez-Sanchez"
@@ -34,6 +34,12 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 mainClassName = group + "." + rootProject.name.toLowerCase() + ".Main"
+
+// method for defining the version using the build-number from git-hash
+def hashedVersion(String semVer) {
+    def hashedVersion = semVer + "-" + versionDetails().gitHash
+    return (gitVersion().contains("dirty")) ? hashedVersion + "-SNAPSHOT" : hashedVersion
+}
 
 repositories {
     mavenCentral()
@@ -64,12 +70,9 @@ task wrapper(type: Wrapper) {
 }
 
 tasks.withType(Jar) {
-    def details = versionDetails()
-    def buildNumber = (gitVersion().contains("dirty")) ? details.gitHash + ".dirty" : details.gitHash;
-    def implementationVersion = project.version.replaceAll("-SNAPSHOT", "") + "_" +  buildNumber
     manifest {
         attributes 'Implementation-Title': rootProject.name,
-            'Implementation-Version': implementationVersion,
+            'Implementation-Version': project.version,
             'Main-Class': project.mainClassName
     }
 }
@@ -136,14 +139,11 @@ tasks.withType(Test) {
 
 processResources {
     def details = versionDetails()
-    // this is better for having a "dirty" marker for versions
-    def buildNumber = (gitVersion().contains("dirty")) ? details.gitHash + ".dirty" : details.gitHash;
     // get the timestamp in its format
     def date = new Date()
     def timestamp = date.format('yyyy-MM-dd HH:mm:ss')
     expand(name: project.name,
-        version: project.version.replaceAll("-SNAPSHOT", ""),
-        buildNumber: buildNumber,
+        version: project.version,
         timestamp: timestamp,
         developer: developer,
         contact: contact) 
@@ -155,9 +155,17 @@ processTestResources {
     exclude "**/org/magicdgs/readtools/**"
 }
 
+// this task is used for have a jar file that is called just as the project name
+// may be useful for uploading jar files to several places always with the same name
+// and also to point to a concrete jar file as the executable
+task currentJar(type: Copy){
+    from shadowJar
+    into new File(buildDir, "libs")
+    rename { string -> rootProject.name + ".jar"}
+}
+
 shadowJar {
     zip64 true
-    classifier = null
-    version = null
     mergeServiceFiles()
+    finalizedBy currentJar
 }

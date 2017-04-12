@@ -48,7 +48,6 @@ public class ProjectProperties {
         final Map<String, String> defaults = new HashMap<>(6);
         defaults.put("version", "UNKNOWN");
         defaults.put("name", "Program");
-        defaults.put("build", "develop"); // the build will be computed except it is in develop
         defaults.put("timestamp", "unknown");
         defaults.put("contact_person", "DGS");
         defaults.put("contact_email", "");
@@ -58,8 +57,6 @@ public class ProjectProperties {
     private static String name = null;
 
     private static String version = null;
-
-    private static String build = null;
 
     private static String timestamp = null;
 
@@ -92,18 +89,6 @@ public class ProjectProperties {
     }
 
     /**
-     * Get the build for this project
-     *
-     * @return the build String
-     */
-    public static String getBuild() {
-        if (build == null) {
-            setValue("build");
-        }
-        return build;
-    }
-
-    /**
      * Get the compilation time
      *
      * @return the timestamp
@@ -116,54 +101,6 @@ public class ProjectProperties {
     }
 
     /**
-     * Get the contact person
-     *
-     * @return the contact person
-     */
-    public static String getContactPerson() {
-        if (contactPerson == null) {
-            setValue("contact_person");
-        }
-        return contactPerson;
-    }
-
-    /**
-     * Get the contact email
-     *
-     * @return the contact email
-     */
-    public static String getContactEmail() {
-        if (contactEmail == null) {
-            setValue("contact_email");
-        }
-        return contactEmail;
-    }
-
-    /**
-     * Get the formatted version in the format v.${version}.r_${build}
-     *
-     * @return the formatted version
-     */
-    public static String getFormattedVersion() {
-        if (version == null || build == null) {
-            getAllPropertiesForProgramHeader();
-        }
-        return String.format("%s.r_%s", version, build);
-    }
-
-    /**
-     * Get the formatted name with version like Name v.${version}.r_${build}
-     *
-     * @return the formatted name with version
-     */
-    public static String getFormattedNameWithVersion() {
-        if (version == null || build == null || name == null) {
-            getAllPropertiesForProgramHeader();
-        }
-        return String.format("%s v.%s", name, getFormattedVersion());
-    }
-
-    /**
      * Get the full contact (Name + email)
      *
      * @return the full contact
@@ -173,18 +110,6 @@ public class ProjectProperties {
             getAllPropertiesForProgramHeader();
         }
         return String.format("%s (%s)", contactPerson, contactEmail);
-    }
-
-    /**
-     * Get the operating system where the program is running as ${os.name} ${os.version}
-     * (${os.arch})
-     *
-     * @return the formatted string
-     */
-    public static String getOperatingSystem() {
-        return String.format("%s %s (%s)", System.getProperty("os.name"),
-                System.getProperty("os.version"),
-                System.getProperty("os.arch"));
     }
 
     /**
@@ -268,9 +193,6 @@ public class ProjectProperties {
         switch (tag) {
             case "name":
                 name = val;
-                break;
-            case "build":
-                build = val;
                 break;
             case "timestamp":
                 timestamp = val;

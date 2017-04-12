@@ -68,7 +68,7 @@ public class Main extends org.broadinstitute.hellbender.Main {
     public static void main(final String[] args) {
         if (args.length == 1
                 && ("--version".equals(args[0]) || "-v".equals(args[0]))) {
-            System.out.println(ProjectProperties.getFormattedVersion());
+            System.out.println(ProjectProperties.getVersion());
             System.exit(0);
         }
         new Main().mainEntry(args);
