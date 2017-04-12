@@ -1,19 +1,26 @@
+## htsjdk.samtools.metrics.StringHeader
+# org.magicdgs.readtools.tools.barcodes.AssignReadGroupByBarcode  --output src/test/resources/org/magicdgs/readtools/tools/barcodes/AssignReadGroupByBarcode/testPairEndDefaultParametersUniqueBarcode --outputFormat SAM --splitBySample false --addOutputSAMProgramRecord false --forceOverwrite true --barcodeFile src/test/resources/org/magicdgs/readtools/tools/barcodes/AssignReadGroupByBarcode/unique.barcodes --keepDiscarded true --input src/test/resources/org/magicdgs/readtools/data/SRR1931701_1.fq --input2 src/test/resources/org/magicdgs/readtools/data/SRR1931701_2.fq --verbosity ERROR --QUIET true  --splitByReadGroup false --splitByLibrary false --createOutputBamIndex true --createOutputBamMD5 false --maximumMismatches 0 --minimumDistance 1 --nNoMismatch false --rawBarcodeSequenceTags BC --barcodeInReadName false --secondsBetweenProgressUpdates 10.0 --readValidationStringency SILENT --interleavedInput false --help false --version false --showHidden false --use_jdk_deflater false --use_jdk_inflater false
+## htsjdk.samtools.metrics.StringHeader
+# Started on: April 7, 2017 4:24:16 PM CEST
+
+
+
 ## org.magicdgs.readtools.metrics.barcodes.BarcodeDetector
 # No match: 0	Discarded by N: 0	Discarded by mismatch: 5	Discarded by distance: 0
 
 ## METRICS CLASS	org.magicdgs.readtools.metrics.barcodes.MatcherStat
-SAMPLE	BARCODE	RECORDS
-sample1	ATTACTCG	6
-sample2	TCCGGAGA	5
-sample3	CGCTCATT	9
-sample4	GAGATTCC	9
-sample5	ATTCAGAA	5
-sample6	GAATTCGT	16
-sample7	CTGAAGCT	15
-sample8	TAATGCGC	8
-sample9	CGGCTATG	10
-sample1	TCCGCGAA	15
-UNKNOWN	UNKNOWN	5
+SAMPLE	BARCODE	RECORDS	PCT_RECORDS
+sample1	ATTACTCG	6	5.825243
+sample2	TCCGGAGA	5	4.854369
+sample3	CGCTCATT	9	8.737864
+sample4	GAGATTCC	9	8.737864
+sample5	ATTCAGAA	5	4.854369
+sample6	GAATTCGT	16	15.533981
+sample7	CTGAAGCT	15	14.563107
+sample8	TAATGCGC	8	7.76699
+sample9	CGGCTATG	10	9.708738
+sample1	TCCGCGAA	15	14.563107
+UNKNOWN	UNKNOWN	5	4.854369
 
 
 

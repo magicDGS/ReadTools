@@ -23,10 +23,10 @@
  */
 package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
 
-import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.metrics.barcodes.BarcodeDetector;
 import org.magicdgs.readtools.metrics.barcodes.BarcodeStat;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
+import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -38,12 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -314,21 +309,34 @@ public class BarcodeDecoder {
     }
 
     /**
-     * Outputs the statistics for the processed barcodes.
+     * Gets the accumulated statistics for barcodes match/mismatch.
      *
-     * @param statsPath metrics file where the statistics will be output.
+     * Note: calling this method recomputes the percentage every time.
      *
-     * @return the statistics for each combined barcode.
+     * @see MatcherStat
      */
-    public Collection<MatcherStat> outputStats(final Path statsPath) throws IOException {
-        final Writer statsWriter = Files.newBufferedWriter(statsPath);
+    public MetricsFile<MatcherStat, Integer> getMatcherStatMetrics() {
         // create the matcher stats
         final MetricsFile<MatcherStat, Integer> matcherStats = new MetricsFile<>();
         // add the header and the metrics
         matcherStats.addHeader(metricHeader);
-        matcherStats.addAllMetrics(stats.values());
-        // write matcher stats
-        matcherStats.write(statsWriter);
+
+        // update the percentage value
+        final double total = stats.values().stream().mapToInt(i -> i.RECORDS).sum();
+        // for each value, set the percentage and add the metric
+        stats.values().forEach(ms -> {
+            ms.PCT_RECORDS = 100d * ms.RECORDS / total;
+            matcherStats.addMetric(ms);
+        });
+        return matcherStats;
+    }
+
+    /**
+     * Gets the accumulated statistics for each barcode.
+     *
+     * @see BarcodeStat
+     */
+    public MetricsFile<BarcodeStat, Integer> getBarcodeStatMetrics() {
         // create the barcode stats
         final MetricsFile<BarcodeStat, Integer> barcode = new MetricsFile<>();
         for (int i = 0; i < dictionary.getNumberOfBarcodes(); i++) {
@@ -342,11 +350,7 @@ public class BarcodeDecoder {
             }
             barcode.addAllMetrics(current.values());
         }
-        // write barcode stats
-        barcode.write(statsWriter);
-        // close the metrics file
-        statsWriter.close();
-        // return the list of the Matcher Statistics
-        return stats.values();
+        return barcode;
     }
+
 }
