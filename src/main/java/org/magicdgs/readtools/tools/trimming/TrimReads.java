@@ -47,6 +47,7 @@ import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineParser;
 import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
+import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterArgumentCollection;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -96,8 +97,9 @@ public final class TrimReads extends ReadToolsWalker {
         return Arrays.asList(
                 new TrimmerPluginDescriptor(
                         Arrays.asList(new TrailingNtrimmer(), new MottQualityTrimmer())),
-                new GATKReadFilterPluginDescriptor(Collections
-                        .singletonList(new ReadLengthReadFilter(40, Integer.MAX_VALUE))));
+                new GATKReadFilterPluginDescriptor(new TrimReadsFilterPluginArgumentCollection(),
+                        Collections.singletonList(
+                                new ReadLengthReadFilter(40, Integer.MAX_VALUE))));
     }
 
     // pipeline to trim and filter
