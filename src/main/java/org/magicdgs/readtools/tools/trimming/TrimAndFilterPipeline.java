@@ -281,11 +281,24 @@ public class TrimAndFilterPipeline extends ReadFilter {
                 .collect(Collectors.toList());
         trimmers.addAll(trimmingPlugin.getAllInstances());
 
+        // TODO: change to the same for the ReadFilter once the Barclay interface is fixed
+        // TODO: https://github.com/broadinstitute/barclay/pull/38
         // the same for filters
-        final List<ReadFilter> filters = filterPlugin.getDefaultInstances().stream()
-                .map(rf -> (ReadFilter) rf) // TODO: this is necessary because it is now a set of filters
-                .collect(Collectors.toList());
-        filters.addAll(filterPlugin.getAllInstances());
+//        final List<ReadFilter> filters = filterPlugin.getDefaultInstances().stream()
+//                .map(rf -> (ReadFilter) rf) // TODO: this is necessary because it is now a set of filters
+//                .collect(Collectors.toList());
+//        filters.addAll(filterPlugin.getAllInstances());
+
+        final List<ReadFilter> filters = (filterPlugin.userArgs.getDisableToolDefaultReadFilters())
+                ? new ArrayList<>()
+                : filterPlugin.getDefaultInstances().stream()
+                        .map(rf -> (ReadFilter) rf)
+                        .filter(rf -> !filterPlugin.isDisabledFilter(rf.getClass().getSimpleName()))
+                        .collect(Collectors.toList());
+        // remove redundant filters
+        filterPlugin.getAllInstances().stream()
+                .filter(rf -> !filters.contains(rf))
+                .forEach(filters::add);
 
         // throw if not pipeline is specified
         if (trimmers.isEmpty() && filters.isEmpty()) {

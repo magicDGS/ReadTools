@@ -40,7 +40,6 @@ import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.metrics.MetricsFile;
-import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.Histogram;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
@@ -96,8 +95,9 @@ public final class TrimReads extends ReadToolsWalker {
         return Arrays.asList(
                 new TrimmerPluginDescriptor(
                         Arrays.asList(new TrailingNtrimmer(), new MottQualityTrimmer())),
-                new GATKReadFilterPluginDescriptor(Collections
-                        .singletonList(new ReadLengthReadFilter(40, Integer.MAX_VALUE))));
+                new GATKReadFilterPluginDescriptor(new TrimReadsFilterPluginArgumentCollection(),
+                        Collections.singletonList(
+                                new ReadLengthReadFilter(40, Integer.MAX_VALUE))));
     }
 
     // pipeline to trim and filter
