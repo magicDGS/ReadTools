@@ -35,7 +35,6 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.SAMTag;
 import org.broadinstitute.barclay.argparser.CommandLineException;
-import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
