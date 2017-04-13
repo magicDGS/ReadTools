@@ -59,10 +59,10 @@ import java.util.stream.StreamSupport;
 public abstract class ReadToolsWalker extends CommandLineProgram {
 
     // For the progress meter in the GATKTool
-    @Argument(fullName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, shortName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, doc = "Output traversal statistics every time this many seconds elapse.", optional = true)
+    @Argument(fullName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, shortName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, doc = "Output traversal statistics every time this many seconds elapse.", optional = true, common = true)
     private double secondsBetweenProgressUpdates = ProgressMeter.DEFAULT_SECONDS_BETWEEN_UPDATES;
 
-    @Argument(fullName = StandardArgumentDefinitions.REFERENCE_LONG_NAME, shortName = StandardArgumentDefinitions.REFERENCE_SHORT_NAME, doc = "Reference sequence file. Required for CRAM input.", optional = true)
+    @Argument(fullName = StandardArgumentDefinitions.REFERENCE_LONG_NAME, shortName = StandardArgumentDefinitions.REFERENCE_SHORT_NAME, doc = "Reference sequence file. Required for CRAM input.", optional = true, common = true)
     private File referenceFile = null;
 
     @ArgumentCollection

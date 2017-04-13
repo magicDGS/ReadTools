@@ -50,7 +50,7 @@ public abstract class RTOutputArgumentCollection implements Serializable {
 
     protected final static Logger logger = LogManager.getLogger(RTOutputArgumentCollection.class);
 
-    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", optional = true)
+    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", optional = true, common = true)
     public Boolean forceOverwrite = false;
 
     /**

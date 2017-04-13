@@ -169,7 +169,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
     }
 
     // expected outputs are SAM files
-    // testSplit is only for splitBySample
+    // testSplit is only for splitSample
     @Test(dataProvider = "addByReadGroupData")
     public void testAddReadGroupByBarcodeOldToolConcordance(final String testName,
             final String deprecatedTool,
@@ -185,7 +185,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                 .addArgument("outputFormat", "SAM") // output always SAM as text file
                 .addBooleanArgument("keepDiscarded",
                         true) // always keep discarded for the concordance tests, because it previously was done
-                .addBooleanArgument("splitBySample", testSplit);
+                .addBooleanArgument("splitSample", testSplit);
 
         // run the command line
         Assert.assertNull(runCommandLine(builder));
