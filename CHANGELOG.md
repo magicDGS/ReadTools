@@ -11,12 +11,17 @@ All notable changes to this project will be documented in this file.
 ### Added
 - HDFS support for input and output. The URI should specify the schema (__hdfs__) and the host.
 - Support for convert any input to the Distmap format.
+- Common arguments
 
 ### Changed
 - Removed legacy tools
+- Barcode metrics improvements: add header and PCT_RECORDS
+- Changed argument for split by read group, sample and/or library
 - (Developer) Removed legacy IO system
 - (Developer) Removed some deprecated code
 - (Developer) Repackaged some classes
+- (Developer) Removed GATKReadFilterPluginDescriptor hack
+- (Developer) Improve gradle build versioning
 
 ## [0.3.0] - 2017-02-06
 
