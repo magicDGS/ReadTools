@@ -25,11 +25,12 @@
 package org.magicdgs.readtools.tools.barcodes;
 
 import org.magicdgs.readtools.RTDefaults;
+import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.BarcodeDetectorArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
-import org.magicdgs.readtools.cmd.programgroups.ReadToolsProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.RTManipulationProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
@@ -39,7 +40,6 @@ import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.metrics.MetricsFile;
-import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
@@ -52,7 +52,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 
 /**
  * Tool for assign barcodes to any kind of input and output a standard ReadTools read.
@@ -71,8 +70,9 @@ import java.util.Collection;
                 + "Note: for pair-end reads, only one read is used to assing the barcode.\n"
                 + "\nWARNING: If several barcodes are present and one of then identify uniquely the "
                 + "read group, this is assigned directly. Thus, it is recommended to provide all the "
-                + "barcodes present in the library to the parameter.",
-        programGroup = ReadToolsProgramGroup.class)
+                + "barcodes present in the library to the parameter.\n"
+                + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
+        programGroup = RTManipulationProgramGroup.class)
 public final class AssignReadGroupByBarcode extends ReadToolsWalker {
 
     @ArgumentCollection

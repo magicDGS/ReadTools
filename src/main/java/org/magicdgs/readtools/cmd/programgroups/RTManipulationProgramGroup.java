@@ -24,23 +24,25 @@
 
 package org.magicdgs.readtools.cmd.programgroups;
 
+import org.magicdgs.readtools.RTHelpConstants;
+
 import org.broadinstitute.barclay.argparser.CommandLineProgramGroup;
 
 /**
- * Conversion program groups represents tools for convert any kind of reads sources to other
- * formats.
+ * ReadTools program group represents tools for standardize/work with any kind of reads sources
+ * and standardize them.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public final class ReadToolsConversionProgramGroup implements CommandLineProgramGroup {
+public final class RTManipulationProgramGroup implements CommandLineProgramGroup {
 
     @Override
     public String getName() {
-        return "Reads conversion";
+        return RTHelpConstants.DOC_CAT_READS_MANIPULATION;
     }
 
     @Override
     public String getDescription() {
-        return "Tools for converting any supported read source (SAM/BAM/CRAM/FASTQ)";
+        return RTHelpConstants.DOC_CAT_READS_MANIPULATION_SUMMARY;
     }
 }

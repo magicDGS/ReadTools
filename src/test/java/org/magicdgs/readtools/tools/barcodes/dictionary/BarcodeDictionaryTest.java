@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
-import org.magicdgs.readtools.ProjectProperties;
+import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.RTBaseTest;
 
@@ -58,7 +58,7 @@ public class BarcodeDictionaryTest extends RTBaseTest {
     // initialize the unknown read group information
     static {
         UNKNOWN_READGROUP_INFO = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
-        UNKNOWN_READGROUP_INFO.setProgramGroup(ProjectProperties.getName());
+        UNKNOWN_READGROUP_INFO.setProgramGroup(RTHelpConstants.READTOOLS_NAME);
         UNKNOWN_READGROUP_INFO.setSample(BarcodeMatch.UNKNOWN_STRING);
     }
 

@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.ProjectProperties;
+import org.magicdgs.readtools.RTHelpConstants;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.util.Iso8601Date;
@@ -66,15 +66,15 @@ public class ReadGroupArgumentCollection implements Serializable {
     /**
      * Gets a basic Read Group from the arguments.
      *
-     * Note: the program group is set to {@link ProjectProperties#getName()}.
+     * Note: the program group is set to {@link RTHelpConstants#READTOOLS_NAME}.
      *
      */
     public SAMReadGroupRecord getReadGroupFromArguments(final String id, final String sampleName) {
         final SAMReadGroupRecord rg = new SAMReadGroupRecord(id);
-        rg.setProgramGroup(ProjectProperties.getName());
+        rg.setProgramGroup(RTHelpConstants.READTOOLS_NAME);
         rg.setSample(sampleName);
         // the program group is the one in the project properties
-        rg.setProgramGroup(ProjectProperties.getName());
+        rg.setProgramGroup(RTHelpConstants.READTOOLS_NAME);
         if (readGroupLibrary != null) {
             rg.setLibrary(readGroupLibrary);
         }

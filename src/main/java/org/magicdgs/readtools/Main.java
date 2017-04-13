@@ -24,9 +24,11 @@
 
 package org.magicdgs.readtools;
 
+import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.util.Log;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +44,15 @@ import java.util.List;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class Main extends org.broadinstitute.hellbender.Main {
+public final class Main extends org.broadinstitute.hellbender.Main {
+
+    /** Stream output for exceptions. */
+    @VisibleForTesting
+    PrintStream exceptionOutput = System.err;
+
+    /** Stream output for results. */
+    @VisibleForTesting
+    PrintStream resultOutput = System.out;
 
     /** Only includes the org.magicdgs.readtools.tools package. */
     @Override
@@ -66,12 +76,25 @@ public class Main extends org.broadinstitute.hellbender.Main {
 
     /** Command line entry point. */
     public static void main(final String[] args) {
-        if (args.length == 1
-                && ("--version".equals(args[0]) || "-v".equals(args[0]))) {
-            System.out.println(ProjectProperties.getVersion());
+        final Main main = new Main();
+        // if only the --version / -v is requested, exit directly
+        if (main.printOnlyVersion(args)) {
             System.exit(0);
         }
         new Main().mainEntry(args);
+    }
+
+    /**
+     * Returns {@code true} if only --version / -v is requested after printing the version;
+     * {@code false} otherwise.
+     */
+    @VisibleForTesting
+    protected boolean printOnlyVersion(final String[] args) {
+        if (args.length == 1 && ("--version".equals(args[0]) || "-v".equals(args[0]))) {
+            handleResult(getClass().getPackage().getImplementationVersion());
+            return true;
+        }
+        return false;
     }
 
     /** Prints the result to the standard output directly. */
@@ -79,21 +102,22 @@ public class Main extends org.broadinstitute.hellbender.Main {
     protected void handleResult(final Object result) {
         // TODO: print something else and/or handle metrics?
         if (result != null) {
-            System.out.println(result);
+            resultOutput.println(result);
         }
     }
 
-    /** Prints in {@link System#err} log information for unexpected error. */
+    /**
+     * Prints in {@link System#err} the decorated exception as an unexpected error.
+     *
+     * In addition, it adds a note pointing to the issue tracker
+     * ({@link RTHelpConstants#ISSUE_TRACKER}).
+     */
     @Override
     protected void handleNonUserException(final Exception e) {
-        System.err
-                .println("***********************************************************************");
-        System.err.println();
-        System.err.println("UNEXPECTED ERROR: " + e.getMessage());
-        System.err.println("Please, contact " + ProjectProperties.getContact());
-        System.err.println();
-        System.err
-                .println("***********************************************************************");
+        printDecoratedExceptionMessage(exceptionOutput, e, "UNEXPECTED ERROR: ");
+        exceptionOutput
+                .println("Please, search for this error in our issue tracker or post a new one:");
+        exceptionOutput.println("\t" + RTHelpConstants.ISSUE_TRACKER);
         // only log the stack-trace for DEBUG mode
         if (Log.isEnabled(Log.LogLevel.DEBUG)) {
             e.printStackTrace();
