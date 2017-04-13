@@ -41,13 +41,13 @@ import java.util.function.Supplier;
 abstract class RTAbstractOutputBamArgumentCollection extends RTOutputArgumentCollection {
     private static final long serialVersionUID = 1L;
 
-    @Argument(fullName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_LONG_NAME, shortName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_SHORT_NAME, doc = "If true, create a BAM/CRAM index when writing a coordinate-sorted BAM/CRAM file.", optional = true)
+    @Argument(fullName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_LONG_NAME, shortName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_INDEX_SHORT_NAME, doc = "If true, create a BAM/CRAM index when writing a coordinate-sorted BAM/CRAM file.", optional = true, common = true)
     public boolean createOutputBamIndex = true;
 
-    @Argument(fullName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_MD5_LONG_NAME, shortName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_MD5_SHORT_NAME, doc = "If true, create a MD5 digest for any BAM/SAM/CRAM file created", optional = true)
+    @Argument(fullName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_MD5_LONG_NAME, shortName = StandardArgumentDefinitions.CREATE_OUTPUT_BAM_MD5_SHORT_NAME, doc = "If true, create a MD5 digest for any BAM/SAM/CRAM file created", optional = true, common = true)
     public boolean createOutputBamMD5 = false;
 
-    @Argument(fullName = "addOutputSAMProgramRecord", shortName = "addOutputSAMProgramRecord", doc = "If true, adds a PG tag to created SAM/BAM/CRAM files.", optional = true)
+    @Argument(fullName = StandardArgumentDefinitions.ADD_OUTPUT_SAM_PROGRAM_RECORD, shortName = StandardArgumentDefinitions.ADD_OUTPUT_SAM_PROGRAM_RECORD, doc = "If true, adds a PG tag to created SAM/BAM/CRAM files.", optional = true, common = true)
     public boolean addOutputSAMProgramRecord = true;
 
     /** Gets the writer factory for the arguments, adding also the reference file. */

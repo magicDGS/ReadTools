@@ -61,7 +61,7 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
         programGroup = ReadToolsConversionProgramGroup.class)
 public final class ReadsToDistmap extends ReadToolsWalker {
 
-    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", optional = true)
+    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", common = true, optional = true)
     public Boolean forceOverwrite = false;
 
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output in Distmap format. Expected to be in an HDFS file system.", optional = false)

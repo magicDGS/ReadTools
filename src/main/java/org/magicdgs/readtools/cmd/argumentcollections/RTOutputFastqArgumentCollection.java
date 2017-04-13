@@ -56,11 +56,10 @@ final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output FASTQ file prefix.", optional = false)
     public String outputPrefix;
 
-    @Argument(fullName = RTStandardArguments.OUTPUT_FORMAT_NAME, shortName = RTStandardArguments.OUTPUT_FORMAT_NAME, doc = "FASTQ output format.", optional = true)
+    @Argument(fullName = RTStandardArguments.OUTPUT_FORMAT_NAME, shortName = RTStandardArguments.OUTPUT_FORMAT_NAME, doc = "FASTQ output format.", optional = true, common = true)
     public ReadToolsIOFormat.FastqFormat outputFormat = ReadToolsIOFormat.FastqFormat.GZIP;
 
-    // TODO: this creates the MD5 not for the gzipped file, but for the FASTQ contents themselves
-    @Argument(fullName = RTStandardArguments.CREATE_OUTPUT_FASTQ_MD5_LONG_NAME, shortName = RTStandardArguments.CREATE_OUTPUT_FASTQ_MD5_SHORT_NAME, doc = "If true, create a MD5 digest for FASTQ file(s).", optional = true)
+    @Argument(fullName = RTStandardArguments.CREATE_OUTPUT_FASTQ_MD5_LONG_NAME, shortName = RTStandardArguments.CREATE_OUTPUT_FASTQ_MD5_SHORT_NAME, doc = "If true, create a MD5 digest for FASTQ file(s).", optional = true, common = true)
     public boolean createsMd5 = false;
 
     @Argument(fullName = RTStandardArguments.INTERLEAVED_OUTPUT_FASTQ_LONG_NAME, shortName = RTStandardArguments.INTERLEAVED_OUTPUT_FASTQ_SHORT_NAME, doc = "If true, creates an interleaved FASTQ output. Otherwise, it will be splited by pairs/single end.", optional = true)

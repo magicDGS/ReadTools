@@ -32,6 +32,7 @@ import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
+import org.broadinstitute.hellbender.tools.SplitReads;
 import org.broadinstitute.hellbender.tools.readersplitters.LibraryNameSplitter;
 import org.broadinstitute.hellbender.tools.readersplitters.ReadGroupIdSplitter;
 import org.broadinstitute.hellbender.tools.readersplitters.ReaderSplitter;
@@ -54,16 +55,16 @@ class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentColl
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file prefix.", optional = false)
     public String outputPrefix;
 
-    @Argument(fullName = RTStandardArguments.OUTPUT_FORMAT_NAME, shortName = RTStandardArguments.OUTPUT_FORMAT_NAME, doc = "SAM/BAM/CRAM output format.", optional = true)
+    @Argument(fullName = RTStandardArguments.OUTPUT_FORMAT_NAME, shortName = RTStandardArguments.OUTPUT_FORMAT_NAME, doc = "SAM/BAM/CRAM output format.", optional = true, common = true)
     public ReadToolsIOFormat.BamFormat outputFormat = ReadToolsIOFormat.BamFormat.BAM;
 
-    @Argument(fullName = "splitBySample", shortName = "splitSM", doc = "Split file by sample.", optional = true)
+    @Argument(fullName = SplitReads.SAMPLE_LONG_NAME, doc = "Split file by sample.", optional = true)
     public boolean splitBySample = false;
 
-    @Argument(fullName = "splitByReadGroup", shortName = "splitRG", doc = "Split file by read group.", optional = true)
+    @Argument(fullName = SplitReads.READ_GROUP_LONG_NAME, doc = "Split file by read group.", optional = true)
     public boolean splitByReadGroup = false;
 
-    @Argument(fullName = "splitByLibrary", shortName = "splitLB", doc = "Split file by library.", optional = true)
+    @Argument(fullName = SplitReads.LIBRARY_NAME_LONG_NAME, doc = "Split file by library.", optional = true)
     public boolean splitByLibrary = false;
 
     @Override

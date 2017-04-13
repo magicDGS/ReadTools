@@ -55,12 +55,12 @@ import java.util.Set;
 public abstract class FixBarcodeAbstractArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, optional = true,
+    @Argument(fullName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME, optional = true, common = true,
             doc = "Include the barcodes encoded in this tag(s) in the read name. Note: this is not necessary for input FASTQ files. WARNING: this tag(s) will be removed/updated as necessary.",
             mutex = {RTStandardArguments.USER_READ_NAME_BARCODE_NAME})
     public List<String> rawBarcodeTags = new ArrayList<>(RTReadUtils.RAW_BARCODE_TAG_LIST);
 
-    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, optional = true,
+    @Argument(fullName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, shortName = RTStandardArguments.USER_READ_NAME_BARCODE_NAME, optional = true, common = true,
             doc = "Use the barcode encoded in SAM/BAM/CRAM read names. Note: this is not necessary for input FASTQ files.",
             mutex = {RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME})
     public boolean useReadNameBarcode = false;
@@ -193,7 +193,7 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
     private static final class FixBarcodeWithQualitiesArgumentCollection
             extends FixBarcodeAbstractArgumentCollection {
 
-        @Argument(fullName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, optional = true,
+        @Argument(fullName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, optional = true, common = true,
                 doc = "Use the qualities encoded in this tag(s) as raw barcode qualities. Requires --"
                         + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
                         + ". WARNING: this tag(s) will be removed/updated as necessary.",

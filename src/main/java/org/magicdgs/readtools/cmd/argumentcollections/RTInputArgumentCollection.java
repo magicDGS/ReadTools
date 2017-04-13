@@ -56,19 +56,19 @@ public class RTInputArgumentCollection implements Serializable {
     public ValidationStringency readValidationStringency =
             ReadConstants.DEFAULT_READ_VALIDATION_STRINGENCY;
 
-    @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "BAM/SAM/CRAM/FASTQ source of reads.", optional = false)
+    @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "BAM/SAM/CRAM/FASTQ source of reads.", common = true, optional = false)
     public String inputSource;
 
     @Argument(fullName = RTStandardArguments.INPUT_PAIR_LONG_NAME, shortName = RTStandardArguments.INPUT_PAIR_SHORT_NAME, doc = "BAM/SAM/CRAM/FASTQ the second source of reads (if pair-end).",
-            optional = true, mutex = {RTStandardArguments.INTERLEAVED_INPUT_LONG_NAME})
+            common = true, optional = true, mutex = {RTStandardArguments.INTERLEAVED_INPUT_LONG_NAME})
     public String inputPair = null;
 
     @Argument(fullName = RTStandardArguments.INTERLEAVED_INPUT_LONG_NAME, shortName = RTStandardArguments.INTERLEAVED_INPUT_SHORT_NAME, doc = "Interleaved input.",
-            optional = true, mutex = {RTStandardArguments.INPUT_PAIR_LONG_NAME})
+            common = true, optional = true, mutex = {RTStandardArguments.INPUT_PAIR_LONG_NAME})
     public boolean interleaved = false;
 
     @Advanced
-    @Argument(fullName = RTStandardArguments.FORCE_QUALITY_ENCODING_NAME, shortName = RTStandardArguments.FORCE_QUALITY_ENCODING_NAME, doc = "Force original quality encoding of the input files.", optional = true)
+    @Argument(fullName = RTStandardArguments.FORCE_QUALITY_ENCODING_NAME, shortName = RTStandardArguments.FORCE_QUALITY_ENCODING_NAME, doc = "Force original quality encoding of the input files.", common = true, optional = true)
     public FastqQualityFormat forceQualityEncoding = null;
 
     // supplier to change the reference
