@@ -74,7 +74,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     // mutex because if we disable all, we cannot disable one by one
     @Argument(fullName = RTStandardArguments.DISABLE_TRIMMER_LONG_NAME, shortName = RTStandardArguments.DISABLE_TRIMMER_SHORT_NAME, doc = "Default trimmers to be disabled.", optional = true, mutex = {
             RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME})
-    public final Set<String> disabledTrimmers = new HashSet<>();
+    public final List<String> disabledTrimmers = new ArrayList<>();
 
     @Argument(fullName = RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME, shortName = RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME, doc = "Disable all default trimmers. It may be useful to reorder the trimmers.", optional = true, mutex = {
             RTStandardArguments.DISABLE_TRIMMER_LONG_NAME})
@@ -236,17 +236,20 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
                     + RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME);
         }
 
-
-        // throw if any trimmer is specified twice
-        final List<String> moreThanOnce = userTrimmerNames.stream()
-                .collect(Collectors.groupingBy(e -> e, Collectors.counting()))
-                .entrySet().stream().filter(e -> e.getValue() != 1)
-                .map(e -> e.getKey() + " (" + e.getValue() + ")")
-                .collect(Collectors.toList());
-        if (!moreThanOnce.isEmpty()) {
+        // throw if a trimmer is *enabled* more than once by the user
+        final Set<String> duplicateUserEnabledTrimmerNames = Utils.getDuplicatedItems(userTrimmerNames);
+        if (!duplicateUserEnabledTrimmerNames.isEmpty()) {
             throw new CommandLineException.BadArgumentValue(
-                    String.format("Trimmer(s) are specified more than once: %s",
-                            Utils.join(", ", moreThanOnce)));
+                    String.format("The trimmer(s) are enabled more than once: %s",
+                            Utils.join(", ", duplicateUserEnabledTrimmerNames)));
+        }
+
+        // throw if a trimmer is *disabled* more than once by the user
+        final Set<String> duplicateDisabledUserFilterNames = Utils.getDuplicatedItems(disabledTrimmers);
+        if (!duplicateDisabledUserFilterNames.isEmpty()) {
+            throw new CommandLineException.BadArgumentValue(
+                    String.format("The trimmer(s) are disabled more than once: %s",
+                            Utils.join(", ", duplicateDisabledUserFilterNames)));
         }
 
         // throw if any trimmer is both enabled *and* disabled by the user
@@ -258,10 +261,12 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
                             Utils.join(", ", enabledAndDisabled)));
         }
 
-        // warn if a disabled trimmer wasn't enabled by the tool in the first place
+        // throw if a disabled trimmer doesn't exist; warn if it wasn't enabled by the tool in the first place
         disabledTrimmers.forEach(s -> {
-            if (!toolDefaultTrimmers.containsKey(s)) {
-                logger.warn("Disabled trimmer ({}) is not enabled by this tool", s);
+            if (!allTrimmerNames.contains(s)) {
+                throw new CommandLineException.BadArgumentValue(String.format("Disabled trimmer (%s) does not exist", s));
+            } else if (!toolDefaultTrimmers.containsKey(s)) {
+                logger.warn(String.format("Disabled trimmer (%s) is not enabled by this tool", s));
             }
         });
 
@@ -276,13 +281,14 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         // throw if args were specified for a trimmer that was also disabled
         disabledTrimmers.forEach(s -> {
             if (requiredPredecessors.contains(s)) {
+                final String msg = String.format(
+                        "Values were supplied for default trimmer (%s) that is also disabled", s);
                 if (toolDefaultTrimmers.containsKey(s)) {
                     // TODO: this should blow up if the argument was really provided
-                    logger.warn("Values were supplied for disabled default trimmer ({})", s);
+                    // TODO: this requires https://github.com/broadinstitute/barclay/issues/23
+                    logger.warn(msg);
                 } else {
-                    throw new CommandLineException.BadArgumentValue(
-                            String.format("Values were supplied for (%s) that is also disabled",
-                                    s));
+                    throw new CommandLineException.BadArgumentValue(msg);
                 }
             }
         });
@@ -300,6 +306,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
                 requestedTrimmers.put(s, trf);
             }
         });
+
         // validates tool default trimmers arguments (maybe overridden in command line)
         // and set the disable5pTrim and disable3primeTrim for the trimmers in use (tool/requested)
         validateAndSetDisablingEnds(toolDefaultTrimmers);
