@@ -64,16 +64,16 @@ If you want to evaluate _ReadTools_ locally:
 
 ## Versioning and changelog
 
-We use [semantic versioning](http://semver.org/) (_MAJOR.MINOR.PATCH_).
-[build.gradle] and Unreleased tag (within [CHANGELOG]) should be updated accordingly in Pull Request to follow the convention:
+We use [Semantic Versioning (SemVer)](http://semver.org/) (_MAJOR.MINOR.PATCH_). The [CHANGELOG] will be updated accordingly after Pull Requests to follow the convention:
 
-1. Backwards-compatible bug fixes: increase _PATCH_ number. Add a __Fixed__ entry to [CHANGELOG].
-2. Backwards-compatible changes: increase _MINOR_ number and reset _PATCH_ to 0. Add a __Added__ entry to [CHANGELOG].
-3. Backwards-incompatible changes: only if the current unreleased version _MAJOR_ number is the same as the last release, increase _MAJOR_ number and reset _MINOR_ and _PATCH_ to 0;
-otherwise apply the backwards-compatible rules (1 or 2). Add a __Changed__ entry to [CHANGELOG] in any case.
+1. Backwards-compatible bug fixes: Add a __Fixed__ entry.
+   These fixes will be released after they are included, by bumping the _PATCH_ number. 
+2. Backwards-compatible changes: Add a __Added__ entry.
+   These changes will be included after a month from the last release, by bumping the _MINOR_ number and reset _PATCH_ to 0.
+3. Backwards-incompatible changes: Add a __Changed__ entry.
+   These changes will be included after a month from the last release, by bumping the _MAJOR_ number and reset _MINOR_ and _PATCH_ to 0.
 
-Please, distinguish within every category (__Fixed__/__Added__/__Changed__) if a change 
-correspond only to API changes or it have some effect to the user side.
+Changes are distinguished by the ones corresponding to API changes alone or if it have some effect on the user side.
 
 ---
 
