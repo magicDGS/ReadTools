@@ -84,7 +84,7 @@ Licensed under the [MIT License]. See [LICENSE] file.
 
 If you use this software, please add the citation as following:
 
->Gómez-Sánchez D (2017): ReadTools ${version}, Institut für Populationsgenetik, Vetmeduni Vienna.
+>Gómez-Sánchez D. & Schlötterer C. (2017). _ReadTools: Standardizing Sources For Sequencing Data._ Manuscript in preparation.
 
 
 
