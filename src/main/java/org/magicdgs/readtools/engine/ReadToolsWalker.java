@@ -24,7 +24,7 @@
 
 package org.magicdgs.readtools.engine;
 
-import org.magicdgs.readtools.ProjectProperties;
+import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.argumentcollections.RTInputArgumentCollection;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -281,7 +281,7 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
      * Subclasses may override.
      */
     public String getToolName() {
-        return ProjectProperties.getName() + " " + getClass().getSimpleName();
+        return RTHelpConstants.PROGRAM_NAME + " " + getClass().getSimpleName();
     }
 
 }

@@ -74,6 +74,7 @@ tasks.withType(Jar) {
     manifest {
         attributes 'Implementation-Title': rootProject.name,
             'Implementation-Version': project.version,
+            'Implementation-Vendor': developer + " (" + contact + ")",
             'Main-Class': project.mainClassName
     }
 }
@@ -136,18 +137,6 @@ tasks.withType(Test) {
             }
         }
     }
-}
-
-processResources {
-    def details = versionDetails()
-    // get the timestamp in its format
-    def date = new Date()
-    def timestamp = date.format('yyyy-MM-dd HH:mm:ss')
-    expand(name: project.name,
-        version: project.version,
-        timestamp: timestamp,
-        developer: developer,
-        contact: contact) 
 }
 
 

@@ -1,5 +1,0 @@
-name=${name}
-version=${version}
-timestamp=${timestamp}
-contact_person=${developer}
-contact_email=${contact}

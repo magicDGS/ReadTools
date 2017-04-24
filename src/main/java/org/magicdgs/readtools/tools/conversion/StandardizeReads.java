@@ -24,14 +24,14 @@
 
 package org.magicdgs.readtools.tools.conversion;
 
+import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
-import org.magicdgs.readtools.cmd.programgroups.ReadToolsConversionProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.RTConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -58,8 +58,9 @@ import scala.Tuple2;
                 + "\t- FASTQ file(s): the output is a unmapped SAM/BAM/CRAM file with the quality "
                 + "header in the CO tag and the PF binary tag if the read name is in the Casava "
                 + "format. The raw barcode (BC) is extracted from the read name if present "
-                + "(does not require any barcode option).",
-        programGroup = ReadToolsConversionProgramGroup.class)
+                + "(does not require any barcode option).\n"
+                + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
+        programGroup = RTConversionProgramGroup.class)
 public final class StandardizeReads extends ReadToolsWalker {
 
     @ArgumentCollection

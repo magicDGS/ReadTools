@@ -24,15 +24,15 @@
 
 package org.magicdgs.readtools.tools.conversion;
 
+import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
-import org.magicdgs.readtools.cmd.programgroups.ReadToolsConversionProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.RTConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -53,9 +53,10 @@ import scala.Tuple2;
                 + "should be used. If the barcode information is encoded in a different tag(s) "
                 + "the option --" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
                 + " should be used.\n"
-                + "Note: see the help for StandardizeReads for more information about the standard "
-                + "barcode information is handled in ReadTools and when it is useful.",
-        programGroup = ReadToolsConversionProgramGroup.class)
+                + "\nNote: see " + RTHelpConstants.DOCUMENTATION_PAGE
+                +" for more information about how standard barcode information is handled in "
+                + "ReadTools and when it is useful.",
+        programGroup = RTConversionProgramGroup.class)
 public final class ReadsToFastq extends ReadToolsWalker {
 
     @ArgumentCollection

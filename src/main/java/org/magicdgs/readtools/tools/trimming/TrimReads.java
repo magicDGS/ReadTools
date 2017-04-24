@@ -25,10 +25,11 @@
 package org.magicdgs.readtools.tools.trimming;
 
 import org.magicdgs.readtools.RTDefaults;
+import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
-import org.magicdgs.readtools.cmd.programgroups.ReadToolsProgramGroup;
+import org.magicdgs.readtools.cmd.programgroups.RTManipulationProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmerMetric;
@@ -76,8 +77,9 @@ import java.util.List;
                 + "\nNote: default trimmer(s)/filter(s) are applied before any specified by the user."
                 + " If you would like to apply them in a different order, use --"
                 + RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME
-                + " in combination with the new ordering.",
-        programGroup = ReadToolsProgramGroup.class)
+                + " in combination with the new ordering.\n"
+                + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
+        programGroup = RTManipulationProgramGroup.class)
 public final class TrimReads extends ReadToolsWalker {
 
     @ArgumentCollection
