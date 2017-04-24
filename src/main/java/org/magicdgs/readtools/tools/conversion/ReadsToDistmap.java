@@ -49,12 +49,12 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
  */
 @CommandLineProgramProperties(oneLineSummary = "Converts any kind of ReadTools source to Distmap format.",
         summary = "This tool converts SAM/BAM/CRAM/FASTQ formats into Distmap format from "
-                + "Pandey & Schlötterer /PLoS ONE 8, 2013, e72614), including information from "
+                + "Pandey & Schlötterer (PLoS ONE 8, 2013, e72614), including information from "
                 + "the barcodes (BC tag) in the read name (Illumina format) to allow keeping to "
                 + "some extend sample information if necessary.\n"
                 + "If the source is a SAM/BAM/CRAM file and the barcodes are encoded in the read "
                 + "name, the option --" + RTStandardArguments.USER_READ_NAME_BARCODE_NAME
-                + "should be used. If the barcode information is encoded in a different tag(s) "
+                + " should be used. If the barcode information is encoded in a different tag(s) "
                 + "the option --" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
                 + " should be used.\n"
                 + "\nNote: see " + RTHelpConstants.DOCUMENTATION_PAGE
