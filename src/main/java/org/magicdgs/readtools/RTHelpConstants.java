@@ -35,7 +35,7 @@ public final class RTHelpConstants {
     private RTHelpConstants() {}
 
     /** Software's name. */
-    public static final String READTOOLS_NAME = "ReadTools";
+    public static final String PROGRAM_NAME = "ReadTools";
 
     // the ReadTools main page hosting the code
     private final static String GITHUB_URL = "https://github.com/magicDGS/ReadTools";

@@ -66,15 +66,15 @@ public class ReadGroupArgumentCollection implements Serializable {
     /**
      * Gets a basic Read Group from the arguments.
      *
-     * Note: the program group is set to {@link RTHelpConstants#READTOOLS_NAME}.
+     * Note: the program group is set to {@link RTHelpConstants#PROGRAM_NAME}.
      *
      */
     public SAMReadGroupRecord getReadGroupFromArguments(final String id, final String sampleName) {
         final SAMReadGroupRecord rg = new SAMReadGroupRecord(id);
-        rg.setProgramGroup(RTHelpConstants.READTOOLS_NAME);
+        rg.setProgramGroup(RTHelpConstants.PROGRAM_NAME);
         rg.setSample(sampleName);
         // the program group is the one in the project properties
-        rg.setProgramGroup(RTHelpConstants.READTOOLS_NAME);
+        rg.setProgramGroup(RTHelpConstants.PROGRAM_NAME);
         if (readGroupLibrary != null) {
             rg.setLibrary(readGroupLibrary);
         }

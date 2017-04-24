@@ -281,7 +281,7 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
      * Subclasses may override.
      */
     public String getToolName() {
-        return RTHelpConstants.READTOOLS_NAME + " " + getClass().getSimpleName();
+        return RTHelpConstants.PROGRAM_NAME + " " + getClass().getSimpleName();
     }
 
 }

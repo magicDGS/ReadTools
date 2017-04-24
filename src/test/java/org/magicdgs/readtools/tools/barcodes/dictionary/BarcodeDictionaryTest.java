@@ -58,7 +58,7 @@ public class BarcodeDictionaryTest extends RTBaseTest {
     // initialize the unknown read group information
     static {
         UNKNOWN_READGROUP_INFO = new SAMReadGroupRecord(BarcodeMatch.UNKNOWN_STRING);
-        UNKNOWN_READGROUP_INFO.setProgramGroup(RTHelpConstants.READTOOLS_NAME);
+        UNKNOWN_READGROUP_INFO.setProgramGroup(RTHelpConstants.PROGRAM_NAME);
         UNKNOWN_READGROUP_INFO.setSample(BarcodeMatch.UNKNOWN_STRING);
     }
 
