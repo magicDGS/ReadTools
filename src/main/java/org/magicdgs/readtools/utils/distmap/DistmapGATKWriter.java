@@ -38,9 +38,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Abstract class for GATKRead writers.
+ * Writer for GATKRead into the Distmap format.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @see DistmapEncoder
  */
 public class DistmapGATKWriter implements GATKReadWriter {
 

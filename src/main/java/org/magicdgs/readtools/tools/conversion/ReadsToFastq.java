@@ -50,7 +50,7 @@ import scala.Tuple2;
                 + "to some extend sample information if necessary.\n"
                 + "If the source is a SAM/BAM/CRAM file and the barcodes are encoded in the read "
                 + "name, the option --" + RTStandardArguments.USER_READ_NAME_BARCODE_NAME
-                + "should be used. If the barcode information is encoded in a different tag(s) "
+                + " should be used. If the barcode information is encoded in a different tag(s) "
                 + "the option --" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
                 + " should be used.\n"
                 + "\nNote: see " + RTHelpConstants.DOCUMENTATION_PAGE

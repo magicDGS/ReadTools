@@ -100,7 +100,7 @@ public class TrimmingUtil {
     }
 
     /**
-     * Implements trailing Ns (unknown nucleotide) trimming. Tajes in an array of sequence value as
+     * Implements trailing Ns (unknown nucleotide) trimming. Takes in an array of sequence value as
      * byte[] and return two indexes where the byte array should be clipped, such as that the
      * caller can then invoke things like:
      * int[] retval = trimPointsTrailingNs(bases)

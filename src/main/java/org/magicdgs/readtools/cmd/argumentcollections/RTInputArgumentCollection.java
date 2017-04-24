@@ -49,7 +49,7 @@ public class RTInputArgumentCollection implements Serializable {
 
     // TODO: change our default validation stringency?
     @Argument(fullName = StandardArgumentDefinitions.READ_VALIDATION_STRINGENCY_LONG_NAME, shortName = StandardArgumentDefinitions.READ_VALIDATION_STRINGENCY_SHORT_NAME,
-            doc = "Validation stringency for all SAM/BAM/CRAM/SRA files read by this program. "
+            doc = "Validation stringency for all SAM/BAM/CRAM files read by this program. "
                     + "The default stringency value SILENT can improve performance when processing "
                     + "a BAM file in which variable-length data (read, qualities, tags) do not otherwise need to be decoded.",
             common = true, optional = true)

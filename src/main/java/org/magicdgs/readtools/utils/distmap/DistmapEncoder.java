@@ -38,8 +38,8 @@ import scala.Tuple2;
  *
  * Distmap (<a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0072614">
  * Pandey & Schlötterer 2013</a>) is a wrapper around different mappers for distributed
- * computation using Hadoop. The input for this tool is a modified FASTQ format which is writen in
- * HDFS to safe space and to distribute easily pair-end reads. It is a tab-delimited format with
+ * computation using Hadoop. The input for this tool is a modified FASTQ format which is written in
+ * HDFS to save space and to distribute easily pair-end reads. It is a tab-delimited format with
  * the following fields:
  *
  * 1. Read name with '@' symbol included.
