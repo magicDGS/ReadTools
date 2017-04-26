@@ -37,9 +37,6 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 public final class TrailingNtrimmer extends TrimmingFunction {
     private static final long serialVersionUID = 1L;
 
-    /** Default constructor. */
-    public TrailingNtrimmer() {}
-
     /**
      * {@inheritDoc}
      *

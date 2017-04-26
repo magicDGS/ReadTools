@@ -216,6 +216,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     private static void testSingleProvider(final RTDataSource source, final int numberOfReads) {
         int n = 0;
         for (final GATKRead read : source) {
+            Assert.assertNotNull(read, "null read from source");
             n++;
         }
         Assert.assertEquals(n, numberOfReads, "less reads than expected");
