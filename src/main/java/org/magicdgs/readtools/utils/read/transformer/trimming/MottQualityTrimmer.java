@@ -61,7 +61,7 @@ public final class MottQualityTrimmer extends TrimmingFunction {
     /**
      * {@inheritDoc}
      *
-     * @see TrimmingUtil#trimPointsMott(byte[], int).
+     * @see TrimmingUtil#trimPointsMott(byte[], int)
      */
     @Override
     protected void fillTrimPoints(final GATKRead read, final int[] toFill) {

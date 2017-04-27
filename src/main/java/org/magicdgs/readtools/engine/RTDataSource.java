@@ -54,7 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * ReadTools abstract implementation of {@link GATKDataSource<GATKRead>}, which includes:
+ * ReadTools abstract implementation of {@link GATKDataSource} for {@link GATKRead}, which includes:
  *
  * - Tracking the original quality encoding of the data source.
  * - Iterates over reads already in standard format.
@@ -168,7 +168,7 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
         readerFactory = factory;
     }
 
-    /** Returns {@code true} if the source represents pair-end data; {@link false} otherwise. */
+    /** Returns {@code true} if the source represents pair-end data; {@code false} otherwise. */
     public boolean isPaired() {
         return interleaved || secondHandler != null;
     }

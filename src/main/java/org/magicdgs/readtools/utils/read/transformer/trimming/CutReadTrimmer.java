@@ -89,7 +89,8 @@ public class CutReadTrimmer extends TrimmingFunction {
     }
 
     /**
-     * Validates the arguments and throws {@link CommandLineException.BadArgumentValue} if:
+     * Validates the arguments and throws
+     * {@link org.broadinstitute.barclay.argparser.CommandLineException.BadArgumentValue} if:
      *
      * - Both ends of the read are disabled.
      * - Values for parameters are not positive integers.

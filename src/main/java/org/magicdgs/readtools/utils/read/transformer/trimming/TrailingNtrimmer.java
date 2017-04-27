@@ -40,7 +40,7 @@ public final class TrailingNtrimmer extends TrimmingFunction {
     /**
      * {@inheritDoc}
      *
-     * @see TrimmingUtil#trimPointsTrailingNs(byte[]).
+     * @see TrimmingUtil#trimPointsTrailingNs(byte[])
      */
     @Override
     protected void fillTrimPoints(final GATKRead read, final int[] toFill) {

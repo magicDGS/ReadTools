@@ -38,7 +38,9 @@ import java.util.function.Supplier;
 
 /**
  * Factory for generate readers for all sources of reads with the same parameters. If any error
- * occurs when opening a reader, an {@link UserException.CouldNotCreateOutputFile} is thrown.
+ * occurs when opening a reader, an
+ * {@link org.broadinstitute.hellbender.exceptions.UserException.CouldNotCreateOutputFile} is
+ * thrown.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */

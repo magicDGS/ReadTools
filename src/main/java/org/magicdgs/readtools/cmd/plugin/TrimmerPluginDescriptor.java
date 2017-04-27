@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
  * Plugin descriptor for including trimmers in the command line as {@link TrimmingFunction}.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @implNote this class have most of the code based in {@link org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor}.
  */
 public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<TrimmingFunction> {
 
