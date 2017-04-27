@@ -60,7 +60,7 @@ public abstract class TrimmingFunction implements ReadTransformer, Serializable 
      * it gets the trimming points from {@link #fillTrimPoints(GATKRead, int[])} and apply then to
      * the reads.
      *
-     * @implNote the read is updated in-place and returned as it is.
+     * Note: the read is updated in-place and returned.
      */
     @Override
     public final GATKRead apply(final GATKRead read) {

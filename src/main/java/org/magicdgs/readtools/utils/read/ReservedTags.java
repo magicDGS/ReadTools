@@ -44,9 +44,9 @@ public final class ReservedTags {
      * If {@link #te} is present, the not trimmed read extends the range [ts, te);
      * if not, [ts, read length).
      *
-     * @see RTReadUtils#getTrimmingStartPoint(GATKRead).
-     * @see RTReadUtils#updateTrimmingStartPointTag(GATKRead, int).
-     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int).
+     * @see RTReadUtils#getTrimmingStartPoint(GATKRead)
+     * @see RTReadUtils#updateTrimmingStartPointTag(GATKRead, int)
+     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int)
      */
     public static final String ts = "ts";
 
@@ -57,9 +57,9 @@ public final class ReservedTags {
      * If {@link #ts} is present, the not trimmed read extends the range [ts, te);
      * if not, [0, te).
      *
-     * @see RTReadUtils#getTrimmingEndPoint(GATKRead).
-     * @see RTReadUtils#updateTrimmingEndPointTag(GATKRead, int).
-     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int).
+     * @see RTReadUtils#getTrimmingEndPoint(GATKRead)
+     * @see RTReadUtils#updateTrimmingEndPointTag(GATKRead, int)
+     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int)
      */
     public static final String te = "te";
 
@@ -68,9 +68,9 @@ public final class ReservedTags {
      * read is not completely trimmed; other values indicates that the read was trimmed. The values
      * are implementation-dependent.
      *
-     * @see RTReadUtils#isCompletelyTrimRead(GATKRead).
-     * @see RTReadUtils#updateCompletelyTrimReadFlag(GATKRead).
-     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int).
+     * @see RTReadUtils#isCompletelyTrimRead(GATKRead)
+     * @see RTReadUtils#updateCompletelyTrimReadFlag(GATKRead)
+     * @see RTReadUtils#updateTrimmingPointTags(GATKRead, int, int)
      */
     public static final String ct = "ct";
 

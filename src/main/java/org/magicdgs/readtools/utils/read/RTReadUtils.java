@@ -267,9 +267,9 @@ public class RTReadUtils {
      * @param start the first trimming point.
      * @param end   the last trimming point.
      *
-     * @see #updateTrimmingStartPointTag(GATKRead, int).
-     * @see #updateTrimmingEndPointTag(GATKRead, int)}.
-     * @see #updateCompletelyTrimReadFlag(GATKRead).
+     * @see #updateTrimmingStartPointTag(GATKRead, int)
+     * @see #updateTrimmingEndPointTag(GATKRead, int)
+     * @see #updateCompletelyTrimReadFlag(GATKRead)
      */
     public static void updateTrimmingPointTags(final GATKRead read, final int start,
             final int end) {

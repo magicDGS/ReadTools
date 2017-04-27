@@ -36,7 +36,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  * {@link org.magicdgs.readtools.utils.read.ReservedTags#te}).
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @see RTReadUtils#updateCompletelyTrimReadFlag(GATKRead).
+ * @see RTReadUtils#updateCompletelyTrimReadFlag(GATKRead)
  */
 public final class CompletelyTrimReadFilter extends ReadFilter {
     private static final long serialVersionUID = 1L;

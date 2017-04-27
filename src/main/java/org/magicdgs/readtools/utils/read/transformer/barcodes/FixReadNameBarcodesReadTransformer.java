@@ -34,7 +34,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  * default barcode tag ({@link RTReadUtils#RAW_BARCODE_TAG}), and removing them from the name.
  *
  * This may be useful when reading a BAM file mapped from a FASTQ file where the barcodes are keep
- * in the read name. For example, <a href=http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0072614>Distmap</a>
+ * in the read name. For example, <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0072614">Distmap</a>
  * uses a file format in a Hadoop cluster where the information will be lost if it is not stored in
  * the read name, so it should be maintained and then fixed with this transformer.
  *
