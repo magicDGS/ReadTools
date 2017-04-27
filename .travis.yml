@@ -10,6 +10,8 @@ env:
     - TYPE=shadow
     ## test runs all the unit/integration tests
     - TYPE=test
+    ## test the javadoc task
+    - TYPE=javadoc
     global:
     # disable gradle daemon
     - GRADLE_OPTS="-Dorg.gradle.daemon=false"
@@ -36,6 +38,8 @@ script:
           java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input ./src/test/resources/org/magicdgs/readtools/tools/conversion/StandardizeReads/small_se.illumina.fq --output ./tmp/test.sam;
       elif [[ $TYPE == test ]]; then
           ./gradlew jacocoTestReport;
+      elif [[ $TYPE == javadoc ]]; then
+          ./gradlew javadoc;
       else
           echo "Test type not recognized $TYPE";
           exit 1;
