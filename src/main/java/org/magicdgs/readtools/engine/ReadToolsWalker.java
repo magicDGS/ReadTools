@@ -56,7 +56,7 @@ import java.util.stream.StreamSupport;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public abstract class ReadToolsWalker extends CommandLineProgram {
+public abstract class ReadToolsWalker extends ReadToolsProgram {
 
     // For the progress meter in the GATKTool
     @Argument(fullName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, shortName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, doc = "Output traversal statistics every time this many seconds elapse.", optional = true, common = true)
@@ -73,7 +73,7 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
      * {@link ProgressMeter#update(Locatable)} after each record processed from
      * the primary input in their {@link #traverse} method.
      */
-    // TODO: probably our progress metter could be better
+    // TODO: probably our own progress meter could be better
     // TODO: because this only takes into account the locus positions
     private ProgressMeter progressMeter;
 
@@ -236,52 +236,6 @@ public abstract class ReadToolsWalker extends CommandLineProgram {
      */
     public final SAMFileHeader getHeaderForReads() {
         return dataSource.getHeader();
-    }
-
-    /**
-     * Returns a program tag to the header with a program version {@link #getVersion()}, program
-     * name {@link #getToolName()} and command line {@link #getCommandLine()}.
-     *
-     * Subclasses may override.
-     *
-     * @param header the header to get an unique program group ID.
-     *
-     * @return the program record.
-     */
-    protected SAMProgramRecord getProgramRecord(final SAMFileHeader header) {
-        final SAMProgramRecord programRecord = new SAMProgramRecord(createProgramGroupID(header));
-        programRecord.setProgramVersion(getVersion());
-        programRecord.setCommandLine(getCommandLine());
-        programRecord.setProgramName(getToolName());
-        return programRecord;
-    }
-
-    /**
-     * Returns the program group ID that will be used in the SAM writer.
-     * Starts with {@link #getToolName} and looks for the first available ID by appending
-     * consecutive integers.
-     */
-    private String createProgramGroupID(final SAMFileHeader header) {
-        final String toolName = getToolName();
-
-        String pgID = toolName;
-        SAMProgramRecord record = header.getProgramRecord(pgID);
-        int count = 1;
-        while (record != null) {
-            pgID = toolName + "." + String.valueOf(count++);
-            record = header.getProgramRecord(pgID);
-        }
-        return pgID;
-    }
-
-    /**
-     * Returns the name of this GATK tool.
-     * The default implementation return the the string "GATK " followed by the simple name of the
-     * class.
-     * Subclasses may override.
-     */
-    public String getToolName() {
-        return RTHelpConstants.PROGRAM_NAME + " " + getClass().getSimpleName();
     }
 
 }
