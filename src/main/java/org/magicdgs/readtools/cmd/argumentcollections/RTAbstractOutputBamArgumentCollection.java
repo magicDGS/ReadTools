@@ -24,7 +24,9 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
@@ -57,6 +59,16 @@ abstract class RTAbstractOutputBamArgumentCollection extends RTOutputArgumentCol
                 .setForceOverwrite(forceOverwrite)
                 .setCreateIndex(createOutputBamIndex)
                 .setCreateMd5File(createOutputBamMD5);
+    }
+
+    /**
+     * Check if {@param outputName} corresponds to a BAM/SAM/CRAM file; if not, throws a
+     */
+    protected final void validateUserOutput(final String outputName) {
+        if (!ReadToolsIOFormat.isSamBamOrCram(outputName)) {
+            throw new RTUserExceptions.InvalidOutputFormat(outputName,
+                    ReadToolsIOFormat.BamFormat.values());
+        }
     }
 
     /**

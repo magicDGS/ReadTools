@@ -79,6 +79,11 @@ class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentColl
     }
 
     @Override
+    public void validateUserOutput() {
+        // do nothing, because the extension is always valid the outputFormat
+    }
+
+    @Override
     protected GATKReadWriter createWriter(final ReadWriterFactory factory,
             final SAMFileHeader header, final boolean presorted) {
         // set the splitter

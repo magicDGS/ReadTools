@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
@@ -51,10 +50,7 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
     public String getOutputNameWithSuffix(final String suffix) {
         final String outputNameWithSuffix = FilenameUtils.removeExtension(outputName) + suffix
                 + "." + FilenameUtils.getExtension(outputName);
-        if (!ReadToolsIOFormat.isSamBamOrCram(outputNameWithSuffix)) {
-            throw new RTUserExceptions.InvalidOutputFormat(outputNameWithSuffix,
-                    ReadToolsIOFormat.BamFormat.values());
-        }
+        validateUserOutput(outputNameWithSuffix);
         return outputNameWithSuffix;
     }
 
@@ -67,6 +63,11 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
         return ReadToolsIOFormat.makeMetricsFile(prefix);
     }
 
+    @Override
+    public void validateUserOutput() {
+        validateUserOutput(outputName);
+    }
+
     /**
      * Checks if the output name is a SAM/BAM/CRAM file and if so it creates a SAM writer.
      * Otherwise, it thrown an UserException.
@@ -74,10 +75,7 @@ class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollectio
     @Override
     protected GATKReadWriter createWriter(final ReadWriterFactory factory,
             final SAMFileHeader header, final boolean presorted) {
-        if (!ReadToolsIOFormat.isSamBamOrCram(outputName)) {
-            throw new RTUserExceptions.InvalidOutputFormat(outputName,
-                    ReadToolsIOFormat.BamFormat.values());
-        }
+        validateUserOutput();
         return factory.createSAMWriter(outputName, header, presorted);
     }
 }
