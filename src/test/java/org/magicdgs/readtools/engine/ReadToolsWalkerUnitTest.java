@@ -26,8 +26,6 @@ package org.magicdgs.readtools.engine;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMProgramRecord;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;

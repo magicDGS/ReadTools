@@ -24,16 +24,13 @@
 
 package org.magicdgs.readtools.engine;
 
-import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.argumentcollections.RTInputArgumentCollection;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.Locatable;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.engine.GATKTool;
 import org.broadinstitute.hellbender.engine.ProgressMeter;

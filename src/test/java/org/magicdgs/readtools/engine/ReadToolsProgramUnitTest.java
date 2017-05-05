@@ -24,11 +24,8 @@
 
 package org.magicdgs.readtools.engine;
 
-import static org.testng.Assert.*;
-
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
-import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
