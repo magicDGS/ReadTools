@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.conversion;
+package org.magicdgs.readtools.tools.distmap;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 
