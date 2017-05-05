@@ -25,13 +25,13 @@
 package org.magicdgs.readtools.tools.quality;
 
 import org.magicdgs.readtools.RTDefaults;
+import org.magicdgs.readtools.engine.ReadToolsProgram;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
-import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
 
@@ -43,7 +43,7 @@ import java.io.IOException;
 @CommandLineProgramProperties(oneLineSummary = "Detects the quality encoding format for all kind of sources for ReadTools.",
         summary = "Detects the quality encoding for a SAM/BAM/CRAM/FASTQ files, output to the STDOUT the quality encoding.",
         programGroup = QCProgramGroup.class)
-public final class QualityEncodingDetector extends CommandLineProgram {
+public final class QualityEncodingDetector extends ReadToolsProgram {
 
     @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "Reads input.", optional = false, common = true)
     public String sourceString;

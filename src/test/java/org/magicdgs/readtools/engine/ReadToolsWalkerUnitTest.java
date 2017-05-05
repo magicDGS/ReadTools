@@ -26,8 +26,6 @@ package org.magicdgs.readtools.engine;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMProgramRecord;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -72,10 +70,6 @@ public class ReadToolsWalkerUnitTest extends RTCommandLineProgramTest {
         Assert.assertNull(walker.instanceMain(injectDefaultVerbosity(args).toArray(new String[0])));
         Assert.assertEquals(walker.isPaired(), isPaired);
         Assert.assertEquals(walker.nReads, expectedReads);
-        // get the program record
-        final SAMProgramRecord pg = walker.getProgramRecord(new SAMFileHeader());
-        Assert.assertEquals(pg.getId(), "ReadTools TestWalker");
-        Assert.assertEquals(pg.getProgramName(), "ReadTools TestWalker");
     }
 
 }
