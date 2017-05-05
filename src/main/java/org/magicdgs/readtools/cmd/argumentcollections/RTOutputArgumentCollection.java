@@ -70,17 +70,24 @@ public abstract class RTOutputArgumentCollection implements Serializable {
     /**
      * Gets the output writer for the arguments.
      *
+     * Note: it uses {@link #validateUserOutput()} to assess that the output parameter is valid
+     * before creation.
+     *
      * @param header        the header for the output file.
      * @param programRecord program record supplier. May be {@code null}, but should not return
      *                      {@code null}.
      * @param presorted     if {@code true}, the output is assumed to be pre-sorted.
      * @param referenceFile the reference file for CRAM output. May be {@code null}.
+     *
+     * @throws org.broadinstitute.hellbender.exceptions.UserException if the output could not be
+     *                                                                created.
      */
     public final GATKReadWriter outputWriter(final SAMFileHeader header,
             final Supplier<SAMProgramRecord> programRecord, final boolean presorted,
             final File referenceFile) {
         Utils.nonNull(header, "null header");
         updateHeader(header, programRecord);
+        validateUserOutput();
         return createWriter(getWriterFactory().setReferenceFile(referenceFile),
                 header, presorted);
     }
@@ -93,6 +100,14 @@ public abstract class RTOutputArgumentCollection implements Serializable {
      * used.
      */
     public abstract Path makeMetricsFile(final String suffix);
+
+    /**
+     * Validates the user output of the
+     *
+     * @throws org.broadinstitute.hellbender.exceptions.UserException if the user output is not
+     *                                                                valid.
+     */
+    public abstract void validateUserOutput();
 
     /**
      * Creates the writer with the provided factory, updated header and presorted.

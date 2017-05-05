@@ -84,6 +84,11 @@ final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
     }
 
     @Override
+    public void validateUserOutput() {
+        // do nothing because the output suffix comes always from the outputFormat
+    }
+
+    @Override
     protected void updateHeader(final SAMFileHeader header,
             final Supplier<SAMProgramRecord> programRecord) {
         // do nothing!
