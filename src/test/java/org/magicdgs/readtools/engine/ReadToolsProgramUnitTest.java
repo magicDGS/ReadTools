@@ -24,54 +24,44 @@
 
 package org.magicdgs.readtools.engine;
 
-import org.magicdgs.readtools.RTCommandLineProgramTest;
+import static org.testng.Assert.*;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
-import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadToolsWalkerUnitTest extends RTCommandLineProgramTest {
+public class ReadToolsProgramUnitTest {
 
-    // test class
-    private static class TestWalker extends ReadToolsWalker {
-        private int nReads = 0;
-
+    private static class TestProgram extends ReadToolsProgram {
         @Override
-        protected void apply(GATKRead read) {
-            nReads++;
+        protected Object doWork() {
+            return null;
         }
-
     }
 
-    private String getTestFileName(final String fileName) {
-        return getTestFile(fileName).getAbsolutePath();
-    }
+    @Test
+    public void testGetProgramRecord() {
+        final ReadToolsProgram program = new TestProgram();
+        final String programName = "ReadTools TestProgram";
 
-    @DataProvider(name = "arguments")
-    public Object[][] walkerArguments() {
-        return new Object[][] {
-                {Arrays.asList("-I", getTestFileName("small.mapped.bam")), 206, false},
-                {Arrays.asList("-I", getTestFileName("small_1.illumina.fq"),
-                        "-I2", getTestFileName("small_2.illumina.fq")), 10, true}
-        };
-    }
+        // test the program record for an empty header
+        final SAMFileHeader header = new SAMFileHeader();
+        SAMProgramRecord pg0 = program.getProgramRecord(header);
+        Assert.assertEquals(pg0.getId(), programName);
+        Assert.assertEquals(pg0.getProgramName(), programName);
 
-    @Test(dataProvider = "arguments")
-    public void testReadToolsSimpleWalker(final List<String> args, final int expectedReads,
-            final boolean isPaired) throws Exception {
-        final TestWalker walker = new TestWalker();
-        Assert.assertNull(walker.instanceMain(injectDefaultVerbosity(args).toArray(new String[0])));
-        Assert.assertEquals(walker.isPaired(), isPaired);
-        Assert.assertEquals(walker.nReads, expectedReads);
+        // test adding more program records
+        for (int i = 1; i < 5; i++) {
+            header.addProgramRecord(pg0);
+            pg0 = program.getProgramRecord(header);
+            Assert.assertEquals(pg0.getId(), programName + "." + i);
+            Assert.assertEquals(pg0.getProgramName(), programName);
+        }
     }
 
 }
