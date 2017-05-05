@@ -22,11 +22,12 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.conversion;
+package org.magicdgs.readtools.tools.distmap;
 
 import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
+import org.magicdgs.readtools.cmd.programgroups.DistmapProgramGroup;
 import org.magicdgs.readtools.cmd.programgroups.RTConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.utils.distmap.DistmapException;
@@ -60,7 +61,7 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
                 + "\nNote: see " + RTHelpConstants.DOCUMENTATION_PAGE
                 +" for more information about how standard barcode information is handled in "
                 + "ReadTools and when it is useful.",
-        programGroup = RTConversionProgramGroup.class)
+        programGroup = DistmapProgramGroup.class)
 public final class ReadsToDistmap extends ReadToolsWalker {
 
     @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", common = true, optional = true)

@@ -56,6 +56,11 @@ public final class RTHelpConstants {
 
     /** Documentation name for reads conversion. */
     public static final String DOC_CAT_READS_CONVERSION = "Reads conversion";
-    /** Documentation description for reads onversion. */
+    /** Documentation description for reads conversion. */
     public static final String DOC_CAT_READS_CONVERSION_SUMMARY = "Tools for converting any supported read source (SAM/BAM/CRAM/FASTQ)";
+
+    /** Documentation name for Dismtap integration.*/
+    public static final String DOC_CAT_DISTMAP = "Distmap integration";
+    /** Documentation description for Distmap integration. */
+    public static final String DOC_CAT_DISTMAP_SUMMARY = "Tools for integration with the DistMap (Pandey & Schlötterer 2013).";
 }
