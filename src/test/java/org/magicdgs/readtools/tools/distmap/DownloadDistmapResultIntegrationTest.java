@@ -55,7 +55,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
                         getTestFile("parts-00000-to-00003.sam")},
                 // test only some parts
                 {new ArgumentsBuilder().addInput(distmapFolder)
-                        .addBooleanArgument("noDropProgramGroups", true)
+                        .addBooleanArgument("noRemoveTaskProgramGroup", true)
                         .addArgument("partName", "part-00001.gz")
                         .addArgument("partName", "part-00002.gz"),
                         getTestFile("parts-00001-to-00002.sam")},
