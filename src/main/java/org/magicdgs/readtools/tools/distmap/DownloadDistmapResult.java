@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -59,13 +60,13 @@ import java.util.stream.Collectors;
                 + "Note: The results are expected to be located in the Hadoop FileSystem (HDFS) and the "
                 + "output file in the local computer for following usage, but it is not restricted.",
         programGroup = DistmapProgramGroup.class)
-public class DownloadDistmapResult extends ReadToolsProgram {
+public final class DownloadDistmapResult extends ReadToolsProgram {
 
     @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "Input folder to look for Distmap multi-part file results. Expected to be in an HDFS file system.", common = true, optional = false)
     public String inputFolder;
 
     @Hidden
-    @Argument(fullName = "partName", shortName = "partName", doc = "Only download this parts. For debugging.", optional = true)
+    @Argument(fullName = "partName", shortName = "partName", doc = "Only download this part(s). For debugging.", optional = true)
     public Set<String> partNames = new HashSet<>();
 
     @ArgumentCollection
@@ -73,12 +74,12 @@ public class DownloadDistmapResult extends ReadToolsProgram {
 
     private final List<Path> partFiles = new ArrayList<>();
 
-
+    /** Scans the input folder for part files to be downloaded. */
     @Override
     protected void onStartup() {
         final Path inputPath = IOUtils.getPath(inputFolder);
         if (!inputPath.toUri().getScheme().startsWith("hdfs")) {
-            logger.warn("Input folder is not in HDFS: {}", () -> inputPath.toUri().toString());
+            logger.warn("Input folder is not in HDFS: {}", inputPath::toUri);
         }
         try {
             Files.list(inputPath)
@@ -98,6 +99,7 @@ public class DownloadDistmapResult extends ReadToolsProgram {
 
     }
 
+    /** Subsets the part files if the hidden argument for download only some parts is provided. */
     private void subsetPartsToDebug() {
         // only for debugging
         if (!partNames.isEmpty()) {
@@ -109,13 +111,14 @@ public class DownloadDistmapResult extends ReadToolsProgram {
                         + " parts specified with --partNames");
             }
 
-            logger.info("Only {} parts will be downloaded.", () -> partNames.size());
+            logger.warn("Only {} parts will be downloaded.", partNames::size);
             logger.debug("Parts to download: {}",
                     () -> partFiles.stream().map(Path::toUri).collect(Collectors.toList()));
 
         }
     }
 
+    /** Runs the downloader {@link DistmapPartDownloader#downloadParts(List, Function)}. */
     @Override
     protected Object doWork() {
         downloader.downloadParts(partFiles, this::getProgramRecord);

@@ -51,7 +51,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
                 {new ArgumentsBuilder().addInput(distmapFolder),
                         getTestFile("parts-00000-to-00003.sam")},
                 // test more batches
-                {new ArgumentsBuilder().addInput(distmapFolder).addArgument("partBatches", "2"),
+                {new ArgumentsBuilder().addInput(distmapFolder).addArgument("numberOfParts", "2"),
                         getTestFile("parts-00000-to-00003.sam")},
                 // test only some parts
                 {new ArgumentsBuilder().addInput(distmapFolder)
