@@ -164,7 +164,7 @@ public class RTReadUtils {
                     // this break should be included because qualSplit is not initialized
                     break;
                 } else {
-                    qualSplit = qualVal.split(RTDefaults.BARCODE_INDEX_DELIMITER);
+                    qualSplit = qualVal.split(RTDefaults.BARCODE_QUALITY_DELIMITER);
                     if (bcSplit.length != qualSplit.length) {
                         throwExceptionForDifferentBarcodeQualityLenghts(barcodeTags.get(i), bcValue,
                                 qualityTags.get(i), qualVal);
@@ -226,7 +226,7 @@ public class RTReadUtils {
         // only ipdate if there are barcodes
         if (barcodes.length != 0) {
             final String barcodeString = String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes);
-            final String qualityString = String.join(RTDefaults.BARCODE_INDEX_DELIMITER, qualities);
+            final String qualityString = String.join(RTDefaults.BARCODE_QUALITY_DELIMITER, qualities);
             // perform extra validation of lengths
             if (barcodeString.length() != qualityString.length()) {
                 throwExceptionForDifferentBarcodeQualityLenghts(RAW_BARCODE_TAG, barcodeString,
