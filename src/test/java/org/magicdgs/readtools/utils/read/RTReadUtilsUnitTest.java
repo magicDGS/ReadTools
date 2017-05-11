@@ -75,7 +75,7 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
                         twoTags, new String[] {quality1, quality2}, twoQualTags});
                 read.setAttribute(twoTags.get(0), barcode + "-" + barcode2);
                 read.setAttribute(twoTags.get(1), (String) null);
-                read.setAttribute(twoQualTags.get(0), quality1 + "-" + quality2);
+                read.setAttribute(twoQualTags.get(0), quality1 + " " + quality2);
                 read.setAttribute(twoQualTags.get(1), (String) null);
                 data.add(new Object[] {new String[] {barcode, barcode2}, read.deepCopy(),
                         twoTags.subList(0, 1), new String[] {quality1, quality2},
@@ -129,7 +129,7 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
         Assert.assertTrue(read.hasAttribute("BC"));
         Assert.assertEquals(read.getAttributeAsString("BC"), String.join("-", barcodes));
         Assert.assertTrue(read.hasAttribute("QT"));
-        Assert.assertEquals(read.getAttributeAsString("QT"), String.join("-", qualities));
+        Assert.assertEquals(read.getAttributeAsString("QT"), String.join(" ", qualities));
     }
 
     @Test
