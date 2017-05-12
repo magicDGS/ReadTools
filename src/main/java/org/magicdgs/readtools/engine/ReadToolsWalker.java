@@ -142,7 +142,8 @@ public abstract class ReadToolsWalker extends ReadToolsProgram {
     // the processing of pair-end data
     private final Consumer<Tuple2<GATKRead, GATKRead>> pairEndConsumer = r -> {
         apply(r);
-        progressMeter.update(r._1);
+        // update with the second because we are traversing read pairs
+        // and reporting pairs
         progressMeter.update(r._2);
     };
 
@@ -187,6 +188,7 @@ public abstract class ReadToolsWalker extends ReadToolsProgram {
     protected final Object doWork() {
         try {
             onTraversalStart();
+            progressMeter.setRecordLabel(isPaired() ? "read pairs" : "reads");
             progressMeter.start();
             traverse();
             progressMeter.stop();
