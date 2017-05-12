@@ -24,7 +24,9 @@
 
 package org.magicdgs.readtools.engine;
 
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.RTHelpConstants;
+import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
@@ -36,6 +38,26 @@ import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public abstract class ReadToolsProgram extends CommandLineProgram {
+
+    @Override
+    protected void printSettings() {
+        super.printSettings();
+        logger.info("Barcode sequence ({}) separator: '{}'",
+                () -> RTReadUtils.RAW_BARCODE_TAG,
+                () -> RTDefaults.BARCODE_INDEX_DELIMITER);
+        logger.info("Barcode quality ({}) separator: '{}'",
+                () -> RTReadUtils.RAW_BARCODE_QUALITY_TAG,
+                () -> RTDefaults.BARCODE_QUALITY_DELIMITER);
+        logger.info("Number of records to detect quality: {}",
+                () -> RTDefaults.MAX_RECORDS_FOR_QUALITY);
+        // for debugging
+        logger.debug("sampling_quality_checking_frequency : {}",
+                () -> RTDefaults.SAMPLING_QUALITY_CHECKING_FREQUENCY);
+        logger.debug("force_overwrite : {}",
+                () -> RTDefaults.FORCE_OVERWRITE);
+        logger.debug("discarded_output_suffix : {}",
+                () -> RTDefaults.DISCARDED_OUTPUT_SUFFIX);
+    }
 
     /**
      * Returns a program tag to the header with a program version {@link #getVersion()}, program
