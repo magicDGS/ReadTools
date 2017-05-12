@@ -1,0 +1,10 @@
+## formats
+sra: https://www.ncbi.nlm.nih.gov/books/NBK242622/
+fastq: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2847217/
+sam: https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btp352
+cram: http://www.ebi.ac.uk/ena/software/cram-toolkit
+
+## specifications
+specs:
+  sam: http://samtools.github.io/hts-specs/
+  pacbio_hdf5: http://files.pacb.com/software/instrument/2.0.0/bas.h5%20Reference%20Guide.pdf

@@ -1,0 +1,63 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: Sidebar
+  product: ReadTools
+  version: 1.0.0-SNAPSHOT
+  folders:
+
+  - title: ReadTools
+    output: web
+    folderitems:
+    - title: Read Sources
+      url: /read_sources.html
+      output: web
+    - title: How sample barcodes are handled
+      url: /barcodes.html
+      output: web
+    - title: Trimming pipelines
+      url: /trimming_pipelines.html
+      output: web
+
+  - title: Tool Documentation
+    output: web
+    folderitems:
+    - title: Index
+      url: /tool_index.html
+      output: web
+    - title: Common Arguments
+      url: /common_arguments.html
+      output: web
+    - title: Trimmers
+      url: /trimmers.html
+      output: web
+
+  - title: Integration with other tools
+    output: web
+    folderitems:
+    - title: Distmap
+      url: /distmap.html
+      output: web
+    - title: PoPoolation (trimming)
+      url: /popoolation.html
+      output: web
+
+  - title: Support
+    output: web
+    folderitems:
+    - title: Frequently Asked Questions
+      url: /faq.html
+      output: web
+    - title: New issue
+      external_url: https://github.com/magicDGS/ReadTools/issues/new
+      output: web
+
+  - title: Advance Features
+    output: web
+    folderitems:
+    - title: ReadTools Java Properties
+      url: /readtools_java_properties.html
+      output: web
+    - title: Javadoc
+      url: /javadoc/index.html
+      ## TODO: add output web one the javadoc is here
