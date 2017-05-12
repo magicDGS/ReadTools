@@ -54,7 +54,7 @@ import scala.Tuple2;
                 + "a different tag (e.g., while using illumina2bam with double indexing) or it was "
                 + "not de-multiplexed before mapping using FASTQ file (e.g., barcodes should be "
                 + "encoded in the read name if mapping with DistMap on a cluster). "
-                + "Note: If several indexes are present, they are separated by hyphens.\n"
+                + "Note: If several indexes are present, barcodes are separated by hyphens and qualities by space.\n"
                 + "\t- FASTQ file(s): the output is a unmapped SAM/BAM/CRAM file with the quality "
                 + "header in the CO tag and the PF binary tag if the read name is in the Casava "
                 + "format. The raw barcode (BC) is extracted from the read name if present "

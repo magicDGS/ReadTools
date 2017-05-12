@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Removed legacy tools
 - Barcode metrics improvements: add header and PCT_RECORDS
 - Changed argument for split by read group, sample and/or library
+- Changed separator for barcode qualities if multiple indexes to space. Hyphen was used before, but it is a valid quality character.
 - (Developer) Removed legacy IO system
 - (Developer) Removed some deprecated code
 - (Developer) Repackaged some classes
