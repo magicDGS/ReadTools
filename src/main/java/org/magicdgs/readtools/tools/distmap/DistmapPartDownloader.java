@@ -112,6 +112,14 @@ final class DistmapPartDownloader {
         return factory;
     }
 
+    // helper method to construct always in the same way a progress meter
+    private ProgressMeter buildProgressMeter() {
+        final ProgressMeter progress = new ProgressMeter(secondsBetweenProgressUpdates);
+        // we are only getting reads
+        progress.setRecordLabel("reads");
+        return progress;
+    }
+
     /**
      * Download the part files in the list.
      *
@@ -144,7 +152,7 @@ final class DistmapPartDownloader {
 
         // initialize the progress meter
         logger.info("Merging output");
-        final ProgressMeter mergingProgress = new ProgressMeter(secondsBetweenProgressUpdates);
+        final ProgressMeter mergingProgress = buildProgressMeter();
         mergingProgress.start();
 
         writeReads(toMerge,
@@ -222,7 +230,7 @@ final class DistmapPartDownloader {
 
         // logging the downloading process
         logger.info("Downloading parts in {} batches.", batches::size);
-        final ProgressMeter downloadProgress = new ProgressMeter(secondsBetweenProgressUpdates);
+        final ProgressMeter downloadProgress = buildProgressMeter();
         downloadProgress.start();
 
         // download in batches
