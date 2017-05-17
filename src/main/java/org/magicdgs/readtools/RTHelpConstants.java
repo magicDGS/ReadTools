@@ -44,7 +44,7 @@ public final class RTHelpConstants {
     public static final String ISSUE_TRACKER = GITHUB_URL + "/issues";
 
     /** Documentation main page. */
-    public static final String DOCUMENTATION_PAGE = GITHUB_URL + "/wiki";
+    public static final String DOCUMENTATION_PAGE = "http://magicdgs.github.io/ReadTools/";
 
     ///////////////////////////////
     // PROGRAM GROUP NAMES

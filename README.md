@@ -6,11 +6,16 @@
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-# _ReadTools_: Standardizing Sources For Sequencing Data 
+# _ReadTools_: a universal toolkit for handling sequence data from different sequencing platforms
 
-ReadTools provides a consistent and highly tested set of tools for processing any kind of source of sequencing data.
+ReadTools provides a consistent and highly tested set of tools for processing sequencing data from 
+any kind of source and focusing on raw reads, while including tools for mapped reads as well.
 
-For more information about the program from the user side, go to the [Wiki Page].
+Diverse formats were developed for storing reads, but ReadTools opt for following the SAM specs 
+to maintain a common data format to store both raw/mapped reads. Thus, ReadTools also helps to 
+standardize sequencing data in different formats.
+
+For more information about the program from the user side, go to the [Documentation Page]. 
 Download main releases in the [Releases] section. Changes for every release could be found in the [CHANGELOG].
 
 _Note: to use unreleased changes it is required to install from source. See the Building section for more details._
@@ -77,19 +82,19 @@ Changes are distinguished by the ones corresponding to API changes alone or if i
 
 ---
 
-## License
-Licensed under the [MIT License]. See [LICENSE] file.
+## License and citing
 
-## Citing
+_ReadTools_ is licensed under the [MIT License(https://opensource.org/licenses/MIT). See [LICENSE]({{https://github.com/magicDGS/ReadTools/blob/master/LICENSE}}) file.
 
-If you use this software, please add the citation as following:
+If you use _ReadTools_, please cite:
 
->Gómez-Sánchez D. & Schlötterer C. (2017). _ReadTools: Standardizing Sources For Sequencing Data._ Manuscript in preparation.
+> Gómez-Sánchez D. & Schlötterer C. (2017). _ReadTools: a universal toolkit for handling sequence data from different sequencing platforms._ Manuscript in preparation.
+
 
 
 
 [MIT License]: https://opensource.org/licenses/MIT
-[Wiki Page]: https://github.com/magicDGS/ReadTools/wiki
+[Documentation Page]: http://magicdgs.github.io/ReadTools/
 [Releases]: https://github.com/magicDGS/ReadTools/releases
 [Issue]: https://github.com/magicDGS/ReadTools/issues
 [HTSJDK]: https://samtools.github.io/htsjdk/

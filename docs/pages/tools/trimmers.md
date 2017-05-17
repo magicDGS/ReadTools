@@ -5,7 +5,7 @@ permalink: trimmers.html
 ---
 
 ## CutReadTrimmer
-Trimmer for crop some bases in one or both sides of the read.
+Trimmer for cropping some bases in one or both sides of the read.
 
 ### Optional Arguments:
 

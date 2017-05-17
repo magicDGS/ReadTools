@@ -5,11 +5,11 @@ permalink: AssignReadGroupByBarcode.html
 ---
 
 ## Description
-Assigns the read groups present in the file(s) based on the barcode present in the raw barcode tag(s). Read groups are assigned by matching the ones provided in the barcode file against the present in the tag(s), allowing mismatches and unknown bases (Ns) in the sequence. Ambiguous barcodes, defined as the ones that have a concrete distance with the second match (at least one mismatch of difference), are also discarded. If several indexed are used and none of then identify uniquely the read group, the read group is assigned by majority vote.
+Assigns the read groups present in the file(s) based on the barcode present in the raw barcode tag(s). Read groups are assigned by matching the ones provided in the barcode file against the present in the tag(s), allowing mismatches and unknown bases (Ns) in the sequence. Ambiguous barcodes, defined as the ones that have a concrete distance with the second match (at least one mismatch of difference), are also discarded. If several indexed are used and none of them identify uniquely the read group, the read group is assigned by majority vote.
 
-Note: for pair-end reads, only one read is used to assing the barcode.
+Note: for pair-end reads, only one read is used to assign the barcode.
 
-WARNING: If several barcodes are present and one of then identify uniquely the read group, this is assigned directly. Thus, it is recommended to provide all the barcodes present in the library to the parameter.
+WARNING: If several barcodes are present and one of them identify uniquely the read group, this is assigned directly. Thus, it is recommended to provide all the barcodes present in the library to the parameter.
 
 ---
 

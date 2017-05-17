@@ -11,12 +11,12 @@ permalink: trimming_pipelines.html
 3. Default filters
 4. User-specified filters
 
-This order is important, because some trimmers would not apply in some situations. For example, if the read is already trimmed in a right-most position for 5' when it pass to a trimmer, the 5' is not trimmer further. For reordering defaults, specify `--disableAllDefaultTrimmers` and provide them in the new order.
+This order is important, because some trimmers would not apply in some situations. For example, if the read is already trimmed in a right-most position for 5' when it is passed to another trimmer, the 5' is not trimmed any further. For reordering defaults, specify `--disableAllDefaultTrimmers` and provide them in the new order.
 
 The following trimmers and filters could be applied in the trimming pipeline:
 
 * Trimmers. For detailed information of each trimmer, please go to [Trimmer description](trimmers.html).
-  - [CutReadTrimmer](trimmers.html#cutreadtrimmer): Trimmer for crop some bases in one or both sides of the read.
+  - [CutReadTrimmer](trimmers.html#cutreadtrimmer): Trimmer for cropping some bases in one or both sides of the read.
   - [MottQualityTrimmer](trimmers.html#mottqualitytrimmer): Computes trim points for quality drop under a certain threshold using the Mott algorithm.
   - [TrailingNtrimmer](trimmers.html#trailingntrimmer): Trim trailing Ns on the read sequence.
 
