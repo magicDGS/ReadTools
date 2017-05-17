@@ -94,7 +94,7 @@ If you use _ReadTools_, please cite:
 
 
 [MIT License]: https://opensource.org/licenses/MIT
-[Documentation Page]: https://github.com/magicDGS/ReadTools/wiki
+[Documentation Page]: http://magicdgs.github.io/ReadTools/
 [Releases]: https://github.com/magicDGS/ReadTools/releases
 [Issue]: https://github.com/magicDGS/ReadTools/issues
 [HTSJDK]: https://samtools.github.io/htsjdk/
