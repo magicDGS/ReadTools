@@ -39,7 +39,7 @@ Please, if you find any problem use our [issue tracker]({{site.data.repo.issue_t
 
 ## License and citing
 
-_ReadTools_ is licensed under the [MIT License(https://opensource.org/licenses/MIT). See [LICENSE]({{https://github.com/magicDGS/ReadTools/blob/master/LICENSE}}) file.
+_ReadTools_ is licensed under the [MIT License](https://opensource.org/licenses/MIT). See [LICENSE](https://github.com/magicDGS/ReadTools/blob/master/LICENSE) file.
 
 If you use _ReadTools_, please cite:
 
