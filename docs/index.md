@@ -36,3 +36,11 @@ For getting the packaged version:
 ## Bug reports
 
 Please, if you find any problem use our [issue tracker]({{site.data.repo.issue_tracker}}) or contact by email <daniel.gomez.sanchez@hotmail.es>
+
+## License and citing
+
+_ReadTools_ is licensed under the [MIT License(https://opensource.org/licenses/MIT). See [LICENSE]({{https://github.com/magicDGS/ReadTools/blob/master/LICENSE}}) file.
+
+If you use _ReadTools_, please cite:
+
+> Gómez-Sánchez D. & Schlötterer C. (2017). _ReadTools: a universal toolkit for handling sequence data from different sequencing platforms._ Manuscript in preparation.

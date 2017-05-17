@@ -96,14 +96,10 @@ defaults:
 sidebars:
 - home_sidebar
 - mydoc_sidebar
-- product1_sidebar
-- product2_sidebar
-- other
 
 # the description is used in the feed.xml file
 ## TODO: more descriptive!!
 description: "Documentation page for ReaddTools"
 
 # needed for  file only
-## TODO: change!!
-url: http://idratherbewriting.com
+url: http://magicDGS.github.io/ReadTools
