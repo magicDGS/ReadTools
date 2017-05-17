@@ -45,7 +45,7 @@ import scala.Tuple2;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 @CommandLineProgramProperties(oneLineSummary = "Standardize quality and format for all kind of sources for ReadTools.",
-        summary = "This tool standardize the format of reads from both raw and mapped reads and "
+        summary = "This tool standardizes the format of reads from both raw and mapped reads and "
                 + "outputs a SAM/BAM/CRAM file:\n"
                 + "\t- Quality encoding: the Standard quality is Sanger. Quality is detected "
                 + "automatically, but is could be forced with --forceEncoding\n"

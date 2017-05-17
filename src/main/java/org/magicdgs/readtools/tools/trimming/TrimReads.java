@@ -73,8 +73,8 @@ import java.util.List;
                 + "\t- Filter out completely trim reads.\n"
                 + "\t- Apply the filters in order. If any read is filtered, the 'FT' tag reflects the reason.\n"
                 + "Default arguments perform the same algorithm as the one described in Kofler et al. (PLoS ONE 6, 2011, e15925)."
-                + " Other features in the pipeline implemented there could be apply with some minor modifications in the command line.\n"
-                + "\nNote: default trimmer(s)/filter(s) are applied before any specified by the user."
+                + " Other features in the pipeline implemented there could be applied with some minor modifications in the command line.\n"
+                + "\nNote: default trimmer(s)/filter(s) are applied before any other user-specified trimmer."
                 + " If you would like to apply them in a different order, use --"
                 + RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME
                 + " in combination with the new ordering.\n"

@@ -29,7 +29,7 @@ import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
- * Trimmer for crop some bases in one or both sides of the read.
+ * Trimmer for cropping some bases in one or both sides of the read.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */

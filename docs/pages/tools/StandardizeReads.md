@@ -5,7 +5,7 @@ permalink: StandardizeReads.html
 ---
 
 ## Description
-This tool standardize the format of reads from both raw and mapped reads and outputs a SAM/BAM/CRAM file:
+This tool standardizes the format of reads from both raw and mapped reads and outputs a SAM/BAM/CRAM file:
 - Quality encoding: the Standard quality is Sanger. Quality is detected automatically, but is could be forced with `--forceEncoding`
 - Raw barcodes: the BC/QT tags will be updated if requested by the barcode options. This options may be useful if the information for the raw barcodes is present in a different tag (e.g., while using illumina2bam with double indexing) or it was not de-multiplexed before mapping using FASTQ file (e.g., barcodes should be encoded in the read name if mapping with DistMap on a cluster). Note: If several indexes are present, barcodes are separated by hyphens and qualities by space.
 - FASTQ file(s): the output is a unmapped SAM/BAM/CRAM file with the quality header in the CO tag and the PF binary tag if the read name is in the Casava format. The raw barcode (BC) is extracted from the read name if present (does not require any barcode option).

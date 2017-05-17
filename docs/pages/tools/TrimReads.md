@@ -10,9 +10,9 @@ Apply a trimming/filtering pipeline to the reads as following:
 - Filter out completely trim reads.
 - Apply the filters in order. If any read is filtered, the 'FT' tag reflects the reason.
 
-Default arguments perform the same algorithm as the one described in [Kofler _et al._ (2011)]({{site.data.software.popoolation}}). Other features in the pipeline implemented there could be apply with some minor modifications in the command line.
+Default arguments perform the same algorithm as the one described in [Kofler _et al._ (2011)]({{site.data.software.popoolation}}). Other features in the pipeline implemented there could be applied with some minor modifications in the command line.
 
-Note: default trimmer(s)/filter(s) are applied before any specified by the user. If you would like to apply them in a different order, use --disableAllDefaultTrimmers in combination with the new ordering.
+Note: default trimmer(s)/filter(s) are applied before any other user-specified trimmer. If you would like to apply them in a different order, use --disableAllDefaultTrimmers in combination with the new ordering.
 
 ---
 
