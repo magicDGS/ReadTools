@@ -26,6 +26,5 @@ rm -fr docs/javadoc && mv build/docs/javadoc docs/
 git commit -am "Release javadoc"
 
 # TODO: generates the documentation with Barclay
+# TODO: Update version in CHANGELOG and docs/_data/sidebars/home_sidebar.yml
 # TODO: see https://github.com/magicDGS/ReadTools/issues/182
-
-# TODO: change the CHANGELOG to include the version
