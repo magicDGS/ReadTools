@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 1.0.0
+## 1.0.0 - 2017-05-17
 
 ### Fixed
 - MD5 file digest for FASTQ is for the file itself and not its content.
@@ -131,6 +131,7 @@ First pre-release
 
 
 [Unreleased]: https://github.com/magicDGS/ReadTools/tree/master
+[1.0.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.0.0
 [0.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.3.0
 [0.2.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.2.2]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
