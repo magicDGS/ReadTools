@@ -14,6 +14,6 @@ topnav_dropdowns:
     - title: Donwload
       folderitems:
         - title: Executable Jar
-          external_url: https://github.com/magicDGS/ReadTools/releases/download/0.3.0/ReadTools.jar
+          external_url: https://github.com/magicDGS/ReadTools/releases/download/1.0.0/ReadTools.jar
         - title: Repository zip
-          external_url: https://github.com/magicDGS/ReadTools/archive/0.3.0.tar.gz
+          external_url: https://github.com/magicDGS/ReadTools/archive/1.0.0.tar.gz
