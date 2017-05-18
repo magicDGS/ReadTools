@@ -23,8 +23,11 @@ startScripts {
     }
 }
 
+// it is a release only if the boolean is a release and the git version does not contain .dirty
+final isRelease = !gitVersion().contains(".dirty") && Boolean.getBoolean("release")
+
 group = 'org.magicdgs'
-version = hashedVersion('1.0.0')
+version = (isRelease ? gitVersion() : gitVersion() + "-SNAPSHOT").replaceAll(".dirty", "")
 description = """Tools for sequencing barcoded read data (in FASTQ/BAM format)"""
 
 def developer = "Daniel Gomez-Sanchez"
@@ -34,13 +37,6 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 mainClassName = group + "." + rootProject.name.toLowerCase() + ".Main"
-
-// method for defining the version using the build-number from git-hash
-// TODO: this should be removed for https://github.com/magicDGS/ReadTools/issues/184
-def hashedVersion(String semVer) {
-    def hashedVersion = semVer + "-" + versionDetails().gitHash
-    return (gitVersion().contains("dirty")) ? hashedVersion + "-SNAPSHOT" : hashedVersion
-}
 
 repositories {
     mavenCentral()
