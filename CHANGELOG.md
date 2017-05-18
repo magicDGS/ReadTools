@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 1.0.0 - 2017-05-17
+## 1.0.0 - 2017-05-18
 
 ### Fixed
 - MD5 file digest for FASTQ is for the file itself and not its content.
