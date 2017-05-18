@@ -78,7 +78,7 @@ We use [Semantic Versioning (SemVer)](http://semver.org/) (_MAJOR.MINOR.PATCH_) 
 3. Backwards-incompatible changes: Add a __Changed__ entry.
    These changes will be included after a month from the last release, by bumping the _MAJOR_ number and reset _MINOR_ and _PATCH_ to 0.
 
-Our API for developers is still not stable, and changes for developers are reflected in under a _API change_ entry from version 1.0.0 onwards.
+Our API for developers is still not stable, and changes for developers are reflected in under a __API change__ entry from version 1.0.0 onwards.
 
 ---
 
