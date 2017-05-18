@@ -69,7 +69,7 @@ If you want to evaluate _ReadTools_ locally:
 
 ## Versioning and changelog
 
-We use [Semantic Versioning (SemVer)](http://semver.org/) (_MAJOR.MINOR.PATCH_). The [CHANGELOG] will be updated accordingly after Pull Requests to follow the convention:
+We use [Semantic Versioning (SemVer)](http://semver.org/) (_MAJOR.MINOR.PATCH_) for the user-side, but not the API. The [CHANGELOG] will be updated accordingly after Pull Requests to follow the convention:
 
 1. Backwards-compatible bug fixes: Add a __Fixed__ entry.
    These fixes will be released after they are included, by bumping the _PATCH_ number. 
@@ -78,7 +78,7 @@ We use [Semantic Versioning (SemVer)](http://semver.org/) (_MAJOR.MINOR.PATCH_).
 3. Backwards-incompatible changes: Add a __Changed__ entry.
    These changes will be included after a month from the last release, by bumping the _MAJOR_ number and reset _MINOR_ and _PATCH_ to 0.
 
-Changes are distinguished by the ones corresponding to API changes alone or if it have some effect on the user side.
+Our API for developers is still not stable, and changes for developers are reflected in under a _API change_ entry from version 1.0.0 onwards.
 
 ---
 
