@@ -22,33 +22,44 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools;
+package org.magicdgs.readtools.documentation;
+
+import org.magicdgs.readtools.RTBaseTest;
+
+import org.broadinstitute.barclay.help.DocWorkUnit;
+import org.mockito.Mockito;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
 /**
- * Class for utilities for retrieve test resources.
- *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public final class TestResourcesUtils {
+public class RTHelpDocWorkUnitHandlerUnitTest extends RTBaseTest{
 
-    // current directory for the tests
-    private static final String CURRENT_DIRECTORY = System.getProperty("user.dir");
+    private static final RTHelpDocWorkUnitHandler HANDLER =
+            new RTHelpDocWorkUnitHandler(RTHelpDocletUnitTest.DOCLET);
 
-    /** The root file directory for main resources files.*/
-    public static final String READTOOLS_MAIN_RESOURCES_DIRECTORY =
-            new File(CURRENT_DIRECTORY, "src/main/resources").getAbsolutePath() + "/";
+    @Test
+    public void testTemplateName() {
+        final File template = new File(RTHelpDocletUnitTest.DOCUMENTATION_TEMPLATES_FOLDER,
+                HANDLER.getTemplateName(null));
+        // check that our index template exists in the resources folder
+        Assert.assertTrue(template.exists(),
+                "index template does not exists: " + template);
+    }
 
-    /** The root file directory for test resource files. */
-    public static final String READTOOLS_TEST_ROOT_FILE_DIRECTORY =
-            new File(CURRENT_DIRECTORY, "src/test/resources").getAbsolutePath() + "/";
+    @Test
+    public void testGetTagFilterPrefix() {
+        Assert.assertEquals(HANDLER.getTagFilterPrefix(), "");
+    }
 
-    /**
-     * Gets the test resource as a file in the test source directory.
-     */
-    public static File getReadToolsTestResource(final String fileName) {
-        return new File(READTOOLS_TEST_ROOT_FILE_DIRECTORY, fileName);
+    @Test
+    public void testGetDestinationFilename() {
+        final DocWorkUnit mockedWorkUnit = Mockito.mock(DocWorkUnit.class);
+        Mockito.when(mockedWorkUnit.getName()).thenReturn("MyToolName");
+        Assert.assertEquals(HANDLER.getDestinationFilename(mockedWorkUnit), "MyToolName.md");
     }
 
 }

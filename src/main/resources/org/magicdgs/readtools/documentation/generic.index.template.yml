@@ -1,0 +1,28 @@
+<#-- TODO: add "other" -->
+<#assign seq = ["tools", "utilities"]>
+<#macro emitGroup group>
+  - ${group.name}:
+    - name: ${group.name}
+    - summary: ${group.summary}
+    - components:
+    <#list data as datum>
+      <#if datum.group == group.name>
+      - ${datum.name}:
+        - name: ${datum.name}
+        - summary: ${datum.summary}
+      </#if>
+    </#list>
+</#macro>
+- ReadTools:
+  - version: ${version}
+  - timestamp: ${timestamp}
+
+<#list seq as supercat>
+- ${supercat}:
+  <#list groups?sort_by("name") as group>
+    <#if group.supercat == supercat>
+      <@emitGroup group=group/>
+	</#if>
+  </#list>
+  
+</#list>

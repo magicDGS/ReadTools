@@ -24,6 +24,11 @@
 
 package org.magicdgs.readtools;
 
+import org.broadinstitute.hellbender.utils.help.HelpConstants;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Constants for help/documentation purposes.
  *
@@ -46,21 +51,67 @@ public final class RTHelpConstants {
     /** Documentation main page. */
     public static final String DOCUMENTATION_PAGE = "http://magicdgs.github.io/ReadTools/";
 
-    ///////////////////////////////
-    // PROGRAM GROUP NAMES
+    //////////////////////////////////////////////////
+    // PROGRAM GROUP NAMES AND DESCRIPTIONS FOR TOOLS
+
+    /** Supercategory for tools */
+    private final static String DOC_SUPERCAT_TOOLS = "tools";
 
     /** Documentation name for reads manipulation. */
     public static final String DOC_CAT_READS_MANIPULATION = "Reads manipulation";
     /** Documentation description for reads manipulation. */
-    public static final String DOC_CAT_READS_MANIPULATION_SUMMARY = "Tools for manipulating any supported read source (SAM/BAM/CRAM/FASTQ)";
+    public static final String DOC_CAT_READS_MANIPULATION_SUMMARY =
+            "Tools for manipulating any supported read source (SAM/BAM/CRAM/FASTQ)";
 
     /** Documentation name for reads conversion. */
     public static final String DOC_CAT_READS_CONVERSION = "Reads conversion";
     /** Documentation description for reads conversion. */
-    public static final String DOC_CAT_READS_CONVERSION_SUMMARY = "Tools for converting any supported read source (SAM/BAM/CRAM/FASTQ)";
+    public static final String DOC_CAT_READS_CONVERSION_SUMMARY =
+            "Tools for converting any supported read source (SAM/BAM/CRAM/FASTQ)";
 
-    /** Documentation name for Dismtap integration.*/
+    /** Documentation name for Dismtap integration. */
     public static final String DOC_CAT_DISTMAP = "Distmap integration";
     /** Documentation description for Distmap integration. */
-    public static final String DOC_CAT_DISTMAP_SUMMARY = "Tools for integration with the DistMap (Pandey & Schlötterer 2013).";
+    public static final String DOC_CAT_DISTMAP_SUMMARY =
+            "Tools for integration with the DistMap (Pandey & Schlötterer 2013).";
+
+    ///////////////////////////////
+    // DOCUMENTATION FOR UTILITIES
+
+    /** Supercategory for utilities. */
+    private final static String DOC_SUPERCAT_UTILITIES = "utilities";
+
+    /** Documentation name for Trimmer 'utilities'. */
+    public static final String DOC_CAT_TRIMMERS = "Trimmers";
+    public static final String DOC_CAT_TRIMMERS_SUMMARY = "Algorithms used to trim the reads.";
+
+    // map each group name to a super-category
+    private static Map<String, String> groupToSuperCategory;
+    // initialize on demand the mapping between supercategories and group names
+    private static Map<String, String> getSuperCategoryMap() {
+        if (groupToSuperCategory == null) {
+            // TODO: initialize with GATK's and/or Picard's supercat map
+
+            // do this only on demand since we only need it during docgen
+            groupToSuperCategory = new HashMap<>();
+
+            // supercat Tools
+            groupToSuperCategory.put(DOC_CAT_READS_MANIPULATION, DOC_SUPERCAT_TOOLS);
+            groupToSuperCategory.put(DOC_CAT_READS_CONVERSION, DOC_SUPERCAT_TOOLS);
+            groupToSuperCategory.put(DOC_CAT_DISTMAP, DOC_SUPERCAT_TOOLS);
+            // include GATK's tool definitions
+            groupToSuperCategory.put(HelpConstants.DOC_CAT_QC, DOC_SUPERCAT_TOOLS);
+
+            // supercat Trimmers
+            groupToSuperCategory.put(DOC_CAT_TRIMMERS, DOC_SUPERCAT_UTILITIES);
+        }
+        return groupToSuperCategory;
+    }
+
+    /** Supercategory not defined in the map. */
+    private static final String DOC_SUPERCAT_OTHER = "other";
+
+    public static String getSuperCategoryProperty(final String groupName) {
+        return getSuperCategoryMap().getOrDefault(groupName, DOC_SUPERCAT_OTHER);
+    }
 }

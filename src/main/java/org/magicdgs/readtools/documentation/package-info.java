@@ -22,33 +22,14 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools;
-
-import java.io.File;
-
 /**
- * Class for utilities for retrieve test resources.
+ * Custom Barclay-based Javadoc classes used for generating ReadTools help/documentation.
+ *
+ * <p>NOTE: Classes and methods in this package are intended to be called by Gradle/Javadoc only,
+ * and should not be called by methods that are used by the runtime. Dependends on com.sun.javadoc
+ * classes, which may not be present since they're not provided as part of the normal runtime
+ * classpath.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public final class TestResourcesUtils {
-
-    // current directory for the tests
-    private static final String CURRENT_DIRECTORY = System.getProperty("user.dir");
-
-    /** The root file directory for main resources files.*/
-    public static final String READTOOLS_MAIN_RESOURCES_DIRECTORY =
-            new File(CURRENT_DIRECTORY, "src/main/resources").getAbsolutePath() + "/";
-
-    /** The root file directory for test resource files. */
-    public static final String READTOOLS_TEST_ROOT_FILE_DIRECTORY =
-            new File(CURRENT_DIRECTORY, "src/test/resources").getAbsolutePath() + "/";
-
-    /**
-     * Gets the test resource as a file in the test source directory.
-     */
-    public static File getReadToolsTestResource(final String fileName) {
-        return new File(READTOOLS_TEST_ROOT_FILE_DIRECTORY, fileName);
-    }
-
-}
+package org.magicdgs.readtools.documentation;
