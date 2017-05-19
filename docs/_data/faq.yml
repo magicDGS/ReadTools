@@ -1,0 +1,33 @@
+# each question should have:
+# - an ID that is a number in capital letter increasing in order
+# - a question field (formatted in HTML and quoted)
+# - an answer field (formatted in HTML and quoted)
+- FAQ:
+  id: One
+  question: "AssignReadGroupByBarcode 'UNEXPECTED ERROR: 1'"
+  answer: 'This error is found in version 1.0.0 when a barcode file with more than one barcode
+	is provided and the barcodes are not encoded in the <b>BC</b> tag separated by hyphens as recommended in
+	the SAM specifications. There are several reported cases:
+	<ul>
+		<li>Barcodes encoded in two different tags. For example, BAM files obtained with
+			<a href="http://gq1.github.io/illumina2bam/#Illumina2bam">illumina2bam</a>
+			use to have dual-indexed datasets with the first barcode in the <b>BC</b> tag
+			and the second in the <b>B2</b> tag. This could be fixed by using the following
+			options: <code>--rawBarcodeSequenceTags BC --rawBarcodeSequenceTags B2</code>.
+			Data from other sources may require a different values for this argument.
+		</li>
+		<li>Barcode encoded in the <b>BC</b> tag but separated with a custom character. In this
+			case, we recommend to reformat your data with <code>awk</code> or <code>sed</code>.
+			We also have implemented an advance solution for laboratories where the data is always
+			encoded with a custom separator, and it should not be modified (for more information, see
+			<a href="readtools_java_properties.html">ReadTools Java Properties</a>).
+		</li>
+	</ul>'
+
+- FAQ:
+  id: Two
+  question: 'Exception in thread "main" java.lang.NoClassDefFoundError: org/xerial/snappy/LoadSnappy'
+  answer: 'If your command fail with this error, the solution is to re-run it using
+  <code>java -Dsnappy.disable=true -jar ReadTools.jar</code>.
+  <p>This is a known bug of one of the libraries used in ReadTools that may be solved
+  in the future.</p>'

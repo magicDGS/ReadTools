@@ -1,0 +1,27 @@
+---
+title: Frequently Asked Questions
+sidebar: home_sidebar
+permalink: faq.html
+toc: false
+---
+
+<div class="panel-group" id="accordion">
+
+{% for item in site.data.faq %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a class="noCrossRef accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse{{item.id}}">{{item.question}}</a>
+        </h4>
+    </div>
+    <div id="collapse{{item.id}}" class="panel-collapse collapse noCrossRef">
+        <div class="panel-body">
+            {{item.answer}}
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+</div>
