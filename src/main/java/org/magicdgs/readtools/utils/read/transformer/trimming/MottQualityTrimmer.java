@@ -24,10 +24,12 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
+import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
 
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
@@ -37,6 +39,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims low quality ends using the  Mott's algorithm.")
 public final class MottQualityTrimmer extends TrimmingFunction {
     private static final long serialVersionUID = 1L;
 

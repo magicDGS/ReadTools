@@ -34,6 +34,7 @@ import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import htsjdk.samtools.SAMFileHeader;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import scala.Tuple2;
@@ -61,6 +62,7 @@ import scala.Tuple2;
                 + "(does not require any barcode option).\n"
                 + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
         programGroup = RTConversionProgramGroup.class)
+@DocumentedFeature
 public final class StandardizeReads extends ReadToolsWalker {
 
     @ArgumentCollection

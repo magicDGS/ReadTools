@@ -80,6 +80,9 @@ import java.util.List;
                 + " in combination with the new ordering.\n"
                 + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
         programGroup = RTManipulationProgramGroup.class)
+// TODO: this could not be documented because a known issue with the GATK filer plugin
+// TODO: https://github.com/broadinstitute/gatk-protected/issues/1048
+// @DocumentedFeature
 public final class TrimReads extends ReadToolsWalker {
 
     @ArgumentCollection

@@ -37,6 +37,7 @@ import org.broadinstitute.barclay.argparser.Advanced;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -62,6 +63,7 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
                 +" for more information about how standard barcode information is handled in "
                 + "ReadTools and when it is useful.",
         programGroup = DistmapProgramGroup.class)
+@DocumentedFeature
 public final class ReadsToDistmap extends ReadToolsWalker {
 
     @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", common = true, optional = true)
