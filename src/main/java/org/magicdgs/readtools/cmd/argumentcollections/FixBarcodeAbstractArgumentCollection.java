@@ -179,7 +179,7 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
 
 
     /** Implementation without barcode qualities. */
-    private static final class FixSimpleBarcodeArgumentCollection
+    protected static final class FixSimpleBarcodeArgumentCollection
             extends FixBarcodeAbstractArgumentCollection {
 
         @Override
@@ -190,7 +190,7 @@ public abstract class FixBarcodeAbstractArgumentCollection implements Serializab
     }
 
     /** Implementation with barocde qualities */
-    private static final class FixBarcodeWithQualitiesArgumentCollection
+    protected static final class FixBarcodeWithQualitiesArgumentCollection
             extends FixBarcodeAbstractArgumentCollection {
 
         @Argument(fullName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, shortName = RTStandardArguments.RAW_BARCODE_QUALITIES_TAG_NAME, optional = true, common = true,

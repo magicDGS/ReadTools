@@ -39,7 +39,8 @@ import java.io.Serializable;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ReadGroupArgumentCollection implements Serializable {
+public final class ReadGroupArgumentCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Argument(fullName = AddOrReplaceReadGroups.RGLB_LONG_NAME, shortName = AddOrReplaceReadGroups.RGLB_SHORT_NAME, doc = "Read Group Library", optional = true)
     public String readGroupLibrary;

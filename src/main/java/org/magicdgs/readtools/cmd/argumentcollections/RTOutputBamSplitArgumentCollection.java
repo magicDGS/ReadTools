@@ -49,7 +49,7 @@ import java.util.List;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentCollection {
+public final class RTOutputBamSplitArgumentCollection extends RTAbstractOutputBamArgumentCollection {
     private static final long serialVersionUID = 1L;
 
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file prefix.", optional = false)

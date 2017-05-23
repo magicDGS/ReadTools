@@ -47,7 +47,8 @@ import java.util.function.Supplier;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
+public final class RTOutputFastqArgumentCollection extends RTOutputArgumentCollection {
+    private static final long serialVersionUID = 1L;
 
     // this is the default splitter for pair-end reads.
     private static final List<ReaderSplitter<?>> PAIR_END_SPLITTER =
