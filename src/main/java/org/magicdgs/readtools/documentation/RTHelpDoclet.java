@@ -105,7 +105,7 @@ public class RTHelpDoclet extends HelpDoclet {
             final List<Map<String, String>> groupMaps,
             final List<Map<String, String>> featureMaps) {
         final RTGSONWorkUnit gsonWorkUnit = new RTGSONWorkUnit();
-        // TODO: add custom values if RTGSONWorkUnit requires it
+        // TODO: update RTGSONWorkUnit (see https://github.com/magicDGS/ReadTools/issues/242)
         return gsonWorkUnit;
     }
 

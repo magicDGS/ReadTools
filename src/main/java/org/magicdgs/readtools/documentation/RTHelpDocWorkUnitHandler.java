@@ -53,7 +53,7 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
     /** No custom tags are output in ReadToools. */
     @Override
     protected String getTagFilterPrefix() {
-        // TODO: add custom tags?
+        // TODO: add custom tags (https://github.com/magicDGS/ReadTools/issues/242)
         return "";
     }
 
@@ -63,13 +63,9 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
      */
     @Override
     protected String getDescription(final DocWorkUnit currentWorkUnit) {
-        // TODO: uncomment when there is a better description in the javadoc
-        // TODO: in that case, this method will delegate into the current implementation is there is no javadoc
-//        final String description = super.getDescription(currentWorkUnit);
-//        if (!(description == null || description.isEmpty())) {
-//            return description;
-//        }
-        // TODO: remove this if the previous lines are uncommented
+        // TODO: we need a different approach for this (see https://github.com/magicDGS/ReadTools/issues/241)
+        // TODO: we should use the default (super method) and if it is nul or empty delegates in
+        // TODO: currentWorkUnit.getCommandLineProperties().summary() - maybe this should be discouraged
         final CommandLineProgramProperties properties = currentWorkUnit.getCommandLineProperties();
         if (properties == null) {
             return super.getDescription(currentWorkUnit);
@@ -77,9 +73,14 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
         return properties.summary();
     }
 
+    /**
+     * Destination filename uses
+     * <p>WARNING: does not honor the output extension.
+     */
     @Override
     public String getDestinationFilename(final DocWorkUnit workUnit) {
-        // TODO: should use getDoclet().getOutputFileExtension() but requires that it is public
+        // TODO: should use getDoclet().getOutputFileExtension() but requires https://github.com/broadinstitute/barclay/pull/60
+        // TODO: see https://github.com/magicDGS/ReadTools/issues/240
         return workUnit.getName() + ".md";
     }
 }

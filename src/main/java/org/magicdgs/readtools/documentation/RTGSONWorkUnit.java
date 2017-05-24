@@ -34,5 +34,5 @@ import org.broadinstitute.barclay.help.GSONWorkUnit;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class RTGSONWorkUnit extends GSONWorkUnit {
-
+    // TODO: see https://github.com/magicDGS/ReadTools/issues/242
 }

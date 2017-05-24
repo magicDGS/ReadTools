@@ -169,7 +169,7 @@ shadowJar {
 }
 
 // Generate ReadTools Online Doc files (jekyll formatted)
-task readtoolsDoc(type: Javadoc, dependsOn: ['cleanReadtoolsDoc', classes]) {
+task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
     // directories
     final File readtoolsDocDir = new File(buildDir, "docs/readtools")
     final String readtoolsTemplates = "src/main/resources/" + documentationPackage.replaceAll("\\.", "/")
@@ -189,6 +189,7 @@ task readtoolsDoc(type: Javadoc, dependsOn: ['cleanReadtoolsDoc', classes]) {
         }
     }
 
+    // TODO: include GATK sources (only filters and plugins are required now)
     source = sourceSets.main.allJava
 
     // The readtoolsDoc process instantiates any documented feature classes, so to run it we need the entire
@@ -202,7 +203,8 @@ task readtoolsDoc(type: Javadoc, dependsOn: ['cleanReadtoolsDoc', classes]) {
 
 
     options.addStringOption("settings-dir", readtoolsTemplates)
-    // TODO: output in markdown format
+    // TODO: add index-file-extension yml option (requires https://github.com/broadinstitute/barclay/pull/60)
+    // TODO: see https://github.com/magicDGS/ReadTools/issues/243
     options.addStringOption("output-file-extension", "md")
     options.addStringOption("absolute-version", getVersion())
     options.addStringOption("build-timestamp", new Date().format("dd-mm-yyyy hh:mm:ss"))

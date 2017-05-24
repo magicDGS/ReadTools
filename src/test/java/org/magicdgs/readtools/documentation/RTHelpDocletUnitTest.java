@@ -42,11 +42,11 @@ import java.util.Map;
 public class RTHelpDocletUnitTest extends RTBaseTest {
 
     /** Folder where templates live. */
-    static final String DOCUMENTATION_TEMPLATES_FOLDER =
+    protected static final String DOCUMENTATION_TEMPLATES_FOLDER =
             TestResourcesUtils.READTOOLS_MAIN_RESOURCES_DIRECTORY
                     + "org/magicdgs/readtools/documentation";
 
-    static final RTHelpDoclet DOCLET = new RTHelpDoclet();
+    protected static final RTHelpDoclet DOCLET = new RTHelpDoclet();
 
     @Test
     public void testGetIndexTemplateName() {
