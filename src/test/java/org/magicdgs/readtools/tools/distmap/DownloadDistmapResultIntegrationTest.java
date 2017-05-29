@@ -26,13 +26,20 @@ package org.magicdgs.readtools.tools.distmap;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 
+import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
+import org.broadinstitute.hellbender.utils.test.MiniClusterUtils;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -42,40 +49,85 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
     private static final File TEST_TEMP_DIR =
             createTestTempDir(DownloadDistmapResultIntegrationTest.class.getSimpleName());
 
+    private MiniDFSCluster cluster;
+    private String clusterInputFolder;
     private final File distmapFolder = getClassTestDirectory();
 
+    // init the cluster and copy the files there
+    @BeforeClass(alwaysRun = true)
+    private void setupMiniCluster() throws Exception {
+        // gets the cluster and create the directory
+        cluster = MiniClusterUtils.getMiniCluster();
+        final Path distmapClusterFolder = IOUtils.getPath(
+                cluster.getFileSystem().getUri().toString()
+                + "/distmap_input/fastq_paired_end_mapping_bwa/");
+        Files.createDirectory(distmapClusterFolder);
+        clusterInputFolder = distmapClusterFolder.toUri().toString();
+
+        // copy input part files into the directory
+        for (final File file: distmapFolder.listFiles((d, f) -> f.startsWith("part-"))) {
+            Files.copy(file.toPath(), IOUtils.getPath(clusterInputFolder + "/" + file.getName()));
+        }
+    }
+
+    // stop the mini-cluster
+    @AfterClass(alwaysRun = true)
+    private void shutdownMiniCluster() {
+        MiniClusterUtils.stopCluster(cluster);
+    }
+
     @DataProvider
-    public Object[][] getLocalArguments() {
+    public Object[][] getArguments() {
         return new Object[][] {
                 // test all in one batch
-                {new ArgumentsBuilder().addInput(distmapFolder),
+                {new ArgumentsBuilder(),
                         getTestFile("parts-00000-to-00003.sam")},
                 // test more batches
-                {new ArgumentsBuilder().addInput(distmapFolder).addArgument("numberOfParts", "2"),
+                {new ArgumentsBuilder().addArgument("numberOfParts", "2"),
                         getTestFile("parts-00000-to-00003.sam")},
                 // test only some parts
-                {new ArgumentsBuilder().addInput(distmapFolder)
+                {new ArgumentsBuilder()
                         .addBooleanArgument("noRemoveTaskProgramGroup", true)
                         .addArgument("partName", "part-00001.gz")
                         .addArgument("partName", "part-00002.gz"),
                         getTestFile("parts-00001-to-00002.sam")},
                 // test unsorted with one part
-                {new ArgumentsBuilder().addInput(distmapFolder)
+                {new ArgumentsBuilder()
                         .addArgument("partName", "part-00001.gz")
                         .addArgument("SORT_ORDER", "unsorted"),
                         getTestFile("only-00001.unsorted.sam")},
         };
     }
 
-    @Test(dataProvider = "getLocalArguments")
-    public void testDownloadDistmapResult(final ArgumentsBuilder args, final File expectedOutput)
+    @Test(dataProvider = "getArguments")
+    public void testDownloadDistmapResultLocal(final ArgumentsBuilder args, final File expectedOutput)
             throws Exception {
         // output in SAM format for text comparison
         final File output = new File(TEST_TEMP_DIR,
-                args.toString() + "." + expectedOutput.getName() + ".sam");
+                args.toString() + ".local." + expectedOutput.getName() + ".sam");
 
-        args.addOutput(output).addBooleanArgument("addOutputSAMProgramRecord", false);
-        runCommandLine(args);
+        final ArgumentsBuilder completeArgs = new ArgumentsBuilder(args.getArgsArray())
+                .addInput(distmapFolder)
+                .addOutput(output)
+                .addBooleanArgument("addOutputSAMProgramRecord", false);
+        runCommandLine(completeArgs);
+
+        // using text file concordance
+        IntegrationTestSpec.assertEqualTextFiles(output, expectedOutput);
+    }
+
+    @Test(dataProvider = "getArguments")
+    public void testDownloadDistmapResultCluster(final ArgumentsBuilder args, final File expectedOutput)
+            throws Exception {
+        // output in SAM format for text comparison
+        final File output = new File(TEST_TEMP_DIR,
+                args.toString() + ".cluster." + expectedOutput.getName() + ".sam");
+
+        final ArgumentsBuilder completeArgs = new ArgumentsBuilder(args.getArgsArray())
+                .addArgument("input", clusterInputFolder)
+                .addOutput(output)
+                .addBooleanArgument("addOutputSAMProgramRecord", false);
+        runCommandLine(completeArgs);
 
         // using text file concordance
         IntegrationTestSpec.assertEqualTextFiles(output, expectedOutput);
