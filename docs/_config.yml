@@ -29,7 +29,6 @@ port: 4000
 # these are the files and directories that jekyll will exclude from the build
 exclude:
   - .gitignore
-  - /javadoc
 
 # used as a contact email for the Feedback link in the top navigation bar
 feedback_subject_line: ReadTools Feedback
