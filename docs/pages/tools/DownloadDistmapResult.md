@@ -5,7 +5,7 @@ permalink: DownloadDistmapResult.html
 ---
 
 ## Description
-Download, sort and merge the results for running DistMap ([Pandey & Schlötterer (PLoS ONE 8, 2013, e72614](site.data.software.distmap)).
+Download, sort and merge the results for running DistMap ([Pandey & Schlötterer (PLoS ONE 8, 2013, e72614]({{site.data.software.distmap}})).
 This tool scan the folder provided as input for multi-part BAM/SAM/CRAM files (e.g. 'part-*'), sort and merge them by batches (in the temp directory) and finally merge all the batches into a single output file.
 
 Note: The results are expected to be located in the Hadoop FileSystem (HDFS) and the output file in the local computer for following usage, but it is not restricted.
