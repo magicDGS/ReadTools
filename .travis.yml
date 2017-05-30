@@ -10,8 +10,8 @@ env:
     - TYPE=shadow
     ## test runs all the unit/integration tests
     - TYPE=test
-    ## test the javadoc task
-    - TYPE=javadoc
+    ## test the documentation (javadoc task and jekyll documentation)
+    - TYPE=documentation
     global:
     # disable gradle daemon
     - GRADLE_OPTS="-Dorg.gradle.daemon=false"
@@ -38,8 +38,11 @@ script:
           java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input ./src/test/resources/org/magicdgs/readtools/tools/conversion/StandardizeReads/small_se.illumina.fq --output ./tmp/test.sam;
       elif [[ $TYPE == test ]]; then
           ./gradlew jacocoTestReport;
-      elif [[ $TYPE == javadoc ]]; then
+      elif [[ $TYPE == documentation ]]; then
+          rvm use 2.4.0 --install --binary --fuzzy;
+          bundle install --gemfile docs/Gemfile;
           ./gradlew javadoc;
+          ./scripts/test_documentation.sh;
       else
           echo "Test type not recognized $TYPE";
           exit 1;
