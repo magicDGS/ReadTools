@@ -75,5 +75,4 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
         Assert.assertEquals(groupMap.get("summary"), "group_summary");
         Assert.assertEquals(groupMap.get("supercat"), "other");
     }
-
 }

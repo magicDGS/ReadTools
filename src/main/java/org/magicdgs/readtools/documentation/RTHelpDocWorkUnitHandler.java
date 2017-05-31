@@ -27,6 +27,7 @@ package org.magicdgs.readtools.documentation;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DefaultDocWorkUnitHandler;
 import org.broadinstitute.barclay.help.DocWorkUnit;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.barclay.help.HelpDoclet;
 
 /**
@@ -58,24 +59,43 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
     }
 
     /**
-     * Use the {@link CommandLineProgramProperties#summary} instead of the javadoc annotation.
-     * If it is not a command line, it uses the default implementation.
+     * Uses different descriptions depending on the work unit content:
+     *
+     * - If the unit is for a command line program, uses {@link CommandLineProgramProperties#summary()}.
+     * - Gets the summary for the documented feature if available.
+     * - Otherwise, use the default method.
      */
+    // TODO: we need a different approach for this (see https://github.com/magicDGS/ReadTools/issues/241)
+    // TODO: we should use the default (super method) and if it is nul or empty delegates in
+    // TODO: currentWorkUnit.getCommandLineProperties().summary() - maybe this should be discouraged
     @Override
     protected String getDescription(final DocWorkUnit currentWorkUnit) {
-        // TODO: we need a different approach for this (see https://github.com/magicDGS/ReadTools/issues/241)
-        // TODO: we should use the default (super method) and if it is nul or empty delegates in
-        // TODO: currentWorkUnit.getCommandLineProperties().summary() - maybe this should be discouraged
+        String description = "";
         final CommandLineProgramProperties properties = currentWorkUnit.getCommandLineProperties();
-        if (properties == null) {
-            return super.getDescription(currentWorkUnit);
+
+        // 1. Command line summary
+        if (properties != null) {
+            description = properties.summary();
         }
-        return properties.summary();
+
+        // 2. Use the documented feature
+        if (description.isEmpty()) {
+            // the documented feature should not be null
+            description = currentWorkUnit.getDocumentedFeature().summary();
+        }
+
+        // 3. Default implementation
+        if (description.isEmpty()) {
+            description = super.getDescription(currentWorkUnit);
+        }
+
+        return description;
     }
 
     /**
-     * Destination filename uses
-     * <p>WARNING: does not honor the output extension.
+     * Uses the name for the unit with the Markdonw suffix (<i>.md</i>).
+     *
+     * <p>WARNING: does not honor the output extension (should be fixed in the future).
      */
     @Override
     public String getDestinationFilename(final DocWorkUnit workUnit) {

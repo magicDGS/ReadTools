@@ -26,7 +26,11 @@ package org.magicdgs.readtools.documentation;
 
 import org.magicdgs.readtools.RTBaseTest;
 
+import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocWorkUnit;
+import org.broadinstitute.barclay.help.DocumentedFeature;
+import org.broadinstitute.hellbender.cmdline.TestProgramGroup;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,7 +40,7 @@ import java.io.File;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTHelpDocWorkUnitHandlerUnitTest extends RTBaseTest{
+public class RTHelpDocWorkUnitHandlerUnitTest extends RTBaseTest {
 
     private static final RTHelpDocWorkUnitHandler HANDLER =
             new RTHelpDocWorkUnitHandler(RTHelpDocletUnitTest.DOCLET);
@@ -60,6 +64,31 @@ public class RTHelpDocWorkUnitHandlerUnitTest extends RTBaseTest{
         final DocWorkUnit mockedWorkUnit = Mockito.mock(DocWorkUnit.class);
         Mockito.when(mockedWorkUnit.getName()).thenReturn("MyToolName");
         Assert.assertEquals(HANDLER.getDestinationFilename(mockedWorkUnit), "MyToolName.md");
+    }
+
+    @Test
+    public void testGetDescriptionFromCommandLine() {
+        @CommandLineProgramProperties(summary = "Summary for CLP", oneLineSummary = "One line summary for CLP", programGroup = TestProgramGroup.class)
+        @DocumentedFeature(summary = "Summary for DocumentedFeature")
+        final class CLPClass {}
+        final DocWorkUnit mockedWorkUnit = mockedWorkUnit(CLPClass.class);
+        Assert.assertEquals(HANDLER.getDescription(mockedWorkUnit), "Summary for CLP");
+    }
+
+    public void testGetDescriptionFromDocumentedFeature() {
+        @DocumentedFeature(summary = "Summary for DocumentedFeature")
+        final class DocumentedClass {}
+        final DocWorkUnit mockedWorkUnit = mockedWorkUnit(DocumentedClass.class);
+        Assert.assertEquals(HANDLER.getDescription(mockedWorkUnit), "Summary for DocumentedFeature");
+    }
+
+    private static final DocWorkUnit mockedWorkUnit(final Class<?> clazz) {
+        final DocWorkUnit mockedWorkUnit = Mockito.mock(DocWorkUnit.class);
+        Mockito.when(mockedWorkUnit.getCommandLineProperties())
+                .thenReturn(clazz.getAnnotation(CommandLineProgramProperties.class));
+        Mockito.when(mockedWorkUnit.getDocumentedFeature())
+                .thenReturn(clazz.getAnnotation(DocumentedFeature.class));
+        return mockedWorkUnit;
     }
 
 }
