@@ -1,4 +1,5 @@
 import javax.tools.ToolProvider
+import java.nio.file.Files
 
 // Dependencies for the buildscript (not the program)
 buildscript {
@@ -227,4 +228,9 @@ task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
     options.addStringOption("absolute-version", getVersion())
     options.addStringOption("build-timestamp", new Date().format("dd-mm-yyyy hh:mm:ss"))
     options.addStringOption("verbose")
+
+    // TODO: remove once teh index file extension is available in yml
+    doLast {
+        new File(readtoolsDocDir, "index.md").renameTo(new File(readtoolsDocDir, "index.yml"))
+    }
 }
