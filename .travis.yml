@@ -17,6 +17,8 @@ env:
     - GRADLE_OPTS="-Dorg.gradle.daemon=false"
     # test verbosity to minimal
     - TEST_VERBOSITY=minimal
+    # speed up testing the documentation with Nokogiri
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 
 # gradle cache
 before_cache:
