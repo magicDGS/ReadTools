@@ -75,6 +75,7 @@ public class RTHelpDocWorkUnitHandlerUnitTest extends RTBaseTest {
         Assert.assertEquals(HANDLER.getDescription(mockedWorkUnit), "Summary for CLP");
     }
 
+    @Test
     public void testGetDescriptionFromDocumentedFeature() {
         @DocumentedFeature(summary = "Summary for DocumentedFeature")
         final class DocumentedClass {}
