@@ -80,7 +80,8 @@ dependencies {
     compileOnly(javadocJDKFiles)
     testCompile(javadocJDKFiles)
 
-    doc gatkDependency
+    // requires sources from GATK for the documentation
+    doc gatkDependency + ":sources"
 }
 
 // for managing the wrapper task
