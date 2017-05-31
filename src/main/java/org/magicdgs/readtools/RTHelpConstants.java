@@ -102,8 +102,9 @@ public final class RTHelpConstants {
             // include GATK's tool definitions
             groupToSuperCategory.put(HelpConstants.DOC_CAT_QC, DOC_SUPERCAT_TOOLS);
 
-            // supercat Trimmers
+            // supercat utilities (trimmers and filters)
             groupToSuperCategory.put(DOC_CAT_TRIMMERS, DOC_SUPERCAT_UTILITIES);
+            groupToSuperCategory.put(HelpConstants.DOC_CAT_READFILTERS, DOC_SUPERCAT_UTILITIES);
         }
         return groupToSuperCategory;
     }

@@ -47,6 +47,7 @@ import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineParser;
 import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -80,9 +81,7 @@ import java.util.List;
                 + " in combination with the new ordering.\n"
                 + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
         programGroup = RTManipulationProgramGroup.class)
-// TODO: this could not be documented yet because the read filter plugin descriptor is broken
-// TODO: see https://github.com/magicDGS/ReadTools/issues/239
-// @DocumentedFeature
+@DocumentedFeature
 public final class TrimReads extends ReadToolsWalker {
 
     @ArgumentCollection

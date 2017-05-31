@@ -56,8 +56,16 @@ final htsjdkVersion = '2.9.1-30-gdd78f77-SNAPSHOT' // TODO: bring back to the HT
 // classpath and we don't want to redistribute them in the uber jar.
 final javadocJDKFiles = files(((URLClassLoader) ToolProvider.getSystemToolClassLoader()).getURLs())
 
+configurations {
+    doc {
+        transitive false
+    }
+}
+
 dependencies {
-    compile (group: 'org.broadinstitute', name: 'gatk', version: gatkVersion) {
+    // use the same GATK dependency for compile and documentation
+    final gatkDependency = 'org.broadinstitute:gatk:' + gatkVersion
+    compile (gatkDependency) {
         exclude module: 'jgrapht' // this is not required
         exclude module: 'htsjdk'
         exclude module: 'testng'
@@ -71,6 +79,8 @@ dependencies {
     // javadoc utilities; compile/test only to prevent redistribution of sdk jars
     compileOnly(javadocJDKFiles)
     testCompile(javadocJDKFiles)
+
+    doc gatkDependency
 }
 
 // for managing the wrapper task
@@ -189,8 +199,15 @@ task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
         }
     }
 
-    // TODO: include GATK sources (only filters and plugins are required now)
-    source = sourceSets.main.allJava
+    // Add all the doc sources and the main ones
+    final docSources = configurations.doc.collect { zipTree(it) }
+    source = files(docSources) + sourceSets.main.allJava
+
+    // exclude test
+    exclude '**/test/**'
+    // include all our classes, and the GATK engine and command line, which contain plugins and filters
+    // TODO: we should document the GATK tools included in our framework
+    include '**/readtools/**', '**/hellbender/engine/**', '**/cmdline/**'
 
     // The readtoolsDoc process instantiates any documented feature classes, so to run it we need the entire
     // runtime classpath, as well as jdk javadoc files such as tools.jar, where com.sun.javadoc lives.
@@ -203,8 +220,8 @@ task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
 
 
     options.addStringOption("settings-dir", readtoolsTemplates)
-    // TODO: add index-file-extension yml option (requires https://github.com/broadinstitute/barclay/pull/60)
-    // TODO: see https://github.com/magicDGS/ReadTools/issues/243
+    // TODO: uncomment the next line (https://github.com/magicDGS/ReadTools/issues/243) -> requires https://github.com/broadinstitute/barclay/pull/60
+    // options.addStringOption("index-file-extension", "yml")
     options.addStringOption("output-file-extension", "md")
     options.addStringOption("absolute-version", getVersion())
     options.addStringOption("build-timestamp", new Date().format("dd-mm-yyyy hh:mm:ss"))
