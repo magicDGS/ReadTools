@@ -27,7 +27,6 @@ package org.magicdgs.readtools.documentation;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DefaultDocWorkUnitHandler;
 import org.broadinstitute.barclay.help.DocWorkUnit;
-import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.barclay.help.HelpDoclet;
 
 /**

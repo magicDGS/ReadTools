@@ -30,7 +30,6 @@ import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocWorkUnit;
 import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.TestProgramGroup;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -91,5 +90,4 @@ public class RTHelpDocWorkUnitHandlerUnitTest extends RTBaseTest {
                 .thenReturn(clazz.getAnnotation(DocumentedFeature.class));
         return mockedWorkUnit;
     }
-
 }

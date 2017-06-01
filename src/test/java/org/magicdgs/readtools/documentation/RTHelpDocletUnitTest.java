@@ -103,6 +103,5 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
         final List<String> generatedFiles = Arrays.asList(outputDir.list());
         // there are at least 1 trimmers is implemented (md + json)
         Assert.assertTrue(generatedFiles.size() > 2, "Trimmers and index should be present: " + generatedFiles);
-
     }
 }
