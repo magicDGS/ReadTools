@@ -34,6 +34,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,7 +51,7 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
     protected static final RTHelpDoclet DOCLET = new RTHelpDoclet();
 
     @Test
-    public void testGetIndexTemplateName() {
+    public void testGetIndexTemplateName() throws Exception {
         final File indexTemplate = new File(DOCUMENTATION_TEMPLATES_FOLDER,
                 DOCLET.getIndexTemplateName());
         // check that our index template exists in the resources folder
@@ -58,14 +60,14 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
     }
 
     @Test
-    public void testcreateGSONWorkUnit() {
+    public void testcreateGSONWorkUnit() throws Exception {
         // should not fail by using all null, because we have no extra information yet
         final GSONWorkUnit gsonWorkUnit = DOCLET.createGSONWorkUnit(null, null, null);
         Assert.assertEquals(gsonWorkUnit.getClass(), RTGSONWorkUnit.class);
     }
 
     @Test
-    public void testGetGroupMap() {
+    public void testGetGroupMap() throws Exception {
         final DocWorkUnit mockedUnit = Mockito.mock(DocWorkUnit.class);
         Mockito.when(mockedUnit.getGroupName()).thenReturn("group_name");
         Mockito.when(mockedUnit.getGroupSummary()).thenReturn("group_summary");
@@ -74,5 +76,33 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
         Assert.assertEquals(groupMap.get("name"), "group_name");
         Assert.assertEquals(groupMap.get("summary"), "group_summary");
         Assert.assertEquals(groupMap.get("supercat"), "other");
+    }
+
+    @Test
+    public void testTrimmersDocGenDontBlowUp() throws Exception {
+        // run javadoc with our custom doclet to check if everything is working
+        // only test if the output folder is not empty
+        final File outputDir = createTestTempDir("DocGenTest");
+        final List<String> docArgList = Arrays.asList(
+                "-build-timestamp", "2016/01/01 01:01:01",      // dummy, constant timestamp
+                "-absolute-version", "11.1",                    // dummy version
+                "-output-file-extension", "md",                 // testing markdown output
+                // TODO: this should be uncommented at some point
+                // "-index-file-extension", "yml",
+                "-docletpath", "build/libs",
+                "-settings-dir", DOCUMENTATION_TEMPLATES_FOLDER,
+                "-d", outputDir.getAbsolutePath(),
+                "-doclet", DOCLET.getClass().getName(),
+                "-sourcepath", "src/main/java",
+                // check if the trimmers do not fail documentation
+                "org.magicdgs.readtools.utils.read.transformer.trimming",
+                "-verbose",
+                "-cp", System.getProperty("java.class.path")
+        );
+        com.sun.tools.javadoc.Main.execute(docArgList.toArray(new String[]{}));
+        final List<String> generatedFiles = Arrays.asList(outputDir.list());
+        // there are at least 1 trimmers is implemented (md + json)
+        Assert.assertTrue(generatedFiles.size() > 2, "Trimmers and index should be present: " + generatedFiles);
+
     }
 }
