@@ -3,7 +3,6 @@
 [![Dependency Status](https://www.versioneye.com/user/projects/58821329e25f59003995102e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58821329e25f59003995102e)
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dd842750e7a74112870a5156a24a8cbf)](https://www.codacy.com/app/daniel-gomez-sanchez/ReadTools?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=magicDGS/ReadTools&amp;utm_campaign=Badge_Grade)
-[![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/magicDGS/ReadTools)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # _ReadTools_: a universal toolkit for handling sequence data from different sequencing platforms
