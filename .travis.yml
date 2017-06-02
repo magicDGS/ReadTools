@@ -10,7 +10,7 @@ env:
     - TYPE=shadow
     ## test runs all the unit/integration tests
     - TYPE=test
-    ## test the documentation (javadoc task and jekyll documentation)
+    ## test the documentation (javadoc/readtoolsDoc tasks and jekyll documentation)
     - TYPE=documentation
     global:
     # disable gradle daemon
@@ -43,7 +43,7 @@ script:
       elif [[ $TYPE == documentation ]]; then
           rvm use 2.4.0 --install --binary --fuzzy;
           bundle install --gemfile docs/Gemfile;
-          ./gradlew javadoc;
+          ./gradlew javadoc readtoolsDoc;
           ./scripts/test_documentation.sh;
       else
           echo "Test type not recognized $TYPE";

@@ -40,7 +40,7 @@ import java.nio.file.Path;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollection {
+public final class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollection {
     private static final long serialVersionUID = 1L;
 
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file.", optional = false)

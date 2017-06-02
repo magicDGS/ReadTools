@@ -36,7 +36,11 @@ public final class TestResourcesUtils {
     // current directory for the tests
     private static final String CURRENT_DIRECTORY = System.getProperty("user.dir");
 
-    /** The root file directory for resource files. */
+    /** The root file directory for main resources files.*/
+    public static final String READTOOLS_MAIN_RESOURCES_DIRECTORY =
+            new File(CURRENT_DIRECTORY, "src/main/resources").getAbsolutePath() + "/";
+
+    /** The root file directory for test resource files. */
     public static final String READTOOLS_TEST_ROOT_FILE_DIRECTORY =
             new File(CURRENT_DIRECTORY, "src/test/resources").getAbsolutePath() + "/";
 

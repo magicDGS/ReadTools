@@ -62,7 +62,7 @@ abstract class RTAbstractOutputBamArgumentCollection extends RTOutputArgumentCol
     }
 
     /**
-     * Check if {@param outputName} corresponds to a BAM/SAM/CRAM file; if not, throws a
+     * Check if {@code outputName} corresponds to a BAM/SAM/CRAM file; if not, throws a
      */
     protected final void validateUserOutput(final String outputName) {
         if (!ReadToolsIOFormat.isSamBamOrCram(outputName)) {

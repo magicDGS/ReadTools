@@ -43,6 +43,7 @@ import htsjdk.samtools.metrics.MetricsFile;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
@@ -73,6 +74,7 @@ import java.nio.file.Path;
                 + "barcodes present in the library to the parameter.\n"
                 + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
         programGroup = RTManipulationProgramGroup.class)
+@DocumentedFeature
 public final class AssignReadGroupByBarcode extends ReadToolsWalker {
 
     @ArgumentCollection

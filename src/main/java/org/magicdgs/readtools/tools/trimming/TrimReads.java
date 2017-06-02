@@ -47,6 +47,7 @@ import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineParser;
 import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -80,6 +81,7 @@ import java.util.List;
                 + " in combination with the new ordering.\n"
                 + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
         programGroup = RTManipulationProgramGroup.class)
+@DocumentedFeature
 public final class TrimReads extends ReadToolsWalker {
 
     @ArgumentCollection

@@ -44,7 +44,7 @@ import java.io.Serializable;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTInputArgumentCollection implements Serializable {
+public final class RTInputArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // TODO: change our default validation stringency?

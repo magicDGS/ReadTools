@@ -22,33 +22,17 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.read.transformer.trimming;
+package org.magicdgs.readtools.documentation;
 
-import org.magicdgs.readtools.RTHelpConstants;
-import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
-
-import org.broadinstitute.barclay.help.DocumentedFeature;
-import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.barclay.help.GSONWorkUnit;
 
 /**
- * Computes trim points for trailing Ns on the read sequence using the algorithm described in
- * {@link TrimmingUtil#trimPointsTrailingNs(byte[])}.
+ * Class representing a GSONWorkUnit for ReadTools work units.
+ *
+ * Does not handle any special tag yet.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims the end of the read containing unknown bases.")
-public final class TrailingNtrimmer extends TrimmingFunction {
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see TrimmingUtil#trimPointsTrailingNs(byte[])
-     */
-    @Override
-    protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
-        final int[] points = TrimmingUtil.trimPointsTrailingNs(read.getBases());
-        toFill[0] = points[0];
-        toFill[1] = points[1];
-    }
+public class RTGSONWorkUnit extends GSONWorkUnit {
+    // TODO: see https://github.com/magicDGS/ReadTools/issues/242
 }

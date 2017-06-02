@@ -1,3 +1,6 @@
+import javax.tools.ToolProvider
+import java.nio.file.Files
+
 // Dependencies for the buildscript (not the program)
 buildscript {
     repositories {
@@ -37,6 +40,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 mainClassName = group + "." + rootProject.name.toLowerCase() + ".Main"
+String documentationPackage = group + "." + rootProject.name.toLowerCase() + ".documentation";
 
 repositories {
     mavenCentral()
@@ -48,8 +52,21 @@ repositories {
 final gatkVersion = '4.alpha.2-266-g48006e4-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
 final htsjdkVersion = '2.9.1-30-gdd78f77-SNAPSHOT' // TODO: bring back to the HTSJDK release
 
+// Get the jdk files we need to run javaDoc. We need to use these during compile, testCompile,
+// test execution, and readtoolsDoc generation, but we don't want them as part of the runtime
+// classpath and we don't want to redistribute them in the uber jar.
+final javadocJDKFiles = files(((URLClassLoader) ToolProvider.getSystemToolClassLoader()).getURLs())
+
+configurations {
+    doc {
+        transitive false
+    }
+}
+
 dependencies {
-    compile (group: 'org.broadinstitute', name: 'gatk', version: gatkVersion) {
+    // use the same GATK dependency for compile and documentation
+    final gatkDependency = 'org.broadinstitute:gatk:' + gatkVersion
+    compile (gatkDependency) {
         exclude module: 'jgrapht' // this is not required
         exclude module: 'htsjdk'
         exclude module: 'testng'
@@ -59,6 +76,13 @@ dependencies {
     // compilation for testing
     testCompile 'org.testng:testng:6.11'
     testCompile 'org.mockito:mockito-core:2.7.19'
+
+    // javadoc utilities; compile/test only to prevent redistribution of sdk jars
+    compileOnly(javadocJDKFiles)
+    testCompile(javadocJDKFiles)
+
+    // requires sources from GATK for the documentation
+    doc gatkDependency + ":sources"
 }
 
 // for managing the wrapper task
@@ -154,4 +178,59 @@ shadowJar {
     zip64 true
     mergeServiceFiles()
     finalizedBy currentJar
+}
+
+// Generate ReadTools Online Doc files (jekyll formatted)
+task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
+    // directories
+    final File readtoolsDocDir = new File(buildDir, "docs/readtools")
+    final String readtoolsTemplates = "src/main/resources/" + documentationPackage.replaceAll("\\.", "/")
+
+    doFirst {
+        // make sure the output folder exists or we can create it
+        if (!readtoolsDocDir.exists() && !readtoolsDocDir.mkdirs()) {
+            throw new GradleException(String.format("Failure creating folder (%s) for ReadTools doc output in task (%s)",
+                    readtoolsDocDir.getAbsolutePath(),
+                    it.name));
+        }
+        final File templatesDir = new File(readtoolsTemplates);
+        if (! templatesDir.exists()) {
+            throw new GradleException(String.format("Templates folder (%s) for ReadTools doc input does not exists in task (%s)",
+                    templatesDir.getAbsolutePath(),
+                    it.name));
+        }
+    }
+
+    // Add all the doc sources and the main ones
+    final docSources = configurations.doc.collect { zipTree(it) }
+    source = files(docSources) + sourceSets.main.allJava
+
+    // exclude test
+    exclude '**/test/**'
+    // include all our classes, and the GATK engine and command line, which contain plugins and filters
+    // TODO: we should document the GATK tools included in our framework
+    include '**/readtools/**', '**/hellbender/engine/**', '**/cmdline/**'
+
+    // The readtoolsDoc process instantiates any documented feature classes, so to run it we need the entire
+    // runtime classpath, as well as jdk javadoc files such as tools.jar, where com.sun.javadoc lives.
+    classpath = sourceSets.main.runtimeClasspath + javadocJDKFiles
+    options.docletpath = classpath.asType(List)
+    options.doclet = documentationPackage + ".RTHelpDoclet"
+
+    outputs.dir(readtoolsDocDir)
+    options.destinationDirectory(readtoolsDocDir)
+
+
+    options.addStringOption("settings-dir", readtoolsTemplates)
+    // TODO: uncomment the next line (https://github.com/magicDGS/ReadTools/issues/243) -> requires https://github.com/broadinstitute/barclay/pull/60
+    // options.addStringOption("index-file-extension", "yml")
+    options.addStringOption("output-file-extension", "md")
+    options.addStringOption("absolute-version", getVersion())
+    options.addStringOption("build-timestamp", new Date().format("dd-mm-yyyy hh:mm:ss"))
+    options.addStringOption("verbose")
+
+    // TODO: remove once the index file extension is available in yml -> requires https://github.com/magicDGS/ReadTools/issues/243
+    doLast {
+        new File(readtoolsDocDir, "index.md").renameTo(new File(readtoolsDocDir, "index.yml"))
+    }
 }

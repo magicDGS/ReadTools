@@ -22,33 +22,14 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.read.transformer.trimming;
-
-import org.magicdgs.readtools.RTHelpConstants;
-import org.magicdgs.readtools.utils.trimming.TrimmingUtil;
-
-import org.broadinstitute.barclay.help.DocumentedFeature;
-import org.broadinstitute.hellbender.utils.read.GATKRead;
-
 /**
- * Computes trim points for trailing Ns on the read sequence using the algorithm described in
- * {@link TrimmingUtil#trimPointsTrailingNs(byte[])}.
+ * Custom Barclay-based Javadoc classes used for generating ReadTools help/documentation.
+ *
+ * <p>NOTE: Classes and methods in this package are intended to be called by Gradle/Javadoc only,
+ * and should not be called by methods that are used by the runtime. Dependends on com.sun.javadoc
+ * classes, which may not be present since they're not provided as part of the normal runtime
+ * classpath.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims the end of the read containing unknown bases.")
-public final class TrailingNtrimmer extends TrimmingFunction {
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see TrimmingUtil#trimPointsTrailingNs(byte[])
-     */
-    @Override
-    protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
-        final int[] points = TrimmingUtil.trimPointsTrailingNs(read.getBases());
-        toFill[0] = points[0];
-        toFill[1] = points[1];
-    }
-}
+package org.magicdgs.readtools.documentation;

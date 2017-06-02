@@ -31,6 +31,7 @@ import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.argparser.Hidden;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
@@ -60,6 +61,7 @@ import java.util.stream.Collectors;
                 + "Note: The results are expected to be located in the Hadoop FileSystem (HDFS) and the "
                 + "output file in the local computer for following usage, but it is not restricted.",
         programGroup = DistmapProgramGroup.class)
+@DocumentedFeature
 public final class DownloadDistmapResult extends ReadToolsProgram {
 
     @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "Input folder to look for Distmap multi-part file results. Expected to be in an HDFS file system.", common = true, optional = false)

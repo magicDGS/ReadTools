@@ -24,8 +24,11 @@
 
 package org.magicdgs.readtools.utils.read.transformer.trimming;
 
+import org.magicdgs.readtools.RTHelpConstants;
+
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineException;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
@@ -33,6 +36,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims a concrete number of bases at the end of the read.")
 public class CutReadTrimmer extends TrimmingFunction {
     private static final long serialVersionUID = 1L;
 
