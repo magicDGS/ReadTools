@@ -38,16 +38,21 @@ import org.broadinstitute.barclay.help.HelpDoclet;
 public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
 
     /** Default generic template for the documentation work unit. */
-    public static final String DEFAULT_TEMPLATE_NAME = "generic.template.md";
+    public static final String DEFAULT_TEMPLATE_PREFIX = "generic.template.";
 
     public RTHelpDocWorkUnitHandler(HelpDoclet doclet) {
         super(doclet);
     }
 
-    /** Returns {@link #DEFAULT_TEMPLATE_NAME}. */
+    /**
+     * Returns {@link #DEFAULT_TEMPLATE_PREFIX} with the output extension
+     *
+     * <p>Note: does not honor the output file extension option.
+     */
     @Override
     public String getTemplateName(final DocWorkUnit workUnit) {
-        return DEFAULT_TEMPLATE_NAME;
+        // TODO: honor index file extension option (requires https://github.com/broadinstitute/barclay/pull/60 in)
+        return DEFAULT_TEMPLATE_PREFIX + RTHelpDoclet.MARKDOWN_OUTPUT_FILE_EXTENSION;
     }
 
     /** No custom tags are output in ReadToools. */
@@ -100,6 +105,6 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
     public String getDestinationFilename(final DocWorkUnit workUnit) {
         // TODO: should use getDoclet().getOutputFileExtension() but requires https://github.com/broadinstitute/barclay/pull/60
         // TODO: see https://github.com/magicDGS/ReadTools/issues/240
-        return workUnit.getName() + ".md";
+        return workUnit.getName() + "." + RTHelpDoclet.MARKDOWN_OUTPUT_FILE_EXTENSION;
     }
 }

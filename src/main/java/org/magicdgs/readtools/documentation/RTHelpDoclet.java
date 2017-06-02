@@ -46,18 +46,21 @@ import java.util.Map;
 public class RTHelpDoclet extends HelpDoclet {
 
     /** Markdown extension is our default. */
-    public static final String MARKDOWN_OUTPUT_FILE_EXTENSION = ".md";
+    public static final String MARKDOWN_OUTPUT_FILE_EXTENSION = "md";
 
-    /**
-     * Generic index template name for ReadTools documentation.
-     */
-    public static final String INDEX_TEMPLATE_NAME = "generic.index.template.yml";
+    /** YML is our default index extension. */
+    public static final String YML_INDEX_FILE_EXTENSION = "yml";
+
+    /** Generic index template name for ReadTools documentation. */
+    public static final String INDEX_TEMPLATE_PREFIX = "generic.index.template.";
 
     /** Constructor with our {@link #MARKDOWN_OUTPUT_FILE_EXTENSION}. */
     public RTHelpDoclet() {
         super();
         // default extension is Markdown
         outputFileExtension = MARKDOWN_OUTPUT_FILE_EXTENSION;
+        // TODO: override indexFileExtension
+        // TODO: requires https://github.com/broadinstitute/barclay/pull/60 and https://github.com/magicDGS/ReadTools/issues/243
     }
 
     /**
@@ -68,11 +71,14 @@ public class RTHelpDoclet extends HelpDoclet {
     }
 
     /**
-     * Returns {@link #INDEX_TEMPLATE_NAME}.
+     * Returns {@link #INDEX_TEMPLATE_PREFIX} with the index file extension.
+     *
+     * <p>Note: it does not honor the index file extension option.
      */
     @Override
     protected String getIndexTemplateName() {
-        return INDEX_TEMPLATE_NAME;
+        // TODO: honor index file extension option (requires https://github.com/broadinstitute/barclay/pull/60 in)
+        return INDEX_TEMPLATE_PREFIX + YML_INDEX_FILE_EXTENSION;
     }
 
     /**

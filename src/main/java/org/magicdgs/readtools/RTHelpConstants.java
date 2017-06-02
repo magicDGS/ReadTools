@@ -87,11 +87,11 @@ public final class RTHelpConstants {
 
     // map each group name to a super-category
     private static Map<String, String> groupToSuperCategory;
+
     // initialize on demand the mapping between supercategories and group names
     private static Map<String, String> getSuperCategoryMap() {
         if (groupToSuperCategory == null) {
             // TODO: initialize with GATK's and/or Picard's supercat map
-
             // do this only on demand since we only need it during docgen
             groupToSuperCategory = new HashMap<>();
 
@@ -112,6 +112,10 @@ public final class RTHelpConstants {
     /** Supercategory not defined in the map. */
     private static final String DOC_SUPERCAT_OTHER = "other";
 
+    /**
+     * Returns the super-category for the group name; if not defined, the supercategory is {@link
+     * #DOC_SUPERCAT_OTHER}
+     */
     public static String getSuperCategoryProperty(final String groupName) {
         return getSuperCategoryMap().getOrDefault(groupName, DOC_SUPERCAT_OTHER);
     }
