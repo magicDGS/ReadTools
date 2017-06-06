@@ -32,11 +32,13 @@ import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
- * Trimmer for cropping some bases in one or both sides of the read.
+ * Crops a concrete number of bases in one or both sides of the read.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @ReadTools.warning It will be applied only if the reads are not further trimmed before the same
+ * number of bases.
  */
-@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims a concrete number of bases at the end of the read.")
+@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Crops a concrete number of bases at the end of the read.")
 public class CutReadTrimmer extends TrimmingFunction {
     private static final long serialVersionUID = 1L;
 
@@ -114,7 +116,8 @@ public class CutReadTrimmer extends TrimmingFunction {
                         fivePrime.toString(), "Should be a positive integer");
             } else if (isDisable5prime()) {
                 throw new CommandLineException.BadArgumentValue("--" + FIVE_PRIME_LONG_NAME,
-                        fivePrime.toString(), "Cannot be used in when 5 prime trimming is disabled");
+                        fivePrime.toString(),
+                        "Cannot be used in when 5 prime trimming is disabled");
             }
         }
         // the same for three prime
