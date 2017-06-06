@@ -27,12 +27,26 @@ package org.magicdgs.readtools.documentation;
 import org.broadinstitute.barclay.help.GSONWorkUnit;
 
 /**
- * Class representing a GSONWorkUnit for ReadTools work units.
- *
- * Does not handle any special tag yet.
+ * Class representing a GSONWorkUnit for ReadTools work units. It handles special tags, as defined
+ * in the setters.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class RTGSONWorkUnit extends GSONWorkUnit {
-    // TODO: see https://github.com/magicDGS/ReadTools/issues/242
+
+    private String note;
+
+    private String warning;
+
+    /** Sets a ReadTools note about the documented feature. */
+    public void setNote(final String note) {
+        this.note = note;
+    }
+
+    /** Sets a ReadTools warning about the documented feature. */
+    public void setWarning(final String warning) {
+        this.warning = warning;
+    }
+
+
 }

@@ -7,5 +7,5 @@ last_updated: 2016/01/01 01:01:01
 
 ## Description
 
-Inline summary
+Description in javadoc
 

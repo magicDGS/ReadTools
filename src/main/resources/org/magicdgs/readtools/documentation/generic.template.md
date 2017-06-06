@@ -20,6 +20,14 @@ last_updated: ${timestamp}
 ## Description
 
 ${description}
+<#if warning?has_content>
+
+{% include warning.html content='${warning}' %}
+</#if>
+<#if note?has_content>
+
+{% include note.html content='${note}' %}
+</#if>
 
 <#if arguments.all?size != 0>
 ## Arguments

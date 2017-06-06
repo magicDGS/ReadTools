@@ -35,6 +35,7 @@ import org.broadinstitute.barclay.help.GSONWorkUnit;
 import org.broadinstitute.barclay.help.HelpDoclet;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,12 @@ public class RTHelpDoclet extends HelpDoclet {
         return new org.magicdgs.readtools.documentation.RTHelpDoclet().startProcessDocs(rootDoc);
     }
 
+    ///////////////////////////////////////////////
+    // Tag names
+    private static final String NOTE_MAP_ENTRY = "note";
+    private static final String WARNING_MAP_ENTRY = "warning";
+
+
     /**
      * Returns {@link #INDEX_TEMPLATE_PREFIX} with the index file extension.
      *
@@ -103,7 +110,7 @@ public class RTHelpDoclet extends HelpDoclet {
     /**
      * {@inheritDoc}
      *
-     * <p>Note: uses the {@link RTGSONWorkUnit}.
+     * <p>Note: uses the {@link RTGSONWorkUnit}, adding custom tags.
      */
     @Override
     protected GSONWorkUnit createGSONWorkUnit(
@@ -111,7 +118,9 @@ public class RTHelpDoclet extends HelpDoclet {
             final List<Map<String, String>> groupMaps,
             final List<Map<String, String>> featureMaps) {
         final RTGSONWorkUnit gsonWorkUnit = new RTGSONWorkUnit();
-        // TODO: update RTGSONWorkUnit (see https://github.com/magicDGS/ReadTools/issues/242)
+        // set the note and the warning from javadocs
+        gsonWorkUnit.setNote((String)workUnit.getProperty(NOTE_MAP_ENTRY));
+        gsonWorkUnit.setWarning((String)workUnit.getProperty(WARNING_MAP_ENTRY));
         return gsonWorkUnit;
     }
 

@@ -1,4 +1,6 @@
 {
+  "note": "Note in javadoc tag.",
+  "warning": "Warning in javadoc tag.",
   "summary": "Inline oneLineSummary",
   "arguments": [
     {

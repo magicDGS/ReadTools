@@ -31,8 +31,10 @@ import org.broadinstitute.hellbender.cmdline.TestProgramGroup;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @ReadTools.note Note in javadoc tag.
+ * @ReadTools.warning Warning in javadoc tag.
  */
-@CommandLineProgramProperties(summary = "Inline summary", oneLineSummary = "Inline oneLineSummary",  programGroup = TestProgramGroup.class)
+@CommandLineProgramProperties(summary = "Inline summary", oneLineSummary = "Inline oneLineSummary", programGroup = TestProgramGroup.class)
 @DocumentedFeature
 public class DocumentedClpWithoutJavadoc {
 
