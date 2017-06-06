@@ -64,25 +64,42 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Tool for perform a trimming/filtering pipeline.
+ * Applies a trimming/filtering pipeline to the reads:
+ *
+ * <ol>
+ *
+ * <li>Trimmers are pallied in order. If ay read is trimmed completely, other trimmers are
+ * ignored.</li>
+ *
+ * <li>Filter out completely trim reads.</li>
+ *
+ * <li>Apply the fiters in order. If any read is filtered, the FT tag reflects the ReadFilter
+ * involved.</li>
+ *
+ * </ol>
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @ReadTools.note Default arguments perform the same algorithm as the one described in
+ * <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015925">
+ * Kofler <i>et al.</i> (2011)</a>. Other features in their implementation could be applied with
+ * some minor modifications in the command line.
+ * @ReadTools.warning Default trimmers/filters are applied before any other user-specified
+ * trimmers/filters. If you would like to apply them in a differen order, use
+ * <code>--disableAllDefaultTrimmers</code>/<code>--disableAllDefaultFilters</code> in combination
+ * with the new ordering.
  */
 @CommandLineProgramProperties(oneLineSummary = "Applies a trimming pipeline to any kind of sources for ReadTools",
-        summary = "Apply a trimming/filtering pipeline to the reads as following:\n"
-                + "\t- Trimmers are applied in order. If any read is trimmed completely, the rest are ignored.\n"
-                + "\t- Filter out completely trim reads.\n"
-                + "\t- Apply the filters in order. If any read is filtered, the 'FT' tag reflects the reason.\n"
-                + "Default arguments perform the same algorithm as the one described in Kofler et al. (PLoS ONE 6, 2011, e15925)."
-                + " Other features in the pipeline implemented there could be applied with some minor modifications in the command line.\n"
-                + "\nNote: default trimmer(s)/filter(s) are applied before any other user-specified trimmer."
-                + " If you would like to apply them in a different order, use --"
-                + RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME
-                + " in combination with the new ordering.\n"
-                + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
+        summary = TrimReads.SUMMARY,
         programGroup = RTManipulationProgramGroup.class)
 @DocumentedFeature
 public final class TrimReads extends ReadToolsWalker {
+
+    static final String SUMMARY = "Apply a trimming/filtering pipeline to the reads as following:\n"
+            + "\t- Trimmers are applied in order.\n"
+            + "\t- Filter out completely trim reads.\n"
+            + "\t- Apply the filters in order.\n\n\n"
+            + "Find more information about this tool in "
+            + RTHelpConstants.DOCUMENTATION_PAGE + "TrimReads.html";
 
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =

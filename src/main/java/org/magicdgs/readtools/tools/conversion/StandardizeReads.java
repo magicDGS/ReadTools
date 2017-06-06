@@ -40,10 +40,44 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import scala.Tuple2;
 
 /**
- * General tool for standardize any kind of input if the format is different from the expected by
- * ReadTools. See the summary for more information.
+ * General tool for standardize any kind of read source (both raw and mapped reads).
+ *
+ * <p>This tool outputs a SAM/BAM/CRAM file as defined in the
+ * <a href="http://samtools.github.io/hts-specs/SAMv1.pdf">SAM specifications</a>:</p>
+ *
+ * <ul>
+ *
+ * <li><b>Quality encoding</b>: the Standard quality is Sanger. Quality is detected automatically,
+ * but it could be forced with <code>--forceEncoding</code></li>
+ *
+ * <li><b>Raw barcodes</b>: the standard barcode tags are BC for the sequence and QT for the
+ * quality. To correctly handle information in a SAM/BAM/CRAM file with misencoded barcode tags,
+ * one of the following options could be used:
+ *
+ * <ul>
+ *
+ * <li>Barcodes in the read name: use <code>--barcodeInReadName</code> option. This may be useful
+ * for files produced by mapping a multiplexed library stored as FASTQ files. </li>
+ *
+ * <li>Barcodes in a different tag(s): use <code>--rawBarcodeSequenceTags</code>. This may be
+ * useful
+ * if the barcode is present in a different tag (e.g., when using <a href="http://gq1.github.io/illumina2bam/">illumina2bam</a> with
+ * dual indexing, the second index will be in the B2 tag)</li>
+ *
+ * </ul></li>
+ *
+ * <li><b>FASTQ file(s)</b>: the output is an unmapped SAM/BAM/CRAM file with the quality header
+ * added to the CO tag. The raw barcode is extracted from the read name if present independently of
+ * the read name encoding (Casava or Illumina legacy).
+ * In the case of the Casava's read name encoding, the PF binary tag is also updated.</li>
+ *
+ * </ul>
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @ReadTools.note FASTQ files does not require the <code>--barcodeInReadName</code> option.
+ * @ReadTools.warning If several barcode indexes are present, barcodes are separated by hyphens and
+ * qualities by space as defined in the <a href="http://samtools.github.io/hts-specs/SAMv1.pdf">SAM
+ * specifications</a>.
  */
 @CommandLineProgramProperties(oneLineSummary = "Standardize quality and format for all kind of sources for ReadTools.",
         summary = "This tool standardizes the format of reads from both raw and mapped reads and "
@@ -64,6 +98,15 @@ import scala.Tuple2;
         programGroup = RTConversionProgramGroup.class)
 @DocumentedFeature
 public final class StandardizeReads extends ReadToolsWalker {
+
+    static final String SUMMARY =
+            "This tool standardizes the format of reads from both raw and mapped reads and outputs "
+                    + "a SAM/BAM/CRAM file with:\n"
+                    + "\t- Standard quality encoding (Sanger)\n"
+                    + "\t- Raw barcode sequence/quality in the correct tags (BC/QT)\n\n\n"
+                    + "correct tags (BC/QT).\n\n"
+                    + "Find more information about this tool in "
+                    + RTHelpConstants.DOCUMENTATION_PAGE + "StandardizeReads.html";
 
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =
