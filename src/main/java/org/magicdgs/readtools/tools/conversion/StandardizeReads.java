@@ -86,7 +86,7 @@ import scala.Tuple2;
 @DocumentedFeature
 public final class StandardizeReads extends ReadToolsWalker {
 
-    protected static final String SUMMARY = "This tool standardizes the format of reads from both "
+    protected static final String SUMMARY = "Standardizes the format of reads from both "
             + "raw and mapped reads and outputs a SAM/BAM/CRAM file with:\n"
             + "\t- Standard quality encoding (Sanger)\n"
             + "\t- Raw barcode sequence/quality in the correct tags (BC/QT)\n\n\n"

@@ -50,15 +50,13 @@ import scala.Tuple2;
         summary = ReadsToFastq.SUMMARY,
         programGroup = RTConversionProgramGroup.class)
 @DocumentedFeature(extraDocs = StandardizeReads.class)
-// TODO: extra docs should be handled correctly
 public final class ReadsToFastq extends ReadToolsWalker {
 
-    protected static final String SUMMARY =
-            "This tool converts SAM/BAM/CRAM/FASTQ formats into FASTQ, including information from "
-                    + "the barcodes (BC tag) in the read name (Illumina format) to allow keeping "
-                    + "sample data.\n\n"
-                    + "Find more information about this tool in "
-                    + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToFastq.html";
+    protected static final String SUMMARY = "Converts SAM/BAM/CRAM/FASTQ formats into FASTQ, "
+            + "including information from the barcodes (BC tag) in the read name (Illumina format) "
+            + "to allow keeping sample data.\n\n"
+            + "Find more information about this tool in "
+            + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToFastq.html";
 
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =

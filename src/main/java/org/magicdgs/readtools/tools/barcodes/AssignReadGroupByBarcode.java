@@ -60,9 +60,10 @@ import java.nio.file.Path;
  * <p>Read groups are assigned by matching the ones provided in the barcode file against the
  * present in the tag(s), allowing mismatches and unknown bases (Ns) in the sequence. We also
  * discard ambiguous barcodes, defined as the ones where the number of mismatches is at least x
- * mismatches apart from the second best barcode (at east one mismatch of difference, although it
- * is configurabel in the command line). If several indexes are used and none of them identify
- * uniquely the read group, it is assigned by majority vote.</p>
+ * mismatches apart (specified with <code>--maximumMismatches</code>) from the second best barcode
+ * (at least one mismatch of difference, change by using <code>--minimumDistance</code>).
+ * If several indexes are used and none of them identify uniquely the read group, it is assigned by
+ * majority vote.</p>
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  * @ReadTools.note For pair-end reads, only one read is used to assign the barcode.

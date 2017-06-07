@@ -55,13 +55,12 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
         summary = ReadsToDistmap.SUMMARY,
         programGroup = DistmapProgramGroup.class)
 @DocumentedFeature(extraDocs = StandardizeReads.class)
-// TODO: extra docs should be handled correctly
 public final class ReadsToDistmap extends ReadToolsWalker {
 
-    protected static final String SUMMARY = "This tool converts SAM/BAM/CRAM/FASTQ formats into "
-            + "Distmap format (Pandey & Schlötterer, PLoS ONE 8, 2013, e72614), including "
-            + "information from the barcodes (BC tag) in the read name (Illumina format) to allow "
-            + "keeping sample data.\n\n"
+    protected static final String SUMMARY = "Converts SAM/BAM/CRAM/FASTQ formats into Distmap "
+            + "format (Pandey & Schlötterer, PLoS ONE 8, 2013, e72614), including information from "
+            + "the barcodes (BC tag) in the read name (Illumina format) to allow keeping sample "
+            + "data.\n\n"
             + "Find more information about this tool in "
             + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToDistmap.html";
 

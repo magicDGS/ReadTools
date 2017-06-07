@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * (<a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0072614">Pandey
  * &amp; Schlötterer 2013</a>).
  *
- * <p>This tool scan the folder provided as input for multi-part BAM/SAM/CRAM files (e.g. 'part-*',
+ * <p>This tool scan the folder provided as input for multi-part BAM/SAM/CRAM files (e.g. 'part-*'),
  * sort and merge them by batches (in the temp directory) and finally merge all the barches into a
  * single output file.
  * </p>
@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 public final class DownloadDistmapResult extends ReadToolsProgram {
 
     protected static final String SUMMARY = "Download, sort and merge the results for running "
-            + "DistMap (Pandey & Schlötterer (PLoS ONE 8, 2013, e72614).\n"
+            + "DistMap (Pandey & Schlötterer, PLoS ONE 8, 2013, e72614).\n"
             + "This tool scan the folder provided as input for multi-part BAM/SAM/CRAM files "
             + "(e.g. 'part-*'), sort and merge them by batches (in the temp directory) and finally "
             + "merge all the batches into a single output file.\n\n"

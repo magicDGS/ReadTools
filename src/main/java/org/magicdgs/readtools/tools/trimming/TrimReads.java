@@ -68,7 +68,7 @@ import java.util.List;
  *
  * <ol>
  *
- * <li>Trimmers are pallied in order. If ay read is trimmed completely, other trimmers are
+ * <li>Trimmers are applied in order. If ay read is trimmed completely, other trimmers are
  * ignored.</li>
  *
  * <li>Filter out completely trim reads.</li>
@@ -94,7 +94,7 @@ import java.util.List;
 @DocumentedFeature
 public final class TrimReads extends ReadToolsWalker {
 
-    protected static final String SUMMARY = "Apply a trimming/filtering pipeline to the reads as "
+    protected static final String SUMMARY = "Applies a trimming/filtering pipeline to the reads as "
             + "following:\n"
             + "\t- Trimmers are applied in order.\n"
             + "\t- Filter out completely trim reads.\n"
