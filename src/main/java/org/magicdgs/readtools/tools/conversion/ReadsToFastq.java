@@ -42,7 +42,7 @@ import scala.Tuple2;
 /**
  * Converts to the FASTQ format any kind of ReadTools source (SAM/BAM/CRAM/FASTQ), including
  * information from the barcodes (BC tag) in the read name (Illumina format) to allow keeping
- * to some extend sample data.
+ * sample data.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -53,10 +53,10 @@ import scala.Tuple2;
 // TODO: extra docs should be handled correctly
 public final class ReadsToFastq extends ReadToolsWalker {
 
-    static final String SUMMARY =
+    protected static final String SUMMARY =
             "This tool converts SAM/BAM/CRAM/FASTQ formats into FASTQ, including information from "
                     + "the barcodes (BC tag) in the read name (Illumina format) to allow keeping "
-                    + "to some extend sample data.\n\n"
+                    + "sample data.\n\n"
                     + "Find more information about this tool in "
                     + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToFastq.html";
 

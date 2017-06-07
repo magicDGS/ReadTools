@@ -67,11 +67,11 @@ import java.util.stream.Collectors;
 @DocumentedFeature
 public final class DownloadDistmapResult extends ReadToolsProgram {
 
-    static final String SUMMARY = "Download, sort and merge the results for running DistMap "
-            + "(Pandey & Schlötterer (PLoS ONE 8, 2013, e72614).\n"
-            + "This tool scan the folder provided as input for multi-part BAM/SAM/CRAM files (e.g. 'part-*'), "
-            + "sort and merge them by batches (in the temp directory) and finally merge "
-            + "all the batches into a single output file.\n\n"
+    protected static final String SUMMARY = "Download, sort and merge the results for running "
+            + "DistMap (Pandey & Schlötterer (PLoS ONE 8, 2013, e72614).\n"
+            + "This tool scan the folder provided as input for multi-part BAM/SAM/CRAM files "
+            + "(e.g. 'part-*'), sort and merge them by batches (in the temp directory) and finally "
+            + "merge all the batches into a single output file.\n\n"
             + "Find more information about this tool in "
             + RTHelpConstants.DOCUMENTATION_PAGE + "DownloadDistmapResult.html";
 

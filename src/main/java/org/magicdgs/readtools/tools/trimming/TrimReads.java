@@ -94,7 +94,8 @@ import java.util.List;
 @DocumentedFeature
 public final class TrimReads extends ReadToolsWalker {
 
-    static final String SUMMARY = "Apply a trimming/filtering pipeline to the reads as following:\n"
+    protected static final String SUMMARY = "Apply a trimming/filtering pipeline to the reads as "
+            + "following:\n"
             + "\t- Trimmers are applied in order.\n"
             + "\t- Filter out completely trim reads.\n"
             + "\t- Apply the filters in order.\n\n\n"

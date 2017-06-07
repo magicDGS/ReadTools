@@ -47,8 +47,7 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
  * Converts to the Distmap format
  * (<a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0072614">
  * Pandey &amp; Schlötterer 2013</a>) any kind of ReadTools source, including information
- * from the barcodes (BC tag) in the read name (Illumina format) to allow keeping
- * to some extend sample data.
+ * from the barcodes (BC tag) in the read name (Illumina format) to allow keeping sample data.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -59,10 +58,10 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 // TODO: extra docs should be handled correctly
 public final class ReadsToDistmap extends ReadToolsWalker {
 
-    static final String SUMMARY = "This tool converts SAM/BAM/CRAM/FASTQ formats into Distmap "
-            + "format (Pandey & Schlötterer, PLoS ONE 8, 2013, e72614), including information "
-            + "from the barcodes (BC tag) in the read name (Illumina format) to allow keeping "
-            + "to some extend sample data.\n\n"
+    protected static final String SUMMARY = "This tool converts SAM/BAM/CRAM/FASTQ formats into "
+            + "Distmap format (Pandey & Schlötterer, PLoS ONE 8, 2013, e72614), including "
+            + "information from the barcodes (BC tag) in the read name (Illumina format) to allow "
+            + "keeping sample data.\n\n"
             + "Find more information about this tool in "
             + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToDistmap.html";
 

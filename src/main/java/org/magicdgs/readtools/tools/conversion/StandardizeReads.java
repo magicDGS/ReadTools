@@ -61,7 +61,8 @@ import scala.Tuple2;
  *
  * <li>Barcodes in a different tag(s): use <code>--rawBarcodeSequenceTags</code>. This may be
  * useful
- * if the barcode is present in a different tag (e.g., when using <a href="http://gq1.github.io/illumina2bam/">illumina2bam</a> with
+ * if the barcode is present in a different tag (e.g., when using <a
+ * href="http://gq1.github.io/illumina2bam/">illumina2bam</a> with
  * dual indexing, the second index will be in the B2 tag)</li>
  *
  * </ul></li>
@@ -80,33 +81,18 @@ import scala.Tuple2;
  * specifications</a>.
  */
 @CommandLineProgramProperties(oneLineSummary = "Standardize quality and format for all kind of sources for ReadTools.",
-        summary = "This tool standardizes the format of reads from both raw and mapped reads and "
-                + "outputs a SAM/BAM/CRAM file:\n"
-                + "\t- Quality encoding: the Standard quality is Sanger. Quality is detected "
-                + "automatically, but is could be forced with --forceEncoding\n"
-                + "\t- Raw barcodes: the BC/QT tags will be updated if requested by the barcode options. "
-                + "This options may be useful if the information for the raw barcodes is present in "
-                + "a different tag (e.g., while using illumina2bam with double indexing) or it was "
-                + "not de-multiplexed before mapping using FASTQ file (e.g., barcodes should be "
-                + "encoded in the read name if mapping with DistMap on a cluster). "
-                + "Note: If several indexes are present, barcodes are separated by hyphens and qualities by space.\n"
-                + "\t- FASTQ file(s): the output is a unmapped SAM/BAM/CRAM file with the quality "
-                + "header in the CO tag and the PF binary tag if the read name is in the Casava "
-                + "format. The raw barcode (BC) is extracted from the read name if present "
-                + "(does not require any barcode option).\n"
-                + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
+        summary = StandardizeReads.SUMMARY,
         programGroup = RTConversionProgramGroup.class)
 @DocumentedFeature
 public final class StandardizeReads extends ReadToolsWalker {
 
-    static final String SUMMARY =
-            "This tool standardizes the format of reads from both raw and mapped reads and outputs "
-                    + "a SAM/BAM/CRAM file with:\n"
-                    + "\t- Standard quality encoding (Sanger)\n"
-                    + "\t- Raw barcode sequence/quality in the correct tags (BC/QT)\n\n\n"
-                    + "correct tags (BC/QT).\n\n"
-                    + "Find more information about this tool in "
-                    + RTHelpConstants.DOCUMENTATION_PAGE + "StandardizeReads.html";
+    protected static final String SUMMARY = "This tool standardizes the format of reads from both "
+            + "raw and mapped reads and outputs a SAM/BAM/CRAM file with:\n"
+            + "\t- Standard quality encoding (Sanger)\n"
+            + "\t- Raw barcode sequence/quality in the correct tags (BC/QT)\n\n\n"
+            + "correct tags (BC/QT).\n\n"
+            + "Find more information about this tool in "
+            + RTHelpConstants.DOCUMENTATION_PAGE + "StandardizeReads.html";
 
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =

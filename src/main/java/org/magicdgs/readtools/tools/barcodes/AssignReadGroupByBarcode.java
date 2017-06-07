@@ -76,7 +76,7 @@ import java.nio.file.Path;
 @DocumentedFeature
 public final class AssignReadGroupByBarcode extends ReadToolsWalker {
 
-    static final String SUMMARY = "Assigns the read groups present in the file(s) based "
+    protected static final String SUMMARY = "Assigns the read groups present in the file(s) based "
             + "on the barcode present in the raw barcode tag(s). Read groups are assigned by "
             + "matching the ones provided in the barcode file against the present in the tag(s), "
             + "allowing mismatches and unknown bases (Ns) in the sequence.\n\n"
