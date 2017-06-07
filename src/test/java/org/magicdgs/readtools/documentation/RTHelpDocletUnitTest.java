@@ -29,12 +29,14 @@ import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.barclay.help.DocWorkUnit;
 import org.broadinstitute.barclay.help.GSONWorkUnit;
+import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,8 +63,10 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
 
     @Test
     public void testcreateGSONWorkUnit() throws Exception {
-        // should not fail by using all null, because we have no extra information yet
-        final GSONWorkUnit gsonWorkUnit = DOCLET.createGSONWorkUnit(null, null, null);
+        // using a mocked unit to check if it is correct
+        final DocWorkUnit workUnitMock = Mockito.mock(DocWorkUnit.class);
+        Mockito.when(workUnitMock.getRootMap()).thenReturn(Collections.emptyMap());
+        final GSONWorkUnit gsonWorkUnit = DOCLET.createGSONWorkUnit(workUnitMock, null, null);
         Assert.assertEquals(gsonWorkUnit.getClass(), RTGSONWorkUnit.class);
     }
 
@@ -81,7 +85,6 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
     @Test
     public void testTrimmersDocGenDontBlowUp() throws Exception {
         // run javadoc with our custom doclet to check if everything is working
-        // only test if the output folder is not empty
         final File outputDir = createTestTempDir("DocGenTest");
         final List<String> docArgList = Arrays.asList(
                 "-build-timestamp", "2016/01/01 01:01:01",      // dummy, constant timestamp
@@ -93,15 +96,21 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
                 "-settings-dir", DOCUMENTATION_TEMPLATES_FOLDER,
                 "-d", outputDir.getAbsolutePath(),
                 "-doclet", DOCLET.getClass().getName(),
-                "-sourcepath", "src/main/java",
-                // check if the trimmers do not fail documentation
-                "org.magicdgs.readtools.utils.read.transformer.trimming",
-                "-verbose",
+                // check the documentation of test classes
+                "-sourcepath", "src/test/java", "org.magicdgs.readtools.documentation.classes",
+                // uncomment next line to debug
+                // "-verbose",
                 "-cp", System.getProperty("java.class.path")
         );
-        com.sun.tools.javadoc.Main.execute(docArgList.toArray(new String[]{}));
-        final List<String> generatedFiles = Arrays.asList(outputDir.list());
-        // there are at least 1 trimmers is implemented (md + json)
-        Assert.assertTrue(generatedFiles.size() > 2, "Trimmers and index should be present: " + generatedFiles);
+
+        com.sun.tools.javadoc.Main.execute(docArgList.toArray(new String[] {}));
+
+        // check all the generated files and assess that they are not breaking the behaviour
+        final File expectedDir = getClassTestDirectory();
+        for (final String fileName : expectedDir.list()) {
+            final File expectedFile = new File(expectedDir, fileName);
+            final File generatedFile = new File(outputDir, fileName);
+            IntegrationTestSpec.assertEqualTextFiles(generatedFile, expectedFile);
+        }
     }
 }

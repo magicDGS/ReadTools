@@ -1,0 +1,23 @@
+{
+  "summary": "Inline oneLineSummary",
+  "arguments": [
+    {
+      "summary": "Inline argument doc",
+      "name": "--string-argument",
+      "synonyms": "-s-arg",
+      "type": "String",
+      "required": "no",
+      "fulltext": "",
+      "defaultValue": "\"\"",
+      "minValue": "NA",
+      "maxValue": "NA",
+      "minRecValue": "NA",
+      "maxRecValue": "NA",
+      "kind": "optional",
+      "options": []
+    }
+  ],
+  "description": "Inline summary",
+  "name": "DocumentedClpWithoutJavadoc",
+  "group": "Test Tools"
+}
