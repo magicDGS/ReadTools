@@ -83,7 +83,7 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
     }
 
     @Test
-    public void testTrimmersDocGenDontBlowUp() throws Exception {
+    public void testCustomDoclet() throws Exception {
         // run javadoc with our custom doclet to check if everything is working
         final File outputDir = createTestTempDir("DocGenTest");
         final List<String> docArgList = Arrays.asList(
