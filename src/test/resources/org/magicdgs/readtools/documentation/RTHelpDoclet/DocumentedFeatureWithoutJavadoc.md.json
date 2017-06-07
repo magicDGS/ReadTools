@@ -1,0 +1,7 @@
+{
+  "summary": "Inline summary",
+  "arguments": [],
+  "description": "Inline summary",
+  "name": "DocumentedFeatureWithoutJavadoc",
+  "group": "Inline groupName"
+}
