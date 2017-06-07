@@ -47,7 +47,8 @@ import java.util.stream.IntStream;
 public final class BarcodeDetectorArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /** Barcode file. A white-space delimited file with sampleName, libraryName and barcodes. */
+    // TODO: this should be pointing to the help page for more information
+    // TODO: and here just add the required elements
     @Argument(fullName = "barcodeFile", shortName = "bc", optional = false, doc =
             BarcodeDictionaryFactory.BARCODE_FILE_FORMAT_DESCRIPTION
                     + " Barcode file will overwrite any of Read Group arguments for the same information. "
@@ -58,26 +59,21 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
     private static final String SPECIFY_MORE_THAN_ONCE_DOC_END =
             "Specify more than once for apply a different threshold to several indexes.";
 
-    /** Maximum number of mismatches allowed. Default is 0 for all barcodes. */
     @Argument(fullName = "maximumMismatches", shortName = "mm", optional = true,
             doc = "Maximum number of mismatches allowed for a matched barcode. "
                     + SPECIFY_MORE_THAN_ONCE_DOC_END)
     public List<Integer> maximumMismatches = new ArrayList<>(Collections.singleton(0));
 
-    /** Minimum distance between matches in barcodes. Default is 1 for all barcodes. */
     @Argument(fullName = "minimumDistance", shortName = "md", optional = true,
-            doc = "Minimum difference in  number of mismatches between the best match and the second. "
+            doc = "Minimum distance (difference in number of mismatches) between the best match and the second. "
                     + SPECIFY_MORE_THAN_ONCE_DOC_END)
     public List<Integer> minimumDistance = new ArrayList<>(Collections.singleton(1));
 
-    /** Maximum number of Ns allowed in the barcode. */
-    @Argument(fullName = "maximumN", shortName = "maxN", optional = true, doc = "Maximum number of Ns allowed in the barcode to consider them. If null, no threshold will be applied.")
+    @Argument(fullName = "maximumN", shortName = "maxN", optional = true, doc = "Maximum number of unknown bases (Ns) allowed in the barcode to consider them. If 'null', no threshold will be applied.")
     public Integer maximumN = null;
 
-    /** If {@code true}, Ns should not be counted as mismatch. */
     @Argument(fullName = "nNoMismatch", shortName = "nnm", optional = true, doc = "Do not count unknown bases (Ns) as mismatch.")
     public boolean nNoMismatch = false;
-
 
     // barcode arguments
     @Argument(fullName = "runName", shortName = "runName", optional = true, doc = "Run name to add to the ID in the read group information.")
