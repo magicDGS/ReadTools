@@ -80,7 +80,7 @@ import scala.Tuple2;
  * qualities by space as defined in the <a href="http://samtools.github.io/hts-specs/SAMv1.pdf">SAM
  * specifications</a>.
  */
-@CommandLineProgramProperties(oneLineSummary = "Standardize quality and format for all kind of sources for ReadTools.",
+@CommandLineProgramProperties(oneLineSummary = "Standardizes quality and format for all kind of sources for ReadTools.",
         summary = StandardizeReads.SUMMARY,
         programGroup = RTConversionProgramGroup.class)
 @DocumentedFeature
