@@ -40,5 +40,5 @@ public class DocumentedClpWithJavadoc {
 
     /** Argument in javadoc. */
     @Argument(fullName = "string-argument", shortName = "s-arg", doc = "Inline argument doc")
-    final String argument = "";
+    public String argument = "";
 }

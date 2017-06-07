@@ -37,5 +37,5 @@ import org.broadinstitute.hellbender.cmdline.TestProgramGroup;
 public class DocumentedClpWithoutJavadoc {
 
     @Argument(fullName = "string-argument", shortName = "s-arg", doc = "Inline argument doc")
-    final String argument = "";
+    public String argument = "";
 }
