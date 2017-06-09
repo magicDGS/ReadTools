@@ -11,7 +11,7 @@ topnav_dropdowns:
 - title: Topnav dropdowns
   folders:
     # TODO: generate automatically this links!!
-    - title: Donwload
+    - title: Download
       folderitems:
         - title: Executable Jar
           external_url: https://github.com/magicDGS/ReadTools/releases/download/1.0.0/ReadTools.jar
