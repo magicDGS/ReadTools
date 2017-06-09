@@ -180,6 +180,10 @@ shadowJar {
     finalizedBy currentJar
 }
 
+javadoc {
+    options.tags = ["ReadTools.note", "ReadTools.warning"]
+}
+
 // Generate ReadTools Online Doc files (jekyll formatted)
 task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
     // directories

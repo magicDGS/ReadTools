@@ -31,10 +31,11 @@ import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
- * Computes trim points for trailing Ns on the read sequence using the algorithm described in
- * {@link TrimmingUtil#trimPointsTrailingNs(byte[])}.
+ * Trims trailing Ns (unknown bases) in the read sequence, in one or both sides.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @ReadTools.warning If a previous trimmer left the read starting/ending with Ns, the read will not
+ * be trimmed by the TrailingNtrimmer.
  */
 @DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims the end of the read containing unknown bases.")
 public final class TrailingNtrimmer extends TrimmingFunction {

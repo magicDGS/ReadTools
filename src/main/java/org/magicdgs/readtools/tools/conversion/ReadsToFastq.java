@@ -25,7 +25,6 @@
 package org.magicdgs.readtools.tools.conversion;
 
 import org.magicdgs.readtools.RTHelpConstants;
-import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.RTConversionProgramGroup;
@@ -41,25 +40,23 @@ import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import scala.Tuple2;
 
 /**
- * Converts to the FASTQ format any kind of ReadTools source. See the summary for more information.
+ * Converts to the FASTQ format any kind of ReadTools source (SAM/BAM/CRAM/FASTQ), including
+ * information from the barcodes (BC tag) in the read name (Illumina format) to allow keeping
+ * sample data.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 @CommandLineProgramProperties(oneLineSummary = "Converts any kind of ReadTools source to FASTQ format.",
-        summary = "This tool converts SAM/BAM/CRAM/FASTQ formats into FASTQ, including information "
-                + "from the barcodes (BC tag) in the read name (Illumina format) to allow keeping "
-                + "to some extend sample information if necessary.\n"
-                + "If the source is a SAM/BAM/CRAM file and the barcodes are encoded in the read "
-                + "name, the option --" + RTStandardArguments.USER_READ_NAME_BARCODE_NAME
-                + " should be used. If the barcode information is encoded in a different tag(s) "
-                + "the option --" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
-                + " should be used.\n"
-                + "\nNote: see " + RTHelpConstants.DOCUMENTATION_PAGE
-                +" for more information about how standard barcode information is handled in "
-                + "ReadTools and when it is useful.",
+        summary = ReadsToFastq.SUMMARY,
         programGroup = RTConversionProgramGroup.class)
-@DocumentedFeature
+@DocumentedFeature(extraDocs = StandardizeReads.class)
 public final class ReadsToFastq extends ReadToolsWalker {
+
+    protected static final String SUMMARY = "Converts SAM/BAM/CRAM/FASTQ formats into FASTQ, "
+            + "including information from the barcodes (BC tag) in the read name (Illumina format) "
+            + "to allow keeping sample data.\n\n"
+            + "Find more information about this tool in "
+            + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToFastq.html";
 
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =

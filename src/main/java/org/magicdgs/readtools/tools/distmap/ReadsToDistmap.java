@@ -28,8 +28,8 @@ import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.DistmapProgramGroup;
-import org.magicdgs.readtools.cmd.programgroups.RTConversionProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
+import org.magicdgs.readtools.tools.conversion.StandardizeReads;
 import org.magicdgs.readtools.utils.distmap.DistmapException;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
@@ -44,27 +44,25 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 /**
- * Converts to the Distmap format any kind of ReadTools source. See the summary for more
- * information.
+ * Converts to the Distmap format
+ * (<a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0072614">
+ * Pandey &amp; Schlötterer 2013</a>) any kind of ReadTools source, including information
+ * from the barcodes (BC tag) in the read name (Illumina format) to allow keeping sample data.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 @CommandLineProgramProperties(oneLineSummary = "Converts any kind of ReadTools source to Distmap format.",
-        summary = "This tool converts SAM/BAM/CRAM/FASTQ formats into Distmap format from "
-                + "Pandey & Schlötterer (PLoS ONE 8, 2013, e72614), including information from "
-                + "the barcodes (BC tag) in the read name (Illumina format) to allow keeping to "
-                + "some extend sample information if necessary.\n"
-                + "If the source is a SAM/BAM/CRAM file and the barcodes are encoded in the read "
-                + "name, the option --" + RTStandardArguments.USER_READ_NAME_BARCODE_NAME
-                + " should be used. If the barcode information is encoded in a different tag(s) "
-                + "the option --" + RTStandardArguments.RAW_BARCODE_SEQUENCE_TAG_NAME
-                + " should be used.\n"
-                + "\nNote: see " + RTHelpConstants.DOCUMENTATION_PAGE
-                +" for more information about how standard barcode information is handled in "
-                + "ReadTools and when it is useful.",
+        summary = ReadsToDistmap.SUMMARY,
         programGroup = DistmapProgramGroup.class)
-@DocumentedFeature
+@DocumentedFeature(extraDocs = StandardizeReads.class)
 public final class ReadsToDistmap extends ReadToolsWalker {
+
+    protected static final String SUMMARY = "Converts SAM/BAM/CRAM/FASTQ formats into Distmap "
+            + "format (Pandey & Schlötterer, PLoS ONE 8, 2013, e72614), including information from "
+            + "the barcodes (BC tag) in the read name (Illumina format) to allow keeping sample "
+            + "data.\n\n"
+            + "Find more information about this tool in "
+            + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToDistmap.html";
 
     @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", common = true, optional = true)
     public Boolean forceOverwrite = false;

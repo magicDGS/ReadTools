@@ -34,12 +34,12 @@ import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
- * Computes trim points for quality drop under a certain threshold using the Mott algorithm
- * described in {@link TrimmingUtil#trimPointsMott(byte[], int)}.
+ * Trims low quality ends by computing quality drops under a certain threshold using a modified
+ * version of the <a href="http://www.phrap.org/phredphrap/phred.html">Mott's algorithm.</a>.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims low quality ends using the  Mott's algorithm.")
+@DocumentedFeature(groupName = RTHelpConstants.DOC_CAT_TRIMMERS, groupSummary = RTHelpConstants.DOC_CAT_TRIMMERS_SUMMARY, summary = "Trims low quality ends using the Mott's algorithm.")
 public final class MottQualityTrimmer extends TrimmingFunction {
     private static final long serialVersionUID = 1L;
 

@@ -32,9 +32,9 @@ import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgument
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 import org.magicdgs.readtools.cmd.programgroups.RTManipulationProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
+import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
-import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 
@@ -55,27 +55,34 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Tool for assign barcodes to any kind of input and output a standard ReadTools read.
- * See the summary for more information.
+ * Assigns read groups (@RG) using the barcode information present in the raw barcode tag(s).
+ *
+ * <p>Read groups are assigned by matching the ones provided in the barcode file against the
+ * present in the tag(s), allowing mismatches and unknown bases (Ns) in the sequence. We also
+ * discard ambiguous barcodes, defined as the ones where the number of mismatches is at least x
+ * mismatches apart (specified with <code>--maximumMismatches</code>) from the second best barcode
+ * (at least one mismatch of difference, change by using <code>--minimumDistance</code>).
+ * If several indexes are used and none of them identify uniquely the read group, it is assigned by
+ * majority vote.</p>
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @ReadTools.note For pair-end reads, only one read is used to assign the barcode.
+ * @ReadTools.warning If several barcodes are present and one of them
+ * identify uniquely the read group, this is assigned directly. Thus, it is recommended to provide
+ * all the barcodes present in the library to the parameter.
  */
 @CommandLineProgramProperties(oneLineSummary = "Assigns read groups based on barcode tag(s) for all kind of sources for ReadTools.",
-        summary = "Assigns the read groups present in the file(s) based on the barcode present in "
-                + "the raw barcode tag(s). Read groups are assigned by matching the ones provided "
-                + "in the barcode file against the present in the tag(s), allowing mismatches and "
-                + "unknown bases (Ns) in the sequence. Ambiguous barcodes, defined as the ones that "
-                + "have a concrete distance with the second match (at least one mismatch of difference), "
-                + "are also discarded. If several indexed are used and none of them identify uniquely "
-                + "the read group, the read group is assigned by majority vote.\n"
-                + "Note: for pair-end reads, only one read is used to assign the barcode.\n"
-                + "\nWARNING: If several barcodes are present and one of them identify uniquely the "
-                + "read group, this is assigned directly. Thus, it is recommended to provide all the "
-                + "barcodes present in the library to the parameter.\n"
-                + "\nFind more information in " + RTHelpConstants.DOCUMENTATION_PAGE,
+        summary = AssignReadGroupByBarcode.SUMMARY,
         programGroup = RTManipulationProgramGroup.class)
 @DocumentedFeature
 public final class AssignReadGroupByBarcode extends ReadToolsWalker {
+
+    protected static final String SUMMARY = "Assigns the read groups present in the file(s) based "
+            + "on the barcode present in the raw barcode tag(s). Read groups are assigned by "
+            + "matching the ones provided in the barcode file against the present in the tag(s), "
+            + "allowing mismatches and unknown bases (Ns) in the sequence.\n\n"
+            + "Find more information about this algorithm in "
+            + RTHelpConstants.DOCUMENTATION_PAGE + "AssignReadGroupByBarcode.html";
 
     @ArgumentCollection
     public RTOutputArgumentCollection outputBamArgumentCollection =
@@ -200,7 +207,8 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
         try (final Writer metricsWriter = Files.newBufferedWriter(path)) {
             getMetricsFile().write(metricsWriter);
             // get the matcher statistics (for writing and logging)
-            final MetricsFile<MatcherStat, Integer> matcherStatMetrics = decoder.getMatcherStatMetrics();
+            final MetricsFile<MatcherStat, Integer> matcherStatMetrics =
+                    decoder.getMatcherStatMetrics();
             // write matcher statistics
             matcherStatMetrics.write(metricsWriter);
             // write barcode statistics
@@ -211,11 +219,12 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
             // log the metrics
             matcherStatMetrics.getMetrics()
                     .forEach(s -> logger.info("Found {} records for {} ({}).",
-                    s.RECORDS, s.SAMPLE, s.BARCODE));
+                            s.RECORDS, s.SAMPLE, s.BARCODE));
             return null;
         } catch (final IOException e) {
             // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
-            throw new UserException.CouldNotCreateOutputFile(path.toUri().toString(), e.getMessage(),
+            throw new UserException.CouldNotCreateOutputFile(path.toUri().toString(),
+                    e.getMessage(),
                     e);
         }
     }
