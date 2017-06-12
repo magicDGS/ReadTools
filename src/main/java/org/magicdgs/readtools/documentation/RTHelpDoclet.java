@@ -35,7 +35,6 @@ import org.broadinstitute.barclay.help.GSONWorkUnit;
 import org.broadinstitute.barclay.help.HelpDoclet;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
