@@ -9,6 +9,10 @@ last_updated: 2016/01/01 01:01:01
 
 Inline summary
 
+{% include warning.html content='Warning in javadoc tag.' %}
+
+{% include note.html content='Note in javadoc tag.' %}
+
 ## Arguments
 
 ### Optional Arguments

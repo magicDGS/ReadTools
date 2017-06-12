@@ -24,10 +24,14 @@
 
 package org.magicdgs.readtools.documentation;
 
+import org.magicdgs.readtools.RTHelpConstants;
+
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DefaultDocWorkUnitHandler;
 import org.broadinstitute.barclay.help.DocWorkUnit;
 import org.broadinstitute.barclay.help.HelpDoclet;
+
+import java.util.Arrays;
 
 /**
  * The ReadTools Documentation work unit handler class that is the companion to
@@ -55,42 +59,61 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
         return DEFAULT_TEMPLATE_PREFIX + RTHelpDoclet.MARKDOWN_OUTPUT_FILE_EXTENSION;
     }
 
-    /** No custom tags are output in ReadToools. */
+    /** Output tags starting with {@link RTHelpConstants#PROGRAM_NAME}. */
     @Override
     protected String getTagFilterPrefix() {
-        // TODO: add custom tags (https://github.com/magicDGS/ReadTools/issues/242)
-        return "";
+        return RTHelpConstants.PROGRAM_NAME;
+    }
+
+    // TODO: this method should be removed if https://github.com/broadinstitute/barclay/pull/70 is included in Barclay
+    private String getTagPrefix() {
+        String customPrefix = getTagFilterPrefix();
+        return customPrefix == null ? null : "@" + customPrefix + ".";
+
     }
 
     /**
-     * Uses different descriptions depending on the work unit content:
+     * {@inheritDoc}
      *
-     * - If the unit is for a command line program, uses {@link CommandLineProgramProperties#summary()}.
-     * - Gets the summary for the documented feature if available.
-     * - Otherwise, use the default method.
+     * It also include custom tags that are not in-line.
      */
-    // TODO: we need a different approach for this (see https://github.com/magicDGS/ReadTools/issues/241)
-    // TODO: we should use the default (super method) and if it is nul or empty delegates in
-    // TODO: currentWorkUnit.getCommandLineProperties().summary() - maybe this should be discouraged
+    @Override
+    protected void addCustomBindings(final DocWorkUnit currentWorkUnit) {
+        // TODO: this method should be removed if https://github.com/broadinstitute/barclay/pull/70 is included in Barclay
+        final String tagFilterPrefix = getTagPrefix();
+        Arrays.stream(currentWorkUnit.getClassDoc().tags())
+                .filter(t -> t.name().startsWith(tagFilterPrefix))
+                .forEach(t -> currentWorkUnit.setProperty(t.name().substring(tagFilterPrefix.length()), t.text()));
+    }
+
+    /**
+     * Uses different descriptions depending on the work unit content. The first non-empty of:
+     *
+     * 1. Default method to capture the javadoc description.
+     * 2. {@link CommandLineProgramProperties#summary()} for tools
+     * 3. {@link org.broadinstitute.barclay.help.DocumentedFeature#summary()}
+     *
+     * Otherwise, the description will be empty.
+     */
     @Override
     protected String getDescription(final DocWorkUnit currentWorkUnit) {
-        String description = "";
-        final CommandLineProgramProperties properties = currentWorkUnit.getCommandLineProperties();
+        String description =  super.getDescription(currentWorkUnit);
 
-        // 1. Command line summary
+        // 1. Default implementation
+        if (!description.isEmpty()) {
+           return description;
+        }
+
+        // 2. Command line summary
+        final CommandLineProgramProperties properties = currentWorkUnit.getCommandLineProperties();
         if (properties != null) {
             description = properties.summary();
         }
 
-        // 2. Use the documented feature
+        // 3. Use the documented feature
         if (description.isEmpty()) {
             // the documented feature should not be null
             description = currentWorkUnit.getDocumentedFeature().summary();
-        }
-
-        // 3. Default implementation
-        if (description.isEmpty()) {
-            description = super.getDescription(currentWorkUnit);
         }
 
         return description;

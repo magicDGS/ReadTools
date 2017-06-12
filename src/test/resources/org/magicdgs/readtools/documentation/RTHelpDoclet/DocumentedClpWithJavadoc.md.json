@@ -17,7 +17,7 @@
       "options": []
     }
   ],
-  "description": "Inline summary",
+  "description": "Description in javadoc.",
   "name": "DocumentedClpWithJavadoc",
   "group": "Test Tools"
 }
