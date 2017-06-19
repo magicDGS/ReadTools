@@ -31,6 +31,9 @@ entries:
     - title: Trimmers
       url: /trimmers.html
       output: web
+    - title: Filters
+      url: /filters.html
+      output: web
 
   - title: Integration with other tools
     output: web
