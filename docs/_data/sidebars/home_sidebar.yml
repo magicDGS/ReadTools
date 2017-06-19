@@ -23,7 +23,7 @@ entries:
     output: web
     folderitems:
     - title: Index
-      url: /tool_index.html
+      url: /tools.html
       output: web
     - title: Trimmers
       url: /trimmers.html
