@@ -3,26 +3,24 @@
 <#macro emitGroup group>
   <#-- Do not allow new lines in the summaries -->
   <#assign group_summary = group.summary?replace("\n", " ", 'r')>
-  - ${group.name}:
-    - name: ${group.name}
-    - summary: ${group_summary}
-    - components:
+  - group: ${group.name}
+    summary: ${group_summary}
+    components:
     <#list data as datum>
       <#if datum.group == group.name>
       <#-- Do not allow new lines in the summaries -->
       <#assign datum_summary = datum.summary?replace("\n", " ", 'r')>
-      - ${datum.name}:
-        - name: ${datum.name}
-        - summary: ${datum_summary}
+      - name: ${datum.name}
+        summary: ${datum_summary}
       </#if>
     </#list>
 </#macro>
-- ReadTools:
+ReadTools:
   - version: ${version}
   - timestamp: ${timestamp}
 
 <#list seq as supercat>
-- ${supercat}:
+${supercat}:
   <#list groups?sort_by("name") as group>
     <#if group.supercat == supercat>
       <@emitGroup group=group/>
