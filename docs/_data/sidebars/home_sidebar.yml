@@ -25,9 +25,6 @@ entries:
     - title: Index
       url: /tool_index.html
       output: web
-    - title: Common Arguments
-      url: /common_arguments.html
-      output: web
     - title: Trimmers
       url: /trimmers.html
       output: web
@@ -61,6 +58,3 @@ entries:
     - title: ReadTools Java Properties
       url: /readtools_java_properties.html
       output: web
-    - title: Javadoc
-      url: /javadoc/index.html
-      ## TODO: add output web one the javadoc is here
