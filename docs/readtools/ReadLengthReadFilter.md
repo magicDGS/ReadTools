@@ -1,13 +1,13 @@
 ---
 title: ReadLengthReadFilter
-summary: Keep only reads whose length is >= min value and <= max value.
+summary: Keep only reads whose length is &ge; min value and &le; max value.
 permalink: ReadLengthReadFilter.html
 last_updated: 19-58-2017 02:58:19
 ---
 
 ## Description
 
-Keep only reads whose length is >= min value and <= max value.
+Keep only reads whose length is &ge; min value and &le; max value.
 
 ## Arguments
 

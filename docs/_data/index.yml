@@ -99,7 +99,7 @@ utilities:
       - name: ReadLengthEqualsCigarLengthReadFilter
         summary: 
       - name: ReadLengthReadFilter
-        summary: Keep only reads whose length is >= min value and <= max value.
+        summary: Keep only reads whose length is &ge; min value and &le; max value.
       - name: ReadNameReadFilter
         summary: Keep only reads with this read name.
       - name: ReadStrandFilter
@@ -115,7 +115,7 @@ utilities:
       - name: ValidAlignmentStartReadFilter
         summary: 
       - name: WellformedReadFilter
-        summary: Tests whether a read is "well-formed" -- that is, is free of major internal inconsistencies and issues that could lead  to errors downstream.
+        summary: Tests whether a read is &quot;well-formed&quot; -- that is, is free of major internal inconsistencies and issues that could lead  to errors downstream.
   - group: Trimmers
     summary: Algorithms used to trim the reads.
     components:
