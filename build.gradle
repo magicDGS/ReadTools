@@ -232,9 +232,4 @@ task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
     options.addStringOption("absolute-version", getVersion())
     options.addStringOption("build-timestamp", new Date().format("dd-mm-yyyy hh:mm:ss"))
     options.addStringOption("verbose")
-
-    // TODO: remove once the index file extension is available in yml -> requires https://github.com/magicDGS/ReadTools/issues/243
-    doLast {
-        new File(readtoolsDocDir, "index.md").renameTo(new File(readtoolsDocDir, "index.yml"))
-    }
 }
