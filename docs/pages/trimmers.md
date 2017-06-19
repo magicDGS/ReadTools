@@ -1,31 +1,16 @@
 ---
 title: Trimmer Description
+summary: Algorithms used to trim the reads.
 sidebar: home_sidebar
 permalink: trimmers.html
+toc: false
 ---
+{% assign trimmer_groups = (site.data.index.utilities | where:"group","Trimmers") %}
 
-## CutReadTrimmer
-Trimmer for cropping some bases in one or both sides of the read.
+{% for trimmer_group in trimmer_groups %}
+    {% for trimmer in trimmer_group.components %}
+### [{{trimmer.name}}]({{trimmer.name}}.html)
+{{trimmer.summary}}
 
-### Optional Arguments:
-
-| Argument name(s) | Type | Default value(s) | Summary |
-| :--------------- | :--: | :--------------: | :------ |
-| --cut5primeBases,-cp5 | Integer | null | Number of bases (in bp) to cut in the 5 prime of the read. For disable, use 'null'. |
-| --cut3primeBases,-cp3 | Integer | null | Number of bases (in bp) to cut in the 3 prime of the read. For disable, use 'null'. |
-
----
-
-## MottQualityTrimmer
-Computes trim points for quality drop under a certain threshold using the Mott algorithm.
-
-### Optional Arguments:
-
-| Argument name(s) | Type | Default value(s) | Summary |
-| :--------------- | :--: | :--------------: | :------ |
-| --mottQualityThreshold,-mottQual | Integer | 20 | Minimum average quality for the modified Mott algorithm. The threshold is used for calculating a score: quality_at_base - threshold. |
-
----
-
-## TrailingNtrimmer
-Trim trailing Ns on the read sequence.
+    {% endfor %}
+{% endfor %}
