@@ -6,9 +6,9 @@ permalink: popoolation.html
 
 ## PoPoolation trimming pipeline
 
-[PoPoolation]({{site.data.software.popoolation}}) is a toolkit for handling Pool-Seq data, which includes a Perl script for performing a trimming pipeline similar to the one implemented here ([trim-fastq.pl](https://sourceforge.net/p/popoolation/code/HEAD/tree/trunk/basic-pipeline/trim-fastq.pl)).
+[PoPoolation]is a toolkit for handling Pool-Seq data, which includes a Perl script for performing a trimming pipeline similar to the one implemented here ([trim-fastq.pl](https://sourceforge.net/p/popoolation/code/HEAD/tree/trunk/basic-pipeline/trim-fastq.pl)).
 
-All features implemented in that script could be mimic in `TrimReads` to apply the same trimming pipeline.
+All features implemented in that script could be mimic in [TrimReads](TrimReads.html) to apply the same trimming pipeline.
 
 ## Differences
 
