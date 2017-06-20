@@ -56,10 +56,9 @@ public class RTHelpDoclet extends HelpDoclet {
     /** Constructor with our {@link #MARKDOWN_OUTPUT_FILE_EXTENSION}. */
     public RTHelpDoclet() {
         super();
-        // default extension is Markdown
+        // default extension is Markdown for features and yml for index
         outputFileExtension = MARKDOWN_OUTPUT_FILE_EXTENSION;
-        // TODO: override indexFileExtension
-        // TODO: requires https://github.com/broadinstitute/barclay/pull/60 and https://github.com/magicDGS/ReadTools/issues/243
+        indexFileExtension = YML_INDEX_FILE_EXTENSION;
     }
 
     /**
@@ -82,8 +81,7 @@ public class RTHelpDoclet extends HelpDoclet {
      */
     @Override
     public String getIndexTemplateName() {
-        // TODO: honor index file extension option (requires https://github.com/broadinstitute/barclay/pull/60 in)
-        return INDEX_TEMPLATE_PREFIX + YML_INDEX_FILE_EXTENSION;
+        return INDEX_TEMPLATE_PREFIX + getIndexFileExtension();
     }
 
     /**
