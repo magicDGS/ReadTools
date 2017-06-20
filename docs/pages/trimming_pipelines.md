@@ -3,6 +3,8 @@ title: Trimming Pipelines
 sidebar: home_sidebar
 permalink: trimming_pipelines.html
 ---
+{% assign trimmer_groups = (site.data.index.utilities | where:"group","Trimmers") %}
+{% assign filter_groups = (site.data.index.utilities | where:"group","Read Filters") %}
 
 [TrimReads](TrimReads.html) applies a trimming/filtering pipeline that can be highly customized by the user. The tool includes default trimmers/filters, but they could be disabled or other ones included. The order of the pipeline is the following:
 
@@ -13,12 +15,24 @@ permalink: trimming_pipelines.html
 
 This order is important, because some trimmers would not apply in some situations. For example, if the read is already trimmed in a right-most position for 5' when it is passed to another trimmer, the 5' is not trimmed any further. For reordering defaults, specify `--disableAllDefaultTrimmers` and provide them in the new order.
 
-The following trimmers and filters could be applied in the trimming pipeline:
+## Trimmers
 
-* Trimmers. For detailed information of each trimmer, please go to [Trimmer description](trimmers.html).
-  - [CutReadTrimmer](trimmers.html#cutreadtrimmer): Trimmer for cropping some bases in one or both sides of the read.
-  - [MottQualityTrimmer](trimmers.html#mottqualitytrimmer): Computes trim points for quality drop under a certain threshold using the Mott algorithm.
-  - [TrailingNtrimmer](trimmers.html#trailingntrimmer): Trim trailing Ns on the read sequence.
+The following trimmers could be applied in the pipeline. Click on the trimmer name to see more information.
 
-* Filters
-  - Filters uses in _ReadTools_ are implemented in GATK4, which is still unreleased. We will include their documentation as soon as they make it available.
+  {% for trimmer_group in trimmer_groups %}
+      {% for trimmer in trimmer_group.components %}
+  - [{{trimmer.name}}]({{trimmer.name}}.html): {{trimmer.summary}}
+      {% endfor %}
+  {% endfor %}
+
+## Filters
+
+The following filters could be applied in the pipeline. Click on the filter name to see more information.
+
+{% include note.html content='Some filters may be undocumented because they are implemented in GATK4, which is unreleased' %}
+
+  {% for filter_group in filter_groups %}
+      {% for filter in filter_group.components %}
+  - [{{filter.name}}]({{filter.name}}.html): {% if filter.summary == nil %}_No summary available._{% else %}{{filter.summary}}{% endif %}
+      {% endfor %}
+  {% endfor %}
