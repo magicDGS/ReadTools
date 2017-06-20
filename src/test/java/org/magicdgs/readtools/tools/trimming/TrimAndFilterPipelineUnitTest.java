@@ -544,7 +544,8 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
             throws Exception {
         final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
                 new GATKReadFilterPluginDescriptor(defaultFilters),
-                new TrimmerPluginDescriptor(defaultTrimmers)));
+                new TrimmerPluginDescriptor(defaultTrimmers)),
+                Collections.emptySet());
         clp.parseArguments(NULL_PRINT_STREAM, arguments.getArgsArray());
         final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
                 clp.getPluginDescriptor(TrimmerPluginDescriptor.class),
@@ -624,7 +625,8 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
         final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
                 new GATKReadFilterPluginDescriptor(defaultFilters),
-                new TrimmerPluginDescriptor(defaultTrimmers)));
+                new TrimmerPluginDescriptor(defaultTrimmers)),
+                Collections.emptySet());
 
         if (defaultFilters.isEmpty()) {
             clp.parseArguments(NULL_PRINT_STREAM, new String[]{});
@@ -651,7 +653,8 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
         final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
                 new GATKReadFilterPluginDescriptor(defaultFilters),
-                new TrimmerPluginDescriptor(defaultTrimmers)));
+                new TrimmerPluginDescriptor(defaultTrimmers)),
+                Collections.emptySet());
 
         final int expectedFilters;
         if (defaultFilters.isEmpty()) {

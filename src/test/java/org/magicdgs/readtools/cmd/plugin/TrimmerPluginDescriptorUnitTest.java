@@ -213,7 +213,8 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
         // run the instance main and get the descriptor after parsing
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new TrimmerPluginDescriptor(
-                        (withDefault) ? makeDefaultTrimmerForTest() : null)));
+                        (withDefault) ? makeDefaultTrimmerForTest() : null)),
+                Collections.emptySet());
 
         Assert.assertTrue(clp.parseArguments(NULL_PRINT_STREAM, args.getArgsArray()));
         final TrimmerPluginDescriptor tpd = clp.getPluginDescriptor(TrimmerPluginDescriptor.class);
@@ -244,7 +245,8 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
     @Test
     public void testAllTrimmersHelpAfterParsed() throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
-                Collections.singletonList(new TrimmerPluginDescriptor(null)));
+                Collections.singletonList(new TrimmerPluginDescriptor(null)),
+                Collections.emptySet());
         clp.parseArguments(NULL_PRINT_STREAM, new String[] {});
         Assert.assertEquals(clp.getPluginDescriptor(TrimmerPluginDescriptor.class)
                         .getAllowedValuesForDescriptorArgument("trimmer").size(),
@@ -302,7 +304,8 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
             final ArgumentsBuilder args) throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
                 Collections.singletonList(new TrimmerPluginDescriptor(
-                        (withDefault) ? makeDefaultTrimmerForTest() : null)));
+                        (withDefault) ? makeDefaultTrimmerForTest() : null)),
+                Collections.emptySet());
         clp.parseArguments(NULL_PRINT_STREAM, args.getArgsArray());
     }
 
@@ -319,7 +322,8 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
     public void testMutexArgsParsing(final boolean disable5pTrim, final boolean disable3pTrim)
             throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
-                Collections.singletonList(new TrimmerPluginDescriptor(null)));
+                Collections.singletonList(new TrimmerPluginDescriptor(null)),
+                Collections.emptySet());
         final boolean parsed = clp.parseArguments(NULL_PRINT_STREAM,
                 new ArgumentsBuilder()
                         .addBooleanArgument("disable5pTrim", disable5pTrim)
