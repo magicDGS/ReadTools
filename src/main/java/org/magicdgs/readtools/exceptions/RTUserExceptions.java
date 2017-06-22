@@ -30,6 +30,7 @@ import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,6 +79,17 @@ public class RTUserExceptions extends UserException {
             this(outputSource, "extension should match one of " + String.join(", ",
                     Stream.of(allowedFormats).map(f -> f.getExtension())
                             .collect(Collectors.toList())));
+        }
+    }
+
+    public static class MissingColumnsBarcodeDictionaryException
+            extends UserException.MalformedFile {
+
+        public MissingColumnsBarcodeDictionaryException(final Path path,
+                final List<String> missingColumns) {
+            // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
+            super(path.toFile(), "barcode file does not include the following required columns: "
+                    + String.join(", ", missingColumns));
         }
     }
 }

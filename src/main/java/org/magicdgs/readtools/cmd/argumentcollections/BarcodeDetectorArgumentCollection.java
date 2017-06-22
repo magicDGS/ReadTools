@@ -49,6 +49,8 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
 
     // TODO: this should be pointing to the help page for more information
     // TODO: and here just add the required elements
+    /** @deprecated this will be contained in the {@link org.magicdgs.readtools.utils.barcodes.BarcodeFile}*/
+    @Deprecated
     @Argument(fullName = "barcodeFile", shortName = "bc", optional = false, doc =
             BarcodeDictionaryFactory.BARCODE_FILE_FORMAT_DESCRIPTION
                     + " Barcode file will overwrite any of Read Group arguments for the same information. "
@@ -76,9 +78,13 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
     public boolean nNoMismatch = false;
 
     // barcode arguments
+    /** @deprecated will be included in {@link org.magicdgs.readtools.utils.barcodes.BarcodeFile} arguments. */
+    @Deprecated
     @Argument(fullName = "runName", shortName = "runName", optional = true, doc = "Run name to add to the ID in the read group information.")
     public String runID = null;
 
+    /** @deprecated will be included in {@link org.magicdgs.readtools.utils.barcodes.BarcodeFile}. */
+    @Deprecated
     @ArgumentCollection
     public ReadGroupArgumentCollection rgArguments = new ReadGroupArgumentCollection();
 

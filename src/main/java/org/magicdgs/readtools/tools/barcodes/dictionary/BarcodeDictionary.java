@@ -42,7 +42,9 @@ import java.util.stream.Collectors;
  * Classs for store a barcode dictionary
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary} instead.
  */
+@Deprecated
 public class BarcodeDictionary {
 
     /**
@@ -98,7 +100,9 @@ public class BarcodeDictionary {
      * Get the number of barcodes in this dictionary
      *
      * @return the number of barcodes
+     * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary#getNumerOfIndexes()} instead.
      */
+    @Deprecated
     public int getNumberOfBarcodes() {
         return barcodes.size();
     }
@@ -107,7 +111,9 @@ public class BarcodeDictionary {
      * Get the sample names in order
      *
      * @return the sample names
+     * @deprecated only used in tests.
      */
+    @Deprecated
     public List<String> getSampleNames() {
         return sampleRecord.stream().map(SAMReadGroupRecord::getSample)
                 .collect(Collectors.toList());
@@ -117,7 +123,9 @@ public class BarcodeDictionary {
      * Get the sample names in order
      *
      * @return the sample names
+     * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary#getReadGroups()} instead.
      */
+    @Deprecated
     public List<SAMReadGroupRecord> getSampleReadGroups() {
         return Collections.unmodifiableList(sampleRecord);
     }
@@ -126,7 +134,9 @@ public class BarcodeDictionary {
      * Get the number of samples in this dictionary associated with a different barcode
      *
      * @return the number of samples
+     * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary#getNumberOfSamples()} instead.
      */
+    @Deprecated
     public int numberOfSamples() {
         return sampleRecord.size();
     }
@@ -135,7 +145,9 @@ public class BarcodeDictionary {
      * Get the number of unique samples in this dictionary
      *
      * @return the effective number of samples
+     * @deprecated unused.
      */
+    @Deprecated
     public int numberOfUniqueSamples() {
         // will it be better to cache this value??
         return new HashSet<>(sampleRecord).size();
@@ -147,7 +159,9 @@ public class BarcodeDictionary {
      * @param sampleIndex the sample index
      *
      * @return the barcodes for the sample
+     * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary#getReadGroupIndexSequences(SAMReadGroupRecord record)} instead.
      */
+    @Deprecated
     public String[] getBarcodesFor(final int sampleIndex) {
         return barcodes.stream().map(l -> l.get(sampleIndex)).toArray(String[]::new);
     }
@@ -158,11 +172,15 @@ public class BarcodeDictionary {
      * @param sampleIndex the sample index
      *
      * @return the read group of the sample
+     * @deprecated only used internally.
      */
+    @Deprecated
     public SAMReadGroupRecord getReadGroupFor(final int sampleIndex) {
         return sampleRecord.get(sampleIndex);
     }
 
+    /** @deprecated unused. */
+    @Deprecated
     public SAMReadGroupRecord getUnknownReadGroup() {
         return unknownBarcode;
     }
@@ -174,7 +192,9 @@ public class BarcodeDictionary {
      *
      * @return the read group associated with that barcode; if not found it returns the unknown r
      * ead group (see {@link #getUnknownReadGroup()}).
+     * @deprecated new {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary} won't handle combined barcodes. It should be combined outside the class.
      */
+    @Deprecated
     public SAMReadGroupRecord getReadGroupFor(final String combinedBarcode) {
         if (barcodeRGmap.isEmpty()) {
             initBarcodeRGmap();
@@ -190,7 +210,9 @@ public class BarcodeDictionary {
      * @param sampleIndex the sample index
      *
      * @return the combined barcodes for the sample
+     * @deprecated new {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary} won't handle combined barcodes. It should be combined outside the class.
      */
+    @Deprecated
     public String getCombinedBarcodesFor(final int sampleIndex) {
         return String.join(RTDefaults.BARCODE_INDEX_DELIMITER, getBarcodesFor(sampleIndex));
     }
@@ -202,7 +224,9 @@ public class BarcodeDictionary {
      * @param index   0-based index
      *
      * @return <code>true</code> if the barcode is unique; <code>false</code> otherwise
+     * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary#isIndexUnique(int index, String barcodeSequence)}
      */
+    @Deprecated
     public boolean isBarcodeUniqueInAt(final String barcode, final int index) {
         return Collections.frequency(barcodes.get(index), barcode) == 1;
     }
@@ -213,7 +237,9 @@ public class BarcodeDictionary {
      * @param index the index
      *
      * @return the list with the barcodes associated with each sample
+     * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary#getIndexSequences(int index)} instead.
      */
+    @Deprecated
     public List<String> getBarcodesFromIndex(final int index) {
         return barcodes.get(index);
     }
@@ -224,7 +250,9 @@ public class BarcodeDictionary {
      * @param index the index
      *
      * @return a set representation of the index barcodes
+     * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeDictionary#getUniqueIndexSequences(int index)} instead.
      */
+    @Deprecated
     public Set<String> getSetBarcodesFromIndex(final int index) {
         if (barcodesSets.isEmpty()) {
             initSets();

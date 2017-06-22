@@ -26,6 +26,7 @@ package org.magicdgs.readtools.tools.barcodes.dictionary;
 
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupArgumentCollection;
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -48,7 +49,9 @@ import java.util.function.BiConsumer;
  * Class to create/read barcode dictionaries.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.utils.barcodes.BarcodeFile} instead.
  */
+@Deprecated
 public class BarcodeDictionaryFactory {
 
     private static final Logger logger = LogManager.getLogger(BarcodeDictionaryFactory.class);
@@ -64,7 +67,9 @@ public class BarcodeDictionaryFactory {
      * - Library name ({@link #LIBRARY_NAME_COLUMN}).
      *
      * Note: order of the columns is not required.
+     * @deprecated this is documented in {@link org.magicdgs.readtools.utils.barcodes.BarcodeFile}. Arguments should be concise.
      */
+    @Deprecated
     public static final String BARCODE_FILE_FORMAT_DESCRIPTION =
             "Tab-delimited file with header for barcode sequences ('"
                     + BarcodeDictionaryFactory.BARCODE_SEQUENCE_COLUMN
@@ -131,7 +136,7 @@ public class BarcodeDictionaryFactory {
             final Tuple3<String, String, List<String>> columns =
                     validateRequiredColumns(barcodesParser);
             if (!columns._3().isEmpty()) {
-                throw new MissingColumnsBarcodeDictionaryException(barcodePath, columns._3());
+                throw new RTUserExceptions.MissingColumnsBarcodeDictionaryException(barcodePath, columns._3());
             }
             final String sequenceColumn = columns._1();
             final String sampleNameColumn = columns._2();
@@ -271,16 +276,5 @@ public class BarcodeDictionaryFactory {
         logger.debug("Using '{}' column as sample name.", () -> sampleNameColumn);
 
         return new Tuple3<>(firstBarcodeColumn, sampleNameColumn, missingColumns);
-    }
-
-    private static class MissingColumnsBarcodeDictionaryException
-            extends UserException.MalformedFile {
-
-        public MissingColumnsBarcodeDictionaryException(final Path path,
-                final List<String> missingColumns) {
-            // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
-            super(path.toFile(), "barcode file does not include the following required columns: "
-                    + String.join(", ", missingColumns));
-        }
     }
 }
