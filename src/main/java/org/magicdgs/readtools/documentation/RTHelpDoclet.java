@@ -28,7 +28,6 @@ import org.magicdgs.readtools.RTHelpConstants;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.RootDoc;
-import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocWorkUnit;
 import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.barclay.help.GSONWorkUnit;
@@ -57,10 +56,9 @@ public class RTHelpDoclet extends HelpDoclet {
     /** Constructor with our {@link #MARKDOWN_OUTPUT_FILE_EXTENSION}. */
     public RTHelpDoclet() {
         super();
-        // default extension is Markdown
+        // default extension is Markdown for features and yml for index
         outputFileExtension = MARKDOWN_OUTPUT_FILE_EXTENSION;
-        // TODO: override indexFileExtension
-        // TODO: requires https://github.com/broadinstitute/barclay/pull/60 and https://github.com/magicDGS/ReadTools/issues/243
+        indexFileExtension = YML_INDEX_FILE_EXTENSION;
     }
 
     /**
@@ -82,9 +80,8 @@ public class RTHelpDoclet extends HelpDoclet {
      * <p>Note: it does not honor the index file extension option.
      */
     @Override
-    protected String getIndexTemplateName() {
-        // TODO: honor index file extension option (requires https://github.com/broadinstitute/barclay/pull/60 in)
-        return INDEX_TEMPLATE_PREFIX + YML_INDEX_FILE_EXTENSION;
+    public String getIndexTemplateName() {
+        return INDEX_TEMPLATE_PREFIX + getIndexFileExtension();
     }
 
     /**
@@ -95,13 +92,11 @@ public class RTHelpDoclet extends HelpDoclet {
     @Override
     protected DocWorkUnit createWorkUnit(
             final DocumentedFeature documentedFeature,
-            final CommandLineProgramProperties commmandLineProgramProperties,
             final ClassDoc classDoc,
             final Class<?> clazz) {
         return new DocWorkUnit(
                 new RTHelpDocWorkUnitHandler(this),
                 documentedFeature,
-                commmandLineProgramProperties,
                 classDoc,
                 clazz);
     }

@@ -90,8 +90,7 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
                 "-build-timestamp", "2016/01/01 01:01:01",      // dummy, constant timestamp
                 "-absolute-version", "11.1",                    // dummy version
                 "-output-file-extension", "md",                 // testing markdown output
-                // TODO: undocument after https://github.com/magicDGS/ReadTools/issues/243
-                // "-index-file-extension", "yml",
+                "-index-file-extension", "yml",              // testing yml index
                 "-docletpath", "build/libs",
                 "-settings-dir", DOCUMENTATION_TEMPLATES_FOLDER,
                 "-d", outputDir.getAbsolutePath(),

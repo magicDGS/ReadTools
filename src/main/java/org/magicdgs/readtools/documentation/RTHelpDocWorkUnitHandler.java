@@ -50,13 +50,10 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
 
     /**
      * Returns {@link #DEFAULT_TEMPLATE_PREFIX} with the output extension
-     *
-     * <p>Note: does not honor the output file extension option.
      */
     @Override
     public String getTemplateName(final DocWorkUnit workUnit) {
-        // TODO: honor index file extension option (requires https://github.com/broadinstitute/barclay/pull/60 in)
-        return DEFAULT_TEMPLATE_PREFIX + RTHelpDoclet.MARKDOWN_OUTPUT_FILE_EXTENSION;
+        return DEFAULT_TEMPLATE_PREFIX + getDoclet().getOutputFileExtension();
     }
 
     /** Output tags starting with {@link RTHelpConstants#PROGRAM_NAME}. */
@@ -126,8 +123,6 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
      */
     @Override
     public String getDestinationFilename(final DocWorkUnit workUnit) {
-        // TODO: should use getDoclet().getOutputFileExtension() but requires https://github.com/broadinstitute/barclay/pull/60
-        // TODO: see https://github.com/magicDGS/ReadTools/issues/240
-        return workUnit.getName() + "." + RTHelpDoclet.MARKDOWN_OUTPUT_FILE_EXTENSION;
+        return workUnit.getName() + "." + getDoclet().getOutputFileExtension();
     }
 }

@@ -49,8 +49,8 @@ repositories {
     }
 }
 // versions for the dependencies
-final gatkVersion = '4.alpha.2-266-g48006e4-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
-final htsjdkVersion = '2.9.1-30-gdd78f77-SNAPSHOT' // TODO: bring back to the HTSJDK release
+final gatkVersion = '4.alpha.2-1164-g8923015-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
+final htsjdkVersion = '2.10.1'
 
 // Get the jdk files we need to run javaDoc. We need to use these during compile, testCompile,
 // test execution, and readtoolsDoc generation, but we don't want them as part of the runtime
@@ -226,15 +226,9 @@ task readtoolsDoc(type: Javadoc, dependsOn: [classes]) {
 
 
     options.addStringOption("settings-dir", readtoolsTemplates)
-    // TODO: uncomment the next line (https://github.com/magicDGS/ReadTools/issues/243) -> requires https://github.com/broadinstitute/barclay/pull/60
-    // options.addStringOption("index-file-extension", "yml")
+    options.addStringOption("index-file-extension", "yml")
     options.addStringOption("output-file-extension", "md")
     options.addStringOption("absolute-version", getVersion())
     options.addStringOption("build-timestamp", new Date().format("dd-mm-yyyy hh:mm:ss"))
     options.addStringOption("verbose")
-
-    // TODO: remove once the index file extension is available in yml -> requires https://github.com/magicDGS/ReadTools/issues/243
-    doLast {
-        new File(readtoolsDocDir, "index.md").renameTo(new File(readtoolsDocDir, "index.yml"))
-    }
 }
