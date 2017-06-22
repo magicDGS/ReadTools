@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## Changed
+
+- Update documentation
+
+### Developer
+
+- Implement automatic documentation framework
+
 ## [1.0.0] - 2017-05-18
 
 ### Fixed
