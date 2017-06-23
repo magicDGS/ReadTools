@@ -48,9 +48,11 @@ repositories {
         url "https://broadinstitute.jfrog.io/broadinstitute/libs-snapshot/"
     }
 }
-// versions for the dependencies
+// versions for the dependencies to resolve conflicts
 final gatkVersion = '4.alpha.2-1164-g8923015-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
 final htsjdkVersion = '2.10.1'
+final testNGVersion = '6.11'
+final mockitoVersion = '2.7.19'
 
 // Get the jdk files we need to run javaDoc. We need to use these during compile, testCompile,
 // test execution, and readtoolsDoc generation, but we don't want them as part of the runtime
@@ -63,19 +65,31 @@ configurations {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        // force the htsjdk version so we don't get a different one transitively or GATK
+        force 'com.github.samtools:htsjdk:' + htsjdkVersion
+        // later versions explode Hadoop
+        // TODO: this is the same in GATK, but we should check if they solve this issue in the future
+        force 'com.google.protobuf:protobuf-java:3.0.0-beta-1'
+        // force testng dependency so we don't pick up a different version via GenomicsDB/GATK
+        force 'org.testng:testng:' + testNGVersion
+        // be sure that mockito is in the same version for our tests
+        force 'org.mockito:mockito-core:' + mockitoVersion
+    }
+}
+
 dependencies {
     // use the same GATK dependency for compile and documentation
     final gatkDependency = 'org.broadinstitute:gatk:' + gatkVersion
     compile (gatkDependency) {
         exclude module: 'jgrapht' // this is not required
-        exclude module: 'htsjdk'
-        exclude module: 'testng'
     }
     compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
 
     // compilation for testing
-    testCompile 'org.testng:testng:6.11'
-    testCompile 'org.mockito:mockito-core:2.7.19'
+    testCompile 'org.testng:testng:' + testNGVersion
+    testCompile 'org.mockito:mockito-core:' + mockitoVersion
 
     // javadoc utilities; compile/test only to prevent redistribution of sdk jars
     compileOnly(javadocJDKFiles)
