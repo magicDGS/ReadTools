@@ -55,12 +55,12 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
 
     // init the cluster and copy the files there
     @BeforeClass(alwaysRun = true)
-    private void setupMiniCluster() throws Exception {
+    public void setupMiniCluster() throws Exception {
         // gets the cluster and create the directory
         cluster = MiniClusterUtils.getMiniCluster();
         final Path distmapClusterFolder = IOUtils.getPath(
                 cluster.getFileSystem().getUri().toString()
-                + "/distmap_input/fastq_paired_end_mapping_bwa/");
+                + "/distmap_output/fastq_paired_end_mapping_bwa/");
         Files.createDirectory(distmapClusterFolder);
         clusterInputFolder = distmapClusterFolder.toUri().toString();
 
@@ -72,7 +72,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
 
     // stop the mini-cluster
     @AfterClass(alwaysRun = true)
-    private void shutdownMiniCluster() {
+    public void shutdownMiniCluster() {
         MiniClusterUtils.stopCluster(cluster);
     }
 
