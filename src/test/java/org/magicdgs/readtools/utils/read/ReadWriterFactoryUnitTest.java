@@ -54,6 +54,8 @@ import java.util.List;
 public class ReadWriterFactoryUnitTest extends RTBaseTest {
 
     // this is the test read with 5 bases (default one)
+    private final static SAMFileHeader DEFAULT_HEADER_FOR_READ = ArtificialReadUtils
+            .createArtificialSamHeader();
     private final static GATKRead DEFAULT_READ_TO_TEST = ArtificialReadUtils
             .createArtificialRead("5M");
 
@@ -81,14 +83,14 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         outputFile.deleteOnExit();
         // TODO: add a FASTA file as reference to test CRAM writer creation
         Assert.assertEquals(new ReadWriterFactory()
-                        .createWriter(outputFile.getAbsolutePath(), new SAMFileHeader(), true).getClass(),
+                        .createWriter(outputFile.getAbsolutePath(), DEFAULT_HEADER_FOR_READ, true).getClass(),
                 writerClass);
         Assert.assertTrue(outputFile.exists());
     }
 
     @Test(expectedExceptions = UserException.MissingReference.class)
     public void testCramFailingWithoutReference() {
-        new ReadWriterFactory().createWriter("example.cram", new SAMFileHeader(), true);
+        new ReadWriterFactory().createWriter("example.cram", DEFAULT_HEADER_FOR_READ, true);
     }
 
     @Test(expectedExceptions = UserException.CouldNotCreateOutputFile.class)
@@ -96,7 +98,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         new ReadWriterFactory()
                 .setReferenceFile(new File("notExisting.fasta"))
                 .createWriter(new File(testDir, "example.cram").getAbsolutePath(),
-                        new SAMFileHeader(), true);
+                        DEFAULT_HEADER_FOR_READ, true);
     }
 
     @Test(expectedExceptions = RTUserExceptions.OutputFileExists.class)
@@ -104,7 +106,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         final File existantFile = new File(testDir, "exists.sam");
         Assert.assertTrue(existantFile.createNewFile(), "unable to create test file");
         new ReadWriterFactory()
-                .createWriter(existantFile.getAbsolutePath(), new SAMFileHeader(), true);
+                .createWriter(existantFile.getAbsolutePath(), DEFAULT_HEADER_FOR_READ, true);
     }
 
     @Test
@@ -114,7 +116,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         file.deleteOnExit();
         Assert.assertFalse(file.exists(), "test implementation error");
         new ReadWriterFactory()
-                .createWriter(nonAbsolute, null, true);
+                .createWriter(nonAbsolute, DEFAULT_HEADER_FOR_READ, true);
         Assert.assertTrue(file.exists(), "file was not generated");
     }
 
@@ -124,7 +126,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         fileAsDirectory.deleteOnExit();
         fileAsDirectory.createNewFile();
         new ReadWriterFactory()
-                .createWriter(new File(fileAsDirectory, "example.fq").toString(), null, true);
+                .createWriter(new File(fileAsDirectory, "example.fq").toString(), DEFAULT_HEADER_FOR_READ, true);
     }
 
     @DataProvider(name = "defaultReadFiles")
@@ -146,7 +148,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         // open the writer
         final GATKReadWriter writer = new ReadWriterFactory()
                 .setCreateMd5File(true)
-                .createFASTQWriter(writedFile.getAbsolutePath());
+                .createFASTQWriter(writedFile.getAbsolutePath(), DEFAULT_HEADER_FOR_READ, true);
 
         // write and close the writer
         writer.addRead(DEFAULT_READ_TO_TEST);

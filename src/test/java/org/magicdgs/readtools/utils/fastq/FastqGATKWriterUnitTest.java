@@ -27,6 +27,7 @@ package org.magicdgs.readtools.utils.fastq;
 import org.magicdgs.readtools.utils.iterators.FastqToReadIterator;
 import org.magicdgs.readtools.RTBaseTest;
 
+import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqWriterFactory;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
@@ -37,6 +38,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +49,9 @@ import java.util.List;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class FastqGATKWriterUnitTest extends RTBaseTest {
+
+    private static final SAMFileHeader HEADER_FOR_TEST = ArtificialReadUtils
+            .createArtificialSamHeader();
 
     @DataProvider(name = "readsToWrite")
     public Object[][] getReadList() throws Exception {
@@ -80,14 +86,17 @@ public class FastqGATKWriterUnitTest extends RTBaseTest {
     public void testWritingReading(final List<GATKRead> readsToWrite) throws Exception {
         final File tempFile = IOUtils.createTempFile("testWriting", "fastq");
         final FastqGATKWriter writer = new FastqGATKWriter(
-                new FastqWriterFactory().newWriter(tempFile));
-        readsToWrite.forEach(writer::addRead);
+                new OutputStreamWriter(new FileOutputStream(tempFile)));
+        writer.setHeader(HEADER_FOR_TEST);
+        // deep copy is necessary because the name is changed after adding to the writer
+        readsToWrite.forEach(r -> writer.addRead(r.deepCopy()));
         writer.close();
         // now check if reading is the same
         final FastqReader reader = new FastqReader(tempFile);
         final Iterator<GATKRead> iterator = new FastqToReadIterator(reader.iterator());
-        readsToWrite.forEach(r -> Assert.assertEquals(iterator.next().convertToSAMRecord(null),
-                r.convertToSAMRecord(null)));
+        readsToWrite.forEach(r -> Assert.assertEquals(
+                iterator.next().convertToSAMRecord(HEADER_FOR_TEST),
+                r.convertToSAMRecord(HEADER_FOR_TEST)));
         Assert.assertFalse(iterator.hasNext());
         reader.close();
     }

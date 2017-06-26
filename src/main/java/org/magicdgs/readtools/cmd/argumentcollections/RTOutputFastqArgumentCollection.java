@@ -98,19 +98,13 @@ public final class RTOutputFastqArgumentCollection extends RTOutputArgumentColle
     @Override
     protected GATKReadWriter createWriter(final ReadWriterFactory factory,
             final SAMFileHeader header, final boolean presorted) {
-        return (interleaved) ? interleavedOutput(factory) : splitOutput(factory);
-    }
-
-    // this creates the split output
-    private GATKReadWriter splitOutput(final ReadWriterFactory factory) {
-        // header is not important for FASTQ files
-        return new SplitGATKWriter(outputPrefix, outputFormat, PAIR_END_SPLITTER,
-                new SAMFileHeader(), true, factory, false);
-    }
-
-    // this creates the interleaved output
-    private GATKReadWriter interleavedOutput(final ReadWriterFactory factory) {
-        final String outputName = outputPrefix + outputFormat.getExtension();
-        return factory.createFASTQWriter(outputName);
+        // for support sorting, we should honor header and pre-sorted
+        if (interleaved) {
+            final String outputName = outputPrefix + outputFormat.getExtension();
+            return factory.createFASTQWriter(outputName, header, presorted);
+        } else {
+            return new SplitGATKWriter(outputPrefix, outputFormat, PAIR_END_SPLITTER,
+                    header, presorted, factory, false);
+        }
     }
 }

@@ -37,9 +37,6 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.cram.build.CramIO;
-import htsjdk.samtools.fastq.AsyncFastqWriter;
-import htsjdk.samtools.fastq.BasicFastqWriter;
-import htsjdk.samtools.fastq.FastqWriter;
 import htsjdk.samtools.util.AbstractAsyncWriter;
 import htsjdk.samtools.util.CustomGzipOutputStream;
 import htsjdk.samtools.util.IOUtil;
@@ -51,6 +48,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.compress.BZip2Codec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.broadinstitute.barclay.utils.Utils;
 import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -61,7 +59,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,12 +95,19 @@ public final class ReadWriterFactory {
     // bzip2 codec, initialized on demand
     private BZip2Codec bzip2 = null;
 
+    // parameters for the sorting on the fly FASTQ files
+    private Integer maxRecordsInRam;
+    private File tmpDir;
+
     /** Creates a default factory. */
     public ReadWriterFactory() {
         this.samFactory = new SAMFileWriterFactory();
         // setting the default create Md5 to the same as the samFactory default
         this.createMd5file = SAMFileWriterFactory.getDefaultCreateMd5File();
         this.useAsyncIo = Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS;
+        // this are the parameters set by default in SAMFileWriterFactory
+        this.maxRecordsInRam = null;
+        this.tmpDir = null;
     }
 
     ////////////////////////////////////////////
@@ -132,15 +136,17 @@ public final class ReadWriterFactory {
 
     /** Sets maximum records in RAM for sorting SAM/BAM/CRAM writers. */
     public ReadWriterFactory setMaxRecordsInRam(final int maxRecordsInRam) {
-        logger.debug("Maximum records in RAM for FASTQ/Distmap writers is ignored");
+        logger.debug("Maximum records in RAM for Distmap writers is ignored");
         this.samFactory.setMaxRecordsInRam(maxRecordsInRam);
+        this.maxRecordsInRam = maxRecordsInRam;
         return this;
     }
 
     /** Sets the temp directory for sorting SAM/BAM/CRAM writers. */
     public ReadWriterFactory setTempDirectory(final File tmpDir) {
-        logger.debug("Temp directory for FASTQ/Distmap writers is ignored");
+        logger.debug("Temp directory for Distmap writers is ignored");
         this.samFactory.setTempDirectory(tmpDir);
+        this.tmpDir = tmpDir;
         return this;
     }
 
@@ -180,22 +186,6 @@ public final class ReadWriterFactory {
     ////////////////////////////////////////////
     // PUBLIC METHODS FOR GET WRITERS
 
-
-    /** Open a new FASTQ writer from a Path. */
-    public FastqWriter openFastqWriter(final Path path) {
-        checkOutputAndCreateDirs(path);
-        final PrintStream writer = new PrintStream(getOutputStream(path));
-        final FastqWriter fastqWriter = new BasicFastqWriter(writer);
-        return (this.useAsyncIo)
-                ? new AsyncFastqWriter(fastqWriter, asyncOutputBufferSize)
-                : fastqWriter;
-    }
-
-    /** Open a new FASTQ writer based from a String path. */
-    public FastqWriter openFastqWriter(final String output) {
-        return openFastqWriter(newOutputFile(output));
-    }
-
     /** Open a new SAM/BAM/CRAM writer from a String path. */
     public SAMFileWriter openSAMWriter(final SAMFileHeader header, final boolean presorted,
             final String output) {
@@ -224,9 +214,25 @@ public final class ReadWriterFactory {
         return new SAMFileGATKReadWriter(openSAMWriter(header, presorted, output));
     }
 
-    /** Creates a FASTQ writer from a String path. */
-    public GATKReadWriter createFASTQWriter(final String output) {
-        return new FastqGATKWriter(openFastqWriter(output));
+    /**
+     * Creates a FASTQ writer from a String path.
+     */
+    public GATKReadWriter createFASTQWriter(final String output, final SAMFileHeader header,
+            final boolean presorted) {
+        Utils.nonNull(header, "null header is not allowed");
+        final Path outputPath = newOutputFile(output);
+        final FastqGATKWriter writer = new FastqGATKWriter(
+                new OutputStreamWriter(getOutputStream(outputPath)),
+                outputPath.toUri().toString());
+        writer.setSortOrder(header.getSortOrder(), presorted);
+        if (maxRecordsInRam != null) {
+            writer.setMaxRecordsInRam(maxRecordsInRam);
+        }
+        if (tmpDir != null) {
+            writer.setTempDirectory(tmpDir);
+        }
+        writer.setHeader(header);
+        return (useAsyncIo) ? new AsyncGATKWriter(writer, asyncOutputBufferSize) : writer;
     }
 
     /** Creates a GATKWriter for Distmap output. */
@@ -245,7 +251,7 @@ public final class ReadWriterFactory {
         if (ReadToolsIOFormat.isSamBamOrCram(output)) {
             return createSAMWriter(output, header, presorted);
         } else if (ReadToolsIOFormat.isFastq(output)) {
-            return createFASTQWriter(output);
+            return createFASTQWriter(output, header, presorted);
         }
         throw new RTUserExceptions.InvalidOutputFormat(output,
                 "not supported output format based on the extension.");

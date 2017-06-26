@@ -81,7 +81,6 @@ public final class ReadsToFastq extends ReadToolsWalker {
                     order);
             logger.warn(
                     "FASTQ output files are expected to be sorted by queryname, and this could cause downstream problems");
-            headerFromReads.setSortOrder(SAMFileHeader.SortOrder.queryname);
         }
         writer = outputBamArgumentCollection.outputWriter(headerFromReads,
                 () -> getProgramRecord(headerFromReads), true, getReferenceFile()
