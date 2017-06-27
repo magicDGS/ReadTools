@@ -44,6 +44,7 @@ import htsjdk.samtools.util.AbstractAsyncWriter;
 import htsjdk.samtools.util.CustomGzipOutputStream;
 import htsjdk.samtools.util.IOUtil;
 import htsjdk.samtools.util.Md5CalculatingOutputStream;
+import htsjdk.samtools.util.RuntimeIOException;
 import htsjdk.tribble.AbstractFeatureReader;
 import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
 import org.apache.hadoop.conf.Configuration;
@@ -53,6 +54,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
 
@@ -124,21 +126,21 @@ public final class ReadWriterFactory {
 
     /** Sets index creation for BAM/CRAM writers. */
     public ReadWriterFactory setCreateIndex(final boolean createIndex) {
-        logger.debug("Create index for FASTQ writers is ignored");
+        logger.debug("Create index for FASTQ/Distmap writers is ignored");
         this.samFactory.setCreateIndex(createIndex);
         return this;
     }
 
     /** Sets maximum records in RAM for sorting SAM/BAM/CRAM writers. */
     public ReadWriterFactory setMaxRecordsInRam(final int maxRecordsInRam) {
-        logger.debug("Maximum records in RAM for FASTQ writers is ignored");
+        logger.debug("Maximum records in RAM for FASTQ/Distmap writers is ignored");
         this.samFactory.setMaxRecordsInRam(maxRecordsInRam);
         return this;
     }
 
     /** Sets the temp directory for sorting SAM/BAM/CRAM writers. */
     public ReadWriterFactory setTempDirectory(final File tmpDir) {
-        logger.debug("Temp directory for FASTQ writers is ignored");
+        logger.debug("Temp directory for FASTQ/Distmap writers is ignored");
         this.samFactory.setTempDirectory(tmpDir);
         return this;
     }
@@ -159,7 +161,7 @@ public final class ReadWriterFactory {
 
     /** Sets the reference file. This is required for CRAM writers. */
     public ReadWriterFactory setReferenceFile(final File referenceFile) {
-        logger.debug("Reference file for FASTQ writers is ignored");
+        logger.debug("Reference file for FASTQ/Distmap writers is ignored");
         this.referenceFile = referenceFile;
         return this;
     }
@@ -232,8 +234,10 @@ public final class ReadWriterFactory {
     public GATKReadWriter createDistmapWriter(final String output, final boolean isPaired) {
         final Path outputPath = newOutputFile(output);
         logger.debug("Distmap output: {}", outputPath::toUri);
-        return new DistmapGATKWriter(new OutputStreamWriter(getOutputStream(outputPath)),
-                outputPath.toString(), isPaired);
+        final DistmapGATKWriter writer = new DistmapGATKWriter(
+                new OutputStreamWriter(getOutputStream(outputPath)),
+                outputPath.toUri().toString(), isPaired);
+        return (useAsyncIo) ? new AsyncGATKWriter(writer, asyncOutputBufferSize) : writer;
     }
 
     /** Creates a GATKReadWriter based on the path extension. */
@@ -304,6 +308,7 @@ public final class ReadWriterFactory {
         logger.debug("Block-size is ignored: {}", () -> hdfsBlockSize);
         return IOUtil.maybeBufferOutputStream(Files.newOutputStream(path), bufferSize);
     }
+
     /**
      * Wraps teh output stream into a compressed stream in case that it is detected by the
      * following:
@@ -398,6 +403,50 @@ public final class ReadWriterFactory {
                         String.format("Couldn't close output file: %s", e.getMessage()),
                         e);
             }
+        }
+    }
+
+    /** Class for writing asynchronously with custom GATKReadWriters. */
+    private static final class AsyncGATKWriter extends AbstractAsyncWriter<GATKRead>
+            implements GATKReadWriter {
+
+        private final GATKReadWriter underlyingWriter;
+
+        /** Constructor for wrapping a writer. */
+        protected AsyncGATKWriter(final GATKReadWriter underlyingWriter, int queueSize) {
+            super(queueSize);
+            this.underlyingWriter = underlyingWriter;
+        }
+
+        /** Adds the read asynchronously. */
+        @Override
+        public void addRead(GATKRead read) {
+            write(read);
+        }
+
+        /** Adds the read to the underlying writer. */
+        @Override
+        protected void synchronouslyWrite(final GATKRead item) {
+            underlyingWriter.addRead(item);
+        }
+
+        /**
+         * Close the underlying writing.
+         * @throws RuntimeIOException if there is an I/O problem while closing.
+         */
+        @Override
+        protected void synchronouslyClose() {
+            try {
+                underlyingWriter.close();
+            } catch (final IOException e) {
+                // TODO: maybe use an user exception?
+                throw new RuntimeIOException(e);
+            }
+        }
+
+        @Override
+        protected String getThreadNamePrefix() {
+            return "GATKReadWriterThread-";
         }
     }
 }
