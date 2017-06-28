@@ -80,6 +80,18 @@ public class DistmapGATKWriterUnitTest extends RTBaseTest {
         IntegrationTestSpec.assertEqualTextFiles(actual, expected);
     }
 
+    @Test(dataProvider = "distmapFiles")
+    public void testAsyncWriter(final File expected, final boolean paired) throws Exception {
+        final File actual = new File(TEST_TMP_DIR, "async." + expected.getName());
+        try (final GATKReadWriter writer = new ReadWriterFactory()
+                .setUseAsyncIo(true)
+                .createDistmapWriter(actual.getAbsolutePath(), paired)) {
+            writer.addRead(READ_1);
+            writer.addRead(READ_2);
+        }
+        IntegrationTestSpec.assertEqualTextFiles(actual, expected);
+    }
+
     @Test(expectedExceptions = DistmapException.class)
     public void testCloseBroken() throws Exception {
         final File broken = new File(TEST_TMP_DIR, "broken.distmap");
