@@ -30,6 +30,7 @@ import org.magicdgs.readtools.utils.distmap.DistmapGATKWriter;
 import org.magicdgs.readtools.utils.fastq.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
+import com.google.common.annotations.VisibleForTesting;
 import hdfs.jsr203.HadoopPath;
 import htsjdk.samtools.Defaults;
 import htsjdk.samtools.SAMException;
@@ -430,18 +431,10 @@ public final class ReadWriterFactory {
             underlyingWriter.addRead(item);
         }
 
-        /**
-         * Close the underlying writing.
-         * @throws RuntimeIOException if there is an I/O problem while closing.
-         */
+        /** Close the underlying writer. */
         @Override
         protected void synchronouslyClose() {
-            try {
-                underlyingWriter.close();
-            } catch (final IOException e) {
-                // TODO: maybe use an user exception?
-                throw new RuntimeIOException(e);
-            }
+            closeWriter(this.underlyingWriter);
         }
 
         @Override
