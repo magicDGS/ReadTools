@@ -87,8 +87,8 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
      * Uses different descriptions depending on the work unit content. The first non-empty of:
      *
      * 1. Default method to capture the javadoc description.
-     * 2. {@link CommandLineProgramProperties#summary()} for tools
-     * 3. {@link org.broadinstitute.barclay.help.DocumentedFeature#summary()}
+     * 2. {@link CommandLineProgramProperties#summary()} for tools.
+     * 3. {@link org.broadinstitute.barclay.help.DocumentedFeature} summary.
      *
      * Otherwise, the description will be empty.
      */
