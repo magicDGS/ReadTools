@@ -30,7 +30,6 @@ import org.magicdgs.readtools.utils.distmap.DistmapGATKWriter;
 import org.magicdgs.readtools.utils.fastq.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
-import com.google.common.annotations.VisibleForTesting;
 import hdfs.jsr203.HadoopPath;
 import htsjdk.samtools.Defaults;
 import htsjdk.samtools.SAMException;
@@ -45,7 +44,6 @@ import htsjdk.samtools.util.AbstractAsyncWriter;
 import htsjdk.samtools.util.CustomGzipOutputStream;
 import htsjdk.samtools.util.IOUtil;
 import htsjdk.samtools.util.Md5CalculatingOutputStream;
-import htsjdk.samtools.util.RuntimeIOException;
 import htsjdk.tribble.AbstractFeatureReader;
 import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
 import org.apache.hadoop.conf.Configuration;
