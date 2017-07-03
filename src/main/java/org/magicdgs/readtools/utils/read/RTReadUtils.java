@@ -27,13 +27,22 @@ package org.magicdgs.readtools.utils.read;
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 
+import com.google.common.hash.Funnel;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
 import htsjdk.samtools.SAMTag;
+import htsjdk.samtools.util.SequenceUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.IntSupplier;
@@ -67,6 +76,125 @@ public class RTReadUtils {
     /** Default raw barcode tag ({@link #RAW_BARCODE_TAG}) as a singleton list. */
     public final static List<String> RAW_BARCODE_TAG_LIST =
             Collections.singletonList(RAW_BARCODE_TAG);
+
+    // default charset for read hash computation
+    private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
+    /**
+     * Computes the hash for the read using the following information:
+     *
+     * <ul>
+     * <li>Read name</li>
+     * <li>Paired flag</li>
+     * <li>First and second of pair flags</li>
+     * <li>Fails platform/vendor quality checks</li>
+     * <li>Sequence bases (in the forward strand; reversed-complement if necessary)</li>
+     * <li>Base qualities (in the forward strand; reversed if necessary)</li>
+     * </ul>
+     *
+     * <p>Note: this method is useful for compared mapped/unmapped reads independently of flags
+     * only set for mapped reads.
+     *
+     * @param read         the read to get the hash from.
+     * @param hashFunction function to compute the hash.
+     *
+     * @return hash object to consume.
+     */
+    public static HashCode readHash(final GATKRead read, final HashFunction hashFunction) {
+        return readHash(read, Collections.emptyList(), hashFunction);
+    }
+
+    /**
+     * Computes the hash for the read using {@link #readHash(GATKRead, HashFunction)}, adding
+     * information from the attributes in an order-independent way.
+     *
+     * @param read         the read to get the hash from.
+     * @param attributes   attributes to include in the hash. May be empty.
+     * @param hashFunction function to compute the hash.
+     */
+    public static HashCode readHash(final GATKRead read, final Collection<String> attributes,
+            final HashFunction hashFunction) {
+        Utils.nonNull(attributes, "null attributes");
+        Utils.nonNull(read, "null read");
+        Utils.nonNull(hashFunction, "null hashFunction");
+        final Hasher hasher = hashFunction.newHasher().putObject(read, DEFAULT_READ_FUNNEL);
+        // if there is no attributes, return just the read hash
+        if (attributes.isEmpty()) {
+            return hasher.hash();
+        }
+        // otherwise, compute a sum of the attributes
+        long attHash = 0;
+        boolean nonNull = false;
+        for (final String att : attributes) {
+            try {
+                // try first with an integer value
+                final Integer val = read.getAttributeAsInteger(att);
+                // if it is null, do not add to the hash (not present)
+                if (val != null) {
+                    attHash += hashFunction.hashInt(val).asLong();
+                    nonNull = true;
+                }
+            } catch (final GATKException.ReadAttributeTypeMismatch e) {
+                // always non-null, because it failed while casting instead of returning null
+                nonNull = true;
+                // we should use the byte[] method for both String and byte[], because the
+                // getAttributeAsString() method returns the address of the byte[] array
+                // TODO: getAttributeAsByteArray() returns String.getBytes() using a default charset
+                // TODO: which is not predictable and could generate problems when generating the hash
+                // TODO: there is a PR to fix this in GATK4: https://github.com/broadinstitute/gatk/pull/3201
+                // TODO: in the meantime, we use the following workaround to detect if the attribute is a String or a byte[]
+                // TODO: this code should be simplified by using removing the rest of the code in the catch clause
+                // TODO: and substitute by `attHash += hashFunction.hashBytes(read.getAttributeAsByteArray(att)).asLong();`
+
+                // WORKAROUND:
+                // getAttributeAsString() returns Object.toString() in the GATK's implementation
+                // in that case, for a byte[] attribute, it will return the address for the object
+                // this could be use to distinguish when the attribute is a byte[] or a String
+                // when you get the bytes from a String attribute, this should be the same as the
+                // ones returned by getAttributeAsByteArray(); if the String is the address for the
+                // byte[], this bytes won't be the same at all
+                final String attAsString = read.getAttributeAsString(att);
+                final byte[] attAsBytes = read.getAttributeAsByteArray(att);
+                if (Arrays.equals(attAsString.getBytes(), attAsBytes)) {
+                    // hash the String as a byte array with the default charset
+                    attHash += hashFunction.hashBytes(attAsString.getBytes(DEFAULT_CHARSET)).asLong();
+                } else {
+                    // hash directly the bytes
+                    attHash += hashFunction.hashBytes(attAsBytes).asLong();
+                }
+            }
+        }
+        // if the attributeHash is zero, that means that no attribute was included
+        // or that their hash sum is zero
+        return (nonNull) ? hasher.putLong(attHash).hash() : hasher.hash();
+    }
+
+
+
+    // funnel for hassing a read, including the information in the following order:
+    // - read name (UTF-8 encoding)
+    // - paired
+    // - first of pair
+    // - second of pair
+    // - fails vendor quality
+    // -bases (reverse complement if necessary),
+    // - qualities (reversed if necessary)
+    private static final Funnel<GATKRead> DEFAULT_READ_FUNNEL = (read, sink) -> {
+        // get the basese and qualities and reverse if necessary
+        byte[] bases = read.getBases();
+        final byte[] qualities = read.getBaseQualities();
+        if (read.isReverseStrand()) {
+            SequenceUtil.reverseComplement(bases);
+            SequenceUtil.reverseQualities(qualities);
+        }
+        sink.putString(read.getName(), DEFAULT_CHARSET)
+                .putBoolean(read.isPaired())
+                .putBoolean(read.isFirstOfPair())
+                .putBoolean(read.isSecondOfPair())
+                .putBoolean(read.failsVendorQualityCheck())
+                .putBytes(bases)
+                .putBytes(qualities);
+    };
 
     /**
      * Extract and remove the barcode from the read name, splitting the barcodes in the read name
@@ -226,7 +354,8 @@ public class RTReadUtils {
         // only ipdate if there are barcodes
         if (barcodes.length != 0) {
             final String barcodeString = String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes);
-            final String qualityString = String.join(RTDefaults.BARCODE_QUALITY_DELIMITER, qualities);
+            final String qualityString =
+                    String.join(RTDefaults.BARCODE_QUALITY_DELIMITER, qualities);
             // perform extra validation of lengths
             if (barcodeString.length() != qualityString.length()) {
                 throwExceptionForDifferentBarcodeQualityLenghts(RAW_BARCODE_TAG, barcodeString,

@@ -26,6 +26,8 @@ package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.RTBaseTest;
 
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import htsjdk.samtools.SAMFileHeader;
 import org.apache.commons.lang3.tuple.Pair;
 import org.broadinstitute.hellbender.utils.Utils;
@@ -394,5 +396,51 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
     @Test(dataProvider = "illuminaNames")
     public void testGetReadNameWithIlluminaBarcode(final GATKRead read, final String expectedName) {
         Assert.assertEquals(RTReadUtils.getReadNameWithIlluminaBarcode(read), expectedName);
+    }
+
+    @Test
+    public void testReadHash() throws Exception {
+        final HashFunction md5 = Hashing.md5();
+        final GATKRead read = ArtificialReadUtils.createArtificialUnmappedRead(header,
+                new byte[]{'A', 'A', 'A', 'A'},
+                new byte[]{'B', 'B', 'B', 'B'});
+        read.setName("read1");
+        read.setIsReverseStrand(false);
+        read.setIsPaired(true);
+        read.setIsFirstOfPair();
+        read.setFailsVendorQualityCheck(true);
+        Assert.assertEquals(RTReadUtils.readHash(read, md5).toString(), "dbc60830220028eb4e27c1baec2cabe7");
+        // changing the strand is changing the hash (because the bases are reverse-complement)
+        read.setIsReverseStrand(true);
+        Assert.assertEquals(RTReadUtils.readHash(read, md5).toString(), "78b396e86916533c9edaa029aa184b75");
+        // changing to second of pair changes the hash too
+        read.setIsSecondOfPair();
+        Assert.assertEquals(RTReadUtils.readHash(read, md5).toString(), "be6f65562e77e69a854ea363a5b1872a");
+        // and now, test a single end passing vendor quality
+        read.setIsPaired(false);
+        read.setFailsVendorQualityCheck(false);
+        Assert.assertEquals(RTReadUtils.readHash(read, md5).toString(), "d376630b7232a75c2db25afe636a4c96");
+        // and come back to forward strand to simplify the tests
+        read.setIsReverseStrand(false);
+        Assert.assertEquals(RTReadUtils.readHash(read, md5).toString(), "85c1bdedfea75f47ed81d1eb1f4103c6");
+        // provide a list of attributes that are not present shouldn't change the hashCode
+        Assert.assertEquals(RTReadUtils.readHash(read, Arrays.asList("BC", "IN", "ST"), md5).toString(), "85c1bdedfea75f47ed81d1eb1f4103c6");
+        // adding a SAM tag is not changing anything (using byte, String and Integer objects)
+        read.setAttribute("BC", new byte[]{'A', 'C', 'T', 'G'});
+        read.setAttribute("IN", 10);
+        read.setAttribute("ST", "test");
+        Assert.assertEquals(RTReadUtils.readHash(read, md5).toString(), "85c1bdedfea75f47ed81d1eb1f4103c6");
+        // neither if it is mapped and has mapping quality
+        read.setMappingQuality(20);
+        Assert.assertEquals(RTReadUtils.readHash(read, md5).toString(), "85c1bdedfea75f47ed81d1eb1f4103c6");
+        // using the method including no tags is the same
+        Assert.assertEquals(RTReadUtils.readHash(read, Collections.emptyList(), md5).toString(), "85c1bdedfea75f47ed81d1eb1f4103c6");
+        // but including the tags change it
+        Assert.assertEquals(RTReadUtils.readHash(read, Collections.singletonList("BC"), md5).toString(), "8e1f21b5f7f29b3d4613c3f216b3372e");
+        Assert.assertEquals(RTReadUtils.readHash(read, Collections.singletonList("IN"), md5).toString(), "05ad44d971e7e739501010486a48b046");
+        Assert.assertEquals(RTReadUtils.readHash(read, Collections.singletonList("ST"), md5).toString(), "b340a906461ad3f4df4372a6e924bc59");
+        // all tags together change it (and it is independent of the order)
+        Assert.assertEquals(RTReadUtils.readHash(read, Arrays.asList("BC", "IN", "ST"), md5).toString(), "1612cbd911430e0cff1c2a0859be752f");
+        Assert.assertEquals(RTReadUtils.readHash(read, Arrays.asList("IN", "ST", "BC"), md5).toString(), "1612cbd911430e0cff1c2a0859be752f");
     }
 }
