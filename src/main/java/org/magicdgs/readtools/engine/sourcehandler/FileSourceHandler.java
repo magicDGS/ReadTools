@@ -47,7 +47,9 @@ import java.util.function.Function;
  * @param <T> closeable reader.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.engine.sources.RTReadsSource}.
  */
+@Deprecated
 abstract class FileSourceHandler<T extends Closeable> extends ReadsSourceHandler {
 
     // keep all the readers that have been open to close them all at the end

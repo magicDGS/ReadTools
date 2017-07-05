@@ -43,7 +43,9 @@ import java.util.function.Supplier;
  * thrown.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated each source of reads should implement is own way of reading the files.
  */
+@Deprecated
 public class ReadReaderFactory {
 
     private final SamReaderFactory samFactory;

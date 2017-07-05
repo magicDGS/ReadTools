@@ -43,7 +43,9 @@ import java.util.List;
  * Source handler for FASTQ files.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.engine.sources.fastq.FastqSingleEndSource}
  */
+@Deprecated
 final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
 
     /**

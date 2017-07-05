@@ -49,7 +49,9 @@ import java.util.stream.StreamSupport;
  * of previous calls.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.engine.sources.RTReadsSource}.
  */
+@Deprecated
 public abstract class ReadsSourceHandler implements Closeable {
 
     /** The handled source string. */

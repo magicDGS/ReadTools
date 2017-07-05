@@ -44,7 +44,9 @@ import java.util.List;
  * Handler for SAM/BAM/CRAM files, which uses the default factory provided.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use {@link org.magicdgs.readtools.engine.sources.sam.SamReadsSource}.
  */
+@Deprecated
 public final class SamSourceHandler extends FileSourceHandler<SamReader> {
 
     /**

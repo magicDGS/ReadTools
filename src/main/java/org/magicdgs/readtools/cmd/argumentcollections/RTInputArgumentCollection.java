@@ -26,7 +26,12 @@ package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.engine.RTDataSource;
+import org.magicdgs.readtools.engine.sources.RTReadsSource;
+import org.magicdgs.readtools.engine.sources.fastq.FastqPairEndSource;
+import org.magicdgs.readtools.engine.sources.fastq.FastqSingleEndSource;
+import org.magicdgs.readtools.engine.sources.sam.SamReadsSource;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.util.FastqQualityFormat;
@@ -44,6 +49,7 @@ import java.io.Serializable;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+// TODO: we should update this class to get the new data sources
 public final class RTInputArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -85,7 +91,9 @@ public final class RTInputArgumentCollection implements Serializable {
      * Gets the data source provided by the command line parameters.
      *
      * @param referenceFileName the reference file for CRAM inputs. May be {@code null}.
+     * @deprecated use {@link #getReadsSource(File)} instead.
      */
+    @Deprecated
     public RTDataSource getDataSource(final File referenceFileName) {
         RTDataSource.setReadReaderFactory(getReaderFactory(referenceFileName));
         if (source == null) {
@@ -98,6 +106,61 @@ public final class RTInputArgumentCollection implements Serializable {
             }
         }
         return source.get();
+    }
+
+    // TODO: documentation
+    public RTReadsSource getReadsSource(final File referenceFileName) {
+        // get the correct source
+        final RTReadsSource source;
+        // because they are mutually-exclusive, this should work fine in the command line
+        // maybe we should check just in case
+        if (interleaved) {
+            source = getSingleFilePaired(inputSource);
+        } else if (inputPair != null) {
+            source = getSplitFilesPaired(inputSource, inputPair);
+        } else {
+            source = getSingleEnd(inputSource);
+        }
+        // set the parameters for iterating
+        // TODO: add parameter for maximum reads for quality?
+        // TODO: add parameter to read asynchronously?
+        return source
+                .setForcedEncoding(forceQualityEncoding)
+                .setValidationStringency(readValidationStringency)
+                .setReferenceSequence(referenceFileName);
+
+    }
+
+    // TODO: documentation
+    public static RTReadsSource getSplitFilesPaired(final String inputSource, final String inputPair) {
+        if (ReadToolsIOFormat.isFastq(inputSource) && ReadToolsIOFormat.isFastq(inputPair)) {
+            return new FastqPairEndSource(inputSource, inputPair);
+        }
+        // TODO: this removes support for other split files
+        // TODO: throw an exception for non-supported splited files
+        return null;
+    }
+
+    // TODO: documentation
+    public static RTReadsSource getSingleFilePaired(final String inputSource) {
+        if (ReadToolsIOFormat.isFastq(inputSource)) {
+            return new FastqPairEndSource(inputSource);
+        } else if (ReadToolsIOFormat.isSamBamOrCram(inputSource)) {
+            return new SamReadsSource(inputSource, true);
+        }
+        // TODO: throw exception or default to FASTQ?
+        return null;
+    }
+
+    // TODO: documentation
+    public static RTReadsSource getSingleEnd(final String inputSource) {
+        if (ReadToolsIOFormat.isFastq(inputSource)) {
+            return new FastqSingleEndSource(inputSource);
+        } else if (ReadToolsIOFormat.isSamBamOrCram(inputSource)) {
+            return new SamReadsSource(inputSource, false);
+        }
+        // TODO: throw exception or default to FASTQ?
+        return null;
     }
 
 }

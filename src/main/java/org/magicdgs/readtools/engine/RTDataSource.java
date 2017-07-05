@@ -62,7 +62,9 @@ import java.util.List;
  * WARNING: query is not working yet.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
+ * @deprecated use new source implementation {@link org.magicdgs.readtools.engine.sources.RTReadsSource}.
  */
+@Deprecated
 public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseable {
 
     // logger for the class
