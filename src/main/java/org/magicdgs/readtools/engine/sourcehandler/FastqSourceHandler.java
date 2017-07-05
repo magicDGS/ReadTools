@@ -24,7 +24,8 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
-import org.magicdgs.readtools.utils.iterators.FastqToReadIterator;
+import org.magicdgs.readtools.utils.fastq.FastqGATKRead;
+import org.magicdgs.readtools.utils.iterators.RecordToReadIterator;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -89,6 +90,6 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
 
     @Override
     protected Iterator<GATKRead> getReaderIterator(final FastqReader reader) {
-        return new FastqToReadIterator(reader.iterator());
+        return new RecordToReadIterator<>(reader.iterator(), FastqGATKRead::new);
     }
 }

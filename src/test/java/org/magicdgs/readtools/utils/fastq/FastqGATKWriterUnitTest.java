@@ -24,8 +24,8 @@
 
 package org.magicdgs.readtools.utils.fastq;
 
-import org.magicdgs.readtools.utils.iterators.FastqToReadIterator;
 import org.magicdgs.readtools.RTBaseTest;
+import org.magicdgs.readtools.utils.iterators.RecordToReadIterator;
 
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.fastq.FastqWriterFactory;
@@ -85,7 +85,7 @@ public class FastqGATKWriterUnitTest extends RTBaseTest {
         writer.close();
         // now check if reading is the same
         final FastqReader reader = new FastqReader(tempFile);
-        final Iterator<GATKRead> iterator = new FastqToReadIterator(reader.iterator());
+        final Iterator<GATKRead> iterator = new RecordToReadIterator<>(reader.iterator(), FastqGATKRead::new);
         readsToWrite.forEach(r -> Assert.assertEquals(iterator.next().convertToSAMRecord(null),
                 r.convertToSAMRecord(null)));
         Assert.assertFalse(iterator.hasNext());
