@@ -53,9 +53,7 @@ public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
     public SAMFileHeader getHeader();
 
     /**
-     * Returns an iterator over the reads.
-     *
-     * TODO: this should be already transformed with the quality encoding
+     * Returns an iterator over the reads, already in standard format.
      *
      * <p>Note: if {@link #isPaired()} is {@code true}, it should return an interleaved iterator.
      */

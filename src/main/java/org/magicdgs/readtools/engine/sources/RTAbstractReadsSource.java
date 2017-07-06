@@ -91,7 +91,6 @@ public abstract class RTAbstractReadsSource implements RTReadsSource {
     // TODO: document
     protected abstract Iterator<GATKRead> rawIterator();
 
-
     protected final Iterator<GATKRead> standardizeEncodingIterator(final Iterator<GATKRead> iterator) {
         final FastqQualityFormat encoding = getQualityEncoding();
         final ReadTransformer transformer;
