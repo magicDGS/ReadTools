@@ -25,8 +25,9 @@
 package org.magicdgs.readtools.engine.sources.fastq;
 
 import org.magicdgs.readtools.engine.sources.RTAbstractReadsSource;
-import org.magicdgs.readtools.utils.iterators.RecordToReadIterator;
 import org.magicdgs.readtools.utils.fastq.FastqGATKRead;
+import org.magicdgs.readtools.utils.iterators.RecordToReadIterator;
+import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
@@ -36,53 +37,44 @@ import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.IOUtil;
 import htsjdk.samtools.util.QualityEncodingDetector;
 import org.broadinstitute.hellbender.exceptions.UserException;
-import org.broadinstitute.hellbender.utils.SimpleInterval;
+import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public final class FastqSingleEndSource extends RTAbstractReadsSource {
+public final class FastqReadsSource extends RTAbstractReadsSource {
 
-    protected final String source;
+    private final String source;
+    private final boolean interleaved;
 
     private FastqReader reader = null;
 
-    public FastqSingleEndSource(final String source) {
+    public FastqReadsSource(final String source, final boolean interleaved) {
+        Utils.validateArg(ReadToolsIOFormat.isFastq(source), () -> source + "is not FASTQ");
         this.source = source;
+        this.interleaved = interleaved;
     }
 
     @Override
-    public String getSourceDescription() {
-        return "Single-end FASTQ (" + source + ")";
+    public String getSourceFormat() {
+        return (interleaved) ? "FASTQ-interleaved" : "FASTQ";
     }
 
     @Override
-    public FastqSingleEndSource setValidationStringency(final ValidationStringency stringency) {
-        logger.debug("Validation stringency option is ignored for FASTQ sources");
-        return this;
+    public String getSourceName() {
+        return source;
     }
 
-    @Override
-    public FastqSingleEndSource setUseAsyncIo(final boolean useAsyncIo) {
-        logger.debug("Asynchronous reading option is ignored for FASTQ sources");
-        return this;
-    }
-
-    @Override
-    public FastqSingleEndSource setReferenceSequence(final File referenceFile) {
-        logger.debug("Reference sequence option is ignored for FASTQ sources");
-        return this;
-    }
-
+    // opens a new reader
     private FastqReader openReader() {
         // TODO: catch exceptions here
+        // TODO: maybe we should implement our own reader at some point
         return new FastqReader(IOUtil.openFileForBufferedReading(IOUtils.getPath(source)));
     }
 
@@ -97,38 +89,67 @@ public final class FastqSingleEndSource extends RTAbstractReadsSource {
     @Override
     protected FastqQualityFormat detectEncoding(long maxNumberOfReads) {
         // try with resources with auto-closing
-        try(final FastqReader reader = openReader()) {
+        try (final FastqReader reader = openReader()) {
             return QualityEncodingDetector.detect(maxNumberOfReads, reader);
         } catch (SAMException e) {
             throw new UserException.CouldNotReadInputFile(source, e);
         }
     }
 
+
     @Override
     protected Iterator<GATKRead> rawIterator() {
         if (reader != null) {
-            throw new IllegalStateException(getSourceDescription() + ": should be close before starting a new iteration");
+            throw new IllegalStateException(String.format(
+                    "%s (%s) should be closed before a new iteration",
+                    getSourceFormat(), getSourceName()));
         }
-        // TODO: the FASTQ readeer is not the best - maybe we should implement our own reader
         reader = openReader();
         return new RecordToReadIterator<>(reader.iterator(), FastqGATKRead::new);
     }
 
+    /** Returns {@code true} if it is interleaved; {@code false} otherwise. */
     @Override
     public boolean isPaired() {
-        return false;
+        return interleaved;
     }
 
+    /** Close the reader if it was opened. */
     @Override
-    public Iterator<GATKRead> query(List<SimpleInterval> locs) {
-        throw new UnsupportedOperationException(getSourceDescription() + ": cannot query FASTQ file");
-    }
-
-    @Override
-    public void close() throws IOException {
+    public void close()  {
         if (reader != null) {
             reader.close();
             reader = null;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>Warning: ignored.
+     */
+    @Override
+    public FastqReadsSource setValidationStringency(final ValidationStringency stringency) {
+        logger.debug("Validation stringency option is ignored for FASTQ sources");
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>Warning: ignored.
+     */
+    @Override
+    public FastqReadsSource setUseAsyncIo(final boolean useAsyncIo) {
+        logger.debug("Asynchronous reading option is ignored for FASTQ sources");
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>Warning: ignored.
+     */
+    @Override
+    public FastqReadsSource setReferenceSequence(final File referenceFile) {
+        logger.debug("Reference sequence option is ignored for FASTQ sources");
+        return this;
     }
 }

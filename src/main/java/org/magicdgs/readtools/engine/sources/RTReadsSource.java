@@ -27,25 +27,28 @@ package org.magicdgs.readtools.engine.sources;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.broadinstitute.hellbender.engine.GATKDataSource;
-import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import scala.Tuple2;
 
 import java.io.Closeable;
 import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 
 /**
+ * Interface representing a source of reads. It allows to open an iteration over a source of reads,
+ * in either single-end mode or pair-end mode.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
+public interface RTReadsSource extends Closeable {
 
     /**
-     * Guess the quality encoding by reading {@code maxNumberOfReads}. If set by {@link
-     * #setForcedEncoding(FastqQualityFormat)}, this method will return that quality encoding, but
-     * may log a warning if it differs.
+     * Returns the quality encoding for the source of reads. Usually the quality is guessed by
+     * reading {@link org.magicdgs.readtools.RTDefaults#MAX_RECORDS_FOR_QUALITY}.
+     *
+     * <p>Note: if {@link #setForcedEncoding(FastqQualityFormat)} was called with to force a
+     * concrete quality, this method will return that encoding. This should log a warning if it
+     * differs for the guessed quality at least the first time that it is called.
      */
     public FastqQualityFormat getQualityEncoding();
 
@@ -56,6 +59,8 @@ public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
      * Returns an iterator over the reads, already in standard format.
      *
      * <p>Note: if {@link #isPaired()} is {@code true}, it should return an interleaved iterator.
+     *
+     * @throws IllegalStateException if the iteration already started.
      */
     public Iterator<GATKRead> iterator();
 
@@ -69,23 +74,23 @@ public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
      */
     public Iterator<Tuple2<GATKRead, GATKRead>> getPairedIterator();
 
-    /**
-     * Returns an iterator over the reads overlapping the provided intervals, already in standard format.
-     *
-     * <p>Note: unmapped reads will not be returned by this iterator.
-     *
-     * @throws UnsupportedOperationException if the source of reads cannot be queried.
-     */
-    public Iterator<GATKRead> query(final List<SimpleInterval> locs);
+    /** Gets the format name of the read source. For example, SAM or FASTQ. */
+    public String getSourceFormat();
 
-    /** Gets a human-readable description of the read source. */
-    public String getSourceDescription();
+    /**
+     * Gets a human-readable name of the read source. For example, input.bam or input.fq.gz
+     *
+     * <p>Note: it may return the whole path of the file.
+     */
+    public String getSourceName();
 
     /////////////////////////////////
-    //// FACTORY OPEN METHODS
+    //// METHODS FOR SETTING OPTIONS
 
     /**
      * Sets the validation stringency.
+     *
+     * <p>Note: some implementations may ignore validation stringency.
      *
      * @return the same source for chaining with setters.
      *
@@ -96,6 +101,8 @@ public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
     /**
      * Sets if asynchronous reading should be used.
      *
+     * <p>Note: some implementations may ignore asynchronous reading.
+     *
      * @return the same source for chaining with setters.
      *
      * @throws IllegalStateException if iteration already started.
@@ -104,6 +111,8 @@ public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
 
     /**
      * Set the reference sequence for reading.
+     *
+     * <p>Note: some implementations may ignore the reference file.
      *
      * @return the same source for chaining with setters.
      *
@@ -120,6 +129,8 @@ public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
      *                 to be the real encoding.
      *
      * @return the same source for chaining with setters.
+     *
+     * @throws IllegalStateException if the quality was already detected.
      */
     public RTReadsSource setForcedEncoding(final FastqQualityFormat encoding);
 
@@ -131,4 +142,10 @@ public interface RTReadsSource extends GATKDataSource<GATKRead>, Closeable {
      * @return the same source for chaining with setters.
      */
     public RTReadsSource setMaxNumberOfReadsForQuality(final long maxNumberOfReadsForQuality);
+
+    /**
+     * {@inheritDoc}
+     * Exceptions should be catched internally.
+     */
+    public void close();
 }

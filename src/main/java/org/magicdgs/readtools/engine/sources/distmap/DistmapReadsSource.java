@@ -39,7 +39,6 @@ import htsjdk.samtools.util.QualityEncodingDetector;
 import htsjdk.tribble.readers.AsciiLineReader;
 import htsjdk.tribble.readers.AsciiLineReaderIterator;
 import org.broadinstitute.hellbender.exceptions.UserException;
-import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -66,6 +65,16 @@ public class DistmapReadsSource extends RTAbstractReadsSource {
     }
 
     @Override
+    public String getSourceFormat() {
+        return isPaired() ? "DistMap-paired" : "DistMap-single";
+    }
+
+    @Override
+    public String getSourceName() {
+        return source;
+    }
+
+    @Override
     protected FastqQualityFormat detectEncoding(long maxNumberOfReads) {
         // open a raw iterator
         final Iterator<GATKRead> iterator = rawIterator();
@@ -85,12 +94,14 @@ public class DistmapReadsSource extends RTAbstractReadsSource {
 
                     @Override
                     public void close() {
-                        // closing the opened raw iterator
-                        this.close();
+                        // do nothing
                     }
                 };
         // this should close the iterator
-        return QualityEncodingDetector.detect(maxNumberOfReads, forQuality);
+        final FastqQualityFormat format =
+                QualityEncodingDetector.detect(maxNumberOfReads, forQuality);
+        close();
+        return format;
     }
 
     private AsciiLineReaderIterator openReader() {
@@ -105,7 +116,6 @@ public class DistmapReadsSource extends RTAbstractReadsSource {
             iterator = openReader();
         }
         if (isPaired()) {
-            // TODO: this is not supported yet!!
             return new GATKReadTupleIterator(getPairedIterator());
         }
         return new RecordToReadIterator<>(iterator, DistmapEncoder::decodeSingle);
@@ -114,7 +124,8 @@ public class DistmapReadsSource extends RTAbstractReadsSource {
     @Override
     public Iterator<Tuple2<GATKRead, GATKRead>> getPairedIterator() {
         if (!isPaired()) {
-            throw new UnsupportedOperationException(getSourceDescription() + ": cannot retrieve pair-end");
+            throw new UnsupportedOperationException(
+                    getSourceFormat() + ": cannot retrieve pair-end");
         }
         if (iterator == null) {
             iterator = openReader();
@@ -141,17 +152,6 @@ public class DistmapReadsSource extends RTAbstractReadsSource {
     }
 
     @Override
-    public Iterator<GATKRead> query(List<SimpleInterval> locs) {
-        // TODO: better msg
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getSourceDescription() {
-        return String.format("Distmap %s-end (%s)", (isPaired()) ? "pair" : "single", source);
-    }
-
-    @Override
     public RTReadsSource setValidationStringency(ValidationStringency stringency) {
         return null;
     }
@@ -167,8 +167,16 @@ public class DistmapReadsSource extends RTAbstractReadsSource {
     }
 
     @Override
-    public void close() throws IOException {
-
+    public void close() {
+        try {
+            if (iterator != null) {
+                iterator.close();
+                iterator = null;
+            }
+        } catch (IOException e) {
+            // TODO: better exception msg
+            throw new UserException(e.getMessage(), e);
+        }
     }
 
     private final static class GATKReadTupleIterator implements Iterator<GATKRead> {

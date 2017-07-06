@@ -42,6 +42,7 @@ import scala.Tuple2;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -56,10 +57,41 @@ public abstract class RTAbstractReadsSource implements RTReadsSource {
 
     private Optional<FastqQualityFormat> forcedEncoding = Optional.empty();
 
-    protected FastqQualityFormat format = null;
-
+    /**
+     * Number of reads to use for quality detection. Defaults in {@link
+     * RTDefaults#MAX_RECORDS_FOR_QUALITY}.
+     */
     protected long maxNumberOfReadsForQuality = RTDefaults.MAX_RECORDS_FOR_QUALITY;
 
+    // cached format
+    private FastqQualityFormat format = null;
+
+    /** Guesses/detects the encoding by reading the file using {@code maxNumnerOfReads}. */
+    protected abstract FastqQualityFormat detectEncoding(final long maxNumberOfReads);
+
+    /** Returns a raw iterator over the reads, without transformation to standard quality. */
+    protected abstract Iterator<GATKRead> rawIterator();
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Default behavior wraps {@link #iterator()} as an interleaved iterator.
+     */
+    @Override
+    public Iterator<Tuple2<GATKRead, GATKRead>> getPairedIterator() {
+        if (!isPaired()) {
+            throw new UnsupportedOperationException(
+                    getSourceFormat() + ": cannot retrieve pair-end");
+        }
+        return GATKReadPairedIterator.of(iterator());
+    }
+
+    /**
+     * Caches and return the format detected by {@link #detectEncoding(long)} and/or forced by
+     * {@link #setForcedEncoding(FastqQualityFormat)}. If both of them differs, log a warning on
+     * the
+     * first call.
+     */
     @Override
     public final FastqQualityFormat getQualityEncoding() {
         if (format != null) {
@@ -67,7 +99,7 @@ public abstract class RTAbstractReadsSource implements RTReadsSource {
             forcedEncoding.ifPresent(format -> {
                 if (!format.equals(detected)) {
                     logger.warn("Forcing {} encoding for {}: detected encoding was {}",
-                            () -> format, () -> getSourceDescription(), () -> detected);
+                            () -> format, () -> getSourceFormat(), () -> detected);
                 }
             });
             format = forcedEncoding.orElse(detected);
@@ -75,53 +107,48 @@ public abstract class RTAbstractReadsSource implements RTReadsSource {
         return format;
     }
 
+    /**
+     * Standardizes an iterator over reads. Useful for custom implementations of
+     * {@link #getPairedIterator()}.
+     */
+    protected final Iterator<GATKRead> standardizeEncodingIterator(
+            final Iterator<GATKRead> iterator) {
+        return new ReadTransformerIterator(iterator, getQualityTransformer());
+    }
+
+    /**
+     * Gets a read transformer to fix the quality based on the {@link #getQualityEncoding()}.
+     * It may be used for custom implementations of {@link #getPairedIterator()}.
+     */
+    protected final ReadTransformer getQualityTransformer() {
+        final FastqQualityFormat encoding = getQualityEncoding();
+        switch (encoding) {
+            case Standard:
+                // TODO: port to GATK MisencodedBaseQualityReadTransformer
+                return new CheckQualityReadTransformer();
+            case Illumina:
+                return new MisencodedBaseQualityReadTransformer();
+            case Solexa:
+                return new SolexaToSangerReadTransformer();
+            default:
+                throw new GATKException("Unknown quality encoding: " + encoding);
+        }
+    }
+
+    /**
+     * Returns the {@link #rawIterator()} wrapped standarized by {@link
+     * #standardizeEncodingIterator(Iterator)}.
+     */
     @Override
     public final Iterator<GATKRead> iterator() {
         return standardizeEncodingIterator(rawIterator());
     }
 
     @Override
-    public final Iterator<GATKRead> query(SimpleInterval interval) {
-        return query(Collections.singletonList(interval));
-    }
-
-    // TODO: document
-    protected abstract FastqQualityFormat detectEncoding(final long maxNumberOfReads);
-
-    // TODO: document
-    protected abstract Iterator<GATKRead> rawIterator();
-
-    protected final Iterator<GATKRead> standardizeEncodingIterator(final Iterator<GATKRead> iterator) {
-        final FastqQualityFormat encoding = getQualityEncoding();
-        final ReadTransformer transformer;
-        switch (encoding) {
-            case Standard:
-                // TODO: port to GATK MisencodedBaseQualityReadTransformer
-                transformer = new CheckQualityReadTransformer();
-                break;
-            case Illumina:
-                transformer = new MisencodedBaseQualityReadTransformer();
-                break;
-            case Solexa:
-                transformer = new SolexaToSangerReadTransformer();
-                break;
-            default:
-                throw new GATKException("Unknown quality encoding: " + encoding);
-        }
-        return new ReadTransformerIterator(iterator, transformer);
-    }
-
-    @Override
-    public Iterator<Tuple2<GATKRead, GATKRead>> getPairedIterator() {
-        if (!isPaired()) {
-            throw new UnsupportedOperationException(getSourceDescription() + ": cannot retrieve pair-end");
-        }
-        // TODO: document default behaviour
-        return GATKReadPairedIterator.of(iterator());
-    }
-
-    @Override
     public final RTReadsSource setForcedEncoding(final FastqQualityFormat encoding) {
+        if (format != null) {
+            throw new IllegalStateException("Quality was already detected and cannot be forced");
+        }
         this.forcedEncoding = Optional.ofNullable(encoding);
         return this;
     }

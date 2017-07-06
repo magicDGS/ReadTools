@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import org.magicdgs.readtools.engine.sources.fastq.FastqReadsSource;
 import org.magicdgs.readtools.utils.fastq.FastqGATKRead;
 import org.magicdgs.readtools.utils.iterators.RecordToReadIterator;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
@@ -43,7 +44,7 @@ import java.util.List;
  * Source handler for FASTQ files.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @deprecated use {@link org.magicdgs.readtools.engine.sources.fastq.FastqSingleEndSource}
+ * @deprecated use {@link FastqReadsSource}
  */
 @Deprecated
 final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {

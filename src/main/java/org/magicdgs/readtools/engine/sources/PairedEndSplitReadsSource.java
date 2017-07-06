@@ -31,34 +31,49 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamFileHeaderMerger;
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.util.FastqQualityFormat;
-import htsjdk.samtools.util.MergingIterator;
-import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.exceptions.UserException;
-import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import scala.Tuple2;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Source of read pairs stored in two different sources, one for the first of pair and another for
+ * the second of pair.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTSplitPairEndSource implements RTReadsSource {
+public class PairedEndSplitReadsSource implements RTReadsSource {
 
+    // wrapped sources
     private final RTReadsSource first;
-
     private final RTReadsSource second;
 
-    public RTSplitPairEndSource(RTReadsSource first, RTReadsSource second) {
-        this.first = Utils.nonNull(first, "null first");
-        this.second = Utils.nonNull(first, "null second");
-        Utils.validateArg(!first.isPaired(), "source cannot be paired for split files: " + first.getSourceDescription());
-        Utils.validateArg(!second.isPaired(), "source cannot be paired for split files: " + second.getSourceDescription());
+    // cached format
+    private FastqQualityFormat format = null;
+
+    /**
+     * Constructor from two sources, containing the first and the second of pair.
+     *
+     * @param first  source of reads for the first of pair.
+     * @param second source of reads for the second of pair.
+     */
+    public PairedEndSplitReadsSource(final RTReadsSource first, final RTReadsSource second) {
+        Utils.nonNull(first, "null first");
+        Utils.nonNull(second, "null second");
+        Utils.validateArg(!first.isPaired(), () -> String.format(
+                "first source cannot be paired for split files: %s (%s)",
+                first.getSourceFormat(), first.getSourceName()));
+        Utils.validateArg(!second.isPaired(), () -> String.format(
+                "second source cannot be paired for split files: %s (%s)",
+                first.getSourceFormat(), first.getSourceName()));
+        this.first = first;
+        this.second = second;
     }
 
     @Override
@@ -73,13 +88,19 @@ public class RTSplitPairEndSource implements RTReadsSource {
 
     @Override
     public FastqQualityFormat getQualityEncoding() {
-        final FastqQualityFormat format1 = first.getQualityEncoding();
-        final FastqQualityFormat format2 = second.getQualityEncoding();
-        if (format2.equals(format1)) {
-            return format1;
+        if (format == null) {
+            final FastqQualityFormat format1 = first.getQualityEncoding();
+            final FastqQualityFormat format2 = second.getQualityEncoding();
+            if (format2.equals(format1)) {
+                return format1;
+            }
+            throw new UserException(String.format(
+                    "Found two different quality encoding for %s: %s (%s) vs. %s (%s)",
+                    getSourceFormat(),
+                    format1, first.getSourceName(),
+                    format2, second.getSourceName()));
         }
-        throw new UserException(String.format("%s: different encoding found (%s vs. %s)",
-                getSourceDescription(), format1, format2));
+        return format;
     }
 
     @Override
@@ -87,12 +108,14 @@ public class RTSplitPairEndSource implements RTReadsSource {
         final SAMFileHeader header1 = first.getHeader();
         final SAMFileHeader header2 = second.getHeader();
         if (!header1.getSortOrder().equals(header2.getSortOrder())) {
-            throw new UserException(String.format("%s: different sort orders found (%s vs. %s)",
-                    getSourceDescription(), header1.getSortOrder(), header2.getSortOrder()));
+            throw new UserException(String.format(
+                    "%s (%s): different sort orders found (%s vs. %s)",
+                    getSourceFormat(), getSourceName(),
+                    header1.getSortOrder(), header2.getSortOrder()));
         }
-        final SamFileHeaderMerger merger = new SamFileHeaderMerger(
-                header1.getSortOrder(), Arrays.asList(header1, header2), true);
-        return merger.getMergedHeader();
+        return new SamFileHeaderMerger(header1.getSortOrder(), Arrays.asList(header1, header2),
+                true)
+                .getMergedHeader();
     }
 
     @Override
@@ -101,15 +124,19 @@ public class RTSplitPairEndSource implements RTReadsSource {
     }
 
     @Override
-    public Iterator<GATKRead> query(List<SimpleInterval> locs) {
-        // TODO: this requires merging iterator, no?
-        return null;
+    public String getSourceFormat() {
+        final String firstFormat = first.getSourceFormat();
+        final String secondFormat = second.getSourceFormat();
+        if (firstFormat.equals(secondFormat)) {
+            return firstFormat + "-split";
+        }
+        return firstFormat + "-" + secondFormat;
     }
 
+    /** Gets the source name of both sources, separated by commas. */
     @Override
-    public String getSourceDescription() {
-        // TODO: implement
-        return null;
+    public String getSourceName() {
+        return first.getSourceName() + "," + second.getSourceName();
     }
 
     @Override
@@ -148,15 +175,27 @@ public class RTSplitPairEndSource implements RTReadsSource {
     }
 
     @Override
-    public void close() throws IOException {
-        // TODO: catch the exceptions and re-throw, but try to close both
-        first.close();
-        second.close();
-    }
-
-    @Override
-    public Iterator<GATKRead> query(SimpleInterval interval) {
-        // TODO: this requires a merging iterator, no?
-        return null;
+    public void close() {
+        final List<UserException> exceptions = new ArrayList<>(2);
+        try {
+            first.close();
+        } catch (UserException e) {
+            exceptions.add(e);
+        }
+        try {
+            second.close();
+        } catch (UserException e) {
+            exceptions.add(e);
+        }
+        switch (exceptions.size()) {
+            case 1:
+                throw exceptions.get(0);
+            case 2:
+                throw new UserException(String.format("Error closing %s (%s): %s and %s",
+                        getSourceFormat(), getSourceName(),
+                        exceptions.get(0).getMessage(), exceptions.get(0).getMessage()));
+            default:
+                // do nothing
+        }
     }
 }
