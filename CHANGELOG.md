@@ -3,13 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### Changed
+### Fixed
+- Force HTSJDK dependency to be the one provided
+- Honor asynchronous writing in Distmap tools
 
+### Changed
 - Update documentation
 
 ### Developer
-
 - Implement automatic documentation framework
+- Remove `FastqToReadIterator` in favor of generic `RecordToReadIterator`
+- Add tests for Distmap tools for HDFS
+- Force testing dependencies to be in hte version provided
 
 ## [1.0.0] - 2017-05-18
 
