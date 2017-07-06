@@ -24,65 +24,54 @@
 
 package org.magicdgs.readtools.utils.iterators;
 
-import org.magicdgs.readtools.utils.fastq.FastqGATKRead;
-
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.fastq.FastqRecord;
-import org.broadinstitute.hellbender.utils.Utils;
+import org.broadinstitute.barclay.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
 /**
- * Wraps a FastqRecord iterator within an iterator of GATKReads.
+ * Wraps an iterator and a function to encode the records into {@link GATKRead}. This is useful to
+ * use implementations of different readers and convert to reads while iterating.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FastqToReadIterator implements Iterator<GATKRead>, Iterable<GATKRead> {
+public class RecordToReadIterator<T> implements Iterator<GATKRead>, Iterable<GATKRead> {
 
-    // wrapped FastqRecord iterator
-    private final Iterator<FastqRecord> fastqIterator;
-    // the header for all the GATKReads for this iterator.
-    private final SAMFileHeader header;
-
-    /**
-     * Creates a new headerless GATKRead iterator from a {@link FastqRecord} iterator.
-     *
-     * @param fastqIterator non-null iterator.
-     */
-    public FastqToReadIterator(final Iterator<FastqRecord> fastqIterator) {
-        this(fastqIterator, null);
-    }
+    // underlying iterator over reads
+    private final Iterator<T> underlyingIterator;
+    // encoder of GATK reads
+    private final Function<T, GATKRead> encoder;
 
     /**
-     * Creates a new GATKRead iterator from a {@link FastqRecord} iterator.
+     * Constructor.
      *
-     * @param fastqIterator non-null iterator.
-     * @param header        the header for include in every returned reads. May be {@code null}.
+     * @param underlyingIterator underlying iterator over records.
+     * @param encoder            function to encode each record into a {@link GATKRead}.
      */
-    public FastqToReadIterator(final Iterator<FastqRecord> fastqIterator, SAMFileHeader header) {
-        Utils.nonNull(fastqIterator, "null iterator");
-        this.fastqIterator = fastqIterator;
-        this.header = header;
+    public RecordToReadIterator(final Iterator<T> underlyingIterator,
+            final Function<T, GATKRead> encoder) {
+        this.underlyingIterator = Utils.nonNull(underlyingIterator);
+        this.encoder = Utils.nonNull(encoder);
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
-        return fastqIterator.hasNext();
+        return underlyingIterator.hasNext();
     }
 
-    /** {@inheritDoc} */
     @Override
     public GATKRead next() {
-        // every transformation is handle in the FastqGATKRead
-        return new FastqGATKRead(header, fastqIterator.next());
+        return encoder.apply(underlyingIterator.next());
     }
 
-    /** WARNING: this iterator does not start from the begining. */
+    /**
+     * {@inheritDoc}
+     *
+     * <p>WARNING: this iterator does not start from the beginning of the iteration.
+     */
     @Override
     public Iterator<GATKRead> iterator() {
         return this;
     }
-
 }

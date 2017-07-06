@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.utils.iterators;
 
 import org.magicdgs.readtools.RTBaseTest;
+import org.magicdgs.readtools.utils.fastq.FastqGATKRead;
 
 import htsjdk.samtools.fastq.FastqRecord;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
@@ -34,17 +35,21 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class FastqToReadIteratorUnitTest extends RTBaseTest {
+public class RecordToReadIteratorUnitTest extends RTBaseTest {
+
+    private final Function<FastqRecord, GATKRead> fastqEncoder = FastqGATKRead::new;
 
     @DataProvider(name = "iterators")
-    public Object[][] iteratorDataProvider() throws Exception {
+    public Object[][] recordProvider() throws Exception {
         // list to iterate
         final List<FastqRecord> records = Arrays.asList(
                 new FastqRecord("read0", "ACTG", null, "FFFF"),
@@ -74,14 +79,15 @@ public class FastqToReadIteratorUnitTest extends RTBaseTest {
 
         // TODO: add more iterators?
         return new Object[][] {
-                {records.iterator(), expectedReads}
+                {records.iterator(), fastqEncoder, expectedReads}
         };
     }
 
     @Test(dataProvider = "iterators")
-    public void testNextHasNext(final Iterator<FastqRecord> recordIterator,
+    public <T> void testNextHasNext(final Iterator<T> recordIterator,
+            final Function<T, GATKRead> encoder,
             final List<GATKRead> expectedReads) throws Exception {
-        final FastqToReadIterator it = new FastqToReadIterator(recordIterator);
+        final RecordToReadIterator<T> it = new RecordToReadIterator(recordIterator, encoder);
         for (int i = 0; i < expectedReads.size(); i++) {
             Assert.assertTrue(it.hasNext());
             // testing as as SAMRecord because GATKRead.equals only considers Object equality
@@ -98,9 +104,10 @@ public class FastqToReadIteratorUnitTest extends RTBaseTest {
     }
 
     @Test(dataProvider = "iterators")
-    public void testIterator(final Iterator<FastqRecord> recordIterator,
+    public <T> void testIterator(final Iterator<T> recordIterator,
+            final Function<T, GATKRead> encoder,
             final List<GATKRead> expectedReads) throws Exception {
-        final FastqToReadIterator it = new FastqToReadIterator(recordIterator);
+        final RecordToReadIterator<T> it = new RecordToReadIterator(recordIterator, encoder);
         final Iterator<GATKRead> expected = expectedReads.iterator();
         for (final GATKRead read : it) {
             // testing as as SAMRecord because GATKRead.equals only considers Object equality
@@ -110,8 +117,10 @@ public class FastqToReadIteratorUnitTest extends RTBaseTest {
         Assert.assertFalse(it.hasNext());
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void testNullNestedIterator() {
-        new FastqToReadIterator(null);
+        Assert.assertThrows(IllegalArgumentException.class, () -> new RecordToReadIterator(null, fastqEncoder));
+        Assert.assertThrows(IllegalArgumentException.class, () -> new RecordToReadIterator(Collections.emptyIterator(), null));
     }
+
 }
