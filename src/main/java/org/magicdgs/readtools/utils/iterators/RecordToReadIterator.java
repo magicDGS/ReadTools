@@ -31,32 +31,45 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 /**
+ * Wraps an iterator and a function to encode the records into {@link GATKRead}. This is useful to
+ * use implementations of different readers and convert to reads while iterating.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class RecordToReadIterator<T> implements Iterator<GATKRead>, Iterable<GATKRead> {
 
+    // underlying iterator over reads
     private final Iterator<T> underlyingIterator;
+    // encoder of GATK reads
     private final Function<T, GATKRead> encoder;
 
+    /**
+     * Constructor.
+     *
+     * @param underlyingIterator underlying iterator over records.
+     * @param encoder            function to encode each record into a {@link GATKRead}.
+     */
     public RecordToReadIterator(final Iterator<T> underlyingIterator,
             final Function<T, GATKRead> encoder) {
         this.underlyingIterator = Utils.nonNull(underlyingIterator);
         this.encoder = Utils.nonNull(encoder);
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
         return underlyingIterator.hasNext();
     }
 
-    /** {@inheritDoc} */
     @Override
     public GATKRead next() {
         return encoder.apply(underlyingIterator.next());
     }
 
-    /** WARNING: this iterator does not start from the begining. */
+    /**
+     * {@inheritDoc}
+     *
+     * <p>WARNING: this iterator does not start from the beginning of the iteration.
+     */
     @Override
     public Iterator<GATKRead> iterator() {
         return this;
