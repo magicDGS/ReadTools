@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.distmap;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
+import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
@@ -93,12 +94,12 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
                         expectedSingle},
                 {"ReadsToDistmap_paired_FASTQ",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small_1.illumina.fq"))
-                                .addFileArgument("input2", getTestFile("small_2.illumina.fq")),
+                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq")),
                         expectedPaired},
                 {"ReadsToDistmap_single_FASTQ",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small_se.illumina.fq")),
+                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_se.fq")),
                         expectedSingle},
                 {"ReadsToDistmap_single_SAM_names",
                         new ArgumentsBuilder()
@@ -148,7 +149,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
         Assert.assertFalse(cluster.getFileSystem().exists(path), "output already exists");
 
         final ArgumentsBuilder args = new ArgumentsBuilder()
-                .addInput(getTestFile("small_se.illumina.fq"))
+                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"))
                 .addArgument("output", path.toUri().toString())
                 .addArgument("hdfsBlockSize", Long.toString(blockSize));
 

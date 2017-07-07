@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.conversion;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
+import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
@@ -62,12 +63,12 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
                         expectedSingle},
                 {"StandardizeReads_paired_FASTQ",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small_1.illumina.fq"))
-                                .addFileArgument("input2", getTestFile("small_2.illumina.fq")),
+                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq")),
                         expectedPaired},
                 {"StandardizeReads_single_FASTQ",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small_se.illumina.fq")),
+                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_se.fq")),
                         expectedSingle},
                 {"StandardizeReads_single_SAM_names",
                         new ArgumentsBuilder()

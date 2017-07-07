@@ -44,11 +44,20 @@ public final class TestResourcesUtils {
     public static final String READTOOLS_TEST_ROOT_FILE_DIRECTORY =
             new File(CURRENT_DIRECTORY, "src/test/resources").getAbsolutePath() + "/";
 
+    /** The directory for example data. */
+    public static final String READTOOLS_EXAMPLE_DATA_DIRECTORY =
+            new File(CURRENT_DIRECTORY, "/testdata").getAbsolutePath() + "/";
+
     /**
      * Gets the test resource as a file in the test source directory.
      */
     public static File getReadToolsTestResource(final String fileName) {
         return new File(READTOOLS_TEST_ROOT_FILE_DIRECTORY, fileName);
+    }
+
+    /** Gets a file in the test data folder. This data represents formats handled in ReadTools. */
+    public static File getExampleDataFile(final String fileName) {
+        return new File(READTOOLS_EXAMPLE_DATA_DIRECTORY, fileName);
     }
 
 }

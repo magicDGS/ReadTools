@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.trimming;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
+import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
@@ -47,7 +48,7 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
     private static ArgumentsBuilder getRequiredArguments() {
         // input argument name changed -> same as GATK
         // added the argument to do not output the program group for easy checks
-        return new ArgumentsBuilder().addInput(SMALL_FASTQ_1)
+        return new ArgumentsBuilder().addInput(TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"))
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
     }
 
@@ -59,13 +60,13 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
                 {"testTrimmingSingleEndDefaultParameters", getRequiredArguments(),
                         false, false},
                 {"testTrimmingPairEndDefaultParameters", getRequiredArguments()
-                        .addFileArgument("input2", SMALL_FASTQ_2),
+                        .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701_2.fq")),
                         true, false},
                 // test keep discarded
                 {"testTrimmingSingleEndDefaultParameters", getRequiredArguments(),
                         false, true},
                 {"testTrimmingPairEndDefaultParameters", getRequiredArguments()
-                        .addFileArgument("input2", SMALL_FASTQ_2),
+                        .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701_2.fq")),
                         true, true},
                 // test lower mapping quality
                 // parameter name changed

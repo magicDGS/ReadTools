@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import org.magicdgs.readtools.TestResourcesUtils;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import org.magicdgs.readtools.RTBaseTest;
 
@@ -66,10 +67,10 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
     public Object[][] fastqDataSources() {
         final SAMFileHeader emptyHeader = new SAMFileHeader();
         return new Object[][] {
-                {new File(sourcesFolder, "small.illumina.fq").getAbsolutePath(),
-                        FastqQualityFormat.Illumina, emptyHeader, 25},
-                {new File(sourcesFolder, "small.sanger.fq").getAbsolutePath(),
-                        FastqQualityFormat.Standard, emptyHeader, 14}
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_se.fq").getAbsolutePath(),
+                        FastqQualityFormat.Illumina, emptyHeader, 4},
+                {TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq").getAbsolutePath(),
+                        FastqQualityFormat.Standard, emptyHeader, 103}
         };
     }
 

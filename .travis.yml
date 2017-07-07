@@ -39,7 +39,7 @@ script:
           ./gradlew shadowJar &&
           java -jar ./build/libs/ReadTools.jar --version &&
           java -jar ./build/libs/ReadTools.jar StandardizeReads --version &&
-          java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input ./src/test/resources/org/magicdgs/readtools/tools/conversion/StandardizeReads/small_se.illumina.fq --output ./tmp/test.sam;
+          java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input ./testdata/SRR1931701.illumina_se.fq --output ./tmp/test.sam;
       elif [[ $TYPE == test ]]; then
           ./gradlew jacocoTestReport;
       elif [[ $TYPE == jekyll ]]; then

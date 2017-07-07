@@ -40,10 +40,6 @@ import java.util.List;
  */
 public abstract class RTCommandLineProgramTest extends RTBaseTest implements CommandLineProgramTester {
 
-    /** Test FASTQ file (pair 1). */
-    public static final File SMALL_FASTQ_1 = getInputDataFile("SRR1931701_1.fq");
-    /** Test FASTQ file (pair 2). */
-    public static final File SMALL_FASTQ_2 = getInputDataFile("SRR1931701_2.fq");
     /** Test BAM file (paired). */
     public static final File PAIRED_BAM_FILE = getInputDataFile("SRR1931701.tagged.sam");
     /** Test BAM file (single). */
