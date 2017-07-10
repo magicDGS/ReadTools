@@ -48,15 +48,16 @@ import java.util.stream.IntStream;
  */
 public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgramTest {
 
+    private final File PAIRED_BAM_FILE = TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.sam");
+
     // old test files in FASTQ format -> they are modified to have the correct separator
     private final File DUAL_FASTQ_1 = getTestFile("SRR1931701.dual.barcoded_1.fq");
     private final File DUAL_FASTQ_2 = getTestFile("SRR1931701.dual.barcoded_2.fq");
 
     private final File SINGLE_BAM_FILE = getTestFile("SRR1931701.single.tagged.sam");
-    private final File PAIRED_BAM_FILE = getTestFile("SRR1931701.tagged.sam");
 
-    protected final File UNIQUE_BARCODE_FILE = getTestFile("unique.barcodes");
-    protected final File DUAL_BARCODE_FILE = getTestFile("dual.barcodes");
+    private final static File UNIQUE_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("unique.barcodes");
+    private final static File DUAL_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("dual.barcodes");
 
     // this is in sync with the input files
     private final static List<String> EXPECTED_BY_SAMPLE_EXT = IntStream.range(1, 10)
@@ -156,13 +157,13 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                 {"testBamBarcodeDetector", "BamBarcodeDetector",
                         new ArgumentsBuilder()
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)
-                                .addFileArgument("input", getInputDataFile("example.mapped.sam"))
+                                .addFileArgument("input", getTestFile("example.mapped.sam"))
                                 .addBooleanArgument("barcodeInReadName", true),
                         false},
                 {"testBamBarcodeDetectorSplit", "BamBarcodeDetector",
                         new ArgumentsBuilder()
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)
-                                .addFileArgument("input", getInputDataFile("example.mapped.sam"))
+                                .addFileArgument("input", getTestFile("example.mapped.sam"))
                                 .addBooleanArgument("barcodeInReadName", true),
                         true}
         };

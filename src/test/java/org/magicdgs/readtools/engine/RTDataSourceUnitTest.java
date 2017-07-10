@@ -82,6 +82,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
         final SAMFileHeader header = new SAMTextHeaderCodec().decode(
                 new StringLineReader("@HD\tVN:1.4\tSO:coordinate\n"
                         + "@SQ\tSN:2L\tLN:59940\n"
+                        // TODO: this header should be changed by using 2L.fragment.fa
                         + "@PG\tID:bwa\tPN:bwa\tVN:0.7.12-r1039\tCL:bwa mem fragment.fa SRR1931701_1.fq SRR1931701_2.fq"
                 ), "testIndexed");
         return new Object[][] {

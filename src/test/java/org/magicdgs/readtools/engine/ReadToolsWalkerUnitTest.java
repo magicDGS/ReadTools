@@ -28,6 +28,7 @@ import org.magicdgs.readtools.RTCommandLineProgramTest;
 import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -51,14 +52,10 @@ public class ReadToolsWalkerUnitTest extends RTCommandLineProgramTest {
 
     }
 
-    private String getTestFileName(final String fileName) {
-        return getTestFile(fileName).getAbsolutePath();
-    }
-
     @DataProvider(name = "arguments")
     public Object[][] walkerArguments() {
         return new Object[][] {
-                {Arrays.asList("-I", getTestFileName("small.mapped.bam")), 206, false},
+                {Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.bam").getAbsolutePath()), 206, false},
                 {Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq").getAbsolutePath(),
                         "-I2", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq").getAbsolutePath()), 8, true}
         };

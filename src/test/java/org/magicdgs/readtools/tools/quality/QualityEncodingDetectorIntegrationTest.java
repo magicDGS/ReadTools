@@ -68,8 +68,8 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
                 {TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"), FastqQualityFormat.Standard},
                 {TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"), FastqQualityFormat.Illumina},
                 // test SAM files
-                {PAIRED_BAM_FILE, FastqQualityFormat.Standard},
-                {getInputDataFile("small.illumina.sam"), FastqQualityFormat.Illumina}
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.sam"), FastqQualityFormat.Standard},
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.misencoded.sam"), FastqQualityFormat.Illumina}
         };
     }
 

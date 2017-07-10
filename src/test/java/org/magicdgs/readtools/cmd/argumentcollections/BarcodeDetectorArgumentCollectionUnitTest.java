@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
+import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -45,6 +46,9 @@ import java.util.List;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class BarcodeDetectorArgumentCollectionUnitTest extends RTCommandLineProgramTest {
+
+    protected final File UNIQUE_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("unique.barcodes");
+    protected final File DUAL_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("dual.barcodes");
 
     @CommandLineProgramProperties(oneLineSummary = "BarcodeDetectorArgumentCollection", summary = "BarcodeDetectorArgumentCollection", programGroup = TestProgramGroup.class)
     private final static class BarcodeDetectorArgumentCollectionTool extends CommandLineProgram {
@@ -114,17 +118,15 @@ public class BarcodeDetectorArgumentCollectionUnitTest extends RTCommandLineProg
 
     @DataProvider(name = "badArgumentsForGetBarcodeDecoder")
     public Object[][] getBadArgumentsForBarcodeDecoder() {
-        final File singleBarcode = getTestFile("unique.barcodes");
-        final File dualBarcode = getTestFile("dual.barcodes");
         final List<Integer> oneElement = Collections.singletonList(1);
         final List<Integer> twoElements = Arrays.asList(1, 2);
         final List<Integer> threeElements = Arrays.asList(1, 2, 3);
         return new Object[][] {
                 {getTestFile("notExistingBarcode"), oneElement, oneElement},
-                {singleBarcode, twoElements, oneElement},
-                {singleBarcode, oneElement, twoElements},
-                {dualBarcode, threeElements, twoElements},
-                {dualBarcode, twoElements, threeElements}
+                {UNIQUE_BARCODE_FILE, twoElements, oneElement},
+                {UNIQUE_BARCODE_FILE, oneElement, twoElements},
+                {DUAL_BARCODE_FILE, threeElements, twoElements},
+                {DUAL_BARCODE_FILE, twoElements, threeElements}
         };
     }
 
@@ -137,17 +139,15 @@ public class BarcodeDetectorArgumentCollectionUnitTest extends RTCommandLineProg
 
     @DataProvider(name = "goodArguments")
     public Object[][] getGoodArguments() {
-        final File singleBarcode = getTestFile("unique.barcodes");
-        final File dualBarcode = getTestFile("dual.barcodes");
         final List<Integer> oneElement = Collections.singletonList(1);
         final List<Integer> twoElements = Arrays.asList(1, 2);
         return new Object[][] {
-                {singleBarcode, null, oneElement, oneElement},
-                {dualBarcode, null, oneElement, oneElement},
-                {dualBarcode, null, twoElements, twoElements},
-                {singleBarcode, 1, oneElement, oneElement},
-                {dualBarcode, 1, oneElement, oneElement},
-                {dualBarcode, 1, twoElements, twoElements}
+                {UNIQUE_BARCODE_FILE, null, oneElement, oneElement},
+                {DUAL_BARCODE_FILE, null, oneElement, oneElement},
+                {DUAL_BARCODE_FILE, null, twoElements, twoElements},
+                {UNIQUE_BARCODE_FILE, 1, oneElement, oneElement},
+                {DUAL_BARCODE_FILE, 1, oneElement, oneElement},
+                {DUAL_BARCODE_FILE, 1, twoElements, twoElements}
         };
     }
 
