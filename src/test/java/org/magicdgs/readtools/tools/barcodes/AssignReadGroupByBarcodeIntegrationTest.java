@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.tools.barcodes;
 
+import org.magicdgs.readtools.TestResourcesUtils;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 
@@ -141,13 +142,13 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                         true},
                 // test unique barcode single-end
                 {"testSingleEndDefaultParameterUniqueBarcode", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(SMALL_FASTQ_1)
+                        new ArgumentsBuilder().addInput(TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"))
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
                 // test unique barcode pair-end
                 {"testPairEndDefaultParametersUniqueBarcode", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(SMALL_FASTQ_1)
-                                .addFileArgument("input2", SMALL_FASTQ_2)
+                        new ArgumentsBuilder().addInput(TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701_2.fq"))
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
 

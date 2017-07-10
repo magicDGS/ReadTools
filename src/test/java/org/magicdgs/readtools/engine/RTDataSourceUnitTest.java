@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.engine;
 
 import org.magicdgs.readtools.RTBaseTest;
+import org.magicdgs.readtools.TestResourcesUtils;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMTextHeaderCodec;
@@ -72,7 +73,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     @Test(expectedExceptions = UserException.class)
     public void testDifferentEncodingForPairEnd() throws Exception {
         final RTDataSource dataSource =
-                new RTDataSource(getSource("small_1.illumina.fq"), getSource("small.paired.sam"));
+                new RTDataSource(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq").getAbsolutePath(), getSource("small.paired.sam"));
         dataSource.getOriginalQualityEncoding();
     }
 
@@ -108,8 +109,8 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     public Object[][] pairedFilesDataSource() {
         return new Object[][] {
                 // pair-end illumina
-                {getSource("small_1.illumina.fq"), getSource("small_2.illumina.fq"),
-                        FastqQualityFormat.Illumina, minimalPairedHeader, 5}
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq").getAbsolutePath(), TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq").getAbsolutePath(),
+                        FastqQualityFormat.Illumina, minimalPairedHeader, 4}
         };
     }
 
@@ -125,7 +126,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
         return new Object[][] {
                 // this is really paired
                 {getSource("small.paired.sam"), FastqQualityFormat.Standard, header, 4},
-                {getSource("small.interleaved.illumina.fq"), FastqQualityFormat.Illumina,
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.interleaved.illumina.fq").getAbsolutePath(), FastqQualityFormat.Illumina,
                         minimalPairedHeader, 5}
         };
     }
@@ -137,8 +138,8 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                 // this is really single end
                 {getSource("small.single.sam"), FastqQualityFormat.Standard, samHeader, 4},
                 // this are not single end, but should be treated as is
-                {getSource("small_1.illumina.fq"), FastqQualityFormat.Illumina, emptyHeader, 5},
-                {getSource("small_2.illumina.fq"), FastqQualityFormat.Illumina, emptyHeader, 5},
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq").getAbsolutePath(), FastqQualityFormat.Illumina, emptyHeader, 4},
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq").getAbsolutePath(), FastqQualityFormat.Illumina, emptyHeader, 4},
                 {getSource("small.paired.sam"), FastqQualityFormat.Standard, samHeader, 8}
         };
     }

@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.quality;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
+import org.magicdgs.readtools.TestResourcesUtils;
 
 import htsjdk.samtools.util.FastqQualityFormat;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -43,9 +44,8 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
 
     @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testBadArgument() throws Exception {
-        // TODO: change when SMALL_FASTQ_1 doees not exists anymore
         runCommandLine(
-                Arrays.asList("-I", SMALL_FASTQ_1.getAbsolutePath(), "--maximumReads", "-1"));
+                Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq").getAbsolutePath(), "--maximumReads", "-1"));
     }
 
     @DataProvider(name = "notExistingFiles")
@@ -55,7 +55,6 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
 
     @Test(dataProvider = "notExistingFiles", expectedExceptions = UserException.CouldNotReadInputFile.class)
     public void testFileDoesNotExists(final String fileName) throws Exception {
-        // TODO: change when SMALL_FASTQ_1 doees not exists anymore
         runCommandLine(Arrays.asList("-I", fileName));
     }
 
@@ -66,8 +65,8 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
     public static Object[][] getTestFiles() {
         return new Object[][] {
                 // test FASTQ file
-                {SMALL_FASTQ_1, FastqQualityFormat.Standard},
-                {getInputDataFile("small.illumina.fq"), FastqQualityFormat.Illumina},
+                {TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"), FastqQualityFormat.Standard},
+                {TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"), FastqQualityFormat.Illumina},
                 // test SAM files
                 {PAIRED_BAM_FILE, FastqQualityFormat.Standard},
                 {getInputDataFile("small.illumina.sam"), FastqQualityFormat.Illumina}

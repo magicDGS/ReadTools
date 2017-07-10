@@ -26,6 +26,7 @@ package org.magicdgs.readtools.tools.conversion;
 
 import org.magicdgs.readtools.RTBaseTest;
 import org.magicdgs.readtools.RTCommandLineProgramTest;
+import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
@@ -83,13 +84,13 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                 {"test_FASTQ_single_standard",
                         new ArgumentsBuilder()
                                 .addArgument("rawBarcodeSequenceTags", "null")
-                                .addInput(getTestFile("small_se.illumina.fq")),
+                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_se.fq")),
                         Collections.singletonList(getTestFile("expected_single_SE.fq")),
                         false},
                 {"test_FASTQ_paired_standard",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small_1.illumina.fq"))
-                                .addFileArgument("input2", getTestFile("small_2.illumina.fq")),
+                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq")),
                         Arrays.asList(getTestFile("expected_paired_1.fq"),
                                 getTestFile("expected_paired_2.fq")),
                         true},
