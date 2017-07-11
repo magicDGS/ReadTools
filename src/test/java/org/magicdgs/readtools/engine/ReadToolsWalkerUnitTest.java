@@ -28,7 +28,6 @@ import org.magicdgs.readtools.RTCommandLineProgramTest;
 import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.utils.read.GATKRead;
-import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
