@@ -48,7 +48,7 @@ import java.util.stream.IntStream;
  */
 public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgramTest {
 
-    private final File PAIRED_BAM_FILE = TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.sam");
+    private final static File PAIRED_BAM_FILE = TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.sam");
 
     // old test files in FASTQ format -> they are modified to have the correct separator
     private final File DUAL_FASTQ_1 = getTestFile("SRR1931701.dual.barcoded_1.fq");

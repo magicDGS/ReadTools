@@ -23,7 +23,7 @@ Files containing reads in different formats.
 
 ## Additional files
 
-* 2L.fragment.fa: FASTA file with index (2L.fragment.fa.fai) for mapped
-  reads and CRAM reference source.
-* dual.barcodes: barcode file for samples with dual-indexing.
-* unique.barcodes: barcode file for samples with single-indexing.
+* __2L.fragment.fa__: FASTA file with index (__2L.fragment.fa.fai__) for
+  mapped reads and CRAM reference source.
+* __dual.barcodes__: barcode file for samples with dual-indexing.
+* __unique.barcodes__: barcode file for samples with single-indexing.
