@@ -137,31 +137,10 @@ public class RTReadUtils {
             } catch (final GATKException.ReadAttributeTypeMismatch e) {
                 // always non-null, because it failed while casting instead of returning null
                 nonNull = true;
-                // we should use the byte[] method for both String and byte[], because the
-                // getAttributeAsString() method returns the address of the byte[] array
-                // TODO: getAttributeAsByteArray() returns String.getBytes() using a default charset
-                // TODO: which is not predictable and could generate problems when generating the hash
-                // TODO: there is a PR to fix this in GATK4: https://github.com/broadinstitute/gatk/pull/3201
-                // TODO: in the meantime, we use the following workaround to detect if the attribute is a String or a byte[]
-                // TODO: this code should be simplified by using removing the rest of the code in the catch clause
-                // TODO: and substitute by `attHash += hashFunction.hashBytes(read.getAttributeAsByteArray(att)).asLong();`
-
-                // WORKAROUND:
-                // getAttributeAsString() returns Object.toString() in the GATK's implementation
-                // in that case, for a byte[] attribute, it will return the address for the object
-                // this could be use to distinguish when the attribute is a byte[] or a String
-                // when you get the bytes from a String attribute, this should be the same as the
-                // ones returned by getAttributeAsByteArray(); if the String is the address for the
-                // byte[], this bytes won't be the same at all
-                final String attAsString = read.getAttributeAsString(att);
-                final byte[] attAsBytes = read.getAttributeAsByteArray(att);
-                if (Arrays.equals(attAsString.getBytes(), attAsBytes)) {
-                    // hash the String as a byte array with the default charset
-                    attHash += hashFunction.hashBytes(attAsString.getBytes(DEFAULT_CHARSET)).asLong();
-                } else {
-                    // hash directly the bytes
-                    attHash += hashFunction.hashBytes(attAsBytes).asLong();
-                }
+                // getAttributeAsByteArray() returns the bytes from a String with the default
+                // charset (UTF-8), and like that we do not have to bother if the attribute is
+                // a String or a byte[] originally
+                attHash += hashFunction.hashBytes(read.getAttributeAsByteArray(att)).asLong();
             }
         }
         // if the attributeHash is zero, that means that no attribute was included
