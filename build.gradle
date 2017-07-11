@@ -49,7 +49,7 @@ repositories {
     }
 }
 // versions for the dependencies to resolve conflicts
-final gatkVersion = '4.alpha.2-1164-g8923015-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
+final gatkVersion = '4.beta.1-16-gf1450ed-SNAPSHOT' // TODO: we should use the master-SNAPSHOT one is done (gatk/issue#1995)
 final htsjdkVersion = '2.10.1'
 final testNGVersion = '6.11'
 final mockitoVersion = '2.7.19'
