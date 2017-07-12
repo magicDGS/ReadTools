@@ -51,14 +51,10 @@ public class ReadToolsWalkerUnitTest extends RTCommandLineProgramTest {
 
     }
 
-    private String getTestFileName(final String fileName) {
-        return getTestFile(fileName).getAbsolutePath();
-    }
-
     @DataProvider(name = "arguments")
     public Object[][] walkerArguments() {
         return new Object[][] {
-                {Arrays.asList("-I", getTestFileName("small.mapped.bam")), 206, false},
+                {Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.bam").getAbsolutePath()), 206, false},
                 {Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq").getAbsolutePath(),
                         "-I2", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq").getAbsolutePath()), 8, true}
         };

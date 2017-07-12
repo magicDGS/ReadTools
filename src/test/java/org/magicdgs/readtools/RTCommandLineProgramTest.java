@@ -40,21 +40,6 @@ import java.util.List;
  */
 public abstract class RTCommandLineProgramTest extends RTBaseTest implements CommandLineProgramTester {
 
-    /** Test BAM file (paired). */
-    public static final File PAIRED_BAM_FILE = getInputDataFile("SRR1931701.tagged.sam");
-    /** Test BAM file (single). */
-    public static final File SINGLE_BAM_FILE = getInputDataFile("SRR1931701.single.tagged.sam");
-
-    /**
-     * Gets input data in the test directory.
-     *
-     * @deprecated use directly {@link TestResourcesUtils#getReadToolsTestResource(String)}.
-     */
-    @Deprecated
-    public static File getInputDataFile(final String fileName) {
-        return TestResourcesUtils.getReadToolsTestResource("org/magicdgs/readtools/data/" + fileName);
-    }
-
     /** @return {@link #getTestedClassName()} */
     @Override
     public String getTestedToolName() {

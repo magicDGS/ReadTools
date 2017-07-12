@@ -16,3 +16,14 @@ Files containing reads in different formats.
 | SRR1931701.illumina_se.fq | FASTQ  | Illumina         | Illumina-legacy  | Single-end     | Dual          | 4       | Barcodes attached to read name, separated by hyphens. |
 | SRR1931701.casava.fq      | FASTQ  | Standard         | Casava           | Single-end     | Single        | 103     | Barcode in the Casava name. |
 | SRR1931701.interleaved.fq | FASTQ  | Illumina         | Illumina-legacy  | Pair-end       | Single        | 10      | Barcodes attached to read name, separated by hyphens. |
+| SRR1931701.misencoded.sam | SAM    | Illumina         | SAM-compliant    | Single-end     | Dual          | 25      | Barcodes in default BC tag, separated by hyphens. |
+| SRR1931701.tagged.sam     | SAM    | Standard         | SAM-compliant    | Pair-end       | Dual          | 206     | Separated barcode tags (BC and B2). Only the first of pair has barcode tags. |
+| SRR1931701.tagged.bam     | BAM    | Standard         | SAM-compliant    | Pair-end       | Dual          | 206     | Separated barcode tags (BC and B2). Only the first of pair has barcode tags. |
+| SRR1931701.tagged.cram    | CRAM   | Standard         | SAM-compliant    | Pair-end       | Dual          | 206     | Separated barcode tags (BC and B2). Only the first of pair has barcode tags. |
+
+## Additional files
+
+* __2L.fragment.fa__: FASTA file with index (__2L.fragment.fa.fai__) for
+  mapped reads and CRAM reference source.
+* __dual.barcodes__: barcode file for samples with dual-indexing.
+* __unique.barcodes__: barcode file for samples with single-indexing.

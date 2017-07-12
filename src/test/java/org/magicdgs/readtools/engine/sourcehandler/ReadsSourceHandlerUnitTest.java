@@ -56,7 +56,7 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     // this is the factory for tests, including reference sequence for CRAM
     private final ReadReaderFactory FACTORY_FOR_TEST = new ReadReaderFactory()
-            .setReferenceSequence(new File(sourcesFolder, "2L.fragment.fa"));
+            .setReferenceSequence(TestResourcesUtils.getExampleDataFile("2L.fragment.fa"));
 
     @Test(expectedExceptions = UserException.CouldNotReadInputFile.class)
     public void testNotFoundHandler() throws Exception {
@@ -80,11 +80,13 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
         // mapped files
         final String[] mapped =
                 new String[] {"small.mapped.sam", "small.mapped.bam", "small.mapped.cram"};
-        final String[] unmapped =
-                new String[] {"small.unmapped.sam", "small.unmapped.bam", "small.unmapped.cram"};
+        final File[] unmapped = new File[] {
+                TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.sam"),
+                TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.bam"),
+                TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.cram")
+        };
         // all the files comes from the same
-        for (final String files : unmapped) {
-            final File file = new File(sourcesFolder, files);
+        for (final File file : unmapped) {
             data.add(new Object[] {file.getAbsolutePath(), FastqQualityFormat.Standard,
                     getHeaderForFile(file), 206});
         }
