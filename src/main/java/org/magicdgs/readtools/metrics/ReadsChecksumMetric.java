@@ -31,7 +31,7 @@ import htsjdk.samtools.metrics.MetricBase;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: it should include the source for the reads
+// TODO: it should include the source for the reads -> name of the source, if pair-end, etc.
 public class ReadsChecksumMetric extends MetricBase {
 
     /**

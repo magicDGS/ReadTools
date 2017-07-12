@@ -129,6 +129,7 @@ public class ReadsChecksum extends ReadToolsWalker {
     /** Writes the metrics file. */
     private void writeOutput() {
         // create the metrics file with default headers
+        // TODO: maybe we shouldn't include this headers, but just the extra information
         final MetricsFile<ReadsChecksumMetric, Integer> metricsFile = getMetricsFile();
         // add String headers with information included
         if (!tagsToInclude.isEmpty()) {
