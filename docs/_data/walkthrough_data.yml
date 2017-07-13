@@ -1,0 +1,257 @@
+# STANDARD DATA: SAM/BAM/CRAM files following the specs
+## single-end & single index:
+- files:
+    - standard.single_index.SE.sam
+  format: SAM
+  quality: Standard
+  paired: no
+  readname: Standard
+  indexing: Single
+  barcode: BC tag
+- files:
+    - standard.single_index.SE.bam
+  format: BAM
+  quality: Standard
+  paired: no
+  readname: Standard
+  indexing: Single
+  barcode: BC tag
+- files:
+    - standard.single_index.SE.cram
+  format: CRAM
+  quality: Standard
+  paired: no
+  readname: Standard
+  indexing: Single
+  barcode: BC tag
+## paired-end & single index
+- files:
+    - standard.single_index.paired.sam
+  format: SAM
+  quality: Standard
+  paired: yes
+  readname: Standard
+  indexing: Single
+  barcode: BC tag
+- files:
+    - standard.single_index.paired.bam
+  format: BAM
+  quality: Standard
+  paired: yes
+  readname: Standard
+  indexing: Single
+  barcode: BC tag
+- files:
+    - standard.single_index.paired.cram
+  format: CRAM
+  quality: Standard
+  paired: yes
+  readname: Standard
+  indexing: Single
+  barcode: BC tag
+## single-end & dual index:
+- files:
+    - standard.dual_index.SE.sam
+  format: SAM
+  quality: Standard
+  paired: no
+  readname: Standard
+  indexing: Dual
+  barcode: BC tag
+- files:
+    - standard.dual_index.SE.bam
+  format: BAM
+  quality: Standard
+  paired: no
+  readname: Standard
+  indexing: Dual
+  barcode: BC tag
+- files:
+    - standard.dual_index.SE.cram
+  format: CRAM
+  quality: Standard
+  paired: no
+  readname: Standard
+  indexing: Dual
+  barcode: BC tag
+## paired-end & dual index:
+- files:
+    - standard.dual_index.paired.sam
+  format: SAM
+  quality: Standard
+  paired: yes
+  readname: Standard
+  indexing: Dual
+  barcode: BC tag
+- files:
+    - standard.dual_index.paired.bam
+  format: BAM
+  quality: Standard
+  paired: yes
+  readname: Standard
+  indexing: Dual
+  barcode: BC tag
+- files:
+    - standard.dual_index.paired.cram
+  format: CRAM
+  quality: Standard
+  paired: yes
+  readname: Standard
+  indexing: Dual
+  barcode: BC tag
+
+# FASTQ DATA
+## normal output for ReadTools: Illumina-legacy, dual/single indexed, single-end or pair-end (split files)
+- files:
+    - illumina_legacy.single_index.SE.fq
+  format: FASTQ
+  quality: Standard
+  paired: no
+  readname: Illumina-legacy
+  indexing: Single
+  barcode: In Read Name
+- files:
+    - illumina_legacy.single_index.paired_1.fq
+    - illumina_legacy.single_index.paired_2.fq
+  format: FASTQ
+  quality: Standard
+  paired: yes
+  readname: Illumina-legacy
+  indexing: Single
+  barcode: In Read Name
+- files:
+    - illumina_legacy.dual_index.SE.fq
+  format: FASTQ
+  quality: Standard
+  paired: no
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+- files:
+    - illumina_legacy.dual_index.paired_1.fq
+    - illumina_legacy.dual_index.paired_2.fq
+  format: FASTQ
+  quality: Standard
+  paired: yes
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+## pair-end interleaved (less common)
+- files:
+    - illumina_legacy.single_index.interleaved.fq
+  format: FASTQ
+  quality: Standard
+  paired: yes
+  readname: Illumina-legacy
+  indexing: Single
+  barcode: In Read Name
+- files:
+    - illumina_legacy.dual_index.interleaved.fq
+  format: FASTQ
+  quality: Standard
+  paired: yes
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+## casava read names
+- files:
+    - casava.single_index.SE.fq
+  format: FASTQ
+  quality: Standard
+  paired: no
+  readname: Casava
+  indexing: Single
+  barcode: In Read Name
+- files:
+    - casava.single_index.paired_1.fq
+    - casava.single_index.paired_2.fq
+  format: FASTQ
+  quality: Standard
+  paired: yes
+  readname: Casava
+  indexing: Single
+  barcode: In Read Name
+
+# ILLUMINA QUALITY: these reads are encoded with Illumina quality, which is misencoded for SAM/BAM/CRAM
+## SAM (misencoded)
+- files:
+    - misencoded.single_index.SE.sam
+  format: SAM
+  quality: Illumina
+  paired: no
+  readname: Standard
+  indexing: Single
+  barcode: BC tag
+## FASTQ
+- files:
+    - illumina_legacy.single_index.illumina_quality.SE.fq
+  format: FASTQ
+  quality: Illumina
+  paired: no
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+- files:
+    - illumina_legacy.single_index.illumina_quality_1.fq
+    - illumina_legacy.single_index.illumina_quality_1.fq
+  format: FASTQ
+  quality: Illumina
+  paired: yes
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+
+# BARCODES FORMAT: these reads have dual-indexes split in two tags or in the read name
+# barcode in BC/B2 (e.g., illumina2bam output)
+- files:
+    - bc_in_two_tags.dual_index.SE.sam
+  format: SAM
+  quality: Standard
+  paired: no
+  readname: Standard
+  indexing: Dual
+  barcode: BC/B2 tags
+- files:
+    - bc_in_two_tags.dual_index.paired.sam
+  format: SAM
+  quality: Standard
+  paired: yes
+  readname: Standard
+  indexing: Dual
+  barcode: BC/B2 tags
+# barcode in read name (e.g, generated by mapping Illumina-legacy reads)
+- files:
+    - bc_in_read_name.single_index.SE.sam
+  format: SAM
+  quality: Standard
+  paired: no
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+- files:
+    - bc_in_read_name.single_index.paired.sam
+  format: SAM
+  quality: Standard
+  paired: yes
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+- files:
+    - bc_in_read_name.dual_index.SE.sam
+  format: SAM
+  quality: Standard
+  paired: no
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+- files:
+    - bc_in_read_name.dual_index.paired.sam
+  format: SAM
+  quality: Standard
+  paired: yes
+  readname: Illumina-legacy
+  indexing: Dual
+  barcode: In Read Name
+
+## TODO: MAPPED FILES
+# TODO: standard SAM/BAM/CRAM file mapped with bwa and sorted by 'queryname' with Picard
