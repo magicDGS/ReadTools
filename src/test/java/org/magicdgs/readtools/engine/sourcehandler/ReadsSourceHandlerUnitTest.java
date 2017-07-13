@@ -56,7 +56,7 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     // this is the factory for tests, including reference sequence for CRAM
     private final ReadReaderFactory FACTORY_FOR_TEST = new ReadReaderFactory()
-            .setReferenceSequence(TestResourcesUtils.getExampleDataFile("2L.fragment.fa"));
+            .setReferenceSequence(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"));
 
     @Test(expectedExceptions = UserException.CouldNotReadInputFile.class)
     public void testNotFoundHandler() throws Exception {

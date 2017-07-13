@@ -56,8 +56,8 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
 
     private final File SINGLE_BAM_FILE = getTestFile("SRR1931701.single.tagged.sam");
 
-    private final static File UNIQUE_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("unique.barcodes");
-    private final static File DUAL_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("dual.barcodes");
+    private final static File UNIQUE_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("unique.barcodes");
+    private final static File DUAL_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("dual.barcodes");
 
     // this is in sync with the input files
     private final static List<String> EXPECTED_BY_SAMPLE_EXT = IntStream.range(1, 10)
