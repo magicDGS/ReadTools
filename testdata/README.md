@@ -1,3 +1,4 @@
+# NOTE: this data is deprecated and data for testing will be in the walkthrough folder
 # Example Data for _ReadTools_
 
 Data in this folder contain modified read data from 
@@ -21,9 +22,3 @@ Files containing reads in different formats.
 | SRR1931701.tagged.bam     | BAM    | Standard         | SAM-compliant    | Pair-end       | Dual          | 206     | Separated barcode tags (BC and B2). Only the first of pair has barcode tags. |
 | SRR1931701.tagged.cram    | CRAM   | Standard         | SAM-compliant    | Pair-end       | Dual          | 206     | Separated barcode tags (BC and B2). Only the first of pair has barcode tags. |
 
-## Additional files
-
-* __2L.fragment.fa__: FASTA file with index (__2L.fragment.fa.fai__) for
-  mapped reads and CRAM reference source.
-* __dual.barcodes__: barcode file for samples with dual-indexing.
-* __unique.barcodes__: barcode file for samples with single-indexing.
