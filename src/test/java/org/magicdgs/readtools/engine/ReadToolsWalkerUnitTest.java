@@ -54,9 +54,9 @@ public class ReadToolsWalkerUnitTest extends RTCommandLineProgramTest {
     @DataProvider(name = "arguments")
     public Object[][] walkerArguments() {
         return new Object[][] {
-                {Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.bam").getAbsolutePath()), 206, false},
-                {Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq").getAbsolutePath(),
-                        "-I2", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq").getAbsolutePath()), 8, true}
+                {Arrays.asList("-I", TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.sam").getAbsolutePath()), 103, false},
+                {Arrays.asList("-I", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq").getAbsolutePath(),
+                        "-I2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq").getAbsolutePath()), 206, true}
         };
     }
 
