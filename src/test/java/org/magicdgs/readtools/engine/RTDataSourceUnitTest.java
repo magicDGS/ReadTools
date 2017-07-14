@@ -26,15 +26,19 @@ package org.magicdgs.readtools.engine;
 
 import org.magicdgs.readtools.RTBaseTest;
 import org.magicdgs.readtools.TestResourcesUtils;
+import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMTextHeaderCodec;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.StringLineReader;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import scala.Tuple2;
@@ -49,13 +53,33 @@ import java.util.stream.Stream;
 public class RTDataSourceUnitTest extends RTBaseTest {
 
     private final static SAMFileHeader minimalPairedHeader = new SAMFileHeader();
-
     static {
         // TODO: header for paired-data should be one of the following:
         // TODO: 1. sorted by 'queryname' (limitation with FASTQ files and samtools sortOrder)
         // TODO: 2. 'unkwnon' or 'unsorted', but with group order 'queryname'
         // TODO: this should be change in the future
         minimalPairedHeader.setSortOrder(SAMFileHeader.SortOrder.unsorted);
+    }
+
+    // the CRAM file requires the header with @SQ lines from reference and MD5
+    // thus, read the header here to pass to the test for one file
+    // should be the same for all of them...
+    private final SAMFileHeader CRAM_HEADER = SamReaderFactory.makeDefault()
+            .referenceSequence(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"))
+            .getFileHeader(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.cram"));
+
+    @BeforeClass
+    public void setRTDataSourceReaderFactoryForTests() {
+        // this allows CRAM tests by providing a FASTQ file to the data source
+        RTDataSource.setReadReaderFactory(new ReadReaderFactory()
+                .setReferenceSequence(TestResourcesUtils
+                        .getWalkthroughDataFile("2L.fragment.fa")));
+    }
+
+    @AfterClass
+    public void revertRTDataSourceReaderFactoryToDefault() {
+        // this removes the reference to the RTDataSource to avoid re-usage in following tests
+        RTDataSource.setReadReaderFactory(new ReadReaderFactory());
     }
 
     @Test(expectedExceptions = UserException.class)
@@ -126,9 +150,6 @@ public class RTDataSourceUnitTest extends RTBaseTest {
 
     @DataProvider(name = "interleaved")
     public Object[][] interleavedDataSource() {
-
-        final SAMFileHeader cramHeader = minimalPairedHeader;
-
         return new Object[][] {
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"),
@@ -156,15 +177,12 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.bam"),
                         FastqQualityFormat.Standard, minimalPairedHeader, 103},
-                // TODO: uncomment to allow CRAM tests - requires:
-                // TODO: reference source set in factory
-                // TODO: header WITH @SQ lines from reference
-//                {TestResourcesUtils
-//                        .getWalkthroughDataFile("standard.dual_index.paired.cram"),
-//                        FastqQualityFormat.Standard, cramHeader, 103},
-//                {TestResourcesUtils
-//                        .getWalkthroughDataFile("standard.single_index.paired.cram"),
-//                        FastqQualityFormat.Standard, cramHeader, 103}
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("standard.dual_index.paired.cram"),
+                        FastqQualityFormat.Standard, CRAM_HEADER, 103},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("standard.single_index.paired.cram"),
+                        FastqQualityFormat.Standard, CRAM_HEADER, 103}
         };
     }
 
@@ -203,15 +221,12 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.SE.bam"),
                         FastqQualityFormat.Standard, unsortedHeader, 103},
-                // TODO: uncomment to allow CRAM tests - requires:
-                // TODO: reference source set in factory
-                // TODO: header WITH @SQ lines from reference
-//                {TestResourcesUtils
-//                        .getWalkthroughDataFile("standard.dual_index.SE.cram"),
-//                        FastqQualityFormat.Standard, emptyHeader, 103},
-//                {TestResourcesUtils
-//                        .getWalkthroughDataFile("standard.single_index.SE.cram"),
-//                        FastqQualityFormat.Standard, emptyHeader, 103},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("standard.dual_index.SE.cram"),
+                        FastqQualityFormat.Standard, CRAM_HEADER, 103},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("standard.single_index.SE.cram"),
+                        FastqQualityFormat.Standard, CRAM_HEADER, 103},
                 // FASTQ files
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.SE.fq"),
@@ -247,15 +262,12 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.bam"),
                         FastqQualityFormat.Standard, unsortedHeader, 206},
-                // TODO: uncomment to allow CRAM tests - requires:
-                // TODO: reference source set in factory
-                // TODO: header WITH @SQ lines from reference
-//                {TestResourcesUtils
-//                        .getWalkthroughDataFile("standard.dual_index.paired.cram"),
-//                        FastqQualityFormat.Standard, emptyHeader, 206},
-//                {TestResourcesUtils
-//                        .getWalkthroughDataFile("standard.single_index.paired.cram"),
-//                        FastqQualityFormat.Standard, emptyHeader, 206},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("standard.dual_index.paired.cram"),
+                        FastqQualityFormat.Standard, CRAM_HEADER, 206},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("standard.single_index.paired.cram"),
+                        FastqQualityFormat.Standard, CRAM_HEADER, 206},
                 // FASTQ files
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.paired_1.fq"),
@@ -330,7 +342,10 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     private static void testFormatAndHeader(final RTDataSource source, final FastqQualityFormat format,
             final SAMFileHeader expectedHeader) throws Exception {
         Assert.assertEquals(source.getOriginalQualityEncoding(), format);
-        Assert.assertEquals(source.getHeader(), expectedHeader);
+        final SAMFileHeader header = source.getHeader();
+        Assert.assertEquals(header, expectedHeader, String.format
+                ("Headers (actual vs. expected): \n%s\n\nvs.\n\n%s\n",
+                header.getSAMString(), expectedHeader.getSAMString()));
         final FastqQualityFormat incorrectForce = Stream.of(FastqQualityFormat.values())
                 .filter(p -> !p.equals(format)).findFirst().orElse(null);
         final RTDataSource forced = new RTDataSource(source, incorrectForce);
