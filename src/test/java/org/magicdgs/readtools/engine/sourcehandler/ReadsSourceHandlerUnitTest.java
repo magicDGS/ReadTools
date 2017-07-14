@@ -31,7 +31,6 @@ import org.magicdgs.readtools.RTBaseTest;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.util.FastqQualityFormat;
-import org.apache.commons.lang.ArrayUtils;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -122,23 +121,23 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     @DataProvider(name = "samSourcesNoIndex")
     public Object[][] samDataSources() {
-        // TODO: use mapped files form sources folder
-        final List<Object[]> data = new ArrayList<>();
-        // mapped files
-        final String[] mapped =
-                new String[] {"small.mapped.sam", "small.mapped.bam", "small.mapped.cram"};
-        for (final String files : mapped) {
-            final File file = new File(sourcesFolder, files);
-            data.add(new Object[] {file, FastqQualityFormat.Standard,
-                    getHeaderForFile(file), 206});
-        }
-
         // header for CRAM files should be the same for all
         // this is required because the @SQ lines are included in this header
         final SAMFileHeader cramHeader = getHeaderForFile(TestResourcesUtils
                 .getWalkthroughDataFile("standard.dual_index.SE.cram"));
 
-        final Object[][] unmapped = new Object[][] {
+        // for mapped files, extract the header from the file for testing
+        final SAMFileHeader singleIndexMappedHeader = getHeaderForFile(TestResourcesUtils
+                .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.sam"));
+        final SAMFileHeader dualIndexMappedHeader = getHeaderForFile(TestResourcesUtils
+                .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.sam"));
+        // and for CRAM, it has a different SQ line
+        final SAMFileHeader singleIndexMappedCramHeader = getHeaderForFile(TestResourcesUtils
+                .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.cram"));
+        final SAMFileHeader dualIndexMappedCramHeader = getHeaderForFile(TestResourcesUtils
+                .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.cram"));
+
+        return new Object[][] {
                 // SAM files
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.SE.sam"),
@@ -197,9 +196,28 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
                         FastqQualityFormat.Standard, cramHeader, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.cram"),
-                        FastqQualityFormat.Standard, cramHeader, 206}
+                        FastqQualityFormat.Standard, cramHeader, 206},
+                // mapped files
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.sam"),
+                        FastqQualityFormat.Standard, singleIndexMappedHeader, 206},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.bam"),
+                        FastqQualityFormat.Standard, singleIndexMappedHeader, 206},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.cram"),
+                        FastqQualityFormat.Standard, singleIndexMappedCramHeader, 206},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.sam"),
+                        FastqQualityFormat.Standard, dualIndexMappedHeader, 206},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.bam"),
+                        FastqQualityFormat.Standard, dualIndexMappedHeader, 206},
+                {TestResourcesUtils
+                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.cram"),
+                        FastqQualityFormat.Standard, dualIndexMappedCramHeader, 206}
+
         };
-        return (Object[][]) ArrayUtils.addAll(unmapped, data.stream().toArray());
     }
 
     @DataProvider(name = "samSourcesIndexed")
