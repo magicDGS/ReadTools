@@ -59,6 +59,12 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
     private final ReadReaderFactory FACTORY_FOR_TEST = new ReadReaderFactory()
             .setReferenceSequence(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"));
 
+    // empty header for Walkthrough data - we do not expect headers to contain more information
+    private final static SAMFileHeader EMPTY_HEADER = new SAMFileHeader();
+    static  {
+        EMPTY_HEADER.setSortOrder(SAMFileHeader.SortOrder.unsorted);
+    }
+
     @Test(expectedExceptions = UserException.CouldNotReadInputFile.class)
     public void testNotFoundHandler() throws Exception {
         ReadsSourceHandler.getHandler("unknown", FACTORY_FOR_TEST);
@@ -66,61 +72,52 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     @DataProvider(name = "fastqSources")
     public Object[][] fastqDataSources() {
-        // TODO: this should be EMPTY_HEADER and add unsorted/unknown
-        final SAMFileHeader emptyHeader = new SAMFileHeader();
+        // TODO: this should use the static version, but it requires to explicitly set 'unsorted' in FASTQ files
+        final SAMFileHeader EMPTY_HEADER = new SAMFileHeader();
         return new Object[][] {
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.SE.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.paired_1.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.paired_2.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.dual_index.SE.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.single_index.SE.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality.SE.fq"),
-                        FastqQualityFormat.Illumina, emptyHeader, 103},
+                        FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_1.fq"),
-                        FastqQualityFormat.Illumina, emptyHeader, 103},
+                        FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_2.fq"),
-                        FastqQualityFormat.Illumina, emptyHeader, 103},
+                        FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.single_index.interleaved.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103}
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103}
         };
-    }
-
-    // empty header for Walkthrough data - we do not expect headers to contain more information
-    private final static SAMFileHeader EMPTY_HEADER = getEmptyHeader();
-
-    private static SAMFileHeader getEmptyHeader() {
-        final SAMFileHeader header = new SAMFileHeader();
-        header.setSortOrder(SAMFileHeader.SortOrder.unsorted);
-        return header;
     }
 
     @DataProvider(name = "samSourcesNoIndex")

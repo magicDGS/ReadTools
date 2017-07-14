@@ -51,23 +51,11 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     private final static SAMFileHeader minimalPairedHeader = new SAMFileHeader();
 
     static {
-        // TODO: header for paired-data will be always sorted by queryname
-        // TODO: now we have some limitations
+        // TODO: header for paired-data should be one of the following:
+        // TODO: 1. sorted by 'queryname' (limitation with FASTQ files and samtools sortOrder)
+        // TODO: 2. 'unkwnon' or 'unsorted', but with group order 'queryname'
+        // TODO: this should be change in the future
         minimalPairedHeader.setSortOrder(SAMFileHeader.SortOrder.unsorted);
-    }
-
-    private final static SAMFileHeader samHeader = new SAMTextHeaderCodec().decode(
-            new StringLineReader(
-                    "@HD\tVN:1.4\tSO:unsorted\n"
-                            + "@RG\tID:SRR1931701\tPU:SRR1931701\tLB:1\tSM:SRR1931701\tPL:ILLUMINA\n"
-                            + "@PG\tID:SCS\tVN:2.2.58\tPN:HiSeq Control Software\tDS:Controlling software on instrument\n"
-                            + "@PG\tID:basecalling\tPP:SCS\tVN:1.18.64.0\tPN:RTA\tDS:Basecalling Package\n"
-                            + "@PG\tID:bcl2fastq\tVN:2.16.0\tPN:bcl2fastq\n"
-                            + "@PG\tID:fastq2bam\tVN:0.3\tPN:fastq2bam"
-            ), "test");
-
-    private String getSource(final String fileName) {
-        return new File(getClassTestDirectory(), fileName).getAbsolutePath();
     }
 
     @Test(expectedExceptions = UserException.class)
@@ -75,7 +63,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
         final RTDataSource dataSource = new RTDataSource(
                 TestResourcesUtils.getWalkthroughDataFile(
                         "illumina_legacy.single_index.illumina_quality_1.fq").getAbsolutePath(),
-                TestResourcesUtils.getReadToolsTestResource(
+                TestResourcesUtils.getWalkthroughDataFile(
                         "illumina_legacy.single_index.paired_1.fq").getAbsolutePath());
         dataSource.getOriginalQualityEncoding();
     }
@@ -89,7 +77,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                         + "@PG\tID:bwa\tPN:bwa\tVN:0.7.12-r1039\tCL:bwa mem fragment.fa SRR1931701_1.fq SRR1931701_2.fq"
                 ), "testIndexed");
         return new Object[][] {
-                {getSource("small.mapped.sort.bam"), FastqQualityFormat.Standard, header, 206, 118}
+                {getTestFile("small.mapped.sort.bam").getAbsolutePath(), FastqQualityFormat.Standard, header, 206, 118}
         };
     }
 
