@@ -58,22 +58,22 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
         runCommandLine(Arrays.asList("-I", fileName));
     }
 
-    // TODO: generate a new data provider for this tool
-    // TODO: this is a very simple test for check that we are not changing anything
-    // TODO: but it is not required anymore
-    @DataProvider(name = "smallFiles")
+    @DataProvider(name = "filesWithQualities")
     public static Object[][] getTestFiles() {
         return new Object[][] {
                 // test FASTQ file
-                {TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"), FastqQualityFormat.Standard},
-                {TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"), FastqQualityFormat.Illumina},
+                {TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq"), FastqQualityFormat.Standard},
+                {TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"), FastqQualityFormat.Standard},
+                {TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality.SE.fq"), FastqQualityFormat.Illumina},
                 // test SAM files
-                {TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.sam"), FastqQualityFormat.Standard},
-                {TestResourcesUtils.getExampleDataFile("SRR1931701.misencoded.sam"), FastqQualityFormat.Illumina}
+                {TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam"), FastqQualityFormat.Standard},
+                {TestResourcesUtils.getWalkthroughDataFile("misencoded.single_index.SE.sam"), FastqQualityFormat.Illumina},
+                // mapped BAM file
+                {TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.bam"), FastqQualityFormat.Standard}
         };
     }
 
-    @Test(dataProvider = "smallFiles")
+    @Test(dataProvider = "filesWithQualities")
     public void testQualityChecker(final File file, final FastqQualityFormat expectedFormat) {
         final Object format = runCommandLine(Arrays.asList("-I", file.getAbsolutePath()));
         Assert.assertEquals(format, expectedFormat);
