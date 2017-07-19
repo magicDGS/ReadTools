@@ -48,14 +48,6 @@ import java.util.stream.IntStream;
  */
 public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgramTest {
 
-    private final static File PAIRED_BAM_FILE = TestResourcesUtils.getExampleDataFile("SRR1931701.tagged.sam");
-
-    // old test files in FASTQ format -> they are modified to have the correct separator
-    private final File DUAL_FASTQ_1 = getTestFile("SRR1931701.dual.barcoded_1.fq");
-    private final File DUAL_FASTQ_2 = getTestFile("SRR1931701.dual.barcoded_2.fq");
-
-    private final File SINGLE_BAM_FILE = getTestFile("SRR1931701.single.tagged.sam");
-
     private final static File UNIQUE_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("unique.barcodes");
     private final static File DUAL_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("dual.barcodes");
 
@@ -66,6 +58,12 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
     // TODO: clean up this tests
     @DataProvider
     public Object[][] addByReadGroupData() {
+        final File singleSamFile = TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam");
+        final File pairedBamFile = TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam");
+        // old test files in FASTQ format -> they are modified to have the correct separator
+        final File dualFastq1 = TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq");
+        final File dualFastq2 = TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq");
+
         // the metrics file are the same
         return new Object[][] {
                 // CONCORDANCE with legacy TaggedBamToFastq (removed)
@@ -73,14 +71,14 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
 
                 // single end
                 {"testTaggedSingleEndDefaultParameters", "TaggedBamToFastq",
-                        new ArgumentsBuilder().addInput(SINGLE_BAM_FILE)
+                        new ArgumentsBuilder().addInput(singleSamFile)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
                         false},
                 // paired-end
                 {"testPairEndDefaultParameters", "TaggedBamToFastq",
-                        new ArgumentsBuilder().addInput(PAIRED_BAM_FILE)
+                        new ArgumentsBuilder().addInput(pairedBamFile)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2")
@@ -88,7 +86,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                         false},
                 // pair-end with max. mismatches
                 {"testPairEndMaxMismatch", "TaggedBamToFastq",
-                        new ArgumentsBuilder().addInput(PAIRED_BAM_FILE)
+                        new ArgumentsBuilder().addInput(pairedBamFile)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2")
@@ -97,19 +95,19 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                         false},
                 // test with splitting
                 {"testTaggedSingleEndSplitting", "TaggedBamToFastq",
-                        new ArgumentsBuilder().addInput(SINGLE_BAM_FILE)
+                        new ArgumentsBuilder().addInput(singleSamFile)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
                         true},
                 // test unique barcode single-end
                 {"testTaggedSingleEndDefaultParameterUniqueBarcode", "TaggedBamToFastq",
-                        new ArgumentsBuilder().addInput(SINGLE_BAM_FILE)
+                        new ArgumentsBuilder().addInput(singleSamFile)
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
                 // test unique barcode pair-end
                 {"testPairEndDefaultParametersUniqueBarcode", "TaggedBamToFastq",
-                        new ArgumentsBuilder().addInput(PAIRED_BAM_FILE)
+                        new ArgumentsBuilder().addInput(pairedBamFile)
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)
                                 .addBooleanArgument("interleaved", true),
                         false},
@@ -120,36 +118,36 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
 
                 // single end
                 {"testSingleEndDefaultParameters", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(DUAL_FASTQ_1)
+                        new ArgumentsBuilder().addInput(dualFastq1)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE),
                         false},
                 // paired-end
                 {"testPairEndDefaultParameters", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(DUAL_FASTQ_1)
-                                .addFileArgument("input2", DUAL_FASTQ_2)
+                        new ArgumentsBuilder().addInput(dualFastq1)
+                                .addFileArgument("input2", dualFastq2)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE),
                         false},
                 // pair-end with max. mismatches
                 {"testPairEndMaxMismatch", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(DUAL_FASTQ_1)
-                                .addFileArgument("input2", DUAL_FASTQ_2)
+                        new ArgumentsBuilder().addInput(dualFastq1)
+                                .addFileArgument("input2", dualFastq2)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)
                                 .addArgument("maximumMismatches", "3"),
                         false},
                 // test with splitting
                 {"testSingleEndSplitting", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(DUAL_FASTQ_1)
+                        new ArgumentsBuilder().addInput(dualFastq1)
                                 .addFileArgument("barcodeFile", DUAL_BARCODE_FILE),
                         true},
                 // test unique barcode single-end
                 {"testSingleEndDefaultParameterUniqueBarcode", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"))
+                        new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.SE.fq"))
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
                 // test unique barcode pair-end
                 {"testPairEndDefaultParametersUniqueBarcode", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701_2.fq"))
+                        new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq"))
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
 
