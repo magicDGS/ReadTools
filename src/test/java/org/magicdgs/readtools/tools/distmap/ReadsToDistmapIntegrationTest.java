@@ -192,8 +192,10 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
         final org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(clusterOutputFolder, "testHdfsBlockSize-" + blockSize + ".distmap");
         Assert.assertFalse(cluster.getFileSystem().exists(path), "output already exists");
 
+        // this test is using a super small file with a single read because we are not checking the
+        // content, but the block-sizes
         final ArgumentsBuilder args = new ArgumentsBuilder()
-                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"))
+                .addInput(getTestFile("single.read.fq"))
                 .addArgument("output", path.toUri().toString())
                 .addArgument("hdfsBlockSize", Long.toString(blockSize));
 
