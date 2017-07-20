@@ -39,7 +39,7 @@ script:
           ./gradlew shadowJar &&
           java -jar ./build/libs/ReadTools.jar --version &&
           java -jar ./build/libs/ReadTools.jar StandardizeReads --version &&
-          java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input docs/walkthrough/data/illumina_legacy.single_index.SE.fq --output ./tmp/test.sam;
+          java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input docs/walkthrough/data/legacy.single_index.SE.fq --output ./tmp/test.sam;
       elif [[ $TYPE == test ]]; then
           ./gradlew jacocoTestReport;
       elif [[ $TYPE == jekyll ]]; then
