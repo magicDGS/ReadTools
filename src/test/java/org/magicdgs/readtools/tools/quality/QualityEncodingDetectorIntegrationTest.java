@@ -63,13 +63,13 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
         return new Object[][] {
                 // test FASTQ file
                 {TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq"), FastqQualityFormat.Standard},
-                {TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"), FastqQualityFormat.Standard},
-                {TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality.SE.fq"), FastqQualityFormat.Illumina},
+                {TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.interleaved.fq"), FastqQualityFormat.Standard},
+                {TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq"), FastqQualityFormat.Illumina},
                 // test SAM files
                 {TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam"), FastqQualityFormat.Standard},
                 {TestResourcesUtils.getWalkthroughDataFile("misencoded.single_index.SE.sam"), FastqQualityFormat.Illumina},
                 // mapped BAM file
-                {TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.bam"), FastqQualityFormat.Standard}
+                {TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.bam"), FastqQualityFormat.Standard}
         };
     }
 

@@ -84,37 +84,37 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
                         .getWalkthroughDataFile("casava.single_index.paired_2.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.SE.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.SE.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.interleaved.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired_2.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.SE.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.SE.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality.SE.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq"),
                         FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_1.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"),
                         FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_2.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq"),
                         FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.interleaved.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.interleaved.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.paired_1.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.paired_2.fq"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103}
         };
     }
@@ -128,14 +128,14 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
         // for mapped files, extract the header from the file for testing
         final SAMFileHeader singleIndexMappedHeader = getHeaderForFile(TestResourcesUtils
-                .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.sam"));
+                .getWalkthroughDataFile("legacy.single_index.paired.mapped.sam"));
         final SAMFileHeader dualIndexMappedHeader = getHeaderForFile(TestResourcesUtils
-                .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.sam"));
+                .getWalkthroughDataFile("legacy.dual_index.paired.mapped.sam"));
         // and for CRAM, it has a different SQ line
         final SAMFileHeader singleIndexMappedCramHeader = getHeaderForFile(TestResourcesUtils
-                .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.cram"));
+                .getWalkthroughDataFile("legacy.single_index.paired.mapped.cram"));
         final SAMFileHeader dualIndexMappedCramHeader = getHeaderForFile(TestResourcesUtils
-                .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.cram"));
+                .getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"));
 
         return new Object[][] {
                 // SAM files
@@ -199,22 +199,22 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
                         FastqQualityFormat.Standard, cramHeader, 206},
                 // mapped files
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.sam"),
+                        .getWalkthroughDataFile("legacy.single_index.paired.mapped.sam"),
                         FastqQualityFormat.Standard, singleIndexMappedHeader, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.bam"),
+                        .getWalkthroughDataFile("legacy.single_index.paired.mapped.bam"),
                         FastqQualityFormat.Standard, singleIndexMappedHeader, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired.mapped.cram"),
+                        .getWalkthroughDataFile("legacy.single_index.paired.mapped.cram"),
                         FastqQualityFormat.Standard, singleIndexMappedCramHeader, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.sam"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired.mapped.sam"),
                         FastqQualityFormat.Standard, dualIndexMappedHeader, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.bam"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired.mapped.bam"),
                         FastqQualityFormat.Standard, dualIndexMappedHeader, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.cram"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"),
                         FastqQualityFormat.Standard, dualIndexMappedCramHeader, 206}
 
         };

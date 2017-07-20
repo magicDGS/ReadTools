@@ -126,23 +126,23 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
 //                // testing mapped file (using also CRAM file, which requires reference)
 //                // TODO: this is not working because the reads are in the reverse strand
 //                // TODO: maybe also soft-clipped?
-//                {"illumina_legacy.dual_index.paired.mapped.cram",
+//                {"legacy.dual_index.paired.mapped.cram",
 //                        new ArgumentsBuilder()
-//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired.mapped.cram"))
+//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"))
 //                                .addReference(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"))
 //                                .addBooleanArgument("barcodeInReadName", true)
 //                                .addBooleanArgument("interleaved", true),
 //                        expectedDualIndexPaired},
                 // FASTQ split file for Illumina-legacy
-                {"illumina_legacy.single_index.paired",
+                {"legacy.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq")),
                         expectedSingleIndexPaired},
                 // FASTQ interleaved file
-                {"illumina_legacy.single_index.interleaved",
+                {"legacy.single_index.interleaved",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.interleaved.fq"))
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.interleaved.fq"))
                                 .addBooleanArgument("interleaved", true),
                         expectedSingleIndexPaired},
                 // FASTQ single-end Casava

@@ -71,30 +71,30 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                 {"test_SAM_single_standard",
                         new ArgumentsBuilder()
                                 .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.sam")),
-                        Collections.singletonList(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.SE.fq")),
+                        Collections.singletonList(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.SE.fq")),
                         false},
                 {"test_SAM_paired_standard",
                         new ArgumentsBuilder()
                                 .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.sam"))
                                 .addBooleanArgument("interleaved", true),
                         Arrays.asList(
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"),
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq")),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_2.fq")),
                         true},
                 // illumina FASTQ
                 {"test_FASTQ_single_standard",
                         new ArgumentsBuilder()
                                 .addArgument("rawBarcodeSequenceTags", "null")
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality.SE.fq")),
-                        Collections.singletonList(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.SE.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq")),
+                        Collections.singletonList(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.SE.fq")),
                         false},
                 {"test_FASTQ_paired_standard",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_2.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq")),
                         Arrays.asList(
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"),
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq")),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq")),
                         true},
                 // test no standard SAMs
                 {"test_SAM_paired_2_tags",
@@ -104,8 +104,8 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
                         Arrays.asList(
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"),
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq")),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_2.fq")),
                         true},
                 {"test_SAM_paired_read_names",
                         new ArgumentsBuilder()
@@ -113,8 +113,8 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                                 .addBooleanArgument("interleaved", true)
                                 .addBooleanArgument("barcodeInReadName", true),
                         Arrays.asList(
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"),
-                                TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq")),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
+                                TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_2.fq")),
                         true},
         };
     }

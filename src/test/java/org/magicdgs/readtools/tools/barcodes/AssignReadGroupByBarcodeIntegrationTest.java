@@ -61,8 +61,8 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
         final File singleSamFile = TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam");
         final File pairedBamFile = TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam");
         // old test files in FASTQ format -> they are modified to have the correct separator
-        final File dualFastq1 = TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq");
-        final File dualFastq2 = TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq");
+        final File dualFastq1 = TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq");
+        final File dualFastq2 = TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_2.fq");
 
         // the metrics file are the same
         return new Object[][] {
@@ -141,13 +141,13 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                         true},
                 // test unique barcode single-end
                 {"testSingleEndDefaultParameterUniqueBarcode", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.SE.fq"))
+                        new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.SE.fq"))
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
                 // test unique barcode pair-end
                 {"testPairEndDefaultParametersUniqueBarcode", "FastqBarcodeDetector",
-                        new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq"))
+                        new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq"))
                                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE),
                         false},
 

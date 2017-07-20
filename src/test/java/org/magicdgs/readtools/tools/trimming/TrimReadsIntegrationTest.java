@@ -48,14 +48,14 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
     private static ArgumentsBuilder getRequiredArguments() {
         // input argument name changed -> same as GATK
         // added the argument to do not output the program group for easy checks
-        return new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_1.fq"))
+        return new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
     }
 
     // TODO: this is from concordance with legacy TrimFastq and should be removed eventually
     @DataProvider(name = "TrimmingDataFromTrimFastq")
     public Object[][] getTrimFastqConcordanceTrimmingData() throws Exception {
-        final File secondOfPair = TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_2.fq");
+        final File secondOfPair = TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq");
         return new Object[][] {
                 // test default arguments, with both pair-end and single-end data
                 {"testTrimmingSingleEndDefaultParameters", getRequiredArguments(),

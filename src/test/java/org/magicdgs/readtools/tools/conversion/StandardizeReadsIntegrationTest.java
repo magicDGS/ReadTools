@@ -187,47 +187,47 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
 //                        STANDARD_SINGLE_INDEX_SE},
                 // with Illumina-legacy read names
                 // misencoded qualities (Illumina)
-                {"illumina_legacy.single_index.illumina_quality.SE",
+                {"legacy.single_index.illumina_quality.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality.SE.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq")),
                         STANDARD_SINGLE_INDEX_SE},
                 // misencoded qualities (Illumina)
-                {"illumina_legacy.single_index.illumina_quality.paired",
+                {"legacy.single_index.illumina_quality.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_2.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq")),
                         STANDARD_SINGLE_INDEX_PAIRED},
                  // interleaved FASTQ
-                {"illumina_legacy.dual_index.interleaved",
+                {"legacy.dual_index.interleaved",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"))
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.interleaved.fq"))
                                 .addBooleanArgument("interleaved", true),
                         STANDARD_DUAL_INDEX_PAIRED
                 },
                 // several standard FASTQ files
-                {"illumina_legacy.dual_index.paired",
+                {"legacy.dual_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_2.fq")),
                         STANDARD_DUAL_INDEX_PAIRED},
-                {"illumina_legacy.dual_index.SE",
+                {"legacy.dual_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.dual_index.SE.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.SE.fq")),
                         STANDARD_DUAL_INDEX_SE},
-                {"illumina_legacy.single_index.interleaved.fq",
+                {"legacy.single_index.interleaved.fq",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.interleaved.fq"))
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.interleaved.fq"))
                                 .addBooleanArgument("interleaved", true),
                         STANDARD_SINGLE_INDEX_PAIRED},
-                {"illumina_legacy.single_index.paired",
+                {"legacy.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq")),
                         STANDARD_SINGLE_INDEX_PAIRED
                 },
-                {"illumina_legacy.single_index.SE",
+                {"legacy.single_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.SE.fq")),
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.SE.fq")),
                         STANDARD_SINGLE_INDEX_SE},
 
                 // test for barcode quality tags option (not in the Walkthrough data)

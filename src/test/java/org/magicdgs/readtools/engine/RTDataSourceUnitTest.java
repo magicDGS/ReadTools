@@ -86,9 +86,9 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     public void testDifferentEncodingForPairEnd() throws Exception {
         final RTDataSource dataSource = new RTDataSource(
                 TestResourcesUtils.getWalkthroughDataFile(
-                        "illumina_legacy.single_index.illumina_quality_1.fq").getAbsolutePath(),
+                        "legacy.single_index.illumina_quality_1.fq").getAbsolutePath(),
                 TestResourcesUtils.getWalkthroughDataFile(
-                        "illumina_legacy.single_index.paired_1.fq").getAbsolutePath());
+                        "legacy.single_index.paired_1.fq").getAbsolutePath());
         dataSource.getOriginalQualityEncoding();
     }
 
@@ -131,19 +131,19 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                                 .getWalkthroughDataFile("casava.single_index.paired_2.fq"),
                         FastqQualityFormat.Standard, minimalPairedHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
                         TestResourcesUtils
-                                .getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq"),
+                                .getWalkthroughDataFile("legacy.dual_index.paired_2.fq"),
                         FastqQualityFormat.Standard, minimalPairedHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_1.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"),
                         TestResourcesUtils
-                                .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_2.fq"),
+                                .getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq"),
                         FastqQualityFormat.Illumina, minimalPairedHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.paired_1.fq"),
                         TestResourcesUtils
-                                .getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq"),
+                                .getWalkthroughDataFile("legacy.single_index.paired_2.fq"),
                         FastqQualityFormat.Standard, minimalPairedHeader, 103},
         };
     }
@@ -152,10 +152,10 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     public Object[][] interleavedDataSource() {
         return new Object[][] {
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.interleaved.fq"),
                         FastqQualityFormat.Standard, minimalPairedHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.interleaved.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.interleaved.fq"),
                         FastqQualityFormat.Standard, minimalPairedHeader, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.sam"),
@@ -232,13 +232,13 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                         .getWalkthroughDataFile("casava.single_index.SE.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.SE.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.SE.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.SE.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.SE.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality.SE.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq"),
                         FastqQualityFormat.Illumina, emptyHeader, 103},
                 // paired files can be always treated as single-end
                 // BAM/SAM/CRAM
@@ -276,28 +276,28 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                         .getWalkthroughDataFile("casava.single_index.paired_2.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.interleaved.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.interleaved.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired_1.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.dual_index.paired_2.fq"),
+                        .getWalkthroughDataFile("legacy.dual_index.paired_2.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_1.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"),
                         FastqQualityFormat.Illumina, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.illumina_quality_2.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq"),
                         FastqQualityFormat.Illumina, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.interleaved.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.interleaved.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 206},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired_1.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.paired_1.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103},
                 {TestResourcesUtils
-                        .getWalkthroughDataFile("illumina_legacy.single_index.paired_2.fq"),
+                        .getWalkthroughDataFile("legacy.single_index.paired_2.fq"),
                         FastqQualityFormat.Standard, emptyHeader, 103}
         };
     }
