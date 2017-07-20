@@ -81,30 +81,10 @@ public final class TestResourcesUtils {
             new File(CURRENT_DIRECTORY, "/docs/walkthrough/data").getAbsolutePath() + "/";
 
     /**
-     * The directory for example data.
-     *
-     * @deprecated use {@link #READTOOLS_WALKTHROUGH_DATA_DIRECTORY}, which contains the new common
-     * data.
-     */
-    @Deprecated
-    public static final String READTOOLS_EXAMPLE_DATA_DIRECTORY =
-            new File(CURRENT_DIRECTORY, "/testdata").getAbsolutePath() + "/";
-
-    /**
      * Gets the test resource as a file in the test source directory.
      */
     public static File getReadToolsTestResource(final String fileName) {
         return new File(READTOOLS_TEST_ROOT_FILE_DIRECTORY, fileName);
-    }
-
-    /**
-     * Gets a file in the test data folder. This data represents formats handled in ReadTools.
-     *
-     * @deprecated use {@link #getWalkthroughDataFile(String)} instead.
-     */
-    @Deprecated
-    public static File getExampleDataFile(final String fileName) {
-        return new File(READTOOLS_EXAMPLE_DATA_DIRECTORY, fileName);
     }
 
     /**

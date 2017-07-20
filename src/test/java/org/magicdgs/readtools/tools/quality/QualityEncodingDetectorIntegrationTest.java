@@ -45,7 +45,7 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
     @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testBadArgument() throws Exception {
         runCommandLine(
-                Arrays.asList("-I", TestResourcesUtils.getExampleDataFile("SRR1931701_1.fq").getAbsolutePath(), "--maximumReads", "-1"));
+                Arrays.asList("-I", TestResourcesUtils.getWalkthroughDataFile("illumina_legacy.single_index.SE.fq").getAbsolutePath(), "--maximumReads", "-1"));
     }
 
     @DataProvider(name = "notExistingFiles")
