@@ -107,10 +107,21 @@ public final class Main extends org.broadinstitute.hellbender.Main {
     }
 
     /**
-     * Prints in {@link System#err} the decorated exception as an unexpected error.
+     * Prints in {@link #exceptionOutput} the decorated exception as an user error.
+     * In addition, prints the stack-trace if the debug mode is enabled.
+     */
+    @Override
+    protected void handleUserException(Exception e) {
+        printDecoratedExceptionMessage(exceptionOutput, e, "A USER ERROR has occurred: ");
+        printStackTrace(e);
+    }
+
+    /**
+     * Prints in {@link #exceptionOutput} the decorated exception as an unexpected error.
      *
      * In addition, it adds a note pointing to the issue tracker
-     * ({@link RTHelpConstants#ISSUE_TRACKER}).
+     * ({@link RTHelpConstants#ISSUE_TRACKER}) and prints the stack-trace if the debug mode is
+     * enabled.
      */
     @Override
     protected void handleNonUserException(final Exception e) {
@@ -118,9 +129,17 @@ public final class Main extends org.broadinstitute.hellbender.Main {
         exceptionOutput
                 .println("Please, search for this error in our issue tracker or post a new one:");
         exceptionOutput.println("\t" + RTHelpConstants.ISSUE_TRACKER);
-        // only log the stack-trace for DEBUG mode
+        printStackTrace(e);
+    }
+
+    /**
+     * Prints the stack-trace into {@link #exceptionOutput} only if
+     * {@link htsjdk.samtools.util.Log.LogLevel#DEBUG} is enabled.
+     */
+    @VisibleForTesting
+    protected final void printStackTrace(final Exception e) {
         if (Log.isEnabled(Log.LogLevel.DEBUG)) {
-            e.printStackTrace();
+            e.printStackTrace(exceptionOutput);
         }
     }
 
