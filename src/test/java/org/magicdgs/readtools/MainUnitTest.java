@@ -54,7 +54,7 @@ public class MainUnitTest extends RTBaseTest {
     @Test(dataProvider = "resultsToHandle")
     public void testHandleResult(final Object result, final String printedResult) throws Exception {
         final Main main = new Main();
-        try(final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 final PrintStream printStream = new PrintStream(outputStream)) {
             main.resultOutput = printStream;
             main.handleResult(result);
@@ -82,7 +82,7 @@ public class MainUnitTest extends RTBaseTest {
     public void testHandleNonUserException() throws Exception {
         final String message = "this is a test exception";
         final Main main = new Main();
-        try(final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 final PrintStream printStream = new PrintStream(outputStream)) {
             main.exceptionOutput = printStream;
             main.handleNonUserException(new RuntimeException(message));
@@ -97,12 +97,12 @@ public class MainUnitTest extends RTBaseTest {
     @DataProvider(name = "printVersionArgs")
     public Object[][] getArgumentsForPrintOnlyVersionTest() {
         return new Object[][] {
-                {new String[]{"--version"}, true},
-                {new String[]{"-v"}, true},
-                {new String[]{"ToolName"}, false},
-                {new String[]{"--version", "--other"}, false},
-                {new String[]{"-v", "--other"}, false},
-                {new String[]{"ToolName", "--version"}, false}
+                {new String[] {"--version"}, true},
+                {new String[] {"-v"}, true},
+                {new String[] {"ToolName"}, false},
+                {new String[] {"--version", "--other"}, false},
+                {new String[] {"-v", "--other"}, false},
+                {new String[] {"ToolName", "--version"}, false}
         };
     }
 
