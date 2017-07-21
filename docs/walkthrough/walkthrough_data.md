@@ -42,6 +42,9 @@ A brief description for each dataset is included in the following table.
 
 {% include note.html 
 content="Click on the file name to download the file." %}
+{% include tip.html
+content="If SAM formatted reads are not available in BAM/CRAM format, 
+please use [samtools](http://www.htslib.org/doc/samtools.html) view for conversion." %}
 
 <!-- Note: Try to keep the columns to 3 or 4 columns only.
 If you add 5+ columns, your table may create horizontal scrolling with 
