@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools;
 
+import htsjdk.samtools.util.Log;
+import org.broadinstitute.hellbender.utils.LoggingUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -61,6 +63,22 @@ public class MainUnitTest extends RTBaseTest {
     }
 
     @Test
+    public void testHandleUserException() throws Exception {
+        final String message = "this is a test user exception";
+        final Main main = new Main();
+        try (final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                final PrintStream ps = new PrintStream(os)) {
+            main.exceptionOutput = ps;
+            main.handleUserException(new RuntimeException(message));
+            final String exceptionOutput = os.toString();
+
+            // should contain the following strings
+            Assert.assertTrue(exceptionOutput.contains("A USER ERROR has occurred: "));
+            Assert.assertTrue((exceptionOutput.contains(message)));
+        }
+    }
+
+    @Test
     public void testHandleNonUserException() throws Exception {
         final String message = "this is a test exception";
         final Main main = new Main();
@@ -93,5 +111,25 @@ public class MainUnitTest extends RTBaseTest {
         final Main main = new Main();
         main.exceptionOutput = NULL_PRINT_STREAM;
         Assert.assertEquals(main.printOnlyVersion(args), printed);
+    }
+
+
+    @Test(singleThreaded = true)
+    public void testPrintStackTrace() throws Exception {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                final PrintStream printStream = new PrintStream(outputStream)) {
+            // set the main class with the custom exception output
+            final Main main = new Main();
+            main.exceptionOutput = printStream;
+
+            // set to debug mode an try to print the stack-trace
+            LoggingUtils.setLoggingLevel(Log.LogLevel.DEBUG);
+            main.printStackTrace(new RuntimeException());
+            // assert non-empty stack-trace message
+            Assert.assertFalse(main.exceptionOutput.toString().isEmpty());
+        } finally {
+            // set back to normal verbosity
+            setTestVerbosity();
+        }
     }
 }
