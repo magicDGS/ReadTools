@@ -22,7 +22,7 @@ To obtain a list of implemented tools run the following command:
 
 > `java -jar ReadTools.jar`
 
-For a long description of each tool:
+For a detailed description of each tool:
 
 > `java -jar ReadTools.jar <toolName> --help`
 
