@@ -108,7 +108,7 @@ public final class Main extends org.broadinstitute.hellbender.Main {
 
     /**
      * Prints in {@link #exceptionOutput} the decorated exception as an user error.
-     * In addition, prints the stack trace if the debug mode is enabled.
+     * In addition, prints the stack-trace if the debug mode is enabled.
      */
     @Override
     protected void handleUserException(Exception e) {
@@ -120,7 +120,8 @@ public final class Main extends org.broadinstitute.hellbender.Main {
      * Prints in {@link #exceptionOutput} the decorated exception as an unexpected error.
      *
      * In addition, it adds a note pointing to the issue tracker
-     * ({@link RTHelpConstants#ISSUE_TRACKER})
+     * ({@link RTHelpConstants#ISSUE_TRACKER}) and prints the stack-trace if the debug mode is
+     * enabled.
      */
     @Override
     protected void handleNonUserException(final Exception e) {
