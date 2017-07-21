@@ -124,8 +124,8 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
                                 .addBooleanArgument("barcodeInReadName", true),
                         expectedSingleIndexPaired},
 //                // testing mapped file (using also CRAM file, which requires reference)
-//                // TODO: this is not working because the reads are in the reverse strand
-//                // TODO: maybe also soft-clipped?
+//                // TODO: this is not working as expected without mapping because of clipping and reverse strand
+//                // TODO: see https://github.com/magicDGS/ReadTools/issues/307 for how we can handle that
 //                {"legacy.dual_index.paired.mapped.cram",
 //                        new ArgumentsBuilder()
 //                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"))

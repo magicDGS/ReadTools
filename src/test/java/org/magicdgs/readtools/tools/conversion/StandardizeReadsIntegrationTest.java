@@ -99,7 +99,7 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
                         STANDARD_DUAL_INDEX_PAIRED},
                 // CRAM files - requires reference
                 // TODO: to enable CRAM file testing, we should ignore the @SQ header lines
-                // TODO: because they aren't in the expected output
+                // TODO: because they aren't in the expected output (https://github.com/magicDGS/ReadTools/issues/305)
 //                {"standard.single_index.SE.cram",
 //                        new ArgumentsBuilder()
 //                                .addReference(REFERENCE_FOR_CRAM_TESTS)
@@ -179,8 +179,8 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
                 // TODO: with Casava format, single-end data is marked as first of pair
                 // TODO: and we should force somehow single-end processing to set the unpaired flag
                 // TODO: thus, this isn't in the expected output (should be marked as single-end)
-                // TODO: this is related with https://github.com/magicDGS/ReadTools/issues/118
-                // TODO: to enable this test, this should be solved
+                // TODO: see https://github.com/magicDGS/ReadTools/issues/306 for possible solutions
+                // TODO: we should enable this test once it is solved
 //                {"casava.single_index.SE",
 //                        new ArgumentsBuilder()
 //                                .addInput(TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq")),
