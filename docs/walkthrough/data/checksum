@@ -28,6 +28,7 @@ d1e19018ada688a65a1da21b1f613702 legacy.single_index.paired.mapped.bam
 9a688410fd77674027de27630616f373 legacy.single_index.paired_1.fq
 bf52606cf2a8337827821c28172a235d legacy.single_index.paired_2.fq
 d32246db1bdf1c8dd20dcaf8eac6189b misencoded.single_index.SE.sam
+b9b0ea84dcaf81506cec1c8367e47194 single.barcodes
 8281be6dcfbdda41e026bd12fe6a2c8c standard.dual_index.SE.bam
 bac28db1dd07b6d6a390ae9069de2783 standard.dual_index.SE.cram
 347a9b2f5d26d1d0cdd995efb8f3544e standard.dual_index.SE.sam
@@ -40,4 +41,3 @@ e7f38e435c884a2a9137a9dcd0fcf4d7 standard.single_index.SE.sam
 bb271b5214639b819e1a6cea13d862c7 standard.single_index.paired.bam
 33639bd45dadb8042780817be542dec4 standard.single_index.paired.cram
 9df1d0aecbebb3857b4ce87d5d0e52eb standard.single_index.paired.sam
-b9b0ea84dcaf81506cec1c8367e47194 unique.barcodes

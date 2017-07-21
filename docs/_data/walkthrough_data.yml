@@ -101,7 +101,7 @@
       - standard.dual_index.paired.cram
 
 # FASTQ DATA
-## normal output for ReadTools: Illumina-legacy, dual/single indexed, single-end or pair-end (split files)
+## normal output for ReadTools: Illumina-legacy, dual/single indexed, single-end or paired-end (split files)
 - format: FASTQ
   quality: Standard
   paired: no
@@ -201,7 +201,7 @@
       - legacy.single_index.illumina_quality_1.fq
       - legacy.single_index.illumina_quality_2.fq
 
-# BARCODES FORMAT: these reads have dual-indexes split in two tags or in the read name
+# BARCODES FORMAT: these reads have dual-indexes stored in two tags or attached to the read name
 ## barcode in BC/B2 (e.g., illumina2bam output)
 - format: SAM
   quality: Standard

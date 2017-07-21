@@ -48,7 +48,7 @@ import java.util.stream.IntStream;
  */
 public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgramTest {
 
-    private final static File UNIQUE_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("unique.barcodes");
+    private final static File UNIQUE_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("single.barcodes");
     private final static File DUAL_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("dual.barcodes");
 
     // this is in sync with the input files
