@@ -47,8 +47,8 @@ import java.util.List;
  */
 public class BarcodeDetectorArgumentCollectionUnitTest extends RTCommandLineProgramTest {
 
-    private static final File UNIQUE_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("unique.barcodes");
-    private static final File DUAL_BARCODE_FILE = TestResourcesUtils.getExampleDataFile("dual.barcodes");
+    private static final File UNIQUE_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("single.barcodes");
+    private static final File DUAL_BARCODE_FILE = TestResourcesUtils.getWalkthroughDataFile("dual.barcodes");
 
     @CommandLineProgramProperties(oneLineSummary = "BarcodeDetectorArgumentCollection", summary = "BarcodeDetectorArgumentCollection", programGroup = TestProgramGroup.class)
     private final static class BarcodeDetectorArgumentCollectionTool extends CommandLineProgram {

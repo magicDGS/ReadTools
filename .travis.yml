@@ -33,13 +33,15 @@ cache:
 
 install:
     - ./gradlew assemble installDist
+    # check also for data integrity (tests and documentation may fail if this is not changed)
+    - ./scripts/walkthrough_data_integrity.sh
 
 script:
     - if [[ $TYPE == shadow ]]; then
           ./gradlew shadowJar &&
           java -jar ./build/libs/ReadTools.jar --version &&
           java -jar ./build/libs/ReadTools.jar StandardizeReads --version &&
-          java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input ./testdata/SRR1931701.illumina_se.fq --output ./tmp/test.sam;
+          java -jar ./build/libs/ReadTools.jar StandardizeReads --verbosity ERROR --input docs/walkthrough/data/legacy.single_index.SE.fq --output ./tmp/test.sam;
       elif [[ $TYPE == test ]]; then
           ./gradlew jacocoTestReport;
       elif [[ $TYPE == jekyll ]]; then

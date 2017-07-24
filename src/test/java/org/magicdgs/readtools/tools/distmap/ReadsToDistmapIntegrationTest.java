@@ -76,36 +76,80 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
 
     @DataProvider(name = "toDistmap")
     public Object[][] tesReadsToDistmapData() {
-        final File expectedPaired = getTestFile("expected_paired.distmap");
-        final File expectedSingle = getTestFile("expected_single.distmap");
+        // expected files for walkthrough data
+        final File expectedSingleIndexSE = getTestFile("expected.single_index.SE.distmap");
+        final File expectedDualIndexSE = getTestFile("expected.dual_index.SE.distmap");
+        final File expectedDualIndexPaired = getTestFile("expected.dual_index.paired.distmap");
+        final File expectedSingleIndexPaired = getTestFile("expected.single_index.paired.distmap");
+
         return new Object[][] {
-                {"ReadsToDistmap_paired_SAM",
+                // standard data (singled and pair-end) - using only BAM files
+                {"standard.single_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small.paired.sam"))
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam")),
+                        expectedSingleIndexSE},
+                {"standard.dual_index.SE",
+                        new ArgumentsBuilder()
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.bam")),
+                        expectedDualIndexSE},
+                {"standard.single_index.paired",
+                        new ArgumentsBuilder()
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.paired.bam"))
+                                .addBooleanArgument("interleaved", true),
+                        expectedSingleIndexPaired},
+                {"standard.dual_index.paired",
+                        new ArgumentsBuilder()
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.bam"))
+                                .addBooleanArgument("interleaved", true),
+                        expectedDualIndexPaired},
+                // using paired data with two barcode tags (SAM files)
+                {"bc_in_two_tags.dual_index.paired",
+                        new ArgumentsBuilder()
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam"))
                                 .addBooleanArgument("interleaved", true)
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
-                        expectedPaired},
-                {"ReadsToDistmap_single_SAM",
+                        expectedDualIndexPaired},
+                {"bc_in_two_tags.dual_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small.single.sam"))
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam"))
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
-                        expectedSingle},
-                {"ReadsToDistmap_paired_FASTQ",
+                        expectedDualIndexSE},
+                // testing barcode in the read name for SAM/BAM
+                {"bc_in_read_name.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"))
-                                .addFileArgument("input2", TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_2.fq")),
-                        expectedPaired},
-                {"ReadsToDistmap_single_FASTQ",
-                        new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_se.fq")),
-                        expectedSingle},
-                {"ReadsToDistmap_single_SAM_names",
-                        new ArgumentsBuilder()
-                                .addInput(getTestFile("small.single.name.sam"))
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.single_index.paired.sam"))
+                                .addBooleanArgument("interleaved", true)
                                 .addBooleanArgument("barcodeInReadName", true),
-                        expectedSingle}
+                        expectedSingleIndexPaired},
+//                // testing mapped file (using also CRAM file, which requires reference)
+//                // TODO: this is not working as expected without mapping because of clipping and reverse strand
+//                // TODO: see https://github.com/magicDGS/ReadTools/issues/307 for how we can handle that
+//                {"legacy.dual_index.paired.mapped.cram",
+//                        new ArgumentsBuilder()
+//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"))
+//                                .addReference(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"))
+//                                .addBooleanArgument("barcodeInReadName", true)
+//                                .addBooleanArgument("interleaved", true),
+//                        expectedDualIndexPaired},
+                // FASTQ split file for Illumina-legacy
+                {"legacy.single_index.paired",
+                        new ArgumentsBuilder()
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
+                                .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq")),
+                        expectedSingleIndexPaired},
+                // FASTQ interleaved file
+                {"legacy.single_index.interleaved",
+                        new ArgumentsBuilder()
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.interleaved.fq"))
+                                .addBooleanArgument("interleaved", true),
+                        expectedSingleIndexPaired},
+                // FASTQ single-end Casava
+                {"casava.single_index.SE",
+                        new ArgumentsBuilder()
+                                .addInput(TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq")),
+                        expectedSingleIndexSE}
         };
     }
 
@@ -148,8 +192,10 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
         final org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(clusterOutputFolder, "testHdfsBlockSize-" + blockSize + ".distmap");
         Assert.assertFalse(cluster.getFileSystem().exists(path), "output already exists");
 
+        // this test is using a super small file with a single read because we are not checking the
+        // content, but the block-sizes
         final ArgumentsBuilder args = new ArgumentsBuilder()
-                .addInput(TestResourcesUtils.getExampleDataFile("SRR1931701.illumina_1.fq"))
+                .addInput(getTestFile("single.read.fq"))
                 .addArgument("output", path.toUri().toString())
                 .addArgument("hdfsBlockSize", Long.toString(blockSize));
 
@@ -172,7 +218,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
             //For ease of debugging, we look at the lines first and only then check their counts
             final int minLen = Math.min(actualLines.size(), expectedLines.size());
             for (int i = 0; i < minLen; i++) {
-                Assert.assertEquals(actualLines.get(i).toString(), expectedLines.get(i).toString(), "Line number " + i + " (not counting comments)");
+                Assert.assertEquals(actualLines.get(i), expectedLines.get(i), "Line number " + i + " (not counting comments)");
             }
             Assert.assertEquals(actualLines.size(), expectedLines.size(), "line counts");
         } catch (IOException e) {
