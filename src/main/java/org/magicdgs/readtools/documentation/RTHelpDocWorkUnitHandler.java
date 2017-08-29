@@ -125,4 +125,10 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
     public String getDestinationFilename(final DocWorkUnit workUnit) {
         return workUnit.getName() + "." + getDoclet().getOutputFileExtension();
     }
+
+    @Override
+    public String getJSONFilename(final DocWorkUnit workUnit) {
+        return workUnit.getName() + ".json";
+    }
+
 }
