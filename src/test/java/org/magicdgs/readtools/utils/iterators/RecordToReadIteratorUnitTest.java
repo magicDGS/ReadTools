@@ -87,7 +87,7 @@ public class RecordToReadIteratorUnitTest extends RTBaseTest {
     public <T> void testNextHasNext(final Iterator<T> recordIterator,
             final Function<T, GATKRead> encoder,
             final List<GATKRead> expectedReads) throws Exception {
-        final RecordToReadIterator<T> it = new RecordToReadIterator(recordIterator, encoder);
+        final RecordToReadIterator<T> it = new RecordToReadIterator<>(recordIterator, encoder);
         for (int i = 0; i < expectedReads.size(); i++) {
             Assert.assertTrue(it.hasNext());
             // testing as as SAMRecord because GATKRead.equals only considers Object equality
@@ -107,7 +107,7 @@ public class RecordToReadIteratorUnitTest extends RTBaseTest {
     public <T> void testIterator(final Iterator<T> recordIterator,
             final Function<T, GATKRead> encoder,
             final List<GATKRead> expectedReads) throws Exception {
-        final RecordToReadIterator<T> it = new RecordToReadIterator(recordIterator, encoder);
+        final RecordToReadIterator<T> it = new RecordToReadIterator<>(recordIterator, encoder);
         final Iterator<GATKRead> expected = expectedReads.iterator();
         for (final GATKRead read : it) {
             // testing as as SAMRecord because GATKRead.equals only considers Object equality
@@ -119,8 +119,8 @@ public class RecordToReadIteratorUnitTest extends RTBaseTest {
 
     @Test
     public void testNullNestedIterator() {
-        Assert.assertThrows(IllegalArgumentException.class, () -> new RecordToReadIterator(null, fastqEncoder));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new RecordToReadIterator(Collections.emptyIterator(), null));
+        Assert.assertThrows(IllegalArgumentException.class, () -> new RecordToReadIterator<>(null, fastqEncoder));
+        Assert.assertThrows(IllegalArgumentException.class, () -> new RecordToReadIterator<>(Collections.emptyIterator(), null));
     }
 
 }
