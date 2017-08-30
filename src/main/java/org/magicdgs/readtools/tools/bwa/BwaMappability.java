@@ -26,6 +26,8 @@ package org.magicdgs.readtools.tools.bwa;
 
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 
+import htsjdk.samtools.Cigar;
+import htsjdk.samtools.CigarElement;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
@@ -173,7 +175,6 @@ public final class BwaMappability extends ReadToolsProgram {
     @Override
     protected Object doWork() {
         logger.debug("Initializing work");
-        final IntervalTreeMap<Integer> coverages = new IntervalTreeMap<>();
 
         final List<String> refNames = reference.getSequenceDictionary().getSequences().stream()
                 .map(SAMSequenceRecord::getSequenceName).collect(Collectors.toList());
@@ -181,23 +182,39 @@ public final class BwaMappability extends ReadToolsProgram {
         final Stream<SAMRecord> mapped = windows.stream()
                 .flatMap(s -> {
                     final byte[] bases = new ReferenceContext(reference, s).getBases();
+                    // TODO: if only Ns, do not try to align (it does not make sense
                     final List<BwaMemAlignment> alignments =
                             aligner.alignSeqs(Collections.singletonList(bases)).get(0);
+                    // TODO: error if not alignments? Could this happen? if so, add empty coverages?
                     return alignments.stream().map(al -> BwaMemAlignmentUtils.applyAlignment(
-                            s.toString(), bases, null, null,
-                            al, refNames, samWriter.getFileHeader(), false, false));
+                                s.toString(), bases, null, null,
+                                al, refNames, samWriter.getFileHeader(), false, false));
+
                 });
 
+        final IntervalTreeMap<Integer> coverages = new IntervalTreeMap<>();
 
         mapped.forEach(record -> {
             samWriter.addAlignment(record);
-            record.getAlignmentBlocks().forEach(block -> {
-                final int max = block.getReferenceStart() + block.getLength();
-                for (int i = block.getReferenceStart(); i <= max; i++) {
-                    final Interval blockInterval = new Interval(record.getReferenceName(), i, i);
-                    coverages.compute(blockInterval, (a, c) -> c == null ? 1 : c + 1);
+            final Cigar cigar = record.getCigar();
+            // no coverage for this region
+            if (cigar == null) {
+                for (int i = record.getStart(); i < record.getEnd(); i++) {
+                    coverages.putIfAbsent(new Interval(record.getContig(), i, i), 0);
                 }
-            });
+            } else {
+                // TODO: we have to walk over each cigar element and not block instead
+                // TODO: to solve issue with the no-covered regions
+                // TODO: or do a pileup for the single read
+                record.getAlignmentBlocks().forEach(block -> {
+                    final int max = block.getReferenceStart() + block.getLength();
+                    for (int i = block.getReferenceStart(); i < max; i++) {
+                        final Interval blockInterval =
+                                new Interval(record.getReferenceName(), i, i);
+                        coverages.compute(blockInterval, (a, c) -> c == null ? 1 : c + 1);
+                    }
+                });
+            }
         });
 
         final IntervalTreeMap<Integer> optimizedIntervals = new IntervalTreeMap<>();
