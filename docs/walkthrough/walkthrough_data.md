@@ -87,9 +87,11 @@ the theme. Additionally, keep the column heading titles short. -->
 
 Additional required data beside of read sources:
 
-* [2L.fragment.fa]({{walkthrough_folder}}2L.fragment.fa)/
-  [2L.fragment.fa.fai]({{walkthrough_folder}}2L.fragment.fa.fai): 
-  Indexed FASTA file for use with mapped reads and CRAM sources.
+* [2L.fragment.fa]({{walkthrough_folder}}2L.fragment.fa): 
+  FASTA file for use with mapped reads and CRAM sources. The folder 
+  also includes the following files needed for its use in ReadTools:
+  - [2L.fragment.fa.fai]({{walkthrough_folder}}2L.fragment.fa.fai): index file
+  - [2L.fragment.dict]({{walkthrough_folder}}2L.fragment.dict): dictionary (SAM header)
 * [dual.barcodes]({{walkthrough_folder}}dual.barcodes): barcode file 
   for samples with dual-indexing.
 * [single.barcodes]({{walkthrough_folder}}single.barcodes): barcode 
