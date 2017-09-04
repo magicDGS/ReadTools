@@ -90,23 +90,23 @@ public class MapReferenceKmers extends ReadToolsProgram {
     // TODO: include more?
 
     @Advanced
-    @Argument(fullName = "matchScore", shortName = "A", doc = "score for a sequence match, which scales options -TdBOELU unless overridden", optional = true)
+    @Argument(fullName = "matchScore", doc = "score for a sequence match, which scales options -TdBOELU unless overridden (- A option in bwa-mem)", optional = true)
     public Integer matchScore = null;
 
     @Advanced
-    @Argument(fullName = "mismatchPenalty", shortName = "B", doc = "penalty for a mismatch", optional = true)
+    @Argument(fullName = "mismatchPenalty", doc = "penalty for a mismatch (-B option in bwa-mem)", optional = true)
     public Integer mismatchPenalty = null;
 
     @Advanced
-    @Argument(fullName = "gapOpenPenalty", shortName = "O", doc = "gap open penalties for deletions and insertions", optional = true, maxElements = 2)
+    @Argument(fullName = "gapOpenPenalty", doc = "gap open penalties for deletions and insertions (-O option in bwa-mem)", optional = true, maxElements = 2)
     public List<Integer> gapOpenPenalties = new ArrayList<>();
 
     @Advanced
-    @Argument(fullName = "gapExtensionPenalty", shortName = "E", doc = "gap extension penalty; a gap of size k cost '{-O} + {-E}*k'", optional = true, maxElements = 2)
+    @Argument(fullName = "gapExtensionPenalty", doc = "gap extension penalty (-E option in bwa-mem); a gap of size k cost '{-O} + {-E}*k'", optional = true, maxElements = 2)
     public List<Integer> gapExtensionPenalties = new ArrayList<>();
 
     @Advanced
-    @Argument(fullName = "clippingPenalty", shortName = "L", doc = "penalty for 5'- and 3'-end clipping", optional = true, maxElements = 2)
+    @Argument(fullName = "clippingPenalty", doc = "penalty for 5'- and 3'-end clipping (-L option in bwa-mem)", optional = true, maxElements = 2)
     public List<Integer> clippingPenalties = new ArrayList<>();
 
     @Override
@@ -225,7 +225,7 @@ public class MapReferenceKmers extends ReadToolsProgram {
                 .map(SAMSequenceRecord::getSequenceName).collect(Collectors.toList());
 
         final ProgressMeter progressMeter = new ProgressMeter();
-        progressMeter.setRecordLabel("kmer");
+        progressMeter.setRecordLabel("kmers");
 
         progressMeter.start();
         // iterate over each contig
