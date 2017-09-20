@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.snpable;
+package org.magicdgs.readtools.tools.mappabily;
 
+import org.magicdgs.readtools.cmd.programgroups.MappabilityProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
@@ -46,7 +47,7 @@ import java.nio.file.Files;
 @BetaFeature
 @CommandLineProgramProperties(oneLineSummary = "Parse the result of reference kmer mapping and compute the raw mask",
         summary = "",
-        programGroup = SnpableProgramGroup.class)
+        programGroup = MappabilityProgramGroup.class)
 // TODO: this should be omitted from the CLI for now
 public class GenerateRawMask extends ReadToolsProgram {
 

@@ -22,23 +22,26 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.snpable;
+package org.magicdgs.readtools.cmd.programgroups;
 
-import org.broadinstitute.barclay.argparser.BetaFeature;
+import com.google.common.annotations.Beta;
 import org.broadinstitute.barclay.argparser.CommandLineProgramGroup;
 
 /**
+ * Tools for compute mappability/alignability with different algorithms.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-@BetaFeature
-public class SnpableProgramGroup implements CommandLineProgramGroup {
+@Beta
+public class MappabilityProgramGroup implements CommandLineProgramGroup {
+
     @Override
     public String getName() {
-        return "(BETA) SNPable pipeline tools";
+        return "(BETA) Mappability/Alignability tools";
     }
 
     @Override
     public String getDescription() {
-        return "(BETA) Implementation of SNPable pipeline (http://lh3lh3.users.sourceforge.net/snpable.shtml)";
+        return "(BETA) Pipeline components for compute mappability/alignability";
     }
 }

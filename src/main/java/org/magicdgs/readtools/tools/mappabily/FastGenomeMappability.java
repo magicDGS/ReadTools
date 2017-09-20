@@ -26,7 +26,6 @@ package org.magicdgs.readtools.tools.mappabily;
 
 import org.magicdgs.readtools.cmd.argumentcollections.BwaMemArgumentCollection;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
-import org.magicdgs.readtools.tools.snpable.Snpable;
 import org.magicdgs.readtools.utils.bwa.BwaUtils;
 
 

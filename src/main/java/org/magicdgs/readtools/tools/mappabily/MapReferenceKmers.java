@@ -22,10 +22,11 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.snpable;
+package org.magicdgs.readtools.tools.mappabily;
 
 import org.magicdgs.readtools.cmd.argumentcollections.BwaMemArgumentCollection;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputBamArgumentCollection;
+import org.magicdgs.readtools.cmd.programgroups.MappabilityProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 import org.magicdgs.readtools.utils.bwa.BwaUtils;
 
@@ -72,7 +73,7 @@ import java.util.stream.Collectors;
 @BetaFeature
 @CommandLineProgramProperties(oneLineSummary = "Extracts and maps all overlapping k-mer sub-sequences from a FASTA reference",
         summary = "",
-        programGroup = SnpableProgramGroup.class)
+        programGroup = MappabilityProgramGroup.class)
 // TODO: this should be omitted from the CLI for now
 public class MapReferenceKmers extends ReadToolsProgram {
 
@@ -215,18 +216,9 @@ public class MapReferenceKmers extends ReadToolsProgram {
             throw new GATKException.ShouldNeverReachHereException("No alignment for read?");
         }
 
-        // TODO: add to documentation with the difference from bwa-aln
-        // custom tags got from the SA alignments and XA tag
-        // X0:i:[0-9]* - number of SA/XA alignments with 0 mismatches (perfect match)
-        // X1:i:[0-9]* - number of SA/XA alignments with 1 mismatch
-        final AtomicInteger x0 = new AtomicInteger(0);
-        final AtomicInteger x1 = new AtomicInteger(0);
-
         final Map<BwaMemAlignment, String> saTags = BwaMemAlignmentUtils.createSATags(alignments, seqNames);
 
         final List<GATKRead> reads = alignments.stream()
-                // first accumulate statistics of mismatches (X0, X1 and X2)
-                .peek(al -> accumulateMismatches(al.getNMismatches(), x0, x1))
                 // convert to GATKRead each of the alignments
                 .map(al -> {
                     final SAMRecord record = BwaMemAlignmentUtils.applyAlignment(
@@ -241,8 +233,6 @@ public class MapReferenceKmers extends ReadToolsProgram {
                 })
                 // filter out the secondary/supplementary alignments
                 .filter(BwaUtils.PRIMARY_LINE_FILTER)
-                // accumulate the statistics from the XA tag
-                .peek(read -> accumulateXaInCustomTags(read, x0, x1))
                 // collect the secondary/supplementary alignmets
                 .collect(Collectors.toList());
 
@@ -251,46 +241,25 @@ public class MapReferenceKmers extends ReadToolsProgram {
         }
         // get the read and add the custom tags
         final GATKRead read = reads.get(0);
-        // setting custom X0 and X1 tags
-        if (!read.isUnmapped()) {
-            // TODO: in some example what I found is that thsi produces an '@' symbol in downstream scripts
-            // TODO: which is bad because the parser for FASTX files considers the '@' symbol as a header
-            // TODO: thus, I cap to 3 to get rid of the '@' symbol
-            // TODO: we should remove this cap and/or add a command-line-option
-            read.setAttribute("X0", Math.min(x0.intValue(), 3));
-            read.setAttribute("X1", Math.min(x1.intValue(), 3));
-        }
+        // setting the OA tag
+        addIntervalAsOAtag(interval, read);
+
+
 
         return read;
     }
 
-    private void accumulateXaInCustomTags(final GATKRead read, final AtomicInteger x0, final AtomicInteger x1) {
-        final String xa = read.getAttributeAsString("XA");
-        // no XA tag - no update
-        if (xa == null || xa.isEmpty()) {
-            return;
-        }
-        // TODO: pre-compile!
-        // XA tag pattern: (chr,pos,CIGAR,NM;)*
-        final String[] alignments = xa.split(";");
-        for (final String al: alignments) {
-            final int nm = Integer.valueOf(al.split(",")[3]);
-            accumulateMismatches(nm, x0, x1);
-        }
-    }
-
-
-    private static void accumulateMismatches(final int nMismatches, final AtomicInteger x0, final AtomicInteger x1) {
-        switch (nMismatches) {
-            case 0:
-                x0.incrementAndGet();
-                break;
-            case 1:
-                x1.incrementAndGet();
-                break;
-            default:
-                break;
-        }
+    // TODO: still not in the specs -> https://github.com/samtools/hts-specs/pull/193
+    // this should be a method in RTReadUtils to encode a GATKRead as a OA tag
+    // and also to encode a locatable into a simple interval
+    private static void addIntervalAsOAtag(final SimpleInterval interval, final GATKRead read) {
+        // OA:Z:(rname,pos,strand,CIGAR,mapQ,NM;)+
+        // the kmer was always originated in the positive strand,
+        // the cigar is all matches M
+        // MAPQ and NM is not computed
+        final String oaTag = String.format("%s,%s,+,%dM,,;",
+                interval.getContig(), interval.getStart(), interval.size());
+        read.setAttribute("OA", oaTag);
     }
 
     @Override

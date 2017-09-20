@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.snpable;
+package org.magicdgs.readtools.tools.mappabily;
 
+import org.magicdgs.readtools.cmd.programgroups.MappabilityProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
@@ -40,10 +41,8 @@ import org.broadinstitute.hellbender.utils.io.IOUtils;
 import scala.Tuple2;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,7 @@ import java.util.Map;
 @BetaFeature
 @CommandLineProgramProperties(oneLineSummary = "",
         summary = "",
-        programGroup = SnpableProgramGroup.class)
+        programGroup = MappabilityProgramGroup.class)
 public class GenerateMask extends ReadToolsProgram {
 
     // TODO: better doc

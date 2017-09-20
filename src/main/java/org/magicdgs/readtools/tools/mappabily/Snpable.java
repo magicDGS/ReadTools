@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.snpable;
+package org.magicdgs.readtools.tools.mappabily;
 
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMSequenceDictionary;
