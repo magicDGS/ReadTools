@@ -40,6 +40,14 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
 
     @DataProvider
     public Object[][] encodingData() throws Exception {
+        // data provider order:
+        // 1. encoding format (enum)
+        // 2. original read name
+        // 3. expected normalized name
+        // 4. first in pair (true/false)
+        // 5. second of pair (true/false)
+        // 6. PF flag (true/false)
+        // 7. barcode sequence (String[])
         return new Object[][] {
                 // illumina encodings
                 {FastqReadNameEncoding.ILLUMINA,
@@ -59,6 +67,7 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
                         "@HWUSI-EAS100R:6:73:941:1973/1",
                         "@HWUSI-EAS100R:6:73:941:1973/1", true, false, false,
                         new String[0]},
+                // with comments
                 {FastqReadNameEncoding.ILLUMINA,
                         "@HWUSI-EAS100R:6:73:941:1973/2 comment",
                         "@HWUSI-EAS100R:6:73:941:1973/2", false, true, false,
@@ -67,6 +76,11 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
                         "@HWUSI-EAS100R:6:73:941:1973#ATCGA comment",
                         "@HWUSI-EAS100R:6:73:941:1973#ATCGA", false, false, false,
                         new String[] {"ATCGA"}},
+                {FastqReadNameEncoding.ILLUMINA,
+                        "@HWUSI-EAS100R:6:73:941:1973#ACTG/2 comment",
+                        "@HWUSI-EAS100R:6:73:941:1973#ACTG/2", false, true, false,
+                        new String[] {"ACTG"}},
+                // casava formatting
                 {FastqReadNameEncoding.CASAVA,
                         "@ST-E00169:175:HMTL3CCXX:7:1101:3457:1573 1:N:0:NTGATTAC",
                         "@ST-E00169:175:HMTL3CCXX:7:1101:3457:1573#NTGATTAC/1", true, false, false,
@@ -83,6 +97,15 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
                         "@ST-E00169:175:HMTL3CCXX:7:1101:3457:1573 2:Y:0:NTGATTAC",
                         "@ST-E00169:175:HMTL3CCXX:7:1101:3457:1573#NTGATTAC/2", false, true, true,
                         new String[] {"NTGATTAC"}},
+                // Nanopore name format - see https://github.com/nanopore-wgs-consortium/NA12878
+                {FastqReadNameEncoding.ILLUMINA,
+                        "@455ce49b-a59e-4c03-8639-5be6272eb928_Basecall_Alignment_template MinION2_20160716_FNFAB23716_MN16454_sequencing_run_Chip86_Human_Genomic_1D_Rapid_Tuned3_99286_ch190_read287_strand1",
+                        // expected value without space
+                        "@455ce49b-a59e-4c03-8639-5be6272eb928_Basecall_Alignment_template",
+                        // no pair-end, PF information
+                        false, false, false,
+                        // no barcode
+                        new String[0]}
         };
     }
 
@@ -105,12 +128,12 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "encodingData")
     public void testUpdateReadFromReadName(final FastqReadNameEncoding encoding,
-            final String readName, final String expextedNormalize, final boolean first,
+            final String readName, final String expectedNormalize, final boolean first,
             final boolean second, final boolean pf, final String[] barcode) throws Exception {
         final GATKRead read = ArtificialReadUtils.createArtificialUnmappedRead(null, null, null);
         FastqReadNameEncoding.updateReadFromReadName(read, readName);
         Assert.assertEquals(read.getName(),
-                plainNameFromExpectedNormalize(expextedNormalize), "incorrect name");
+                plainNameFromExpectedNormalize(expectedNormalize), "incorrect name");
         Assert.assertEquals(read.isPaired(), first || second, "incorrec paired flag");
         Assert.assertEquals(read.isFirstOfPair(), first, "incorrect first of pair flag");
         Assert.assertEquals(read.isSecondOfPair(), second, "incorrect second of pair flag");

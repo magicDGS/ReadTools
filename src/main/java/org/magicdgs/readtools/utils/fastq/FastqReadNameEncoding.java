@@ -97,7 +97,10 @@ public enum FastqReadNameEncoding {
             throw new IllegalArgumentException(
                     "Wrong encoded read name for " + name() + " encoding: " + readName);
         }
-        return matcher.group(1);
+        // remove trailing white spaces if present
+        final String plainName = matcher.group(1);
+        final int index = plainName.indexOf(" ");
+        return (index == -1) ? plainName : plainName.substring(0, index);
     }
 
     /**
