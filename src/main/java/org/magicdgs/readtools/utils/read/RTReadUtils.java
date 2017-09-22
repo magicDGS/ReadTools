@@ -27,6 +27,7 @@ package org.magicdgs.readtools.utils.read;
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 
+import com.google.common.annotations.Beta;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;

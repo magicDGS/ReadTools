@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.quality;
 
 import org.magicdgs.readtools.RTHelpConstants;
+import org.magicdgs.readtools.cmd.argumentcollections.FixBarcodeAbstractArgumentCollection;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.metrics.ReadsChecksumMetric;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
@@ -34,7 +35,9 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import htsjdk.samtools.metrics.MetricsFile;
 import htsjdk.samtools.metrics.StringHeader;
+import org.apache.commons.lang3.ArrayUtils;
 import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.BetaFeature;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocumentedFeature;
@@ -43,6 +46,7 @@ import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import scala.Tuple2;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -51,6 +55,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 /**
  * Computes a checksum for the reads contained in any kind of read source. This checksum is
@@ -83,7 +88,7 @@ import java.util.TreeSet;
                 + "The hash code does not include mapping information and it is independent "
                 + "of the order of appearance of the reads.\n"
                 + "This tool is useful for assess integrity of data after mapping or processing, "
-                + "when the information of the read itself will not be changed."
+                + "when the information of the read itself will not be changed.\n\n"
                 + "Find more information about this tool in "
                 + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsChecksum.html",
         programGroup = QCProgramGroup.class)
@@ -100,6 +105,10 @@ public class ReadsChecksum extends ReadToolsWalker {
     @Argument(fullName = "tag", optional = true, doc = "Include the provided tag(s) in the hash computation. If provided, it will override the default value. Set to null to remove the default value.")
     public Set<String> tagsToInclude = new TreeSet<>(RTReadUtils.RAW_BARCODE_TAG_LIST);
 
+    @ArgumentCollection
+    public FixBarcodeAbstractArgumentCollection fixBarcodeArguments =
+            FixBarcodeAbstractArgumentCollection.getArgumentCollection(true);
+
     // we use MD5 hashing for the reads
     private final static HashFunction MD5_HASH_FUNCTION = Hashing.md5();
 
@@ -107,15 +116,40 @@ public class ReadsChecksum extends ReadToolsWalker {
     // this assess that the combine method works (requires the same number of bytes)
     private HashCode hashAccumulator = MD5_HASH_FUNCTION.hashInt(0);
     // checksum for the file
-    public ReadsChecksumMetric checksum = new ReadsChecksumMetric();
+    private ReadsChecksumMetric checksum = new ReadsChecksumMetric();
+
+    @Override
+    public String[] customCommandLineValidation() {
+        fixBarcodeArguments.validateArguments();
+        return super.customCommandLineValidation();
+    }
 
     @Override
     protected void apply(final GATKRead read) {
+        final GATKRead fixed = fixBarcodeArguments.fixBarcodeTags(read);
+        accumulateHash(getHash(fixed));
+    }
+
+    @Override
+    protected void apply(final Tuple2<GATKRead, GATKRead> pair) {
+        // fix the barcode pair tag
+        final Tuple2<GATKRead, GATKRead> fixed = fixBarcodeArguments.fixBarcodeTags(pair);
+        accumulateHash(getHash(fixed._1), getHash(fixed._2));
+    }
+
+    // helper method
+    private HashCode getHash(final GATKRead read) {
+        return RTReadUtils.readHash(read, tagsToInclude, MD5_HASH_FUNCTION);
+    }
+
+    // helper method
+    private void accumulateHash(final HashCode... hashes) {
         // because this is sum, it is order independent
         // maybe we should come out with a better solution, because this may explode
-        hashAccumulator = Hashing.combineUnordered(Arrays.asList(hashAccumulator,
-                RTReadUtils.readHash(read, tagsToInclude, MD5_HASH_FUNCTION)));
-        checksum.NUMBER_OF_READS++;
+        for (HashCode hash: hashes) {
+            hashAccumulator = Hashing.combineUnordered(Arrays.asList(hashAccumulator, hash));
+            checksum.NUMBER_OF_READS++;
+        }
     }
 
     /** Returns the read hash code. */
