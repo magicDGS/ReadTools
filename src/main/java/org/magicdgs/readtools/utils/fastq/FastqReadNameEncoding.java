@@ -189,15 +189,15 @@ public enum FastqReadNameEncoding {
     }
 
     /**
-     * Detects the format for the read name provided, and updates the following information of the
-     * read:
+     * Detects the format for the read name provided, and updates the read information.
      *
+     * <p>The following information will be updated:
      * <ul>
      * <li>Read name according to SAM specs (no barcode or pair-end information), without
      * white-space.</li>
      * <li>Pair-end information in the bitwise flag (using {@link #getPairedState(String)}).</li>
      * <li>PF information in the bitwise flag (using {@link #isPF(String)}).</li>
-     * <l>Barcode information in the default tag (using {@link #getBarcodes(String)})</l>
+     * <li>Barcode information in the default tag (using {@link #getBarcodes(String)}).</li>
      * </ul>
      *
      * @param read     the read to update.
