@@ -31,6 +31,7 @@ import org.magicdgs.readtools.RTCommandLineProgramTest;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamReader;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -237,6 +238,23 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                 Assert.assertEquals(actual.getReadGroup(), expected.getReadGroup(), "not same RG");
             });
         }
+    }
+
+    @DataProvider
+    public Object[][] differentBarcodeNumberForFailure() {
+        return new Object[][] {
+                // standard data with single index and dual barcode
+                {new ArgumentsBuilder()
+                        .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam"))
+                        .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)}
+        };
+    }
+
+    @Test(dataProvider = "differentBarcodeNumberForFailure", expectedExceptions = UserException.MalformedFile.class)
+    public void testFailureForDifferentBarcodesInDictionaryAndInput(final ArgumentsBuilder args) {
+        // TODO: this should fail
+        final File outputPrefix = new File(createTestTempDir(getTestedToolName()), args.toString() + ".sam");
+        runCommandLine(args.addOutput(outputPrefix));
     }
 
 }
