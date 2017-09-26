@@ -35,6 +35,7 @@ import htsjdk.samtools.util.Histogram;
 import htsjdk.tribble.util.MathUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
@@ -176,13 +177,26 @@ public class BarcodeDecoder {
     public void assignReadGroupByBarcode(final GATKRead read) {
         final String[] barcodes = RTReadUtils.getRawBarcodes(read);
         logger.debug("Raw barcodes: {}", () -> Arrays.toString(barcodes));
-        // if there is not barcode in the read, just ignore it
-        final String bestBarcode = (barcodes.length == 0)
-                ? BarcodeMatch.UNKNOWN_STRING : getBestBarcodeString(barcodes);
-        logger.debug("Detected barcode: {}", () -> bestBarcode);
-        final SAMReadGroupRecord readGroup = dictionary.getReadGroupFor(bestBarcode);
-        logger.debug("Detected RG: {}", () -> readGroup);
-        read.setReadGroup(readGroup.getReadGroupId());
+        // get the best barcode
+        ;
+        if (barcodes.length == 0) {
+            // log a warning if there is no barcode
+            logger.warn("Read without barcodes {} assigned to {} Read Group", read::getName,
+                    () -> dictionary.getUnknownReadGroup().getId());
+            read.setReadGroup(dictionary.getUnknownReadGroup().getReadGroupId());
+        } else if (barcodes.length != dictionary.getNumberOfBarcodes() ) {
+            // throw an exception if there is a mismatch with the number of barcodes
+            throw new UserException.MalformedFile(String.format(
+                    "Barcode dictionary has %s indexes, but read contains %s.",
+                    dictionary.getNumberOfBarcodes(), barcodes.length));
+        } else {
+            // assigned the barcode only if it has the same number as in the dictionary
+            final String bestBarcode = getBestBarcodeString(barcodes);
+            logger.debug("Detected barcode: {}", () -> bestBarcode);
+            final SAMReadGroupRecord readGroup = dictionary.getReadGroupFor(bestBarcode);
+            logger.debug("Detected RG: {}", () -> readGroup);
+            read.setReadGroup(readGroup.getReadGroupId());
+        }
     }
 
     /**
