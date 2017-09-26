@@ -26,6 +26,7 @@ package org.magicdgs.readtools.tools.distmap;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
@@ -38,6 +39,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -53,6 +56,8 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
     private String clusterInputFolder;
     private final File distmapFolder = getClassTestDirectory();
 
+    private final FilenameFilter partNameFilter = (d, f) -> f.startsWith("part-");
+
     // init the cluster and copy the files there
     @BeforeClass(alwaysRun = true)
     public void setupMiniCluster() throws Exception {
@@ -65,7 +70,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         clusterInputFolder = distmapClusterFolder.toUri().toString();
 
         // copy input part files into the directory
-        for (final File file: distmapFolder.listFiles((d, f) -> f.startsWith("part-"))) {
+        for (final File file: distmapFolder.listFiles(partNameFilter)) {
             Files.copy(file.toPath(), IOUtils.getPath(clusterInputFolder + "/" + file.getName()));
         }
     }
@@ -99,21 +104,22 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         };
     }
 
+    @Test
+    public void testLocalPreSorted() throws Exception {
+        final ArgumentsBuilder args = new ArgumentsBuilder();
+        final File expectedOutput = getTestFile("parts-00000-to-00003.sam");
+        final File output = new File(TEST_TEMP_DIR,
+                args.toString() + ".local.presorted." + expectedOutput.getName() + ".sam");
+        testDonwloadDistmapResult(args, distmapFolder.getAbsolutePath() + "/presorted", output, expectedOutput);
+    }
+
     @Test(dataProvider = "getArguments")
     public void testDownloadDistmapResultLocal(final ArgumentsBuilder args, final File expectedOutput)
             throws Exception {
         // output in SAM format for text comparison
         final File output = new File(TEST_TEMP_DIR,
                 args.toString() + ".local." + expectedOutput.getName() + ".sam");
-
-        final ArgumentsBuilder completeArgs = new ArgumentsBuilder(args.getArgsArray())
-                .addInput(distmapFolder)
-                .addOutput(output)
-                .addBooleanArgument("addOutputSAMProgramRecord", false);
-        runCommandLine(completeArgs);
-
-        // using text file concordance
-        IntegrationTestSpec.assertEqualTextFiles(output, expectedOutput);
+        testDonwloadDistmapResult(args, distmapFolder.getAbsolutePath(), output, expectedOutput);
     }
 
     @Test(dataProvider = "getArguments")
@@ -122,9 +128,15 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         // output in SAM format for text comparison
         final File output = new File(TEST_TEMP_DIR,
                 args.toString() + ".cluster." + expectedOutput.getName() + ".sam");
+        testDonwloadDistmapResult(args, clusterInputFolder, output, expectedOutput);
+    }
+
+    // helper method for run every test
+    private void testDonwloadDistmapResult(final ArgumentsBuilder args, final String inputPath, final File output, final File expectedOutput)
+            throws Exception {
 
         final ArgumentsBuilder completeArgs = new ArgumentsBuilder(args.getArgsArray())
-                .addArgument("input", clusterInputFolder)
+                .addArgument("input", inputPath)
                 .addOutput(output)
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
         runCommandLine(completeArgs);
