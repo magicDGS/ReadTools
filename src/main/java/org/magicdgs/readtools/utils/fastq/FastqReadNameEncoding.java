@@ -85,10 +85,11 @@ public enum FastqReadNameEncoding {
     }
 
     /**
-     * Normalize the read name with this encoding. Includes the barcode if it can be detected.
+     * Gets the plain read name for this encoding, trimming everything after the white-space.
      *
-     * @return illumina read name without comments; {@code null} if the read name is not encoded
-     * with this format.
+     * @return illumina read name without comments.
+     *
+     * @throws IllegalArgumentException if the name is wrongly encoded.
      */
     @VisibleForTesting
     String getPlainName(final String readName) {
@@ -97,13 +98,16 @@ public enum FastqReadNameEncoding {
             throw new IllegalArgumentException(
                     "Wrong encoded read name for " + name() + " encoding: " + readName);
         }
-        return matcher.group(1);
+        // remove trailing white spaces if present
+        final String plainName = matcher.group(1);
+        final int index = plainName.indexOf(" ");
+        return (index == -1) ? plainName : plainName.substring(0, index);
     }
 
     /**
      * Gets the PF flag from the read name.
      *
-     * Note: this is only encoded int the {@link #CASAVA} formatting.
+     * <p>Note: this information is only encoded in the {@link #CASAVA} formatting.
      *
      * @param readName the read name.
      *
@@ -141,7 +145,7 @@ public enum FastqReadNameEncoding {
     /**
      * Returns the second of pair status of the read.
      *
-     * Note: {@code false} does not mean that the read is not paired or have the '1' mark.
+     * <p>Note: {@code false} does not mean that the read is not paired or have the '1' mark.
      *
      * @param readName the read name to extract the information.
      *
@@ -154,11 +158,11 @@ public enum FastqReadNameEncoding {
     /**
      * Returns the first of pair status of the read.
      *
-     * Note: {@code false} does not mean that the read is not paired or have the '1' mark.
+     * <p>Note: {@code false} does not mean that the read is not paired or have the '2' mark.
      *
      * @param readName the read name to extract the information.
      *
-     * @return {@code true} if the read have the '2' mark; {@code false} otherwise.
+     * @return {@code true} if the read have the '1' mark; {@code false} otherwise.
      */
     public boolean isFirstOfPair(final String readName) {
         return getPairedState(readName).equals("1");
@@ -185,12 +189,16 @@ public enum FastqReadNameEncoding {
     }
 
     /**
-     * Detects the format for the read name, and update the read with the following information:
+     * Detects the format for the read name provided, and updates the read information.
      *
-     * - Read name according to SAM specs (Illumina-like read name with barcode but without pair
-     * information).
-     * - Second of pair information detected with {@link #isSecondOfPair(String)}
-     * - PF information if {@link #isPF(String)}
+     * <p>The following information will be updated:
+     * <ul>
+     * <li>Read name according to SAM specs (no barcode or pair-end information), without
+     * white-space.</li>
+     * <li>Pair-end information in the bitwise flag (using {@link #getPairedState(String)}).</li>
+     * <li>PF information in the bitwise flag (using {@link #isPF(String)}).</li>
+     * <li>Barcode information in the default tag (using {@link #getBarcodes(String)}).</li>
+     * </ul>
      *
      * @param read     the read to update.
      * @param readName the read name from a FASTQ file.
