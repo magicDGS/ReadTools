@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Fix bug for FASTQ read names with spaces without barcode/pair-end information
 - Force HTSJDK dependency to be the one provided
 - Honor asynchronous writing in Distmap tools
+
+### Added
+- Add walkthrough data for documentation
 
 ### Changed
 - Update documentation
@@ -15,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - Remove `FastqToReadIterator` in favor of generic `RecordToReadIterator`
 - Add tests for Distmap tools for HDFS
 - Force testing dependencies to be in hte version provided
+- Use walkthrough data for some tests
 
 ## [1.0.0] - 2017-05-18
 
