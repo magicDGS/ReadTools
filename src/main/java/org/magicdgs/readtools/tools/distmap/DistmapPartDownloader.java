@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 /**
  * Engine for download part files from DistMap.
  *
- * Note: if used within a tool it should be considered as an {@link ArgumentCollection} to allow
+ * <p>Note: if used within a tool it should be considered as an {@link ArgumentCollection} to allow
  * the user to pass the parameters.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -205,7 +205,7 @@ final class DistmapPartDownloader {
     /**
      * Write the reads contained in the source into the writer.
      *
-     * Note: the writer is closed before returning.
+     * <p>Note: the writer is closed before returning.
      */
     private void writeReads(final ReadsDataSource reads, final GATKReadWriter writer,
             final ProgressMeter progressMeter) {
