@@ -243,16 +243,19 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
     @DataProvider
     public Object[][] differentBarcodeNumberForFailure() {
         return new Object[][] {
-                // standard data with single index and dual barcode
+                // standard data with single index and dual barcode file
                 {new ArgumentsBuilder()
                         .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam"))
-                        .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)}
+                        .addFileArgument("barcodeFile", DUAL_BARCODE_FILE)},
+                // standard data with dual index and single barcode file
+                {new ArgumentsBuilder()
+                        .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.bam"))
+                        .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)}
         };
     }
 
     @Test(dataProvider = "differentBarcodeNumberForFailure", expectedExceptions = UserException.MalformedFile.class)
     public void testFailureForDifferentBarcodesInDictionaryAndInput(final ArgumentsBuilder args) {
-        // TODO: this should fail
         final File outputPrefix = new File(createTestTempDir(getTestedToolName()), args.toString() + ".sam");
         runCommandLine(args.addOutput(outputPrefix));
     }

@@ -23,6 +23,7 @@
  */
 package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
 
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.metrics.barcodes.BarcodeDetector;
 import org.magicdgs.readtools.metrics.barcodes.BarcodeStat;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
@@ -173,22 +174,25 @@ public class BarcodeDecoder {
      * pipeline in {@link #getBestBarcodeString(String...)}.
      *
      * @param read the read to asssing the read group.
+     * @throws UserException.MalformedFile if the raw barcode length and dictionary number of
+     * indexes differs.
      */
     public void assignReadGroupByBarcode(final GATKRead read) {
         final String[] barcodes = RTReadUtils.getRawBarcodes(read);
         logger.debug("Raw barcodes: {}", () -> Arrays.toString(barcodes));
         // get the best barcode
-        ;
         if (barcodes.length == 0) {
             // log a warning if there is no barcode
-            logger.warn("Read without barcodes {} assigned to {} Read Group", read::getName,
-                    () -> dictionary.getUnknownReadGroup().getId());
+            logger.warn("{} read does not have raw barcodes: assigned to {} Read Group",
+                    read::getName, () -> dictionary.getUnknownReadGroup().getId());
             read.setReadGroup(dictionary.getUnknownReadGroup().getReadGroupId());
         } else if (barcodes.length != dictionary.getNumberOfBarcodes() ) {
             // throw an exception if there is a mismatch with the number of barcodes
             throw new UserException.MalformedFile(String.format(
-                    "Barcode dictionary has %s indexes, but read contains %s.",
-                    dictionary.getNumberOfBarcodes(), barcodes.length));
+                    "Barcode dictionary has %s indexes, but read contains %s barcodes."
+                            + " Failing read: %s (%s)",
+                    dictionary.getNumberOfBarcodes(), barcodes.length,
+                    read.getName(), String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes)));
         } else {
             // assigned the barcode only if it has the same number as in the dictionary
             final String bestBarcode = getBestBarcodeString(barcodes);
