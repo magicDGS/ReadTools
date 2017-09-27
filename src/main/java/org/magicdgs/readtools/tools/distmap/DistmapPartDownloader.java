@@ -27,9 +27,7 @@ package org.magicdgs.readtools.tools.distmap;
 import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection;
 
 import avro.shaded.com.google.common.collect.Lists;
-import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileSpanImpl;
 import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;

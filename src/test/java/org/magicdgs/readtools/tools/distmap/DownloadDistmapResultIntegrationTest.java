@@ -26,7 +26,6 @@ package org.magicdgs.readtools.tools.distmap;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
@@ -39,8 +38,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -56,8 +53,6 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
     private String clusterInputFolder;
     private final File distmapFolder = getClassTestDirectory();
 
-    private final FilenameFilter partNameFilter = (d, f) -> f.startsWith("part-");
-
     // init the cluster and copy the files there
     @BeforeClass(alwaysRun = true)
     public void setupMiniCluster() throws Exception {
@@ -70,7 +65,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         clusterInputFolder = distmapClusterFolder.toUri().toString();
 
         // copy input part files into the directory
-        for (final File file: distmapFolder.listFiles(partNameFilter)) {
+        for (final File file: distmapFolder.listFiles((d, f) -> f.startsWith("part-"))) {
             Files.copy(file.toPath(), IOUtils.getPath(clusterInputFolder + "/" + file.getName()));
         }
     }
