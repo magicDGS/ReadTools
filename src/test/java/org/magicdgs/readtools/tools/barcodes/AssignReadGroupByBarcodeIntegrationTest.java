@@ -177,34 +177,45 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
             final boolean testSplit) throws Exception {
         log("Testing " + testName + " for deprecated " + deprecatedTool);
 
+        final File expextedFilePrefix = getTestFile(testName);
+
         // add the outputs
         final File actualOutputPrefix = new File(createTestTempDir(deprecatedTool), testName);
-        builder.addOutput(actualOutputPrefix)
-                .addBooleanArgument("addOutputSAMProgramRecord",
-                        false) // does not output the program group record
-                .addArgument("outputFormat", "SAM") // output always SAM as text file
-                .addBooleanArgument("keepDiscarded",
-                        true) // always keep discarded for the concordance tests, because it previously was done
-                .addBooleanArgument("splitSample", testSplit);
-
-        // run the command line
-        Assert.assertNull(runCommandLine(builder));
-
-        // first check the metrics file -> the metrics file is the same
-        metricsFileConcordance(new File(actualOutputPrefix + ".metrics"),
-                getTestFile(testName + ".metrics"));
-
-        testSamFileEquivalentForBarcodeDetection(new File(actualOutputPrefix + "_discarded.sam"),
-                getTestFile(testName + "_discarded.sam"));
+        builder.addBooleanArgument("splitSample", testSplit);
 
         // get the extensions to check
         final List<String> outputToCheck = (testSplit)
                 ? EXPECTED_BY_SAMPLE_EXT : Collections.singletonList(".sam");
-        // check them
-        for (final String ext : outputToCheck) {
+
+        testAddReadGroupByBarcodeRun(builder, actualOutputPrefix, expextedFilePrefix, outputToCheck);
+    }
+
+    private void testAddReadGroupByBarcodeRun(final ArgumentsBuilder args,
+            final File outputFilePrefix, final File expectedFilePrefix,
+            final List<String> outputSuffixes) throws Exception {
+        args.addOutput(outputFilePrefix)
+                // never output the program group record for test files to exact concordance
+                .addBooleanArgument("addOutputSAMProgramRecord", false)
+                // output always SAM as text file for comparison purposes (byte by byte)
+                .addArgument("outputFormat", "SAM")
+                // always keep discarded for the concordance tests, because it keeps all the information
+                .addBooleanArgument("keepDiscarded",  true);
+        // run the command line
+        Assert.assertNull(runCommandLine(args));
+
+        // this files shouldn't be provided in the list of expected output files: metrics and discarded
+        // first check the metrics file -> the metrics file is the same
+        metricsFileConcordance(new File(outputFilePrefix + ".metrics"),
+                new File(expectedFilePrefix + ".metrics"));
+        // test the discarded ones
+        testSamFileEquivalentForBarcodeDetection(new File(outputFilePrefix + "_discarded.sam"),
+                new File(expectedFilePrefix + "_discarded.sam"));
+
+        // now test every of the output suffixes
+        for (final String ext : outputSuffixes) {
             // we expect that they are
-            testSamFileEquivalentForBarcodeDetection(new File(actualOutputPrefix + ext),
-                    getTestFile(testName + ext));
+            testSamFileEquivalentForBarcodeDetection(new File(outputFilePrefix + ext),
+                    new File(expectedFilePrefix + ext));
         }
     }
 
@@ -259,5 +270,4 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
         final File outputPrefix = new File(createTestTempDir(getTestedToolName()), args.toString() + ".sam");
         runCommandLine(args.addOutput(outputPrefix));
     }
-
 }
