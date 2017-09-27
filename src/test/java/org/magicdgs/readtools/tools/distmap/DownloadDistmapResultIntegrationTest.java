@@ -99,21 +99,22 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         };
     }
 
+    @Test
+    public void testLocalPreSorted() throws Exception {
+        final ArgumentsBuilder args = new ArgumentsBuilder();
+        final File expectedOutput = getTestFile("parts-00000-to-00003.sam");
+        final File output = new File(TEST_TEMP_DIR,
+                args.toString() + ".local.presorted." + expectedOutput.getName() + ".sam");
+        testDonwloadDistmapResult(args, distmapFolder.getAbsolutePath() + "/presorted", output, expectedOutput);
+    }
+
     @Test(dataProvider = "getArguments")
     public void testDownloadDistmapResultLocal(final ArgumentsBuilder args, final File expectedOutput)
             throws Exception {
         // output in SAM format for text comparison
         final File output = new File(TEST_TEMP_DIR,
                 args.toString() + ".local." + expectedOutput.getName() + ".sam");
-
-        final ArgumentsBuilder completeArgs = new ArgumentsBuilder(args.getArgsArray())
-                .addInput(distmapFolder)
-                .addOutput(output)
-                .addBooleanArgument("addOutputSAMProgramRecord", false);
-        runCommandLine(completeArgs);
-
-        // using text file concordance
-        IntegrationTestSpec.assertEqualTextFiles(output, expectedOutput);
+        testDonwloadDistmapResult(args, distmapFolder.getAbsolutePath(), output, expectedOutput);
     }
 
     @Test(dataProvider = "getArguments")
@@ -122,9 +123,15 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         // output in SAM format for text comparison
         final File output = new File(TEST_TEMP_DIR,
                 args.toString() + ".cluster." + expectedOutput.getName() + ".sam");
+        testDonwloadDistmapResult(args, clusterInputFolder, output, expectedOutput);
+    }
+
+    // helper method for run every test
+    private void testDonwloadDistmapResult(final ArgumentsBuilder args, final String inputPath, final File output, final File expectedOutput)
+            throws Exception {
 
         final ArgumentsBuilder completeArgs = new ArgumentsBuilder(args.getArgsArray())
-                .addArgument("input", clusterInputFolder)
+                .addArgument("input", inputPath)
                 .addOutput(output)
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
         runCommandLine(completeArgs);

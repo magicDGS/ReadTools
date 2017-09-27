@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 /**
  * Engine for download part files from DistMap.
  *
- * Note: if used within a tool it should be considered as an {@link ArgumentCollection} to allow
+ * <p>Note: if used within a tool it should be considered as an {@link ArgumentCollection} to allow
  * the user to pass the parameters.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -142,7 +142,8 @@ final class DistmapPartDownloader {
                     "Only {} parts found: download will be performed at the same time as merging",
                     partFiles::size);
             toMerge = new ReadsDataSource(partFiles, getSamReaderFactory());
-            presorted = isPresorted();
+            presorted = isPresorted(toMerge.getHeader());
+            logger.debug("Presorted = {}", presorted);
         } else {
             toMerge = downloadBatchesAndPreSort(partFiles);
             presorted = true;
@@ -169,12 +170,14 @@ final class DistmapPartDownloader {
     /**
      * Returns {@code true} if the parameters suggest that the files are pre-sorted; {@code false}
      * otherwise.
+     *
+     * @param header header for checking the sort order.
      */
-    private boolean isPresorted() {
-        // TODO: this should also include the header to check if they are sorted in the same order
-        // TODO: nevertheless, GATK ReadsDataSource returns a merged header with coordinate sort order
-        // TODO: and it is impossible to distinguish when it is pre-sorted
-        return SAMFileHeader.SortOrder.unsorted == sortOrder;
+    private boolean isPresorted(final SAMFileHeader header) {
+        // if the requested order is unsorted
+        return SAMFileHeader.SortOrder.unsorted == sortOrder
+                // if the header is the same sort order than the one requested
+                || header.getSortOrder() == sortOrder;
     }
 
     /**
@@ -183,24 +186,26 @@ final class DistmapPartDownloader {
      *
      * @param header header to update.
      *
-     * @return the same header (modified accordingly).
+     * @return new header (modified accordingly).
      */
     private SAMFileHeader setHeaderOptions(final SAMFileHeader header) {
-        header.setSortOrder(sortOrder);
+        // clone the SAMFileHeader
+        final SAMFileHeader toReturn = header.clone();
+        toReturn.setSortOrder(sortOrder);
         if (noRemoveTaskProgramGroup) {
             logger.warn(
                     "Program Group header lines (@PG) from DistMap multi-part output are maintained. This may contain information for each Map-Reduce task.");
         } else {
-            header.setProgramRecords(new ArrayList<>());
+            toReturn.setProgramRecords(new ArrayList<>());
         }
-        return header;
+        return toReturn;
     }
 
 
     /**
      * Write the reads contained in the source into the writer.
      *
-     * Note: the writer is closed before returning.
+     * <p>Note: the writer is closed before returning.
      */
     private void writeReads(final ReadsDataSource reads, final GATKReadWriter writer,
             final ProgressMeter progressMeter) {
@@ -236,8 +241,9 @@ final class DistmapPartDownloader {
         // download in batches
         batches.entrySet().forEach(entry -> {
             final String batchName = entry.getKey().toUri().toString();
-            final SAMFileHeader header = setHeaderOptions(entry.getValue().getHeader());
-            logger.debug("Downloading batch: {}.", () -> batchName);
+            final SAMFileHeader batchHeader = entry.getValue().getHeader();
+            final boolean preSorted = isPresorted(batchHeader);
+            logger.debug("Downloading batch: {} (pre-sorted=).", () -> batchName, () -> preSorted);
             writeReads(entry.getValue(),
                     // create based on the batch name, which is BAM and does not require the reference
                     outputArgumentCollection.getWriterFactory()
@@ -245,7 +251,7 @@ final class DistmapPartDownloader {
                             .setCreateIndex(false)
                             // overwrite previous batches (this should never happen, but it is a temp folder)
                             .setForceOverwrite(true)
-                            .createSAMWriter(batchName, header, isPresorted()),
+                            .createSAMWriter(batchName, setHeaderOptions(batchHeader), preSorted),
                     downloadProgress);
             entry.getValue().close();
         });
