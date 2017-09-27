@@ -186,6 +186,7 @@ public class BarcodeDecoder {
             logger.warn("{} read does not have raw barcodes: assigned to {} Read Group",
                     read::getName, () -> dictionary.getUnknownReadGroup().getId());
             read.setReadGroup(dictionary.getUnknownReadGroup().getReadGroupId());
+            stats.get(BarcodeMatch.UNKNOWN_STRING).RECORDS++;
         } else if (barcodes.length != dictionary.getNumberOfBarcodes() ) {
             // throw an exception if there is a mismatch with the number of barcodes
             throw new UserException.MalformedFile(String.format(

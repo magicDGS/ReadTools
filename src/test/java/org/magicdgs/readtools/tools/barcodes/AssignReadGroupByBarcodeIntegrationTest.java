@@ -190,10 +190,23 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
         testAddReadGroupByBarcodeRun(builder, actualOutputPrefix, expextedFilePrefix, outputToCheck);
     }
 
+    @Test
+    public void testSomeReadsWithoutBarcode() throws Exception {
+        final File expectedFilePrefix = getTestFile("expected_some_reads_without_barcode_expected");
+
+        final ArgumentsBuilder args = new ArgumentsBuilder()
+                .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)
+                .addInput(getTestFile("some_reads_without_barcode.sam"));
+
+        final File testFilePrefix = new File(createTestTempDir(getTestedToolName()), "testSomeReadsWithoutBarcode");
+
+        testAddReadGroupByBarcodeRun(args, testFilePrefix, expectedFilePrefix, Collections.singletonList(".sam"));
+    }
+
     private void testAddReadGroupByBarcodeRun(final ArgumentsBuilder args,
-            final File outputFilePrefix, final File expectedFilePrefix,
+            final File testOutputFilePrefix, final File expectedFilePrefix,
             final List<String> outputSuffixes) throws Exception {
-        args.addOutput(outputFilePrefix)
+        args.addOutput(testOutputFilePrefix)
                 // never output the program group record for test files to exact concordance
                 .addBooleanArgument("addOutputSAMProgramRecord", false)
                 // output always SAM as text file for comparison purposes (byte by byte)
@@ -205,16 +218,16 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
 
         // this files shouldn't be provided in the list of expected output files: metrics and discarded
         // first check the metrics file -> the metrics file is the same
-        metricsFileConcordance(new File(outputFilePrefix + ".metrics"),
+        metricsFileConcordance(new File(testOutputFilePrefix + ".metrics"),
                 new File(expectedFilePrefix + ".metrics"));
         // test the discarded ones
-        testSamFileEquivalentForBarcodeDetection(new File(outputFilePrefix + "_discarded.sam"),
+        testSamFileEquivalentForBarcodeDetection(new File(testOutputFilePrefix + "_discarded.sam"),
                 new File(expectedFilePrefix + "_discarded.sam"));
 
         // now test every of the output suffixes
         for (final String ext : outputSuffixes) {
             // we expect that they are
-            testSamFileEquivalentForBarcodeDetection(new File(outputFilePrefix + ext),
+            testSamFileEquivalentForBarcodeDetection(new File(testOutputFilePrefix + ext),
                     new File(expectedFilePrefix + ext));
         }
     }
