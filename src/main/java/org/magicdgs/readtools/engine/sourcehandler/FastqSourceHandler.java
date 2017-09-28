@@ -46,6 +46,12 @@ import java.util.List;
  */
 final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
 
+    // FASTQ headers are assumed to be unsorted for FASTQ files
+    private static final SAMFileHeader FASTQ_HEADER = new SAMFileHeader();
+    static {
+        FASTQ_HEADER.setSortOrder(SAMFileHeader.SortOrder.unsorted);
+    }
+
     /**
      * Constructor froma a source.
      *
@@ -55,11 +61,11 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
         super(source, factory);
     }
 
-    /** Returns an empty header. */
+    /** Returns an empty header with unsorted order. */
     // Overrided because this source does not have header
     @Override
     public SAMFileHeader getHeader() {
-        return new SAMFileHeader();
+        return FASTQ_HEADER.clone();
     }
 
     @Override

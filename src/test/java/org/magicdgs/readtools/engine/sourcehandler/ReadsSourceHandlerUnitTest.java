@@ -71,9 +71,6 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     @DataProvider(name = "fastqSources")
     public Object[][] fastqDataSources() {
-        // TODO: this should use the static and consistent version of the header for FASTQ files
-        // TODO: see https://github.com/magicDGS/ReadTools/issues/303
-        final SAMFileHeader EMPTY_HEADER = new SAMFileHeader();
         return new Object[][] {
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.SE.fq"),

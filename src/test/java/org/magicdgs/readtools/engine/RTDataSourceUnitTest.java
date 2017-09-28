@@ -52,6 +52,12 @@ import java.util.stream.Stream;
  */
 public class RTDataSourceUnitTest extends RTBaseTest {
 
+    // minimal header information (at least unsorted order)
+    private final static SAMFileHeader EMPTY_HEADER = new SAMFileHeader();
+    static {
+        EMPTY_HEADER.setSortOrder(SAMFileHeader.SortOrder.unsorted);
+    }
+
     private final static SAMFileHeader minimalPairedHeader = new SAMFileHeader();
     static {
         // TODO: header for paired-data should be one of the following:
@@ -188,39 +194,33 @@ public class RTDataSourceUnitTest extends RTBaseTest {
 
     @DataProvider(name = "single")
     public Object[][] singleDataSource() {
-        // header for FASTQ
-        final SAMFileHeader emptyHeader = new SAMFileHeader();
-        // header for SAM/BAM
-        final SAMFileHeader unsortedHeader = new SAMFileHeader();
-        unsortedHeader.setSortOrder(SAMFileHeader.SortOrder.unsorted);
-
         return new Object[][] {
                 // real single-end files
                 // SAM/BAM/CRAM
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.SE.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.SE.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("misencoded.single_index.SE.sam"),
-                        FastqQualityFormat.Illumina, unsortedHeader, 103},
+                        FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("bc_in_read_name.single_index.SE.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("bc_in_read_name.dual_index.SE.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.SE.bam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.SE.bam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.SE.cram"),
                         FastqQualityFormat.Standard, CRAM_HEADER, 103},
@@ -230,38 +230,38 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                 // FASTQ files
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.SE.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.dual_index.SE.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.SE.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq"),
-                        FastqQualityFormat.Illumina, emptyHeader, 103},
+                        FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 // paired files can be always treated as single-end
                 // BAM/SAM/CRAM
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.paired.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("bc_in_read_name.single_index.paired.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("bc_in_read_name.dual_index.paired.sam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.paired.bam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.bam"),
-                        FastqQualityFormat.Standard, unsortedHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.paired.cram"),
                         FastqQualityFormat.Standard, CRAM_HEADER, 206},
@@ -271,34 +271,34 @@ public class RTDataSourceUnitTest extends RTBaseTest {
                 // FASTQ files
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.paired_1.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("casava.single_index.paired_2.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.dual_index.interleaved.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.dual_index.paired_2.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"),
-                        FastqQualityFormat.Illumina, emptyHeader, 103},
+                        FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq"),
-                        FastqQualityFormat.Illumina, emptyHeader, 103},
+                        FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.interleaved.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 206},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.paired_1.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103},
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.paired_2.fq"),
-                        FastqQualityFormat.Standard, emptyHeader, 103}
+                        FastqQualityFormat.Standard, EMPTY_HEADER, 103}
         };
     }
 
