@@ -252,7 +252,6 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
                     break;
                 case queryname:
                     // TODO - remove this limitation
-                    order = SAMFileHeader.SortOrder.unsorted;
                     logger.warn("Output might reflect '%s' even if '%s' is specified in pair-end source %s. This limitation may be removed in the future.",
                             order, SAMFileHeader.SortOrder.queryname, handler.getHandledSource());
                     break;
