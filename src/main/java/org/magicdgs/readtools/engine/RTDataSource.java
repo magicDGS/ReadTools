@@ -245,12 +245,9 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
                 // both unsorted and unknown
                 case unsorted:
                 case unknown:
-                    if (! SAMFileHeader.GroupOrder.query.equals(header.getGroupOrder())) {
-                        logger.warn(
-                                "Pair-end read source {} with '{}' order grouped by '{}': Assuming that reads are grouped by read name, keeping pairs together.",
-                                handler.getHandledSource(), order, header.getGroupOrder());
-                        // TODO: set group order to queryname sorted - our assumption for unsorted
-                    }
+                    logger.warn(
+                            "Pair-end read source {} with '{}' order grouped by '{}': Assuming that reads are grouped by read name, keeping pairs together.",
+                            handler.getHandledSource(), order, header.getGroupOrder());
                     order = SAMFileHeader.SortOrder.unsorted;
                     break;
                 case queryname:
