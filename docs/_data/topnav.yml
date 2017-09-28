@@ -1,5 +1,6 @@
 ## Topnav single links
 ## if you want to list an external url, use external_url instead of url. the theme will apply a different link base.
+## urls will parse automatically the site.data.index.ReadTools.version to being in sync with the version
 topnav:
 - title: Topnav
   items:
@@ -10,10 +11,9 @@ topnav:
 topnav_dropdowns:
 - title: Topnav dropdowns
   folders:
-    # TODO: generate automatically this links!!
     - title: Download
       folderitems:
         - title: Executable Jar
-          external_url: https://github.com/magicDGS/ReadTools/releases/download/1.0.0/ReadTools.jar
+          external_url: https://github.com/magicDGS/ReadTools/releases/download/site.data.index.ReadTools.version/ReadTools.jar
         - title: Repository zip
-          external_url: https://github.com/magicDGS/ReadTools/archive/1.0.0.tar.gz
+          external_url: https://github.com/magicDGS/ReadTools/archive/site.data.index.ReadTools.version.tar.gz
