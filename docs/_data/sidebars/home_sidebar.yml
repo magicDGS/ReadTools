@@ -3,7 +3,8 @@
 entries:
 - title: Sidebar
   product: ReadTools
-  version: 1.0.0
+  # This is substituted in the sidebar and wherever it is used by teh index.yml corresponding data
+  version: "site.data.index.ReadTools.version"
   folders:
 
   - title: ReadTools
