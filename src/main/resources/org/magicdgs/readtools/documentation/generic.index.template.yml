@@ -16,8 +16,8 @@
     </#list>
 </#macro>
 ReadTools:
-  - version: ${version}
-  - timestamp: ${timestamp}
+  version: ${version}
+  timestamp: ${timestamp}
 
 <#list seq as supercat>
 ${supercat}:
