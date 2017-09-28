@@ -207,9 +207,12 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
                         Arrays.asList(firstHeader, getSamFileHeader(secondHandler)), true)
                         .getMergedHeader();
                 // removes group order included by the merger
-                // this should be done like this because of a null pointer exception
-                // TODO: we should assume SORT_ORDER = query for all the pair-end
+                logger.warn("Assuming '{}' group order for pair-end data in two different files ({} and {})",
+                        SAMFileHeader.GroupOrder.query, readHandler.getHandledSource(), secondHandler.getHandledSource());
+                // remove and set again the group order
+                // this should be done to have always SortOrder before GroupOrder
                 header.setAttribute(SAMFileHeader.GROUP_ORDER_TAG, null);
+                header.setGroupOrder(SAMFileHeader.GroupOrder.query);
             } else {
                 header = firstHeader;
             }
@@ -234,6 +237,7 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
     private SAMFileHeader getSamFileHeader(final ReadsSourceHandler handler) {
         final SAMFileHeader header = handler.getHeader();
         SAMFileHeader.SortOrder order = header.getSortOrder();
+        SAMFileHeader.GroupOrder groupOrder = header.getGroupOrder();
         if (isPaired()) {
             switch (order) {
                 // both coordinate/duplicate sorting are not allowed here if it is paired
@@ -246,9 +250,10 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
                 case unsorted:
                 case unknown:
                     logger.warn(
-                            "Pair-end read source {} with '{}' order grouped by '{}': Assuming that reads are grouped by read name, keeping pairs together.",
-                            handler.getHandledSource(), order, header.getGroupOrder());
+                            "Pair-end read source {} with '{}' order grouped by '{}': Assuming that reads are grouped by {} (keeping pairs together).",
+                            handler.getHandledSource(), order, groupOrder, SAMFileHeader.GroupOrder.query);
                     order = SAMFileHeader.SortOrder.unsorted;
+                    groupOrder = SAMFileHeader.GroupOrder.query;
                     break;
                 case queryname:
                     // TODO - remove this limitation
@@ -269,6 +274,10 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
 
         // finally, set the sort order
         header.setSortOrder(order);
+        // this should be done like this because of a null pointer exception
+        if (! SAMFileHeader.GroupOrder.none.equals(groupOrder)) {
+            header.setGroupOrder(groupOrder);
+        }
 
         return header;
     }

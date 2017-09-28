@@ -64,6 +64,12 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
         EMPTY_HEADER.setSortOrder(SAMFileHeader.SortOrder.unsorted);
     }
 
+    // empty header for standard Walkthrough data - includes also GO:query
+    private final static SAMFileHeader EMPTY_PAIRED_HEADER = EMPTY_HEADER.clone();
+    static {
+        EMPTY_PAIRED_HEADER.setGroupOrder(SAMFileHeader.GroupOrder.query);
+    }
+
     @Test(expectedExceptions = UserException.CouldNotReadInputFile.class)
     public void testNotFoundHandler() throws Exception {
         ReadsSourceHandler.getHandler("unknown", FACTORY_FOR_TEST);
@@ -123,6 +129,8 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
         // this is required because the @SQ lines are included in this header
         final SAMFileHeader cramHeader = getHeaderForFile(TestResourcesUtils
                 .getWalkthroughDataFile("standard.dual_index.SE.cram"));
+        final SAMFileHeader cramPairedHeader = cramHeader.clone();
+        cramPairedHeader.setGroupOrder(SAMFileHeader.GroupOrder.query);
 
         // for mapped files, extract the header from the file for testing
         final SAMFileHeader singleIndexMappedHeader = getHeaderForFile(TestResourcesUtils
@@ -142,13 +150,13 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.sam"),
-                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
+                        FastqQualityFormat.Standard, EMPTY_PAIRED_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.SE.sam"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.paired.sam"),
-                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
+                        FastqQualityFormat.Standard, EMPTY_PAIRED_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("misencoded.single_index.SE.sam"),
                         FastqQualityFormat.Illumina, EMPTY_HEADER, 103},
@@ -175,26 +183,26 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.paired.bam"),
-                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
+                        FastqQualityFormat.Standard, EMPTY_PAIRED_HEADER, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.SE.bam"),
                         FastqQualityFormat.Standard, EMPTY_HEADER, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.bam"),
-                        FastqQualityFormat.Standard, EMPTY_HEADER, 206},
+                        FastqQualityFormat.Standard, EMPTY_PAIRED_HEADER, 206},
                 // CRAM files
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.SE.cram"),
                         FastqQualityFormat.Standard, cramHeader, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.dual_index.paired.cram"),
-                        FastqQualityFormat.Standard, cramHeader, 206},
+                        FastqQualityFormat.Standard, cramPairedHeader, 206},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.SE.cram"),
                         FastqQualityFormat.Standard, cramHeader, 103},
                 {TestResourcesUtils
                         .getWalkthroughDataFile("standard.single_index.paired.cram"),
-                        FastqQualityFormat.Standard, cramHeader, 206},
+                        FastqQualityFormat.Standard, cramPairedHeader, 206},
                 // mapped files
                 {TestResourcesUtils
                         .getWalkthroughDataFile("legacy.single_index.paired.mapped.sam"),
