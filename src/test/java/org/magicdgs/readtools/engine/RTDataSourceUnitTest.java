@@ -408,4 +408,11 @@ public class RTDataSourceUnitTest extends RTBaseTest {
         source.getHeader();
     }
 
+    @Test
+    public void testQueryNameSortOrderForPairEndWarningsGetHeader() {
+        final RTDataSource source = new RTDataSource(getTestFile("queryname.sorted.sam").getAbsolutePath(), true);
+        // assert that the queryname sort order isn't changed
+        Assert.assertEquals(source.getHeader().getSortOrder(), SAMFileHeader.SortOrder.queryname);
+    }
+
 }
