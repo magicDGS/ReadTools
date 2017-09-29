@@ -243,7 +243,7 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
                 // both coordinate/duplicate sorting are not allowed here if it is paired
                 case coordinate:
                 case duplicate:
-                    throw new UserException(String.format(
+                    throw new UserException.BadInput(String.format(
                             "Pair-end read source %s sorted by '%s'. ReadTools requires pairs to be together: either sorted or grouped by queryname.",
                             handler.getHandledSource(), order));
                 // both unsorted and unknown

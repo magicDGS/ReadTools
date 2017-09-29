@@ -44,6 +44,7 @@ import org.testng.annotations.Test;
 import scala.Tuple2;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -387,6 +388,24 @@ public class RTDataSourceUnitTest extends RTBaseTest {
             n++;
         }
         Assert.assertEquals(n, numberOfReads, "less reads than expected");
+    }
+
+
+    @DataProvider(name = "invalidSortOrderPairedData")
+    public Object[][] getInvalidSortOrderPairedData() throws IOException {
+        return new Object[][] {
+                // this BAM file is sorted by coordinate (cannot be used as pair-end)
+                {getTestFile("small.mapped.sort.bam")},
+                // this SAM file is set to be sorted as duplicate (it is invalid by itself)
+                {getTestFile("invalid.duplicate.sorted.sam")}
+        };
+    }
+
+    @Test(dataProvider = "invalidSortOrderPairedData", expectedExceptions = UserException.BadInput.class)
+    public void testInvalidSortOrderForPairedDataSourceGetHeader(final File invalidPairedSortedSource) {
+        // TODO: this should throw before getting the header - see https://github.com/magicDGS/ReadTools/issues/329
+        final RTDataSource source = new RTDataSource(invalidPairedSortedSource.getAbsolutePath(), true);
+        source.getHeader();
     }
 
 }
