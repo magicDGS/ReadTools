@@ -577,32 +577,6 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
     }
 
     @Test(dataProvider = "trimmersAndFilters")
-    public void testGetPipeline(final List<TrimmingFunction> defaultTrimmers,
-            final List<ReadFilter> userFilters) throws Exception {
-        // set up the GATKReadFilterPluginDescriptor -> defaults null because they does not matter
-        final GATKReadFilterPluginDescriptor filterDescriptor =
-                new GATKReadFilterPluginDescriptor(null);
-        // this is like parsing the arguments with Barclay
-        userFilters.stream().map(ReadFilter::getClass).forEach(rf -> {
-            filterDescriptor.userArgs.getUserEnabledReadFilterNames().add(rf.getSimpleName());
-            try {
-                filterDescriptor.getInstance(rf);
-            } catch (IllegalAccessException | InstantiationException e) {
-                Assert.fail(e.getMessage());
-            }
-        });
-
-        // get the trimming pipeline arguments
-        final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
-                new TrimmerPluginDescriptor(defaultTrimmers), filterDescriptor);
-
-        // check that the pipeline contains the same number of trimmers
-        Assert.assertEquals(pipeline.getTrimmingStats().size(), defaultTrimmers.size());
-        // and the same number of filters + 1 (completely trimmed)
-        Assert.assertEquals(pipeline.getFilterStats().size(), userFilters.size() + 1);
-    }
-
-    @Test(dataProvider = "trimmersAndFilters")
     public void testGetPipelineCompatibleWithGATKReadFilterPluginDescriptor(
             final List<TrimmingFunction> defaultTrimmers,
             final List<ReadFilter> defaultFilters) throws Exception {
