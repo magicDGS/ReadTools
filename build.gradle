@@ -53,9 +53,6 @@ final gatkVersion = '4.beta.5-55-g577c763-SNAPSHOT'
 final htsjdkVersion = '2.12.0'
 final testNGVersion = '6.11'
 final mockitoVersion = '2.7.19'
-// TODO: this is a workaround for https://github.com/broadinstitute/gatk/issues/3532
-// TODO: and should be removed in the future
-final gklWorkingVersion = '0.5.2'
 
 // Get the jdk files we need to run javaDoc. We need to use these during compile, testCompile,
 // test execution, and readtoolsDoc generation, but we don't want them as part of the runtime
@@ -79,8 +76,6 @@ configurations.all {
         force 'org.testng:testng:' + testNGVersion
         // be sure that mockito is in the same version for our tests
         force 'org.mockito:mockito-core:' + mockitoVersion
-        // TODO: this force should be removed
-        force 'com.intel.gkl:gkl:' + gklWorkingVersion
     }
 }
 
@@ -91,11 +86,6 @@ dependencies {
         exclude module: 'jgrapht' // this is not required
     }
     compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
-
-    // TODO: this dependency should be the one from GATK4
-    compile('com.intel.gkl:gkl:' + gklWorkingVersion) {
-        exclude module: 'htsjdk'
-    }
 
     // compilation for testing
     testCompile 'org.testng:testng:' + testNGVersion
