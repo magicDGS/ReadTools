@@ -192,7 +192,7 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
     /**
      * Gets the consensus SAM header for the data.
      *
-     * Note: the returned header is cached, so any modification will be reflected in successive
+     * <p>Note: the returned header is cached, so any modification will be reflected in successive
      * calls.
      */
     public SAMFileHeader getHeader() {
@@ -202,14 +202,17 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
             final SAMFileHeader firstHeader = getSamFileHeader(readHandler);
             // if it is pair-end
             if (secondHandler != null) {
-                // TODO: always assume sorted by queryname if paired
-                // TODO: it is not possible because the queryname sort order is not really specified
+                // assuming always unsorted for pair-end data
                 header = new SamFileHeaderMerger(SAMFileHeader.SortOrder.unsorted,
                         Arrays.asList(firstHeader, getSamFileHeader(secondHandler)), true)
                         .getMergedHeader();
                 // removes group order included by the merger
-                // this should be done like this because of a null pointer exception
+                logger.warn("Assuming '{}' group order for pair-end data in two different files ({} and {})",
+                        SAMFileHeader.GroupOrder.query, readHandler.getHandledSource(), secondHandler.getHandledSource());
+                // remove and set again the group order
+                // this should be done to have always SortOrder before GroupOrder
                 header.setAttribute(SAMFileHeader.GROUP_ORDER_TAG, null);
+                header.setGroupOrder(SAMFileHeader.GroupOrder.query);
             } else {
                 header = firstHeader;
             }
@@ -233,39 +236,52 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
     // helper method to get the SAM header with coordinate
     private SAMFileHeader getSamFileHeader(final ReadsSourceHandler handler) {
         final SAMFileHeader header = handler.getHeader();
-        switch (header.getSortOrder()) {
-            // both coordinate/duplicate sorting are not allowed here if it is paired.
-            case coordinate:
-            case duplicate:
-                if (isPaired()) {
-                    logger.warn(
-                            "Paired read source {} sorted by '{}'. This could cause errors while processing, because sorted by read name is expected to keep pairs together.",
-                            handler.getHandledSource(), header.getSortOrder());
-                    header.setSortOrder(SAMFileHeader.SortOrder.queryname);
-                }
-                break;
-            case unsorted:
-                if (isPaired()) {
-                    logger.warn(
-                            "Unsorted read source {} for pair-end data. Assuming sorted by read name, keeping pairs together.",
-                            handler.getHandledSource());
-                    header.setSortOrder(SAMFileHeader.SortOrder.queryname);
-                }
-                break;
-            case queryname:
-                logger.warn(
-                        "Sort order by 'queryname' is assumed to follow the Picard specifications. This limitation may be removed in the future.");
-                break;
-            default:
-                throw new GATKException("Unknown sort order: " + header.getSortOrder());
-        }
+        SAMFileHeader.SortOrder order = header.getSortOrder();
+        SAMFileHeader.GroupOrder groupOrder = header.getGroupOrder();
         if (isPaired()) {
-            // TODO: does not log this warning nor setting to unsorted
-            logger.warn("Output will reflect unsorted even if queryname is assumed. This limitation may be removed in the future.");
-            header.setSortOrder(SAMFileHeader.SortOrder.unsorted);
+            switch (order) {
+                // both coordinate/duplicate sorting are not allowed here if it is paired
+                case coordinate:
+                case duplicate:
+                    throw new UserException.BadInput(String.format(
+                            "Pair-end read source %s sorted by '%s'. ReadTools requires pairs to be together: either sorted or grouped by queryname.",
+                            handler.getHandledSource(), order));
+                // both unsorted and unknown
+                case unsorted:
+                case unknown:
+                    logger.warn(
+                            "Pair-end read source {} with '{}' order grouped by '{}': Assuming that reads are grouped by {} (keeping pairs together).",
+                            handler.getHandledSource(), order, groupOrder, SAMFileHeader.GroupOrder.query);
+                    order = SAMFileHeader.SortOrder.unsorted;
+                    groupOrder = SAMFileHeader.GroupOrder.query;
+                    break;
+                case queryname:
+                    // TODO - remove this limitation
+                    logger.warn("Output might reflect '%s' even if '%s' is specified in pair-end source %s. This limitation may be removed in the future.",
+                            order, SAMFileHeader.SortOrder.queryname, handler.getHandledSource());
+                    break;
+                default:
+                    throw new GATKException("Unknown sort order: " + header.getSortOrder());
+            }
         }
+
+        // log always a warning for queryname order
+        if (SAMFileHeader.SortOrder.queryname.equals(order)) {
+            logger.warn(
+                    "Sort order by '{}' is assumed to follow the Picard specifications. This limitation may be removed in the future.",
+                    SAMFileHeader.SortOrder.queryname);
+        }
+
+        // finally, set the sort order
+        header.setSortOrder(order);
+        // this should be done like this because of a null pointer exception
+        if (! SAMFileHeader.GroupOrder.none.equals(groupOrder)) {
+            header.setGroupOrder(groupOrder);
+        }
+
         return header;
     }
+
 
     /**
      * Returns an iterator over the interval requested. Unmapped reads will not be included.

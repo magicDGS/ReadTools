@@ -24,8 +24,6 @@
 
 package org.magicdgs.readtools.utils.fastq;
 
-import org.magicdgs.readtools.utils.fastq.FastqReadNameEncoding;
-
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMTag;

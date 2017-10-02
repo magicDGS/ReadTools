@@ -1,4 +1,4 @@
-@HD	VN:1.5	SO:unsorted
+@HD	VN:1.5	SO:unsorted	GO:query
 @RG	ID:sample1_ATTACTCG	PG:ReadTools	SM:sample1	LB:lib1
 @RG	ID:sample2_TCCGGAGA	PG:ReadTools	SM:sample2	LB:lib2
 @RG	ID:sample3_CGCTCATT	PG:ReadTools	SM:sample3	LB:lib3
