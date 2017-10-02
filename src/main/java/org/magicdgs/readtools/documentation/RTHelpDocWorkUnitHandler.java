@@ -26,12 +26,19 @@ package org.magicdgs.readtools.documentation;
 
 import org.magicdgs.readtools.RTHelpConstants;
 
+import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
+import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
+import org.broadinstitute.barclay.argparser.CommandLinePluginProvider;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DefaultDocWorkUnitHandler;
 import org.broadinstitute.barclay.help.DocWorkUnit;
 import org.broadinstitute.barclay.help.HelpDoclet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The ReadTools Documentation work unit handler class that is the companion to
@@ -129,6 +136,52 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
     @Override
     public String getJSONFilename(final DocWorkUnit workUnit) {
         return workUnit.getName() + ".json";
+    }
+
+    // hack for the bug in barclay - https://github.com/broadinstitute/barclay/issues/97
+    // TODO - should be removed after it is solved
+    @Override
+    public void processWorkUnit(
+            final DocWorkUnit workUnit,
+            final List<Map<String, String>> featureMaps,
+            final List<Map<String, String>> groupMaps) {
+
+        CommandLineArgumentParser clp = null;
+        List<? extends CommandLinePluginDescriptor<?>> pluginDescriptors = new ArrayList<>();
+
+        // Not all DocumentedFeature targets are CommandLinePrograms, and thus not all can be instantiated via
+        // a no-arg constructor. But we do want to generate a doc page for them. Any arguments associated with
+        // such a feature will show up in the doc page for any referencing CommandLinePrograms, instead of in
+        // the standalone feature page.
+        //
+        // Ex: We may want to document an input or output file format by adding @DocumentedFeature
+        // to the format's reader/writer class (i.e. TableReader), and then reference that feature
+        // in the extraDocs attribute in a CommandLineProgram that reads/writes that format.
+        try {
+            final Object argumentContainer = workUnit.getClazz().newInstance();
+            if (argumentContainer instanceof CommandLinePluginProvider) {
+                pluginDescriptors = ((CommandLinePluginProvider) argumentContainer).getPluginDescriptors();
+                clp = new CommandLineArgumentParser(
+                        argumentContainer, pluginDescriptors, Collections.emptySet()
+                );
+            } else {
+                clp = new CommandLineArgumentParser(argumentContainer);
+            }
+        } catch (IllegalAccessException | InstantiationException e) {
+            // only throw if the command line properties is set (always require a non-arg constructor)
+            if (workUnit.getCommandLineProperties() != null) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        workUnit.setProperty("groups", groupMaps);
+        workUnit.setProperty("data", featureMaps);
+
+        addHighLevelBindings(workUnit);
+        addCommandLineArgumentBindings(workUnit, clp);
+        addDefaultPlugins(workUnit, pluginDescriptors);
+        addExtraDocsBindings(workUnit);
+        addCustomBindings(workUnit);
     }
 
 }
