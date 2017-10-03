@@ -33,6 +33,7 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultRea
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 
 import com.google.common.annotations.VisibleForTesting;
+import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMTag;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
@@ -289,16 +290,12 @@ public class TrimAndFilterPipeline extends ReadFilter {
 //                .collect(Collectors.toList());
 //        filters.addAll(filterPlugin.getAllInstances());
 
-        final List<ReadFilter> filters = (filterPlugin.userArgs.getDisableToolDefaultReadFilters())
-                ? new ArrayList<>()
-                : filterPlugin.getDefaultInstances().stream()
-                        .map(rf -> (ReadFilter) rf)
-                        .filter(rf -> !filterPlugin.isDisabledFilter(rf.getClass().getSimpleName()))
-                        .collect(Collectors.toList());
-        // remove redundant filters
-        filterPlugin.getAllInstances().stream()
-                .filter(rf -> !filters.contains(rf))
-                .forEach(filters::add);
+        // using the getMergedReadFilter is hack, because it does not return any merged filter
+        final List<ReadFilter> filters = new ArrayList<>(filterPlugin.getAllInstances().size());
+        filterPlugin.getMergedReadFilter(new SAMFileHeader(), (finalFilters, header) -> {
+                    filters.addAll(finalFilters);
+                    return null;
+        });
 
         // throw if not pipeline is specified
         if (trimmers.isEmpty() && filters.isEmpty()) {
