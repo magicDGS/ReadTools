@@ -78,8 +78,11 @@ public abstract class RTCommandLineProgramTest extends RTBaseTest implements Com
      * - Header lines containing ReadTools class names at the beginning.
      * - Date of start of command line program.
      */
-    public static void metricsFileConcordance(final File resultFile, final File expectedFile)
+    public void metricsFileConcordance(final File resultFile, final File expectedFile)
             throws IOException {
+        // construct the expected header for the METRIC class
+        final String metricClassHeader = "# " + getTestedToolName();
+
         try (final XReadLines actualReader = new XReadLines(resultFile);
                 final XReadLines expectedReader = new XReadLines(expectedFile)) {
             final List<String> actualLines = actualReader.readLines();
@@ -90,7 +93,10 @@ public abstract class RTCommandLineProgramTest extends RTBaseTest implements Com
                 final String actual = actualLines.get(i);
                 final String expected = expectedLines.get(i);
                 // handle the CMD line
-                if (expected.startsWith(METRIC_CLASS_HEADER)) {
+                if (expected.startsWith(metricClassHeader)) {
+                    // TODO - do something? - for example, check params but not the paths
+                } else if (expected.startsWith(METRIC_CLASS_HEADER)) {
+                    // handle metric class headers
                     final int indexOfSpace = expected.indexOf(" ", METRIC_CLASS_HEADER.length());
                     final String expectedClassLine = (indexOfSpace == -1)
                             ? expected : expected.substring(0, indexOfSpace + 1);
