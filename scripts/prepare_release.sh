@@ -45,7 +45,7 @@ git commit -am "Release javadoc" && git push
 ## generate the online documentation
 echo "Generate documentation site"
 ./gradlew -Drelease=true readtoolsDoc &> tmp/release_${version}.readtoolsDoc.out
-mv build/docs/readtools/*.yml docs/_data/ && rm -fr docs/readtools && mv build/docs/readtools/*.md docs/readtools/
+mv build/docs/readtools/*.yml docs/_data/ && rm -fr docs/readtools/* && mv build/docs/readtools/*.md docs/readtools/
 
 ## commit and push
 git commit -am "Release documentation site" && git push
