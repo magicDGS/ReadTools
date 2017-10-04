@@ -15,7 +15,8 @@ Filter out reads where the number of bases without soft-clips (M, I, X, and = CI
      organisms; the symptoms of such contamination are a class of reads with only a small number
      of aligned bases and additionally many soft-clipped bases. This filter is intended
      to remove such reads.
- <p>Note: Consecutive soft-clipped blocks are treated as a single block. For example, 1S2S10M1S2S is treated as 3S10M3S
+ </p>
+ <p>Note: Consecutive soft-clipped blocks are treated as a single block. For example, 1S2S10M1S2S is treated as 3S10M3S</p>
 
 ## Arguments
 
