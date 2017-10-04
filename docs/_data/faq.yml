@@ -5,7 +5,7 @@
 - FAQ:
   id: One
   question: "AssignReadGroupByBarcode 'UNEXPECTED ERROR: 1'"
-  answer: '<i><b>This error is solved in versions > 1.0.0</b></i></p>
+  answer: '<p><i><b>This error is solved in versions > 1.0.0</b></i></p>
     In version 1.0.0 or lower, when a barcode file with more than one barcode
 	is provided and the barcodes are not encoded in the <b>BC</b> tag separated by hyphens as recommended in
 	the SAM specifications. There are several reported cases:
@@ -28,6 +28,6 @@
 - FAQ:
   id: Two
   question: 'Exception in thread "main" java.lang.NoClassDefFoundError: org/xerial/snappy/LoadSnappy'
-  answer: '<i><b>This error is solved in versions > 1.0.0</b></i></p>
+  answer: '<p><i><b>This error is solved in versions > 1.0.0</b></i></p>
   <p>If your command fail with this error, the solution is to re-run it using
   <code>java -Dsnappy.disable=true -jar ReadTools.jar</code>.</p>'

@@ -13,7 +13,6 @@ else
         echo "[$(date)] WARNING: download URLs including version ${n} will be ignored (release branch)";
         ## in case of the release branch, ignore the
         url_ignore="--url-ignore https://github.com/magicDGS/ReadTools/archive/${n}.tar.gz,https://github.com/magicDGS/ReadTools/releases/download/${n}/ReadTools.jar"
-        echo "DEBUG: $url_ignore"
     fi
 fi
 
