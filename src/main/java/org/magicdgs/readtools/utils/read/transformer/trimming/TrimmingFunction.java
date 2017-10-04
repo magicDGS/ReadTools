@@ -83,9 +83,14 @@ public abstract class TrimmingFunction implements ReadTransformer, Serializable 
     }
 
     /**
-     * Check if it is safe to use {@link #setDisableEnds(boolean, boolean)}. They cannot be set if:
-     * - It was already set.
-     * - The function was already applied.
+     * Check if it is safe to use {@link #setDisableEnds(boolean, boolean)}.
+     *
+     * <p>Disable ends cannot be set if:
+     *
+     * <ul>
+     *     <li>They were already set.</li>
+     *     <li>The function was already applied</li>
+     * </ul>
      *
      * @return {@code true} if {@link #setDisableEnds(boolean, boolean)} can be called;
      * {@code false} otherwise.
@@ -97,7 +102,7 @@ public abstract class TrimmingFunction implements ReadTransformer, Serializable 
     /**
      * Sets if some end should be disabled.
      *
-     * Note: this should be used before any other public method is called except
+     * <p>Note: this should be used before any other public method is called except
      * {@link #isDisable3prime()} or {@link #isDisable5prime()}.
      *
      * @throws IllegalStateException if {@link #canSetDisableEnds()} returns {@code false}.
@@ -139,10 +144,10 @@ public abstract class TrimmingFunction implements ReadTransformer, Serializable 
      * called, which throws a command line exception or user exception depending on the
      * implementation. For a safe validation, use {@link #validateArgs()}.
      *
-     * WARNING: use only if a validation is required before calling
+     * <p>WARNING: use only if a validation is required before calling
      * {@link #setDisableEnds(boolean, boolean)}
      *
-     * Default behaviour does not perform any validation. Implementations should verify that their
+     * <p>Default behaviour does not perform any validation. Implementations should verify that their
      * arguments are compatible with {@link #isDisable5prime()} and/or {@link #isDisable3prime()}.
      *
      * @throws org.broadinstitute.barclay.argparser.CommandLineException if arguments are invalid.

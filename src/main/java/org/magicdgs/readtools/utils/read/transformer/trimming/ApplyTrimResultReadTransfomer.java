@@ -44,7 +44,7 @@ import java.util.Arrays;
  * Trimming point tags are removed using {@link RTReadUtils#clearTrimmingPointTags(GATKRead)},
  * except {@link org.magicdgs.readtools.utils.read.ReservedTags#ct}.
  *
- * Note: this read transformer assumes that the trimming tags are independent on the strand.
+ * <p>Note: this read transformer assumes that the trimming tags are independent on the strand.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  * @see ReadClipper
@@ -56,7 +56,7 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
      * If the read is completely trimmed, does nothing. Otherwise, the read is hard-clipped based
      * on the trimming flags.
      *
-     * Note: the read is modified in-place.
+     * <p>Note: the read is modified in-place.
      *
      * @return the same read object, trimmed as necessary.
      */
