@@ -1,14 +1,15 @@
 ---
 title: PlatformUnitReadFilter
-summary: Keep reads that do not have blacklisted platform unit tags.
+summary: Filter out reads with matching platform unit attribute
 permalink: PlatformUnitReadFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-Keep reads that do not have blacklisted platform unit tags.
- Matching is done by exact case-sensitive text matching.
+Filter out reads where the the platform unit attribute (PU tag) contains the given string.
+
+ <p>Note: Matching is done by exact case-sensitive text matching.
 
 ## Arguments
 
@@ -16,6 +17,6 @@ Keep reads that do not have blacklisted platform unit tags.
 
 | Argument name(s) | Type | Description |
 | :--------------- | :--: | :------ |
-| `--blackListedLanes`<br/>`-blackListedLanes` | Set[String] | Keep reads with platform units not on the list |
+| `--blackListedLanes`<br/>`-blackListedLanes` | Set[String] | Platform unit (PU) to filter out |
 
 

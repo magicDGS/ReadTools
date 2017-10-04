@@ -1,16 +1,20 @@
 ---
 title: MappingQualityReadFilter
-summary: Keep reads with mapping qualities within a specified range.
+summary: Keep only reads with mapping qualities within a specified range
 permalink: MappingQualityReadFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-Keep reads with mapping qualities within a specified range.
+Keep only reads with mapping qualities within a specified range.
 
- Note: this filter does not handle specially the unavailable mapping quality (org.broadinstitute.hellbender.utils.QualityUtils#MAPPING_QUALITY_UNAVAILABLE).
- Use org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary.MappingQualityAvailableReadFilter to explicitly filter out reads with unavailable quality.
+ <p>Note: this filter is not designed to handle the unavailable mapping quality (255).
+ Use MappingQualityAvailableReadFilter to explicitly filter out reads with unavailable quality.
+
+<i>See additional information in the following pages:</i>
+
+- [MappingQualityAvailableReadFilter](MappingQualityAvailableReadFilter.html)
 
 ## Arguments
 

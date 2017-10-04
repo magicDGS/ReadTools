@@ -3,6 +3,7 @@ org.magicdgs.readtools.cmd
 org.magicdgs.readtools.cmd.argumentcollections
 org.magicdgs.readtools.cmd.plugin
 org.magicdgs.readtools.cmd.programgroups
+org.magicdgs.readtools.documentation
 org.magicdgs.readtools.engine
 org.magicdgs.readtools.engine.sourcehandler
 org.magicdgs.readtools.exceptions

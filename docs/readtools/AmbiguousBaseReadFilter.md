@@ -1,13 +1,13 @@
 ---
 title: AmbiguousBaseReadFilter
-summary: Filters out reads with more than a threshold number of N's
+summary: Filters out reads that have greater than the threshold number of N bases
 permalink: AmbiguousBaseReadFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-Filters out reads with more than a threshold number of N's
+Filters out reads that have greater than the threshold number for unknown (N) bases.
 
 ## Arguments
 
@@ -15,6 +15,7 @@ Filters out reads with more than a threshold number of N's
 
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
+| `--ambigFilterBases` | Integer | null | Threshold number of ambiguous bases. If null, uses threshold fraction; otherwise, overrides threshold fraction. |
 | `--ambigFilterFrac` | double | 0.05 | Threshold fraction of ambiguous bases |
 
 

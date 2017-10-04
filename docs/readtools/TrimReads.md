@@ -2,7 +2,7 @@
 title: TrimReads
 summary: Applies a trimming pipeline to any kind of sources for ReadTools
 permalink: TrimReads.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
@@ -51,6 +51,7 @@ Applies a trimming/filtering pipeline to the reads:
 | `--disableReadFilter`<br/>`-DF` | List[String] | [] | Read filters to be disabled after trimming |
 | `--disableToolDefaultReadFilters`<br/>`-disableToolDefaultReadFilters` | boolean | false | Disable all tool default read filters for trimming |
 | `--disableTrimmer`<br/>`-DTM` | Set[String] | [] | Default trimmers to be disabled. |
+| `--gcs_max_retries`<br/>`-gcs_retries` | int | 20 | If the GCS bucket channel errors out, how many times it will attempt to re-initiate the connection |
 | `--help`<br/>`-h` | boolean | false | display the help message |
 | `--keepDiscarded`<br/>`-keepDiscarded` | boolean | false | Keep discarded reads in a separate file. Note: For pair-end input, this file contain also mates of discarded reads (they do not have FT tag). |
 | `--readFilter`<br/>`-RF` | List[String] | [] | Read filters to be applied after trimming |

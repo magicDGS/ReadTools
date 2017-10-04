@@ -2,7 +2,7 @@
 title: MottQualityTrimmer
 summary: Trims low quality ends using the Mott's algorithm.
 permalink: MottQualityTrimmer.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
@@ -16,6 +16,6 @@ Trims low quality ends by computing quality drops under a certain threshold usin
 
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
-| `--mottQualityThreshold`<br/>`-mottQual` | int | 20 | The quality threshold to use for trimming. |
+| `--mottQualityThreshold`<br/>`-mottQual` | int | 20 | Minimum average quality for the modified Mott algorithm. The threshold is used for calculating a score: <code>quality_at_base - threshold</code>. |
 
 

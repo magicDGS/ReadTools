@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.0] - 2017-10-04
+
 ### Fixed
 - Fix bug for FASTQ read names with spaces without barcode/pair-end information
 - Honor asynchronous writing in Distmap tools
@@ -172,3 +174,4 @@ First pre-release
 [0.2.3]: https://github.com/magicDGS/ReadTools/releases/tag/0.2.2
 [0.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.3.0
 [1.0.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.0.0
+[1.1.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.1.0

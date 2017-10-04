@@ -1,13 +1,13 @@
 ---
 title: ReadStrandFilter
-summary: Keep only reads whose strand is forward or reverse
+summary: Keep only reads whose strand is as specified
 permalink: ReadStrandFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-Keep only reads whose strand is forward or reverse
+Keep only reads whose strand is either forward (not 0x10) or reverse (0x10), as specified. By default the filter keeps only forward reads (not 0x10).
 
 ## Arguments
 
