@@ -46,9 +46,8 @@ public final class MottQualityTrimmer extends TrimmingFunction {
     private static final String QUAL_THRESHOLD_LONG_NAME = "mottQualityThreshold";
     private static final String QUAL_THRESHOLD_SHORT_NAME = "mottQual";
 
-    // TODO: improve doc
-    /** The quality threshold to use for trimming. */
-    @Argument(fullName = QUAL_THRESHOLD_LONG_NAME, shortName = QUAL_THRESHOLD_SHORT_NAME, doc = "Minimum average quality for the modified Mott algorithm. The threshold is used for calculating a score: quality_at_base - threshold.", optional = true)
+    /** Minimum average quality for the modified Mott algorithm. The threshold is used for calculating a score: <code>quality_at_base - threshold</code>. */
+    @Argument(fullName = QUAL_THRESHOLD_LONG_NAME, shortName = QUAL_THRESHOLD_SHORT_NAME, doc = "Minimum average quality for the modified Mott algorithm", optional = true)
     public int qualThreshold = 20;
 
     /** Constructor with default quality. */

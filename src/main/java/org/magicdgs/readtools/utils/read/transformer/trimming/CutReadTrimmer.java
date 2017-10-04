@@ -47,10 +47,9 @@ public class CutReadTrimmer extends TrimmingFunction {
     private static final String THREE_PRIME_LONG_NAME = "cut3primeBases";
     private static final String THREE_PRIME_SHORT_NAME = "c3p";
 
-    /** The number of bases from the 5 prime of the read to trim. */
     @Argument(fullName = FIVE_PRIME_LONG_NAME, shortName = FIVE_PRIME_SHORT_NAME, doc = "Number of bases (in bp) to cut in the 5 prime of the read. For disable, use 'null'.", optional = true)
     public Integer fivePrime;
-    /** The number of bases from the 3 prime of the read to trim. */
+
     @Argument(fullName = THREE_PRIME_LONG_NAME, shortName = THREE_PRIME_SHORT_NAME, doc = "Number of bases (in bp) to cut in the 3 prime of the read. For disable, use 'null'.", optional = true)
     public Integer threePrime;
 
@@ -60,7 +59,7 @@ public class CutReadTrimmer extends TrimmingFunction {
     /**
      * Constructor with a 5/3 prime points.
      *
-     * Note: at least one of the ends of the read should be trimmed.
+     * <p>Note: at least one of the ends of the read should be trimmed.
      *
      * @param fivePrime  5 prime number of bases to cut. Use {@code 0} for disable 5-prime cutting.
      * @param threePrime 3 prime number of bases to cut. Use {@code 0} for disable 3-prime cutting.
@@ -79,9 +78,6 @@ public class CutReadTrimmer extends TrimmingFunction {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
         final int readLength = read.getLength();
@@ -95,12 +91,17 @@ public class CutReadTrimmer extends TrimmingFunction {
     }
 
     /**
-     * Validates the arguments and throws
-     * {@link org.broadinstitute.barclay.argparser.CommandLineException.BadArgumentValue} if:
+     * Validates the arguments.
      *
-     * - Both ends of the read are disabled.
-     * - Values for parameters are not positive integers.
-     * - A value is set for trimming when it is disabled.
+     * <p>The arguments are invalid if:
+     *
+     * <ul>
+     * <li>Both ends of the read are disabled.</li>
+     * <li>Values for parameters are not positive integers.</li>
+     * <li>A value is set for trimming when it is disabled.</li>
+     * </ul>
+     *
+     * @throws CommandLineException.BadArgumentValue if the argument is invalid.
      */
     @Override
     public void validateArgsUnsafe() {
