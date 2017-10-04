@@ -17,9 +17,8 @@ if [[ ! -z "$(git status -s)" ]]; then
 	exit 2
 fi
 
-# TODO: Update version in CHANGELOG and docs version:
-# ## in docs, we require to update _data/sidebars/home_sidebar.yml and _data/topnav.yml
-echo "WARNING: CHANGELOG and version in docs are not updated!!"
+# TODO: Update version in CHANGELOG
+echo "WARNING: CHANGELOG version is not updated!!"
 
 
 ## start creating the relase
