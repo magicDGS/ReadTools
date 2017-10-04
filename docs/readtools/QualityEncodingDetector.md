@@ -2,7 +2,7 @@
 title: QualityEncodingDetector
 summary: Detects the quality encoding format for all kind of sources for ReadTools.
 permalink: QualityEncodingDetector.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
@@ -22,6 +22,7 @@ Detects the quality encoding for a SAM/BAM/CRAM/FASTQ files, output to the STDOU
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
 | `--arguments_file` | List[File] | [] | read one or more arguments files and add them to the command line |
+| `--gcs_max_retries`<br/>`-gcs_retries` | int | 20 | If the GCS bucket channel errors out, how many times it will attempt to re-initiate the connection |
 | `--help`<br/>`-h` | boolean | false | display the help message |
 | `--maximumReads`<br/>`-maximumReads` | Long | 1000000 | Maximum number of reads to use for detect the quality encoding. |
 | `--version` | boolean | false | display the version number for this tool |

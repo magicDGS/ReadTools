@@ -1,6 +1,6 @@
 ReadTools:
-  version: 1.0.0
-  timestamp: 19-58-2017 02:58:19
+  version: 1.1.0
+  timestamp: 04-49-2017 12:49:37
 
 tools:
   - group: Diagnostics and Quality Control Tools
@@ -35,87 +35,87 @@ utilities:
     summary: Read Filters used by the engine to select reads to be included for analysis
     components:
       - name: AlignmentAgreesWithHeaderReadFilter
-        summary: Checks to ensure that the alignment of each read makes sense based on the contents of the header.
+        summary: Filters out reads where the alignment does not match the contents of the header
       - name: AllowAllReadsReadFilter
-        summary: local classes for static read filters
+        summary: Do not filter out any read
       - name: AmbiguousBaseReadFilter
-        summary: Filters out reads with more than a threshold number of N's
+        summary: Filters out reads that have greater than the threshold number of N bases
       - name: CigarContainsNoNOperator
-        summary: 
+        summary: Filter out reads with CIGAR containing N operator
       - name: FirstOfPairReadFilter
-        summary: 
+        summary: Keep only reads that are first of pair
       - name: FragmentLengthReadFilter
-        summary: Keep reads that are within a given max fragment length.
+        summary: Keep only read pairs with insert length less than or equal to the given value
       - name: GoodCigarReadFilter
-        summary: 
+        summary: Keep only reads containing good CIGAR string
       - name: HasReadGroupReadFilter
-        summary: 
+        summary: Filter out reads without Read Group
       - name: LibraryReadFilter
-        summary: Keep only reads from the specified library.
+        summary: Keep only reads from the specified library
       - name: MappedReadFilter
-        summary: 
+        summary: Filter out unmapped reads
       - name: MappingQualityAvailableReadFilter
-        summary: 
+        summary: Filter out reads without available mapping quality
       - name: MappingQualityNotZeroReadFilter
-        summary: 
+        summary: Filter out reads with mapping quality equal to zero
       - name: MappingQualityReadFilter
-        summary: Keep reads with mapping qualities within a specified range.
+        summary: Keep only reads with mapping qualities within a specified range
       - name: MatchingBasesAndQualsReadFilter
-        summary: 
+        summary: Filter out reads where the bases and qualities do not match
       - name: MateDifferentStrandReadFilter
-        summary: Reads that have a mapped mate and both mate and read are on different same strands (ie the usual situation).
+        summary: Keep only reads with mates mapped on the different strand
       - name: MateOnSameContigOrNoMappedMateReadFilter
-        summary: Reads that either have a mate that maps to the same contig, or don't have a mapped mate.
+        summary: Keep only reads whose mate maps to the same contig or is unmapped
       - name: MetricsReadFilter
-        summary: 
+        summary: Filter out reads that fail platform quality checks, are unmapped and represent secondary/supplementary alignments
       - name: NonZeroFragmentLengthReadFilter
-        summary: 
+        summary: Filter out reads with fragment length different from zero
       - name: NonZeroReferenceLengthAlignmentReadFilter
-        summary: 
+        summary: Filter out reads that do not align to the reference
       - name: NotDuplicateReadFilter
-        summary: 
+        summary: Filter out reads marked as duplicate
       - name: NotSecondaryAlignmentReadFilter
-        summary: 
+        summary: Filter out reads representing secondary alignments
       - name: NotSupplementaryAlignmentReadFilter
-        summary: 
+        summary: Filter out reads representing supplementary alignments
       - name: OverclippedReadFilter
         summary: Filter out reads that are over-soft-clipped
       - name: PairedReadFilter
-        summary: 
+        summary: Filter out unpaired reads
       - name: PassesVendorQualityCheckReadFilter
-        summary: 
+        summary: Filter out reads failing platfor/vendor quality checks
       - name: PlatformReadFilter
-        summary: Keep only reads that match th PL attribute.
+        summary: Keep only reads with matching Read Group platform
       - name: PlatformUnitReadFilter
-        summary: Keep reads that do not have blacklisted platform unit tags.
-      - name: PrimaryAlignmentReadFilter
-        summary: 
+        summary: Filter out reads with matching platform unit attribute
+      - name: PrimaryLineReadFilter
+        summary: Keep only reads representing primary alignments (those that satisfy both the NotSecondaryAlignment and  NotSupplementaryAlignment filters, or in terms of SAM flag values, must have neither of the 0x100 or  0x800 flags set).
       - name: ProperlyPairedReadFilter
-        summary: 
+        summary: Keep only reads that are properly paired
       - name: ReadGroupBlackListReadFilter
         summary: Keep records not matching the read group tag and exact match string.
       - name: ReadGroupReadFilter
-        summary: Only use reads from the specified read group.
+        summary: Keep only reads from the specified read group
       - name: ReadLengthEqualsCigarLengthReadFilter
-        summary: 
+        summary: Filter out reads  where the read and CIGAR do not match in length
       - name: ReadLengthReadFilter
-        summary: Keep only reads whose length is &ge; min value and &le; max value.
+        summary: Keep only reads whose length is within a certain range
       - name: ReadNameReadFilter
-        summary: Keep only reads with this read name.
+        summary: Keep only reads with this read name
       - name: ReadStrandFilter
-        summary: Keep only reads whose strand is forward or reverse
+        summary: Keep only reads whose strand is as specified
       - name: SampleReadFilter
-        summary: Keep only reads for a given sample.
+        summary: Keep only reads for a given sample
       - name: SecondOfPairReadFilter
-        summary: 
+        summary: Keep only paired reads that are second of pair
       - name: SeqIsStoredReadFilter
-        summary: 
+        summary: Keep only reads with sequenced bases
       - name: ValidAlignmentEndReadFilter
-        summary: 
+        summary: Keep only reads where the read end is properly aligned
       - name: ValidAlignmentStartReadFilter
-        summary: 
+        summary: Keep only reads with a valid alignment start
       - name: WellformedReadFilter
-        summary: Tests whether a read is &quot;well-formed&quot; -- that is, is free of major internal inconsistencies and issues that could lead  to errors downstream.
+        summary: Keep only reads that are well-formed
   - group: Trimmers
     summary: Algorithms used to trim the reads.
     components:

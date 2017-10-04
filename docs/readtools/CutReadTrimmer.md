@@ -2,7 +2,7 @@
 title: CutReadTrimmer
 summary: Crops a concrete number of bases at the end of the read.
 permalink: CutReadTrimmer.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
@@ -18,7 +18,7 @@ Crops a concrete number of bases in one or both sides of the read.
 
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
-| `--cut3primeBases`<br/>`-c3p` | Integer | null | The number of bases from the 3 prime of the read to trim. |
-| `--cut5primeBases`<br/>`-c5p` | Integer | null | The number of bases from the 5 prime of the read to trim. |
+| `--cut3primeBases`<br/>`-c3p` | Integer | null | Number of bases (in bp) to cut in the 3 prime of the read. For disable, use 'null'. |
+| `--cut5primeBases`<br/>`-c5p` | Integer | null | Number of bases (in bp) to cut in the 5 prime of the read. For disable, use 'null'. |
 
 

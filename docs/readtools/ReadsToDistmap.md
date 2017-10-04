@@ -2,7 +2,7 @@
 title: ReadsToDistmap
 summary: Converts any kind of ReadTools source to Distmap format.
 permalink: ReadsToDistmap.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
@@ -30,6 +30,7 @@ Converts to the Distmap format
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
 | `--arguments_file` | List[File] | [] | read one or more arguments files and add them to the command line |
+| `--gcs_max_retries`<br/>`-gcs_retries` | int | 20 | If the GCS bucket channel errors out, how many times it will attempt to re-initiate the connection |
 | `--help`<br/>`-h` | boolean | false | display the help message |
 | `--version` | boolean | false | display the version number for this tool |
 

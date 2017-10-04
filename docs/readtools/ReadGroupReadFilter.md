@@ -1,13 +1,13 @@
 ---
 title: ReadGroupReadFilter
-summary: Only use reads from the specified read group.
+summary: Keep only reads from the specified read group
 permalink: ReadGroupReadFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-Only use reads from the specified read group.
+Keep only reads from the specified read group. Discards reads lacking an RG tag.
  Matching is done by case-sensitive exact match.
 
 ## Arguments

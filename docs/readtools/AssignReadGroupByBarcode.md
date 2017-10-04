@@ -2,7 +2,7 @@
 title: AssignReadGroupByBarcode
 summary: Assigns read groups based on barcode tag(s) for all kind of sources for ReadTools.
 permalink: AssignReadGroupByBarcode.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
@@ -38,6 +38,7 @@ Assigns read groups (@RG) using the barcode information present in the raw barco
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
 | `--arguments_file` | List[File] | [] | read one or more arguments files and add them to the command line |
+| `--gcs_max_retries`<br/>`-gcs_retries` | int | 20 | If the GCS bucket channel errors out, how many times it will attempt to re-initiate the connection |
 | `--help`<br/>`-h` | boolean | false | display the help message |
 | `--keepDiscarded`<br/>`-keepDiscarded` | boolean | false | Keep reads does not assigned to any record in a separate file. |
 | `--maximumMismatches`<br/>`-mm` | List[Integer] | [0] | Maximum number of mismatches allowed for a matched barcode. Specify more than once for apply a different threshold to several indexes. |

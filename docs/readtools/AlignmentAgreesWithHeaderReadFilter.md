@@ -1,11 +1,15 @@
 ---
 title: AlignmentAgreesWithHeaderReadFilter
-summary: Checks to ensure that the alignment of each read makes sense based on the contents of the header.
+summary: Filters out reads where the alignment does not match the contents of the header
 permalink: AlignmentAgreesWithHeaderReadFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-Checks to ensure that the alignment of each read makes sense based on the contents of the header.
+Filter out reads where the alignment does not match the contents of the header:
+ <ul>
+     <li>Read aligned to non-existent contig</li>
+     <li>Read aligned to a point after the end of the contig</li>
+ </ul>
 

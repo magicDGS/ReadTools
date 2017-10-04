@@ -1,11 +1,11 @@
 ---
 title: PassesVendorQualityCheckReadFilter
-summary: 
+summary: Filter out reads failing platfor/vendor quality checks
 permalink: PassesVendorQualityCheckReadFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-
+Filter out reads failing platform/vendor quality checks (0x200).
 

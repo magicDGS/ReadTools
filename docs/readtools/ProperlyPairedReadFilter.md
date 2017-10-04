@@ -1,11 +1,11 @@
 ---
 title: ProperlyPairedReadFilter
-summary: 
+summary: Keep only reads that are properly paired
 permalink: ProperlyPairedReadFilter.html
-last_updated: 19-58-2017 02:58:19
+last_updated: 04-49-2017 12:49:37
 ---
 
 ## Description
 
-
+Keep only paired reads that are properly paired (0x1 and 0x2). Removes single ended reads.
 
