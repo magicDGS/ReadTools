@@ -36,6 +36,14 @@ install:
     # check also for data integrity (tests and documentation may fail if this is not changed)
     - ./scripts/walkthrough_data_integrity.sh
 
+before_script:
+    ## set the branch name for testing hte documentation
+    - if [ -z $TRAVIS_PULL_REQUEST_BRANCH ]; then
+        BRANCH_NAME=$TRAVIS_BRANCH;
+      else
+        BRANCH_NAME=$TRAVIS_PULL_REQUEST_BRANCH;
+      fi
+
 script:
     - if [[ $TYPE == shadow ]]; then
           ./gradlew shadowJar &&
@@ -47,7 +55,7 @@ script:
       elif [[ $TYPE == jekyll ]]; then
           rvm use 2.4.0 --install --binary --fuzzy &&
           bundle install --gemfile docs/Gemfile &&
-          ./scripts/test_documentation.sh;
+          ./scripts/test_documentation.sh ${BRANCH_NAME};
       elif [[ $TYPE == docgen ]]; then
           ./gradlew javadoc readtoolsDoc;
       else
