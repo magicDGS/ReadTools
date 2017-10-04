@@ -5,21 +5,31 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fix bug for FASTQ read names with spaces without barcode/pair-end information
-- Force HTSJDK dependency to be the one provided
 - Honor asynchronous writing in Distmap tools
+- Fix error for different number of barcodes in dictionary and files
+- Major bug fixes to CRAM format (HTSJDK change)
 
 ### Added
 - Add walkthrough data for documentation
+- Use pre-sorted output for DistmapPartDownloader if possible (speed-up)
+- Better support of Snappy compression/decompression in more systems (HTSJDK change)
 
 ### Changed
+- Assume SO:unsorted and GO:query for pair-end data if no header is present
+- Do not allow SO:coordinate for pair-end data
+- Do not change SO:queryname for SO:unsorted for single-end data
 - Update documentation
+- Remove `PrimaryAlignmentReadFilter` in favor of `PrimaryLineReadFilter` (GATK v4 change)
+- More consistent GCS support (GATK v4 change)
 
 ### Developer
+- Force HTSJDK dependency to be the one provided
 - Implement automatic documentation framework
 - Remove `FastqToReadIterator` in favor of generic `RecordToReadIterator`
 - Add tests for Distmap tools for HDFS
 - Force testing dependencies to be in hte version provided
 - Use walkthrough data for some tests
+- Test clean-up
 
 ## [1.0.0] - 2017-05-18
 
