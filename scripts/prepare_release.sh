@@ -17,10 +17,6 @@ if [[ ! -z "$(git status -s)" ]]; then
 	exit 2
 fi
 
-# TODO: Update version in CHANGELOG and docs:
-# ## in docs, we require to update _data/sidebars/home_sidebar.yml and _data/topnav.yml
-echo "WARNING: CHANGELOG and docs are not updated!!"
-
 
 ## start creating the relase
 echo "Create release for version $version (from master branch)"
@@ -31,11 +27,29 @@ git checkout release_${version}
 # tagging as version
 git tag $version
 
+## generate jar for upload
+echo "Generate jar"
+./gradlew -Drelease=true clean currentJar &> tmp/release_${version}.currentJar.out
+
 # now generate the documentation
-echo "Generate javadoc and jar"
-./gradlew -Drelease=true clean javadoc currentJar &> tmp/release_${version}.gradle_output
+echo "Generate javadoc"
+./gradlew -Drelease=true javadoc &> tmp/release_${version}.javadoc.out
 rm -fr docs/javadoc && mv build/docs/javadoc docs/
 
-git commit -am "Release javadoc"
+## commit and push
+git commit -am "Release javadoc" && git push
 
-# TODO: generates the documentation with Barclay (https://github.com/magicDGS/ReadTools/issues/182)
+## generate the online documentation
+echo "Generate documentation site"
+./gradlew -Drelease=true readtoolsDoc &> tmp/release_${version}.readtoolsDoc.out
+mv build/docs/readtools/*.yml docs/_data/ && rm -fr docs/readtools/* && mv build/docs/readtools/*.md docs/readtools/
+
+## commit and push
+git commit -am "Release documentation site" && git push
+
+
+# TODO: Update version in CHANGELOG
+echo "WARNING: CHANGELOG version is not updated!! Please, update manually"
+
+echo "Please, upload to the release page the following file(s):"
+echo "* build/libs/ReadTools.jar"
