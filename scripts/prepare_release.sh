@@ -17,9 +17,6 @@ if [[ ! -z "$(git status -s)" ]]; then
 	exit 2
 fi
 
-# TODO: Update version in CHANGELOG
-echo "WARNING: CHANGELOG version is not updated!!"
-
 
 ## start creating the relase
 echo "Create release for version $version (from master branch)"
@@ -49,3 +46,10 @@ mv build/docs/readtools/*.yml docs/_data/ && rm -fr docs/readtools/* && mv build
 
 ## commit and push
 git commit -am "Release documentation site" && git push
+
+
+# TODO: Update version in CHANGELOG
+echo "WARNING: CHANGELOG version is not updated!! Please, update manually"
+
+echo "Please, upload to the release page the following file(s):"
+echo "* build/libs/ReadTools.jar"
