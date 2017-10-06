@@ -162,12 +162,12 @@ public final class TrimReads extends ReadToolsWalker {
 
         // setup the writer
         writer = outputBamArgumentCollection.outputWriter(header,
-                () -> getProgramRecord(header), true, getReferenceFile()
+                () -> getProgramRecord(header), true, getReferencePath()
         );
 
         if (keepDiscarded) {
             discardedWriter = outputBamArgumentCollection.getWriterFactory()
-                    .setReferenceFile(getReferenceFile())
+                    .setReferencePath(getReferencePath())
                     .createWriter(outputBamArgumentCollection
                                     .getOutputNameWithSuffix(RTDefaults.DISCARDED_OUTPUT_SUFFIX),
                             getHeaderForReads(), true);

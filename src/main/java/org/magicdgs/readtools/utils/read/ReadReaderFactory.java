@@ -28,6 +28,8 @@ import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.cram.ref.CRAMReferenceSource;
+import htsjdk.samtools.cram.ref.ReferenceSource;
 import htsjdk.samtools.fastq.FastqReader;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
@@ -73,8 +75,11 @@ public class ReadReaderFactory {
     }
 
     /** Set the reference sequence for reading. */
-    public ReadReaderFactory setReferenceSequence(final File referenceFile) {
-        samFactory.referenceSequence(referenceFile);
+    public ReadReaderFactory setReferenceSequence(final Path referenceSequence) {
+        // TODO - this should use the setter in HTSJDK (version >= 2.13.0)
+        // TODO - this is a hack using the CRAMReferenceSource instead
+        final CRAMReferenceSource source = new ReferenceSource(referenceSequence);
+        samFactory.referenceSource(source);
         return this;
     }
 

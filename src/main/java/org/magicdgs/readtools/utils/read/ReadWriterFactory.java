@@ -83,7 +83,7 @@ public final class ReadWriterFactory {
     private final SAMFileWriterFactory samFactory;
 
     // the reference file to use with CRAM
-    private File referenceFile = null;
+    private Path referencePath = null;
     // false if we do not check for existence
     private boolean forceOverwrite = RTDefaults.FORCE_OVERWRITE;
 
@@ -159,9 +159,9 @@ public final class ReadWriterFactory {
     }
 
     /** Sets the reference file. This is required for CRAM writers. */
-    public ReadWriterFactory setReferenceFile(final File referenceFile) {
+    public ReadWriterFactory setReferencePath(final Path referencePath) {
         logger.debug("Reference file for FASTQ/Distmap writers is ignored");
-        this.referenceFile = referenceFile;
+        this.referencePath = referencePath;
         return this;
     }
 
@@ -207,17 +207,20 @@ public final class ReadWriterFactory {
             final Path output) {
         checkOutputAndCreateDirs(output);
         try {
-            return samFactory.makeWriter(header, presorted, output.toFile(), referenceFile);
+            // TODO - this will blow up if the java.nio.Path is not a file
+            // TODO - it requires an HTSJDK change not yet in the basecode (https://github.com/samtools/htsjdk/pull/1005)
+            final File referenceFile = (referencePath == null) ? null : referencePath.toFile();
+            return samFactory.makeWriter(header, presorted, output, referenceFile);
         } catch (final SAMException e) {
             // catch SAM exceptions as IO errors -> this are the ones that may fail
-            throw new UserException.CouldNotCreateOutputFile(output.toFile(), e.getMessage(), e);
+            throw new UserException.CouldNotCreateOutputFile(output.toUri().toString(), e.getMessage(), e);
         }
     }
 
     /** Creates a SAM/BAM/CRAM writer from a String path. */
     public GATKReadWriter createSAMWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
-        if (null == referenceFile && output.endsWith(CramIO.CRAM_FILE_EXTENSION)) {
+        if (null == referencePath && output.endsWith(CramIO.CRAM_FILE_EXTENSION)) {
             throw new UserException.MissingReference(
                     "A reference file is required for writing CRAM files");
         }

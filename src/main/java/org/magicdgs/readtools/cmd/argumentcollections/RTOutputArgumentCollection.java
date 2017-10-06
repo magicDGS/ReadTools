@@ -35,7 +35,6 @@ import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
-import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.function.Supplier;
@@ -58,7 +57,7 @@ public abstract class RTOutputArgumentCollection implements Serializable {
      *
      * Note: this factory may be used for extra outputs that are not part of the argument
      * collection. For instance, if a discarded output is requested. Otherwise, use
-     * {@link #outputWriter(SAMFileHeader, Supplier, boolean, File)}.
+     * {@link #outputWriter(SAMFileHeader, Supplier, boolean, Path)}.
      *
      * Implementations should call the super method to honor the common arguments.
      */
@@ -84,11 +83,11 @@ public abstract class RTOutputArgumentCollection implements Serializable {
      */
     public final GATKReadWriter outputWriter(final SAMFileHeader header,
             final Supplier<SAMProgramRecord> programRecord, final boolean presorted,
-            final File referenceFile) {
+            final Path referenceFile) {
         Utils.nonNull(header, "null header");
         updateHeader(header, programRecord);
         validateUserOutput();
-        return createWriter(getWriterFactory().setReferenceFile(referenceFile),
+        return createWriter(getWriterFactory().setReferencePath(referenceFile),
                 header, presorted);
     }
 

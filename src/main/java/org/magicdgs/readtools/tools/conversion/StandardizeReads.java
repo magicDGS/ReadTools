@@ -115,7 +115,7 @@ public final class StandardizeReads extends ReadToolsWalker {
     public void onTraversalStart() {
         final SAMFileHeader headerFromReads = getHeaderForReads();
         writer = outputBamArgumentCollection.outputWriter(headerFromReads,
-                () -> getProgramRecord(headerFromReads), true, getReferenceFile()
+                () -> getProgramRecord(headerFromReads), true, getReferencePath()
         );
     }
 

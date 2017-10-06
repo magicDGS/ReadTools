@@ -133,13 +133,13 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
 
         // output the writer
         writer = outputBamArgumentCollection.outputWriter(headerForWriter,
-                () -> getProgramRecord(headerForWriter), true, getReferenceFile()
+                () -> getProgramRecord(headerForWriter), true, getReferencePath()
         );
 
         // discarded writer
         discardedWriter = (keepDiscarded)
                 ? discardedWriter = outputBamArgumentCollection.getWriterFactory()
-                .setReferenceFile(getReferenceFile())
+                .setReferencePath(getReferencePath())
                 .createWriter(outputBamArgumentCollection
                                 .getOutputNameWithSuffix(RTDefaults.DISCARDED_OUTPUT_SUFFIX),
                         getHeaderForReads(), true)

@@ -94,7 +94,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
     @Test(expectedExceptions = UserException.CouldNotCreateOutputFile.class)
     public void testCramFailingWithNonExistingReference() {
         new ReadWriterFactory()
-                .setReferenceFile(new File("notExisting.fasta"))
+                .setReferencePath(new File("notExisting.fasta").toPath())
                 .createWriter(new File(testDir, "example.cram").getAbsolutePath(),
                         new SAMFileHeader(), true);
     }
