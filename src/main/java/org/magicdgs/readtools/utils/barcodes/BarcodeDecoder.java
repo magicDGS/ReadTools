@@ -27,7 +27,6 @@ import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.metrics.barcodes.BarcodeDetector;
 import org.magicdgs.readtools.metrics.barcodes.BarcodeStat;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -55,7 +54,7 @@ import java.util.stream.IntStream;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeDecoder {
+public final class BarcodeDecoder {
 
     private final Logger logger;
 

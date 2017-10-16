@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.tools.barcodes.dictionary;
 
 import org.magicdgs.readtools.RTHelpConstants;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.barcodes.BarcodeMatch;
 import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMReadGroupRecord;

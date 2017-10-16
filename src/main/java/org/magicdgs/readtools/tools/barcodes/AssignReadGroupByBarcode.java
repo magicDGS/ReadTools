@@ -34,7 +34,7 @@ import org.magicdgs.readtools.cmd.programgroups.RTManipulationProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
 import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.barcodes.BarcodeMatch;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 

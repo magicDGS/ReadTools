@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.barcodes;
 
+import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.broadinstitute.hellbender.utils.Utils;
 
@@ -54,7 +55,8 @@ public class BarcodeDictionary {
 
     // TODO - we can also have a constructor from a SAMFileHeader with RG
     // TODO - if https://github.com/samtools/hts-specs/issues/249 is added to the specs, we can build from SAMFileHeader
-    private BarcodeDictionary(final List<SAMReadGroupRecord> readGroups,
+    @VisibleForTesting
+    BarcodeDictionary(final List<SAMReadGroupRecord> readGroups,
             final List<String[]> readGroupIndexes,
             final SAMReadGroupRecord unknownReadGroup) {
         // non-null args and initialize

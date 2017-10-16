@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
+package org.magicdgs.readtools.utils.barcodes;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.broadinstitute.hellbender.utils.BaseUtils;

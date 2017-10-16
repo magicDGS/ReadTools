@@ -27,7 +27,7 @@ package org.magicdgs.readtools.tools.barcodes.dictionary;
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupArgumentCollection;
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.barcodes.BarcodeMatch;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.apache.logging.log4j.LogManager;
