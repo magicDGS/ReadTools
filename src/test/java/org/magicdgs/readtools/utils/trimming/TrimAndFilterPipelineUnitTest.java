@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.trimming;
+package org.magicdgs.readtools.utils.trimming;
 
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.metrics.FilterMetric;
@@ -31,6 +31,7 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 import org.magicdgs.readtools.RTBaseTest;
+import org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline;
 
 import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
 import org.broadinstitute.barclay.argparser.CommandLineException;

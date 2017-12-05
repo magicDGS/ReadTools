@@ -38,6 +38,7 @@ import org.magicdgs.readtools.utils.read.ReservedTags;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
+import org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.metrics.MetricsFile;
