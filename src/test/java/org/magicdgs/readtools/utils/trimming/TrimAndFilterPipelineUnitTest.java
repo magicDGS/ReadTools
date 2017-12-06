@@ -27,6 +27,7 @@ package org.magicdgs.readtools.utils.trimming;
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmerMetric;
+import org.magicdgs.readtools.tools.trimming.TrimReadsTrimmerPluginArgumentCollection;
 import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
@@ -430,7 +431,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
     public void testGetEmptyPipelineBlowsUp() throws Exception {
         // empty argument collection
         TrimAndFilterPipeline.fromPluginDescriptors(
-                new TrimmerPluginDescriptor(null),
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), null),
                 new GATKReadFilterPluginDescriptor(null));
     }
 
@@ -545,7 +546,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
             throws Exception {
         final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
                 new GATKReadFilterPluginDescriptor(defaultFilters),
-                new TrimmerPluginDescriptor(defaultTrimmers)),
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), defaultTrimmers)),
                 Collections.emptySet());
         clp.parseArguments(NULL_PRINT_STREAM, arguments.getArgsArray());
         final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
@@ -584,7 +585,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
         // get the trimming pipeline arguments
         final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
-                new TrimmerPluginDescriptor(defaultTrimmers),
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), defaultTrimmers),
                 new GATKReadFilterPluginDescriptor(defaultFilters));
 
         // check that the pipeline contains the same number of trimmers
@@ -600,7 +601,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
         final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
                 new GATKReadFilterPluginDescriptor(defaultFilters),
-                new TrimmerPluginDescriptor(defaultTrimmers)),
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), defaultTrimmers)),
                 Collections.emptySet());
 
         if (defaultFilters.isEmpty()) {
@@ -628,7 +629,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
         final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
                 new GATKReadFilterPluginDescriptor(defaultFilters),
-                new TrimmerPluginDescriptor(defaultTrimmers)),
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), defaultTrimmers)),
                 Collections.emptySet());
 
         final int expectedFilters;

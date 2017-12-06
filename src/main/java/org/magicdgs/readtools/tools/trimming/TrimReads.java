@@ -116,7 +116,7 @@ public final class TrimReads extends ReadToolsWalker {
     @Override
     public List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
         return Arrays.asList(
-                new TrimmerPluginDescriptor(
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(),
                         Arrays.asList(new TrailingNtrimmer(), new MottQualityTrimmer())),
                 new GATKReadFilterPluginDescriptor(new TrimReadsFilterPluginArgumentCollection(),
                         Collections.singletonList(
