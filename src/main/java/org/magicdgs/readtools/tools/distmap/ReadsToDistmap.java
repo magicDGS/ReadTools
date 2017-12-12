@@ -117,7 +117,6 @@ public final class ReadsToDistmap extends ReadToolsWalker {
     @Override
     public void onTraversalStart() {
         fixBarcodeTags.validateArguments();
-        // TODO - activate trimming
         try {
             final CommandLineParser parser = getCommandLineParser();
             pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
