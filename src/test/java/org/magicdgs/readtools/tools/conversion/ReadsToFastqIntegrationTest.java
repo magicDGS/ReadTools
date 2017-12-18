@@ -53,7 +53,7 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
         final File outputPrefix = new File(TEST_TEMP_DIR, "testMappedSortFile");
         final ArgumentsBuilder args = new ArgumentsBuilder()
                 .addFileArgument("input", getTestFile("mapped.sort.sam"))
-                .addOutput(outputPrefix);
+                .addFileArgument("output", outputPrefix);
         runCommandLine(args);
         assertFileIsEmpty(new File(outputPrefix.getAbsolutePath() + "_SE.fq.gz"));
         testFiles(Arrays.asList(
@@ -123,7 +123,7 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
     public void testReadsToFastq(final String testName, final ArgumentsBuilder args,
             final List<File> expectedFiles, final boolean paired) {
         final File outputName = new File(TEST_TEMP_DIR, testName);
-        args.addOutput(outputName);
+        args.addFileArgument("output", outputName);
         final List<File> pairedFiles = Arrays.asList(
                 new File(TEST_TEMP_DIR, testName + "_1.fq.gz"),
                 new File(TEST_TEMP_DIR, testName + "_2.fq.gz"));

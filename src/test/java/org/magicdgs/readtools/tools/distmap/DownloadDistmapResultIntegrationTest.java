@@ -132,7 +132,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
 
         final ArgumentsBuilder completeArgs = new ArgumentsBuilder(args.getArgsArray())
                 .addArgument("input", inputPath)
-                .addOutput(output)
+                .addFileArgument("output", output)
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
         runCommandLine(completeArgs);
 
@@ -152,7 +152,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
 
     @Test(dataProvider = "getInvalidArguments", expectedExceptions = UserException.class)
     public void invalidArguments(final ArgumentsBuilder args) throws Exception {
-        args.addOutput(new File(TEST_TEMP_DIR, args.toString() + ".bam"));
+        args.addFileArgument("output", new File(TEST_TEMP_DIR, args.toString() + ".bam"));
         runCommandLine(args);
     }
 

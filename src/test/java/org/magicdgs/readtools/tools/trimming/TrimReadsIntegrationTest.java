@@ -116,7 +116,7 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
 
         // now there is not output prefix but bam output
         final ArgumentsBuilder args = builder
-                .addOutput(outputName)
+                .addFileArgument("output", outputName)
                 .addBooleanArgument("keepDiscarded", keepDiscarded);
         // running the command line
         runCommandLine(args);
@@ -146,7 +146,7 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
         // tun with a very simple fastq file with a read that only contains Ns
         runCommandLine(new ArgumentsBuilder()
                 .addFileArgument("input", getTestFile("onlyN.fq"))
-                .addOutput(outputFile));
+                .addFileArgument("output", outputFile));
 
         // assert that the output file exists and it is empty
         Assert.assertTrue(outputFile.exists());

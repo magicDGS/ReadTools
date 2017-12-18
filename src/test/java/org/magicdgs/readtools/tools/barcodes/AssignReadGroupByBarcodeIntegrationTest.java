@@ -206,7 +206,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
     private void testAddReadGroupByBarcodeRun(final ArgumentsBuilder args,
             final File testOutputFilePrefix, final File expectedFilePrefix,
             final List<String> outputSuffixes) throws Exception {
-        args.addOutput(testOutputFilePrefix)
+        args.addFileArgument("output", testOutputFilePrefix)
                 // never output the program group record for test files to exact concordance
                 .addBooleanArgument("addOutputSAMProgramRecord", false)
                 // output always SAM as text file for comparison purposes (byte by byte)
@@ -281,6 +281,6 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
     @Test(dataProvider = "differentBarcodeNumberForFailure", expectedExceptions = UserException.MalformedFile.class)
     public void testFailureForDifferentBarcodesInDictionaryAndInput(final ArgumentsBuilder args) {
         final File outputPrefix = new File(createTestTempDir(getTestedToolName()), args.toString() + ".sam");
-        runCommandLine(args.addOutput(outputPrefix));
+        runCommandLine(args.addFileArgument("output", outputPrefix));
     }
 }

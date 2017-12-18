@@ -250,7 +250,7 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
         // output is always in
         final File output = new File(TEST_TEMP_DIR, name + ".sam");
         // add output and remove from tests the program record
-        args.addOutput(output)
+        args.addFileArgument("output", output)
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
         runCommandLine(args);
 
