@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.trimming;
 
+import org.magicdgs.readtools.cmd.argumentcollections.TrimmerPluginArgumentCollection;
 import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmerMetric;
@@ -32,7 +33,6 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 import org.magicdgs.readtools.RTBaseTest;
-import org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline;
 
 import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
 import org.broadinstitute.barclay.argparser.CommandLineException;
@@ -43,7 +43,6 @@ import org.broadinstitute.hellbender.engine.filters.ReadFilterLibrary;
 import org.broadinstitute.hellbender.engine.filters.ReadLengthReadFilter;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
-import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -53,7 +52,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 /**
@@ -430,8 +429,25 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
     @Test(expectedExceptions = CommandLineException.BadArgumentValue.class)
     public void testGetEmptyPipelineBlowsUp() throws Exception {
         // empty argument collection
+        final TrimmerPluginArgumentCollection empty = new TrimmerPluginArgumentCollection() {
+            @Override
+            public List<String> getUserEnabledTrimmerNames() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public Set<String> getUserDisabledTrimmerNames() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public boolean getDisableToolDefaultTrimmers() {
+                return false;
+            }
+        };
+
         TrimAndFilterPipeline.fromPluginDescriptors(
-                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), null),
+                new TrimmerPluginDescriptor(empty, null),
                 new GATKReadFilterPluginDescriptor(null));
     }
 
@@ -442,124 +458,6 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
                 {true, false},
                 {false, true}
         };
-    }
-
-    @DataProvider(name = "pipelineArguments")
-    public Object[][] getPipelineArguments() throws Exception {
-        // this is always the first read filter
-        final String completelyTrimName = "CompletelyTrimReadFilter";
-        return new Object[][] {
-                // without arguments
-                {new ArgumentsBuilder(),
-                        Collections.singletonList(new TrailingNtrimmer()),
-                        Collections.emptyList(),
-                        Collections.singletonList("TrailingNtrimmer"),
-                        Collections.singletonList(completelyTrimName)},
-                {new ArgumentsBuilder(),
-                        Collections.singletonList(new TrailingNtrimmer()),
-                        Collections.singletonList(ReadFilterLibrary.MAPPED),
-                        Collections.singletonList("TrailingNtrimmer"),
-                        Arrays.asList(completelyTrimName, "MappedReadFilter")},
-                {new ArgumentsBuilder(),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Collections.emptyList(),
-                        Arrays.asList("TrailingNtrimmer", "CutReadTrimmer"),
-                        Collections.singletonList(completelyTrimName)},
-                {new ArgumentsBuilder(),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Collections.singletonList(ReadFilterLibrary.GOOD_CIGAR),
-                        Arrays.asList("TrailingNtrimmer", "CutReadTrimmer"),
-                        Arrays.asList(completelyTrimName,"GoodCigarReadFilter")},
-                {new ArgumentsBuilder(),
-                        Collections.singletonList(new TrailingNtrimmer()),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Collections.singletonList("TrailingNtrimmer"),
-                        Arrays.asList(completelyTrimName,"GoodCigarReadFilter", "MappedReadFilter")},
-                // with arguments to enable new ones
-                {new ArgumentsBuilder().addArgument("trimmer", "MottQualityTrimmer"),
-                        Collections.singletonList(new TrailingNtrimmer()),
-                        Collections.emptyList(),
-                        Arrays.asList("TrailingNtrimmer", "MottQualityTrimmer"),
-                        Collections.singletonList(completelyTrimName)},
-                {new ArgumentsBuilder().addArgument("readFilter", "GoodCigarReadFilter"),
-                        Collections.singletonList(new TrailingNtrimmer()),
-                        Collections.emptyList(),
-                        Collections.singletonList("TrailingNtrimmer"),
-                        Arrays.asList(completelyTrimName, "GoodCigarReadFilter")},
-                // with arguments to disable default ones
-                {new ArgumentsBuilder().addArgument("disableTrimmer", "TrailingNtrimmer"),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Collections.emptyList(),
-                        Collections.singletonList("CutReadTrimmer"),
-                        Collections.singletonList(completelyTrimName)},
-                {new ArgumentsBuilder().addArgument("disableReadFilter", "GoodCigarReadFilter"),
-                        Collections.singletonList(new TrailingNtrimmer()),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Collections.singletonList("TrailingNtrimmer"),
-                        Arrays.asList(completelyTrimName, "MappedReadFilter")},
-                // disabling all trimmers and/or filters (no user-provided)
-                {new ArgumentsBuilder().addBooleanArgument("disableAllDefaultTrimmers", true),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Collections.emptyList(),
-                        Arrays.asList(completelyTrimName,"GoodCigarReadFilter", "MappedReadFilter")},
-                {new ArgumentsBuilder().addBooleanArgument("disableToolDefaultReadFilters", true),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Arrays.asList("TrailingNtrimmer", "CutReadTrimmer"),
-                        Collections.singletonList(completelyTrimName)},
-                // disabling default trimmers and/or filters, with user provided
-                {new ArgumentsBuilder().addBooleanArgument("disableAllDefaultTrimmers", true)
-                        .addArgument("trimmer", "MottQualityTrimmer"),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Collections.singletonList("MottQualityTrimmer"),
-                        Arrays.asList(completelyTrimName,"GoodCigarReadFilter", "MappedReadFilter")},
-                {new ArgumentsBuilder().addBooleanArgument("disableToolDefaultReadFilters", true)
-                        .addArgument("readFilter", "FirstOfPairReadFilter"),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Arrays.asList("TrailingNtrimmer", "CutReadTrimmer"),
-                        Arrays.asList(completelyTrimName, "FirstOfPairReadFilter")},
-                // disable all default trimmers and/or filters, and enable again in different order
-                {new ArgumentsBuilder().addBooleanArgument("disableAllDefaultTrimmers", true)
-                        .addArgument("trimmer", "CutReadTrimmer")
-                        .addArgument("trimmer", "TrailingNtrimmer"),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Arrays.asList("CutReadTrimmer", "TrailingNtrimmer"),
-                        Arrays.asList(completelyTrimName,"GoodCigarReadFilter", "MappedReadFilter")},
-                {new ArgumentsBuilder().addBooleanArgument("disableToolDefaultReadFilters", true)
-                        .addArgument("readFilter", "MappedReadFilter")
-                        .addArgument("readFilter", "GoodCigarReadFilter"),
-                        Arrays.asList(new TrailingNtrimmer(), new CutReadTrimmer(1, 1)),
-                        Arrays.asList(ReadFilterLibrary.GOOD_CIGAR, ReadFilterLibrary.MAPPED),
-                        Arrays.asList("TrailingNtrimmer", "CutReadTrimmer"),
-                        Arrays.asList(completelyTrimName, "MappedReadFilter", "GoodCigarReadFilter")},
-        };
-    }
-
-    @Test(dataProvider = "pipelineArguments")
-    public void testParsingAndPipelineFromPlugin(final ArgumentsBuilder arguments,
-            final List<TrimmingFunction> defaultTrimmers, final List<ReadFilter> defaultFilters,
-            final List<String> expectedTrimmerName, final List<String> expectedFilterNames)
-            throws Exception {
-        final CommandLineParser clp = new CommandLineArgumentParser(new Object(), Arrays.asList(
-                new GATKReadFilterPluginDescriptor(defaultFilters),
-                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), defaultTrimmers)),
-                Collections.emptySet());
-        clp.parseArguments(NULL_PRINT_STREAM, arguments.getArgsArray());
-        final TrimAndFilterPipeline pipeline = TrimAndFilterPipeline.fromPluginDescriptors(
-                clp.getPluginDescriptor(TrimmerPluginDescriptor.class),
-                clp.getPluginDescriptor(GATKReadFilterPluginDescriptor.class));
-
-        final List<String> trimmerNames = pipeline.getTrimmingStats().stream()
-                .map(fs -> fs.TRIMMER).collect(Collectors.toList());
-        final List<String> filterNames = pipeline.getFilterStats().stream()
-                .map(fs -> fs.FILTER).collect(Collectors.toList());
-
-        Assert.assertEquals(trimmerNames, expectedTrimmerName, trimmerNames.toString());
-        Assert.assertEquals(filterNames, expectedFilterNames, filterNames.toString());
     }
 
     @DataProvider(name = "trimmersAndFilters")

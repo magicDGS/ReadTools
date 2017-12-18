@@ -69,7 +69,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     private static final Class<?> pluginBaseClass = TrimmingFunction.class;
 
     @ArgumentCollection
-    public final TrimmerPluginArgumentCollection trimmerArgs;
+    private final TrimmerPluginArgumentCollection trimmerArgs;
 
     // Map of read trimmers (simple) class names to the corresponding discovered plugin instance
     private Map<String, TrimmingFunction> trimmers = new HashMap<>();

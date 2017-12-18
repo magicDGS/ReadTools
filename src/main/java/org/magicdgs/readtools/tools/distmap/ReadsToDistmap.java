@@ -104,7 +104,8 @@ public final class ReadsToDistmap extends ReadToolsWalker {
     @Override
     public List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
         return Arrays.asList(
-                // no default trimmers
+                // should not use default trimmers/filters; if this is changed, the argument
+                // collection should support disabling tool defaults and single trimmer/filters
                 new TrimmerPluginDescriptor(new DistmapTrimmerPluginArgumentCollection(), Collections.emptyList()),
                 new GATKReadFilterPluginDescriptor(
                         new DistmapFilterPluginArgumentCollection(),
@@ -123,7 +124,9 @@ public final class ReadsToDistmap extends ReadToolsWalker {
                     parser.getPluginDescriptor(TrimmerPluginDescriptor.class),
                     parser.getPluginDescriptor(GATKReadFilterPluginDescriptor.class)
             );
-        } catch (CommandLineException.BadArgumentValue e) {
+        } catch (final CommandLineException.BadArgumentValue e) {
+            // should catch here, because it might be that the trimmer/filter pipeline is empty
+            // in that case, we set to null to indicate that no trimming is performed
             pipeline = null;
         }
 

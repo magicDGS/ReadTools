@@ -39,28 +39,28 @@ import java.util.Set;
 public abstract class TrimmerPluginArgumentCollection {
 
     /**
-     * Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified by th3 5' mapping position.
+     * Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified
+     * by the 5' mapping position.
+     * Cannot be true when disable3pTrim (D3P) is true.
      */
+    // TODO - javadoc should use the {@value} pragma - and this should be parsed by the DocGen code
     @Argument(fullName = RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME,
             doc = "Disable 5'-trimming."
                     // This is a custom mutex argument, specify as in Barclay but it could be specify in the command line
                     // TODO: see also https://github.com/broadinstitute/barclay/issues/26
                     + " Cannot be true when argument "
                     + RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME
-                    + "(" + RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME + ") is true.",
+                    + " (" + RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME + ") is true.",
             optional = true)
     public boolean disable5pTrim = false;
 
-    /**
-     * Disable 3' trimming.
-     */
     @Argument(fullName = RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME,
             doc = "Disable 3'-trimming."
                     // This is a custom mutex argument, specify as in Barclay but it could be specify in the command line
                     // TODO: see also https://github.com/broadinstitute/barclay/issues/26
                     + " Cannot be true when argument "
                     + RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME
-                    + "(" + RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME + ") is true.",
+                    + " (" + RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME + ") is true.",
             optional = true)
     public boolean disable3pTrim = false;
 
@@ -70,7 +70,7 @@ public abstract class TrimmerPluginArgumentCollection {
      *
      * <p>Note: should preserve the order.
      *
-     * @return trimmers to use.
+     * @return non {@code null} list of trimmers to use.
      */
     public abstract List<String> getUserEnabledTrimmerNames();
 
@@ -78,7 +78,8 @@ public abstract class TrimmerPluginArgumentCollection {
     /**
      * Gets the trimmers disabled by the user in the command line.
      *
-     * @return trimmers to be disabled.
+     * @return non {@code null} list of trimmers to be disabled. It might be empty if disabling
+     * trimmers is unsupported.
      */
     public abstract Set<String> getUserDisabledTrimmerNames();
 
