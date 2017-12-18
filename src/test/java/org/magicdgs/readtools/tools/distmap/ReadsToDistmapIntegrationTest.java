@@ -86,40 +86,40 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
                 // standard data (singled and pair-end) - using only BAM files
                 {"standard.single_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam")),
                         expectedSingleIndexSE},
                 {"standard.dual_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.bam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.bam")),
                         expectedDualIndexSE},
                 {"standard.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.paired.bam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.single_index.paired.bam"))
                                 .addBooleanArgument("interleaved", true),
                         expectedSingleIndexPaired},
                 {"standard.dual_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.bam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.bam"))
                                 .addBooleanArgument("interleaved", true),
                         expectedDualIndexPaired},
                 // using paired data with two barcode tags (SAM files)
                 {"bc_in_two_tags.dual_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam"))
                                 .addBooleanArgument("interleaved", true)
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
                         expectedDualIndexPaired},
                 {"bc_in_two_tags.dual_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam"))
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
                         expectedDualIndexSE},
                 // testing barcode in the read name for SAM/BAM
                 {"bc_in_read_name.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.single_index.paired.sam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.single_index.paired.sam"))
                                 .addBooleanArgument("interleaved", true)
                                 .addBooleanArgument("barcodeInReadName", true),
                         expectedSingleIndexPaired},
@@ -128,7 +128,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
 //                // TODO: see https://github.com/magicDGS/ReadTools/issues/307 for how we can handle that
 //                {"legacy.dual_index.paired.mapped.cram",
 //                        new ArgumentsBuilder()
-//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"))
+//                                .addFileArgument("input), estResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"))
 //                                .addReference(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"))
 //                                .addBooleanArgument("barcodeInReadName", true)
 //                                .addBooleanArgument("interleaved", true),
@@ -136,19 +136,19 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
                 // FASTQ split file for Illumina-legacy
                 {"legacy.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
                                 .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq")),
                         expectedSingleIndexPaired},
                 // FASTQ interleaved file
                 {"legacy.single_index.interleaved",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.interleaved.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.interleaved.fq"))
                                 .addBooleanArgument("interleaved", true),
                         expectedSingleIndexPaired},
                 // FASTQ single-end Casava
                 {"casava.single_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq")),
                         expectedSingleIndexSE}
         };
     }
@@ -160,7 +160,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
         // output is always in
         final File output = new File(TEST_TEMP_DIR, name + ".distmap");
         // add output, and set the quiet level
-        args.addOutput(output);
+        args.addFileArgument("output", output);
         runCommandLine(args);
 
         // using text file concordance
@@ -195,7 +195,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
         // this test is using a super small file with a single read because we are not checking the
         // content, but the block-sizes
         final ArgumentsBuilder args = new ArgumentsBuilder()
-                .addInput(getTestFile("single.read.fq"))
+                .addFileArgument("input", getTestFile("single.read.fq"))
                 .addArgument("output", path.toUri().toString())
                 .addArgument("hdfsBlockSize", Long.toString(blockSize));
 
@@ -237,7 +237,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
                     // equal to ReadsToDistmap from testTrimmingSingleEndDefaultParameters
                     getTestFile("trimmed/single_index.illumina_quality.SE.distmap"),
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
                                 .addArgument("readFilter", "ReadLengthReadFilter")
                                 .addArgument("maxReadLength", "1000000")
                                 .addArgument("minReadLength", "40")
@@ -249,7 +249,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
                     // equal to ReadsToDistmap from testTrimmingPairEndDefaultParameters
                     getTestFile("trimmed/single_index.illumina_quality.PE.distmap"),
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
                                 .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq"))
                                 .addArgument("readFilter", "ReadLengthReadFilter")
                                 .addArgument("maxReadLength", "1000000")
@@ -264,7 +264,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
     @Test(dataProvider = "trimmingDataProvider")
     public void testReadsToDistmapWithTrimming(final File expectedOutput, final ArgumentsBuilder args) throws Exception {
         final File output = new File(TEST_TEMP_DIR, args.hashCode() + "." + expectedOutput.getName());
-        args.addOutput(output);
+        args.addFileArgument("output", output);
         args.addArgument("verbosity", "INFO");
         runCommandLine(args);
 
