@@ -128,7 +128,7 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
 //                // TODO: see https://github.com/magicDGS/ReadTools/issues/307 for how we can handle that
 //                {"legacy.dual_index.paired.mapped.cram",
 //                        new ArgumentsBuilder()
-//                                .addFileArgument("input), estResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"))
+//                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired.mapped.cram"))
 //                                .addReference(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"))
 //                                .addBooleanArgument("barcodeInReadName", true)
 //                                .addBooleanArgument("interleaved", true),
