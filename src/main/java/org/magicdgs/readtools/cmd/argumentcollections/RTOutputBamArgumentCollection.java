@@ -24,13 +24,13 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
+import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.utils.read.writer.ReadToolsIOFormat;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 
 import htsjdk.samtools.SAMFileHeader;
 import org.apache.commons.io.FilenameUtils;
 import org.broadinstitute.barclay.argparser.Argument;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
 import java.nio.file.Path;
@@ -43,7 +43,7 @@ import java.nio.file.Path;
 public final class RTOutputBamArgumentCollection extends RTAbstractOutputBamArgumentCollection {
     private static final long serialVersionUID = 1L;
 
-    @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file.", optional = false)
+    @Argument(fullName = RTStandardArguments.OUTPUT_LONG_NAME, shortName = RTStandardArguments.OUTPUT_SHORT_NAME, doc = "Output SAM/BAM/CRAM file.", optional = false)
     public String outputName;
 
     @Override

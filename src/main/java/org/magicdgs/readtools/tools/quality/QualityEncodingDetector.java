@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.quality;
 
 import org.magicdgs.readtools.RTDefaults;
+import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
@@ -33,7 +34,6 @@ import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocumentedFeature;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ import java.io.IOException;
 @DocumentedFeature
 public final class QualityEncodingDetector extends ReadToolsProgram {
 
-    @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "Reads input.", optional = false, common = true)
+    @Argument(fullName = RTStandardArguments.INPUT_LONG_NAME, shortName = RTStandardArguments.INPUT_SHORT_NAME, doc = "Reads input.", optional = false, common = true)
     public String sourceString;
 
     @Argument(fullName = "maximumReads", shortName = "maximumReads", doc = "Maximum number of reads to use for detect the quality encoding.", optional = true)

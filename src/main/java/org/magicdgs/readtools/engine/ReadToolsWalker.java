@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.engine;
 
+import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.argumentcollections.RTInputArgumentCollection;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -31,8 +32,6 @@ import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.Locatable;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
-import org.broadinstitute.hellbender.engine.GATKTool;
 import org.broadinstitute.hellbender.engine.ProgressMeter;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import scala.Tuple2;
@@ -56,10 +55,10 @@ import java.util.stream.StreamSupport;
 public abstract class ReadToolsWalker extends ReadToolsProgram {
 
     // For the progress meter in the GATKTool
-    @Argument(fullName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, shortName = GATKTool.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, doc = "Output traversal statistics every time this many seconds elapse.", optional = true, common = true)
+    @Argument(fullName = RTStandardArguments.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, shortName = RTStandardArguments.SECONDS_BETWEEN_PROGRESS_UPDATES_NAME, doc = "Output traversal statistics every time this many seconds elapse.", optional = true, common = true)
     private double secondsBetweenProgressUpdates = ProgressMeter.DEFAULT_SECONDS_BETWEEN_UPDATES;
 
-    @Argument(fullName = StandardArgumentDefinitions.REFERENCE_LONG_NAME, shortName = StandardArgumentDefinitions.REFERENCE_SHORT_NAME, doc = "Reference sequence file. Required for CRAM input.", optional = true, common = true)
+    @Argument(fullName = RTStandardArguments.REFERENCE_LONG_NAME, shortName = RTStandardArguments.REFERENCE_SHORT_NAME, doc = "Reference sequence file. Required for CRAM input.", optional = true, common = true)
     private File referenceFile = null;
 
     @ArgumentCollection

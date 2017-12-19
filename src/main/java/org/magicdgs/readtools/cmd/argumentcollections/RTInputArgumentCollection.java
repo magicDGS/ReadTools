@@ -33,7 +33,6 @@ import htsjdk.samtools.util.FastqQualityFormat;
 import org.apache.logging.log4j.util.Supplier;
 import org.broadinstitute.barclay.argparser.Advanced;
 import org.broadinstitute.barclay.argparser.Argument;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.utils.read.ReadConstants;
 
 import java.io.File;
@@ -48,7 +47,7 @@ public final class RTInputArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // TODO: change our default validation stringency?
-    @Argument(fullName = StandardArgumentDefinitions.READ_VALIDATION_STRINGENCY_LONG_NAME, shortName = StandardArgumentDefinitions.READ_VALIDATION_STRINGENCY_SHORT_NAME,
+    @Argument(fullName = RTStandardArguments.READ_VALIDATION_STRINGENCY_LONG_NAME, shortName = RTStandardArguments.READ_VALIDATION_STRINGENCY_SHORT_NAME,
             doc = "Validation stringency for all SAM/BAM/CRAM files read by this program. "
                     + "The default stringency value SILENT can improve performance when processing "
                     + "a BAM file in which variable-length data (read, qualities, tags) do not otherwise need to be decoded.",
@@ -56,7 +55,7 @@ public final class RTInputArgumentCollection implements Serializable {
     public ValidationStringency readValidationStringency =
             ReadConstants.DEFAULT_READ_VALIDATION_STRINGENCY;
 
-    @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "BAM/SAM/CRAM/FASTQ source of reads.", common = true, optional = false)
+    @Argument(fullName = RTStandardArguments.INPUT_LONG_NAME, shortName = RTStandardArguments.INPUT_SHORT_NAME, doc = "BAM/SAM/CRAM/FASTQ source of reads.", common = true, optional = false)
     public String inputSource;
 
     @Argument(fullName = RTStandardArguments.INPUT_PAIR_LONG_NAME, shortName = RTStandardArguments.INPUT_PAIR_SHORT_NAME, doc = "BAM/SAM/CRAM/FASTQ the second source of reads (if pair-end).",

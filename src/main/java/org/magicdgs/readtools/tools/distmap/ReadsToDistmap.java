@@ -44,7 +44,6 @@ import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
@@ -81,7 +80,7 @@ public final class ReadsToDistmap extends ReadToolsWalker {
     @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", common = true, optional = true)
     public Boolean forceOverwrite = false;
 
-    @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output in Distmap format. Expected to be in an HDFS file system.", optional = false)
+    @Argument(fullName = RTStandardArguments.OUTPUT_LONG_NAME, shortName = RTStandardArguments.OUTPUT_SHORT_NAME, doc = "Output in Distmap format. Expected to be in an HDFS file system.", optional = false)
     public String output;
 
     @Advanced
