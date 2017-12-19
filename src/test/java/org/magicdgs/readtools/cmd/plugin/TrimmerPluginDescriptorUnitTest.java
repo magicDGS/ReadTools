@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.cmd.plugin;
 
+import org.magicdgs.readtools.tools.trimming.TrimReadsTrimmerPluginArgumentCollection;
 import org.magicdgs.readtools.utils.read.transformer.trimming.CutReadTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
@@ -66,7 +67,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
         };
 
         final TrimmerPluginDescriptor pluginDescriptor =
-                new TrimmerPluginDescriptor(Collections.singletonList(anonymous));
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), Collections.singletonList(anonymous));
 
         // test all instances is empty
         Assert.assertTrue(pluginDescriptor.getAllInstances().isEmpty());
@@ -82,13 +83,13 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
         // this trimmer default constructor does not have valid arguments
         final CutReadTrimmer trimmer = new CutReadTrimmer();
         // this should blow up
-        new TrimmerPluginDescriptor(Collections.singletonList(trimmer));
+        new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), Collections.singletonList(trimmer));
     }
 
     @Test
     public void testGetInstanceThrowByCollision() throws Exception {
         final TrimmerPluginDescriptor pluginDescriptor =
-                new TrimmerPluginDescriptor(Collections.emptyList());
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), Collections.emptyList());
         // pass twice the class to exercise IllegalArgumentException path
         // this will only happen if there are duplicated packages
         pluginDescriptor.getInstance(MottQualityTrimmer.class);
@@ -115,7 +116,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
     @Test(dataProvider = "defaultTrimmingFunctionsForHelp")
     public void testGetAllowedValuesForDisableTrimmer(final List<TrimmingFunction> defaults,
             final Set<String> expectedDefaults) throws Exception {
-        final TrimmerPluginDescriptor pluginDescriptor = new TrimmerPluginDescriptor(defaults);
+        final TrimmerPluginDescriptor pluginDescriptor = new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), defaults);
         // test valid trimmers -> without CMD they are not found by reflection
         final Set<String> allowedTrimmers = pluginDescriptor
                 .getAllowedValuesForDescriptorArgument("trimmer");
@@ -212,7 +213,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
 
         // run the instance main and get the descriptor after parsing
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
-                Collections.singletonList(new TrimmerPluginDescriptor(
+                Collections.singletonList(new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(),
                         (withDefault) ? makeDefaultTrimmerForTest() : null)),
                 Collections.emptySet());
 
@@ -245,7 +246,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
     @Test
     public void testAllTrimmersHelpAfterParsed() throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
-                Collections.singletonList(new TrimmerPluginDescriptor(null)),
+                Collections.singletonList(new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), null)),
                 Collections.emptySet());
         clp.parseArguments(NULL_PRINT_STREAM, new String[] {});
         Assert.assertEquals(clp.getPluginDescriptor(TrimmerPluginDescriptor.class)
@@ -303,7 +304,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
     public void testParsingWrongArguments(final boolean withDefault,
             final ArgumentsBuilder args) throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
-                Collections.singletonList(new TrimmerPluginDescriptor(
+                Collections.singletonList(new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(),
                         (withDefault) ? makeDefaultTrimmerForTest() : null)),
                 Collections.emptySet());
         clp.parseArguments(NULL_PRINT_STREAM, args.getArgsArray());
@@ -322,7 +323,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
     public void testMutexArgsParsing(final boolean disable5pTrim, final boolean disable3pTrim)
             throws Exception {
         final CommandLineArgumentParser clp = new CommandLineArgumentParser(new Object(),
-                Collections.singletonList(new TrimmerPluginDescriptor(null)),
+                Collections.singletonList(new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), null)),
                 Collections.emptySet());
         final boolean parsed = clp.parseArguments(NULL_PRINT_STREAM,
                 new ArgumentsBuilder()

@@ -25,11 +25,12 @@
 package org.magicdgs.readtools.cmd.plugin;
 
 import org.magicdgs.readtools.cmd.RTStandardArguments;
+import org.magicdgs.readtools.cmd.argumentcollections.TrimmerPluginArgumentCollection;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.broadinstitute.barclay.argparser.Argument;
+import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -67,37 +68,8 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             "org.magicdgs.readtools.utils.read.transformer.trimming";
     private static final Class<?> pluginBaseClass = TrimmingFunction.class;
 
-    @Argument(fullName = RTStandardArguments.TRIMMER_LONG_NAME, shortName = RTStandardArguments.TRIMMER_SHORT_NAME, doc = "Trimmers to be applied. Note: default trimmers are applied first and then the rest of them in order.", optional = true)
-    public final List<String> userTrimmerNames = new ArrayList<>(); // preserve order
-
-    // mutex because if we disable all, we cannot disable one by one
-    @Argument(fullName = RTStandardArguments.DISABLE_TRIMMER_LONG_NAME, shortName = RTStandardArguments.DISABLE_TRIMMER_SHORT_NAME, doc = "Default trimmers to be disabled.", optional = true, mutex = {
-            RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME})
-    public final Set<String> disabledTrimmers = new HashSet<>();
-
-    @Argument(fullName = RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME, shortName = RTStandardArguments.DISABLE_ALL_DEFAULT_TRIMMERS_NAME, doc = "Disable all default trimmers. It may be useful to reorder the trimmers.", optional = true, mutex = {
-            RTStandardArguments.DISABLE_TRIMMER_LONG_NAME})
-    public boolean disableAllDefaultTrimmers = false;
-
-    @Argument(fullName = RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME,
-            doc = "Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified by the 5' mapping position."
-                    // This is a custom mutex argument, specify as in Barclay but it could be specify in the command line
-                    // TODO: see also https://github.com/broadinstitute/barclay/issues/26
-                    + " Cannot be true when argument "
-                    + RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME
-                    + "(" + RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME + ") is true.",
-            optional = true)
-    public boolean disable5pTrim = false;
-
-    @Argument(fullName = RTStandardArguments.DISABLE_3P_TRIMING_LONG_NAME, shortName = RTStandardArguments.DISABLE_3P_TRIMING_SHORT_NAME,
-            doc = "Disable 3'-trimming."
-                    // This is a custom mutex argument, specify as in Barclay but it could be specify in the command line
-                    // TODO: see also https://github.com/broadinstitute/barclay/issues/26
-                    + " Cannot be true when argument "
-                    + RTStandardArguments.DISABLE_5P_TRIMING_LONG_NAME
-                    + "(" + RTStandardArguments.DISABLE_5P_TRIMING_SHORT_NAME + ") is true.",
-            optional = true)
-    public boolean disable3pTrim = false;
+    @ArgumentCollection
+    private final TrimmerPluginArgumentCollection trimmerArgs;
 
     // Map of read trimmers (simple) class names to the corresponding discovered plugin instance
     private Map<String, TrimmingFunction> trimmers = new HashMap<>();
@@ -111,10 +83,14 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     private Set<String> requiredPredecessors = new HashSet<>();
 
     /**
+     * Constructor for the plugin descriptor.
+     *
+     * @param trimmerArgs         arguments for getting the trimming information.
      * @param toolDefaultTrimmers Default trimmers that may be supplied with arguments on the
      *                            command line. May be {@code null}.
      */
-    public TrimmerPluginDescriptor(final List<TrimmingFunction> toolDefaultTrimmers) {
+    public TrimmerPluginDescriptor(final TrimmerPluginArgumentCollection trimmerArgs, final List<TrimmingFunction> toolDefaultTrimmers) {
+        this.trimmerArgs = Utils.nonNull(trimmerArgs);
         if (null != toolDefaultTrimmers) {
             toolDefaultTrimmers.forEach(f -> {
                 // validate the argument from the defaults
@@ -213,7 +189,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         // make sure the predecessor for this dependent class was either specified
         // on the command line or is a tool default, otherwise reject it
         String predecessorName = dependentClass.getSimpleName();
-        boolean isAllowed = userTrimmerNames.contains(predecessorName)
+        boolean isAllowed = trimmerArgs.getUserEnabledTrimmerNames().contains(predecessorName)
                 || (toolDefaultTrimmers.get(predecessorName) != null);
         if (isAllowed) {
             // keep track of the ones we allow so we can validate later that they
@@ -226,7 +202,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     @Override
     public void validateArguments() throws CommandLineException {
         // validate here the arguments for disabling 5/3 prime
-        if (disable3pTrim && disable5pTrim) {
+        if (trimmerArgs.disable3pTrim && trimmerArgs.disable5pTrim) {
             // TODO: contribute to Barclay to create special CommandLineException for this cases
             // TODO: to be able to apply them in other parts of the code
             throw new CommandLineException("Argument '"
@@ -237,7 +213,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
 
 
         // throw if any trimmer is specified twice
-        final List<String> moreThanOnce = userTrimmerNames.stream()
+        final List<String> moreThanOnce = trimmerArgs.getUserEnabledTrimmerNames().stream()
                 .collect(Collectors.groupingBy(e -> e, Collectors.counting()))
                 .entrySet().stream().filter(e -> e.getValue() != 1)
                 .map(e -> e.getKey() + " (" + e.getValue() + ")")
@@ -249,8 +225,8 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         }
 
         // throw if any trimmer is both enabled *and* disabled by the user
-        final Set<String> enabledAndDisabled = new HashSet<>(userTrimmerNames);
-        enabledAndDisabled.retainAll(disabledTrimmers);
+        final Set<String> enabledAndDisabled = new HashSet<>(trimmerArgs.getUserEnabledTrimmerNames());
+        enabledAndDisabled.retainAll(trimmerArgs.getUserDisabledTrimmerNames());
         if (!enabledAndDisabled.isEmpty()) {
             throw new CommandLineException.BadArgumentValue(
                     String.format("Trimmer(s) are both enabled and disabled: %s",
@@ -258,22 +234,22 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         }
 
         // warn if a disabled trimmer wasn't enabled by the tool in the first place
-        disabledTrimmers.forEach(s -> {
+        trimmerArgs.getUserDisabledTrimmerNames().forEach(s -> {
             if (!toolDefaultTrimmers.containsKey(s)) {
                 logger.warn("Disabled trimmer ({}) is not enabled by this tool", s);
             }
         });
 
         // warn on redundant enabling of trimmer already enabled by default
-        if (!disableAllDefaultTrimmers) {
+        if (!trimmerArgs.getDisableToolDefaultTrimmers()) {
             final Set<String> redundant = new HashSet<>(toolDefaultTrimmers.keySet());
-            redundant.retainAll(userTrimmerNames);
+            redundant.retainAll(trimmerArgs.getUserEnabledTrimmerNames());
             redundant.forEach(s -> logger
                     .warn("Redundant enabled trimmer ({}) is enabled for this tool by default", s)
             );
         }
         // throw if args were specified for a trimmer that was also disabled
-        disabledTrimmers.forEach(s -> {
+        trimmerArgs.getUserDisabledTrimmerNames().forEach(s -> {
             if (requiredPredecessors.contains(s)) {
                 if (toolDefaultTrimmers.containsKey(s)) {
                     // TODO: this should blow up if the argument was really provided
@@ -288,7 +264,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
 
         // throw if a trimmer name was specified that has no corresponding instance
         final Map<String, TrimmingFunction> requestedTrimmers = new HashMap<>();
-        userTrimmerNames.forEach(s -> {
+        trimmerArgs.getUserEnabledTrimmerNames().forEach(s -> {
             TrimmingFunction trf = trimmers.get(s);
             if (null == trf) {
                 if (!toolDefaultTrimmers.containsKey(s)) {
@@ -315,9 +291,9 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         nameTrimmerMap.forEach((name, trimmer) -> {
             // first set, because they may be used in the validation
             logger.debug("{} trimmer: 5 prime {} and 3 prime {}", () -> name,
-                    () -> (disable5pTrim) ? "disabled" : "not disabled",
-                    () -> (disable3pTrim) ? "disabled" : "not disabled");
-            trimmer.setDisableEnds(disable5pTrim, disable3pTrim);
+                    () -> (trimmerArgs.disable5pTrim) ? "disabled" : "not disabled",
+                    () -> (trimmerArgs.disable3pTrim) ? "disabled" : "not disabled");
+            trimmer.setDisableEnds(trimmerArgs.disable5pTrim, trimmerArgs.disable3pTrim);
             trimmer.validateArgs();
         });
     }
@@ -332,10 +308,10 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     // TODO: the signature should be change in Barclay: https://github.com/broadinstitute/barclay/pull/32
     @Override
     public List<Object> getDefaultInstances() {
-        return (disableAllDefaultTrimmers)
+        return (trimmerArgs.getDisableToolDefaultTrimmers())
                 ? Collections.emptyList()
                 : toolDefaultTrimmerNamesInOrder.stream()
-                        .filter(s -> !disabledTrimmers.contains(s))
+                        .filter(s -> !trimmerArgs.getUserDisabledTrimmerNames().contains(s))
                         .map(s -> toolDefaultTrimmers.get(s))
                         .collect(Collectors.toList());
     }
@@ -362,12 +338,12 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
         // uses the tool-supplied instance and doesn't add a separate one to the
         // trimmers list, but the name from the command line still appears in
         // userTrimmerNames.
-        return userTrimmerNames.stream()
+        return trimmerArgs.getUserEnabledTrimmerNames().stream()
                 .map(s -> {
                     TrimmingFunction tf = trimmers.get(s);
                     if (tf != null) {
                         return tf;
-                    } else if (disableAllDefaultTrimmers) {
+                    } else if (trimmerArgs.getDisableToolDefaultTrimmers()) {
                         return toolDefaultTrimmers.get(s);
                     } else {
                         return null;

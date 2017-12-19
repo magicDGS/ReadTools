@@ -38,6 +38,7 @@ import org.magicdgs.readtools.utils.read.ReservedTags;
 import org.magicdgs.readtools.utils.read.transformer.trimming.MottQualityTrimmer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrailingNtrimmer;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
+import org.magicdgs.readtools.utils.trimming.TrimAndFilterPipeline;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.metrics.MetricsFile;
@@ -115,7 +116,7 @@ public final class TrimReads extends ReadToolsWalker {
     @Override
     public List<? extends CommandLinePluginDescriptor<?>> getPluginDescriptors() {
         return Arrays.asList(
-                new TrimmerPluginDescriptor(
+                new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(),
                         Arrays.asList(new TrailingNtrimmer(), new MottQualityTrimmer())),
                 new GATKReadFilterPluginDescriptor(new TrimReadsFilterPluginArgumentCollection(),
                         Collections.singletonList(
