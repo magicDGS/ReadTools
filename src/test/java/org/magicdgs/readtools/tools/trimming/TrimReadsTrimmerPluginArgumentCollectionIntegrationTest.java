@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class TrimReadsTrimmerPluginArgumentCollectionTest extends RTBaseTest {
+public class TrimReadsTrimmerPluginArgumentCollectionIntegrationTest extends RTBaseTest {
 
     @DataProvider(name = "pipelineArguments")
     public Object[][] getPipelineArguments() throws Exception {
