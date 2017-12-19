@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Trimming support for `ReadsToDistmap`
+
+### Developer
+- Refactored trimming engine for improved re-usability
+
 ## [1.1.0] - 2017-10-04
 
 ### Fixed
