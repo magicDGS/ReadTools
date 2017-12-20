@@ -24,6 +24,9 @@
 
 package org.magicdgs.readtools;
 
+import htsjdk.samtools.util.Log;
+import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
+import org.broadinstitute.hellbender.utils.logging.BunnyLog;
 import org.broadinstitute.hellbender.utils.test.CommandLineProgramTester;
 import org.broadinstitute.hellbender.utils.text.XReadLines;
 import org.testng.Assert;
@@ -31,6 +34,7 @@ import org.testng.Assert;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,19 +56,28 @@ public abstract class RTCommandLineProgramTest extends RTBaseTest implements Com
         return new Main().instanceMain(makeCommandLineArgs(args));
     }
 
-    /** Includes also setting QUIET=true if not present. */
+    /**
+     * If vthe --verbosity argument is not present, sets it to ERROR and sets the --QUIET to true;
+     * otherwise, it keeps the original arguments.
+     */
     @Override
     public List<String> injectDefaultVerbosity(final List<String> args) {
-        // call the super
-        final List<String> verbArgs = CommandLineProgramTester.super.injectDefaultVerbosity(args);
-        for (String arg : verbArgs) {
-            if ("--QUIET".equals(arg)) {
-                return verbArgs;
+        // similar to the super method behaviour
+
+        // global toggle for BunnyLog output. TODO - really necessary?
+        BunnyLog.setEnabled(false);
+
+        for (String arg : args) {
+            if (arg.equals("--verbosity") || arg.equals("-verbosity")) {
+                return args;
             }
         }
-        final List<String> quietArgs = new ArrayList<>(verbArgs);
-        quietArgs.add("--QUIET");
-        return quietArgs;
+
+        List<String> argsWithVerbosity = new ArrayList<>(args);
+        argsWithVerbosity.add("--" + StandardArgumentDefinitions.VERBOSITY_NAME);
+        argsWithVerbosity.add(Log.LogLevel.ERROR.name());
+        argsWithVerbosity.add("--QUIET");
+        return argsWithVerbosity;
     }
 
     // classes names for ReadTools are sited in this package
