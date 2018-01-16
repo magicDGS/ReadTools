@@ -26,9 +26,11 @@ package org.magicdgs.readtools.engine.sourcehandler;
 
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
+import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.util.CloserUtil;
 import htsjdk.samtools.util.FastqQualityFormat;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
@@ -106,10 +108,14 @@ abstract class FileSourceHandler<T extends Closeable> extends ReadsSourceHandler
     }
 
     private <O> O readAndClose(final Function<T, O> getter) {
-        final T reader = getFreshReader();
-        final O toReturn = getter.apply(reader);
-        CloserUtil.close(reader);
-        return toReturn;
+        try {
+            final T reader = getFreshReader();
+            final O toReturn = getter.apply(reader);
+            reader.close();
+            return toReturn;
+        } catch (final IOException | SAMException e) {
+            throw new UserException.CouldNotReadInputFile(path, e.getMessage(), e);
+        }
     }
 
     /**
