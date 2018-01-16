@@ -3,7 +3,7 @@ apply plugin: 'jacoco'
 
 // JaCoCo version
 jacoco {
-    toolVersion = "0.7.8"
+    toolVersion = "0.8.0"
 }
 
 // JaCoCo task
