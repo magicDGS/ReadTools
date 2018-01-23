@@ -33,12 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Argument collection for ReadFilters, which use the same names as the
- * {@link org.broadinstitute.hellbender.cmdline.GATKPlugin.DefaultGATKReadFilterArgumentCollection}
- * but changing the description to specify where in the pipeline they are applied.
+ * Argument collection for ReadFilters.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+// TODO - use as in org.broadinstitute.hellbender.cmdline.GATKPlugin.DefaultGATKReadFilterArgumentCollection
+// TODO - once we move to kebab-case as in GATK4 (https://github.com/magicDGS/ReadTools/issues/340)
 final class TrimReadsFilterPluginArgumentCollection extends GATKReadFilterArgumentCollection {
 
     @Argument(fullName = RTStandardArguments.READ_FILTER_LONG_NAME,
