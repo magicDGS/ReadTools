@@ -37,8 +37,11 @@ public class RTStandardArguments {
 
     //////////////////////////////////
     // OLD-STYLE GATK ARGUMENTS
-    // TODO - this arguments should be substituted by the GATK defaults for addressing
-    // TODO - https://github.com/magicDGS/ReadTools/issues/346
+    // TODO - the following arguments comes from the beta version of GATK4
+    // TODO - the released version of GATK4 changed the cli to be kebab-case instead
+    // TODO - if we hack the StandardArgumentDefinitions (https://github.com/magicDGS/ReadTools/issues/364)
+    // TODO - we can get rid of this arguments in this class; otherwise, we will continue to use them until v2.0.0
+    // TODO - for ReadTools version 2.0.0 we will use kebab-case too (https://github.com/magicDGS/ReadTools/issues/340)
 
     // StandardArgumentDefinitions (probably not changing):
 
