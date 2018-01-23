@@ -24,9 +24,10 @@
 
 package org.magicdgs.readtools.tools.distmap;
 
+import org.magicdgs.readtools.cmd.RTStandardArguments;
+
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterArgumentCollection;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +40,8 @@ import java.util.List;
  */
 final class DistmapFilterPluginArgumentCollection extends GATKReadFilterArgumentCollection {
 
-    @Argument(fullName = StandardArgumentDefinitions.READ_FILTER_LONG_NAME,
-            shortName = StandardArgumentDefinitions.READ_FILTER_SHORT_NAME,
+    @Argument(fullName = RTStandardArguments.READ_FILTER_LONG_NAME,
+            shortName = RTStandardArguments.READ_FILTER_SHORT_NAME,
             doc="Read filters to be applied in the distmap pipeline", optional=true)
     public final List<String> userEnabledReadFilterNames = new ArrayList<>();
 

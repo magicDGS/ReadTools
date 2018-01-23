@@ -25,7 +25,6 @@
 package org.magicdgs.readtools;
 
 import htsjdk.samtools.util.Log;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.utils.logging.BunnyLog;
 import org.broadinstitute.hellbender.utils.test.CommandLineProgramTester;
 import org.broadinstitute.hellbender.utils.text.XReadLines;
@@ -34,7 +33,6 @@ import org.testng.Assert;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,6 +41,8 @@ import java.util.List;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public abstract class RTCommandLineProgramTest extends RTBaseTest implements CommandLineProgramTester {
+
+    private final static String VERBOSITY_ARG_NAME = "verbosity";
 
     /** @return {@link #getTestedClassName()} */
     @Override
@@ -68,13 +68,13 @@ public abstract class RTCommandLineProgramTest extends RTBaseTest implements Com
         BunnyLog.setEnabled(false);
 
         for (String arg : args) {
-            if (arg.equals("--verbosity") || arg.equals("-verbosity")) {
+            if (arg.equals("--" + VERBOSITY_ARG_NAME) || arg.equals("-" + VERBOSITY_ARG_NAME)) {
                 return args;
             }
         }
 
         List<String> argsWithVerbosity = new ArrayList<>(args);
-        argsWithVerbosity.add("--" + StandardArgumentDefinitions.VERBOSITY_NAME);
+        argsWithVerbosity.add("--" + VERBOSITY_ARG_NAME);
         argsWithVerbosity.add(Log.LogLevel.ERROR.name());
         argsWithVerbosity.add("--QUIET");
         return argsWithVerbosity;
