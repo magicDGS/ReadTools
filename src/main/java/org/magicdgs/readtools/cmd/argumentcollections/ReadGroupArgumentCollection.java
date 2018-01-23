@@ -25,11 +25,11 @@
 package org.magicdgs.readtools.cmd.argumentcollections;
 
 import org.magicdgs.readtools.RTHelpConstants;
+import org.magicdgs.readtools.cmd.RTStandardArguments;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.util.Iso8601Date;
 import org.broadinstitute.barclay.argparser.Argument;
-import org.broadinstitute.hellbender.tools.picard.sam.AddOrReplaceReadGroups;
 
 import java.io.Serializable;
 
@@ -42,26 +42,26 @@ import java.io.Serializable;
 public final class ReadGroupArgumentCollection implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Argument(fullName = AddOrReplaceReadGroups.RGLB_LONG_NAME, shortName = AddOrReplaceReadGroups.RGLB_SHORT_NAME, doc = "Read Group Library", optional = true)
+    @Argument(fullName = RTStandardArguments.RGLB_LONG_NAME, shortName = RTStandardArguments.RGLB_SHORT_NAME, doc = "Read Group Library", optional = true)
     public String readGroupLibrary;
 
     // This is a modification w.r.t. Picard, because there is an enum for platform values that may be useful for limiting this value
-    @Argument(fullName = AddOrReplaceReadGroups.RGPL_LONG_NAME, shortName = AddOrReplaceReadGroups.RGPL_SHORT_NAME, doc = "Read Group platform (e.g. illumina, solid)", optional = true)
+    @Argument(fullName = RTStandardArguments.RGPL_LONG_NAME, shortName = RTStandardArguments.RGPL_SHORT_NAME, doc = "Read Group platform (e.g. illumina, solid)", optional = true)
     public SAMReadGroupRecord.PlatformValue readGroupPlatform;
 
-    @Argument(fullName = AddOrReplaceReadGroups.RGPU_LONG_NAME, shortName = AddOrReplaceReadGroups.RGPU_SHORT_NAME, doc = "Read Group platform unit (eg. run barcode)", optional = true)
+    @Argument(fullName = RTStandardArguments.RGPU_LONG_NAME, shortName = RTStandardArguments.RGPU_SHORT_NAME, doc = "Read Group platform unit (eg. run barcode)", optional = true)
     public String readGroupPlatformUnit;
 
-    @Argument(fullName = AddOrReplaceReadGroups.RGCN_LONG_NAME, shortName = AddOrReplaceReadGroups.RGCN_SHORT_NAME, doc = "Read Group sequencing center name", optional = true)
+    @Argument(fullName = RTStandardArguments.RGCN_LONG_NAME, shortName = RTStandardArguments.RGCN_SHORT_NAME, doc = "Read Group sequencing center name", optional = true)
     public String readGroupSequencingCenter;
 
-    @Argument(fullName = AddOrReplaceReadGroups.RGDT_LONG_NAME, shortName = AddOrReplaceReadGroups.RGDT_SHORT_NAME, doc = "Read Group run date", optional = true)
+    @Argument(fullName = RTStandardArguments.RGDT_LONG_NAME, shortName = RTStandardArguments.RGDT_SHORT_NAME, doc = "Read Group run date", optional = true)
     public Iso8601Date readGroupRunDate;
 
-    @Argument(fullName = AddOrReplaceReadGroups.RGPI_LONG_NAME, shortName = AddOrReplaceReadGroups.RGPI_SHORT_NAME, doc = "Read Group predicted insert size", optional = true)
+    @Argument(fullName = RTStandardArguments.RGPI_LONG_NAME, shortName = RTStandardArguments.RGPI_SHORT_NAME, doc = "Read Group predicted insert size", optional = true)
     public Integer readGroupPredictedInsertSize;
 
-    @Argument(fullName = AddOrReplaceReadGroups.RGPM_LONG_NAME, shortName = AddOrReplaceReadGroups.RGPM_SHORT_NAME, doc = "Read Group platform model", optional = true)
+    @Argument(fullName = RTStandardArguments.RGPM_LONG_NAME, shortName = RTStandardArguments.RGPM_SHORT_NAME, doc = "Read Group platform model", optional = true)
     public String readGroupPlatformModel;
 
     /**
