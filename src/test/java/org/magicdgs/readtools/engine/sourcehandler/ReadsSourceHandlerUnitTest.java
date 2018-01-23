@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.engine.sourcehandler;
 
+import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.TestResourcesUtils;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import org.magicdgs.readtools.RTBaseTest;
@@ -301,5 +302,18 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
         Assert.assertEquals(handler.toStream().count(), length);
         // test that they close correctly without throwing exceptions
         handler.close();
+    }
+
+    @Test
+    public void testCorruptedFileHandler() throws Exception {
+        // TODO - this was a truncated file from an issue report (https://github.com/magicDGS/ReadTools/issues/359)
+        // TODO - it is too big, but I could not reproduce a similar issue with a smaller one
+        // TODO - it should have at least a two-blocks file for throwing this error
+        final File testFile = new File(sourcesFolder, "premature_end.bam");
+        Assert.assertTrue(testFile.exists(), "Test file does not exists: " + testFile);
+        final ReadsSourceHandler handler = new SamSourceHandler(testFile.getAbsolutePath());
+        handler.close();
+        Assert.assertThrows(UserException.CouldNotReadInputFile.class,
+                () -> handler.getQualityEncoding(RTDefaults.MAX_RECORDS_FOR_QUALITY));
     }
 }
