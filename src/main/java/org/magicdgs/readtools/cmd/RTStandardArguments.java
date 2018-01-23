@@ -69,7 +69,9 @@ public class RTStandardArguments {
     public static final String READ_VALIDATION_STRINGENCY_LONG_NAME = "readValidationStringency";
     public static final String READ_VALIDATION_STRINGENCY_SHORT_NAME = "VS";
 
-    public static final String SORT_ORDER_LONG_NAME = "SORT_ORDER"; // TODO - this is not yet in StandardArgumentDefinitions
+    // TODO - the long name was not in StandardArgumentDefinitions
+    // TODO - and the short one wil be removed in https://github.com/broadinstitute/gatk/pull/4232
+    public static final String SORT_ORDER_LONG_NAME = "SORT_ORDER";
     public static final String SORT_ORDER_SHORT_NAME = "SO";
 
     // GATKTool static fields:
