@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -307,11 +306,12 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     @Test
     public void testCorruptedFileHandler() throws Exception {
-        // TODO - this file is truncated but too big (maybe Rupert can create a better one)
+        // TODO - this was a truncated file from an issue report (https://github.com/magicDGS/ReadTools/issues/359)
+        // TODO - it is too big, but I could not reproduce a similar issue with a smaller one
+        // TODO - it should have at least a two-blocks file for throwing this error
         final File testFile = new File(sourcesFolder, "premature_end.bam");
         Assert.assertTrue(testFile.exists(), "Test file does not exists: " + testFile);
         final ReadsSourceHandler handler = new SamSourceHandler(testFile.getAbsolutePath());
-        // System.err.println(handler.getQualityEncoding(RTDefaults.MAX_RECORDS_FOR_QUALITY));
         handler.close();
         Assert.assertThrows(UserException.CouldNotReadInputFile.class,
                 () -> handler.getQualityEncoding(RTDefaults.MAX_RECORDS_FOR_QUALITY));
