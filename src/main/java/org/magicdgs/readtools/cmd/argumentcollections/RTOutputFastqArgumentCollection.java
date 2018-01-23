@@ -33,7 +33,6 @@ import org.magicdgs.readtools.utils.read.writer.SplitGATKWriter;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import org.broadinstitute.barclay.argparser.Argument;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.tools.readersplitters.ReaderSplitter;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 
@@ -54,7 +53,7 @@ public final class RTOutputFastqArgumentCollection extends RTOutputArgumentColle
     private static final List<ReaderSplitter<?>> PAIR_END_SPLITTER =
             Collections.singletonList(new PairEndSplitter());
 
-    @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output FASTQ file prefix.", optional = false)
+    @Argument(fullName = RTStandardArguments.OUTPUT_LONG_NAME, shortName = RTStandardArguments.OUTPUT_SHORT_NAME, doc = "Output FASTQ file prefix.", optional = false)
     public String outputPrefix;
 
     @Argument(fullName = RTStandardArguments.OUTPUT_FORMAT_NAME, shortName = RTStandardArguments.OUTPUT_FORMAT_NAME, doc = "FASTQ output format.", optional = true, common = true)

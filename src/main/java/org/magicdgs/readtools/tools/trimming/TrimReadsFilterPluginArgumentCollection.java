@@ -24,9 +24,10 @@
 
 package org.magicdgs.readtools.tools.trimming;
 
+import org.magicdgs.readtools.cmd.RTStandardArguments;
+
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterArgumentCollection;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,18 +41,18 @@ import java.util.List;
  */
 final class TrimReadsFilterPluginArgumentCollection extends GATKReadFilterArgumentCollection {
 
-    @Argument(fullName = StandardArgumentDefinitions.READ_FILTER_LONG_NAME,
-            shortName = StandardArgumentDefinitions.READ_FILTER_SHORT_NAME,
+    @Argument(fullName = RTStandardArguments.READ_FILTER_LONG_NAME,
+            shortName = RTStandardArguments.READ_FILTER_SHORT_NAME,
             doc="Read filters to be applied after trimming", optional=true)
     public final List<String> userEnabledReadFilterNames = new ArrayList<>();
 
-    @Argument(fullName = StandardArgumentDefinitions.DISABLE_READ_FILTER_LONG_NAME,
-            shortName = StandardArgumentDefinitions.DISABLE_READ_FILTER_SHORT_NAME,
+    @Argument(fullName = RTStandardArguments.DISABLE_READ_FILTER_LONG_NAME,
+            shortName = RTStandardArguments.DISABLE_READ_FILTER_SHORT_NAME,
             doc="Read filters to be disabled after trimming", optional=true)
     public final List<String> userDisabledReadFilterNames = new ArrayList<>();
 
-    @Argument(fullName = StandardArgumentDefinitions.DISABLE_TOOL_DEFAULT_READ_FILTERS,
-            shortName = StandardArgumentDefinitions.DISABLE_TOOL_DEFAULT_READ_FILTERS,
+    @Argument(fullName = RTStandardArguments.DISABLE_TOOL_DEFAULT_READ_FILTERS,
+            shortName = RTStandardArguments.DISABLE_TOOL_DEFAULT_READ_FILTERS,
             doc = "Disable all tool default read filters for trimming", optional = true)
     public boolean disableToolDefaultReadFilters = false;
 

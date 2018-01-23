@@ -24,8 +24,6 @@
 
 package org.magicdgs.readtools.cmd;
 
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
-
 /**
  * Standard argument names for ReadTools. This encapsulates the names for all arguments that does
  * not belong to legacy tools alone.
@@ -36,6 +34,58 @@ public class RTStandardArguments {
 
     /** Cannot be instantiated. */
     private RTStandardArguments() {}
+
+    //////////////////////////////////
+    // OLD-STYLE GATK ARGUMENTS
+    // TODO - the following arguments comes from the beta version of GATK4
+    // TODO - the released version of GATK4 changed the cli to be kebab-case instead
+    // TODO - if we hack the StandardArgumentDefinitions (https://github.com/magicDGS/ReadTools/issues/364)
+    // TODO - we can get rid of this arguments in this class; otherwise, we will continue to use them until v2.0.0
+    // TODO - for ReadTools version 2.0.0 we will use kebab-case too (https://github.com/magicDGS/ReadTools/issues/340)
+
+    // StandardArgumentDefinitions (probably not changing):
+
+    public static final String INPUT_LONG_NAME = "input";
+    public static final String INPUT_SHORT_NAME = "I";
+    public static final String OUTPUT_LONG_NAME = "output";
+    public static final String OUTPUT_SHORT_NAME = "O";
+    public static final String REFERENCE_LONG_NAME = "reference";
+    public static final String REFERENCE_SHORT_NAME = "R";
+
+    // StandardArgumentDefinitions (probably changing):
+
+    public static final String READ_FILTER_LONG_NAME = "readFilter";
+    public static final String READ_FILTER_SHORT_NAME = "RF";
+    public static final String DISABLE_READ_FILTER_LONG_NAME = "disableReadFilter";
+    public static final String DISABLE_READ_FILTER_SHORT_NAME = "DF";
+    public static final String DISABLE_TOOL_DEFAULT_READ_FILTERS = "disableToolDefaultReadFilters";
+
+    public static final String CREATE_OUTPUT_BAM_INDEX_LONG_NAME = "createOutputBamIndex";
+    public static final String CREATE_OUTPUT_BAM_INDEX_SHORT_NAME = "OBI";
+    public static final String CREATE_OUTPUT_BAM_MD5_LONG_NAME = "createOutputBamMD5";
+    public static final String CREATE_OUTPUT_BAM_MD5_SHORT_NAME = "OBM";
+    public static final String ADD_OUTPUT_SAM_PROGRAM_RECORD = "addOutputSAMProgramRecord";
+
+    public static final String READ_VALIDATION_STRINGENCY_LONG_NAME = "readValidationStringency";
+    public static final String READ_VALIDATION_STRINGENCY_SHORT_NAME = "VS";
+
+    // TODO - the long name was not in StandardArgumentDefinitions
+    // TODO - and the short one wil be removed in https://github.com/broadinstitute/gatk/pull/4232
+    public static final String SORT_ORDER_LONG_NAME = "SORT_ORDER";
+    public static final String SORT_ORDER_SHORT_NAME = "SO";
+
+    // GATKTool static fields:
+
+    public static final String SECONDS_BETWEEN_PROGRESS_UPDATES_NAME = "secondsBetweenProgressUpdates";
+
+    // SplitReads static fields:
+
+    public static final String SAMPLE_LONG_NAME = "splitSample";
+    public static final String READ_GROUP_LONG_NAME = "splitReadGroup";
+    public static final String LIBRARY_NAME_LONG_NAME = "splitLibraryName";
+
+    // END OF OLD-STYLE GATK ARGUMENTS
+    //////////////////////////////////
 
     // OUTPUT PARAMS
 
@@ -59,10 +109,8 @@ public class RTStandardArguments {
     // INPUT PARAMS
 
     /** Parameter for the second of the pair (if pair-end split files). */
-    public static final String INPUT_PAIR_LONG_NAME =
-            StandardArgumentDefinitions.INPUT_LONG_NAME + "2";
-    public static final String INPUT_PAIR_SHORT_NAME =
-            StandardArgumentDefinitions.INPUT_SHORT_NAME + "2";
+    public static final String INPUT_PAIR_LONG_NAME = INPUT_LONG_NAME + "2";
+    public static final String INPUT_PAIR_SHORT_NAME = INPUT_SHORT_NAME + "2";
 
     /** Parameter for interleaved pair-end input. */
     public static final String INTERLEAVED_INPUT_LONG_NAME = "interleavedInput";

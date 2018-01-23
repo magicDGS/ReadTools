@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.distmap;
 
 import org.magicdgs.readtools.RTHelpConstants;
+import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.programgroups.DistmapProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 
@@ -33,7 +34,6 @@ import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.argparser.Hidden;
 import org.broadinstitute.barclay.help.DocumentedFeature;
-import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 
@@ -76,7 +76,7 @@ public final class DownloadDistmapResult extends ReadToolsProgram {
             + RTHelpConstants.DOCUMENTATION_PAGE + "DownloadDistmapResult.html";
 
 
-    @Argument(fullName = StandardArgumentDefinitions.INPUT_LONG_NAME, shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME, doc = "Input folder to look for Distmap multi-part file results. Expected to be in an HDFS file system.", common = true, optional = false)
+    @Argument(fullName = RTStandardArguments.INPUT_LONG_NAME, shortName = RTStandardArguments.INPUT_SHORT_NAME, doc = "Input folder to look for Distmap multi-part file results. Expected to be in an HDFS file system.", common = true, optional = false)
     public String inputFolder;
 
     @Hidden

@@ -62,40 +62,40 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
                 // SAM files
                 {"standard.single_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(STANDARD_SINGLE_INDEX_SE),
+                                .addFileArgument("input", STANDARD_SINGLE_INDEX_SE),
                         STANDARD_SINGLE_INDEX_SE},
                 {"standard.dual_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(STANDARD_DUAL_INDEX_SE),
+                                .addFileArgument("input", STANDARD_DUAL_INDEX_SE),
                         STANDARD_DUAL_INDEX_SE},
                 {"standard.single_index.paired",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("interleaved", true)
-                                .addInput(STANDARD_SINGLE_INDEX_PAIRED),
+                                .addFileArgument("input", STANDARD_SINGLE_INDEX_PAIRED),
                         STANDARD_SINGLE_INDEX_PAIRED},
                 {"standard.dual_index.paired",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("interleaved", true)
-                                .addInput(STANDARD_DUAL_INDEX_PAIRED),
+                                .addFileArgument("input", STANDARD_DUAL_INDEX_PAIRED),
                         STANDARD_DUAL_INDEX_PAIRED},
                 // BAM files
                 {"standard.single_index.SE.bam",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam")),
                         STANDARD_SINGLE_INDEX_SE},
                 {"standard.dual_index.SE.bam",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.bam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.bam")),
                         STANDARD_DUAL_INDEX_SE},
                 {"standard.single_index.paired.bam",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("interleaved", true)
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.paired.bam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.single_index.paired.bam")),
                         STANDARD_SINGLE_INDEX_PAIRED},
                 {"standard.dual_index.paired.bam",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("interleaved", true)
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.bam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.bam")),
                         STANDARD_DUAL_INDEX_PAIRED},
                 // CRAM files - requires reference
                 // TODO: to enable CRAM file testing, we should ignore the @SQ header lines
@@ -103,30 +103,30 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
 //                {"standard.single_index.SE.cram",
 //                        new ArgumentsBuilder()
 //                                .addReference(REFERENCE_FOR_CRAM_TESTS)
-//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.cram")),
+//                                .addFileArgument("input", )(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.cram")),
 //                        STANDARD_SINGLE_INDEX_SE},
 //                {"standard.dual_index.SE.cram",
 //                        new ArgumentsBuilder()
 //                                .addReference(REFERENCE_FOR_CRAM_TESTS)
-//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.cram")),
+//                                .addFileArgument("input", )(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.cram")),
 //                        STANDARD_DUAL_INDEX_SE},
 //                {"standard.single_index.paired.cram",
 //                        new ArgumentsBuilder()
 //                                .addReference(REFERENCE_FOR_CRAM_TESTS)
 //                                .addBooleanArgument("interleaved", true)
-//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.paired.cram")),
+//                                .addFileArgument("input", )(TestResourcesUtils.getWalkthroughDataFile("standard.single_index.paired.cram")),
 //                        STANDARD_SINGLE_INDEX_PAIRED},
 //                {"standard.dual_index.paired.cram",
 //                        new ArgumentsBuilder()
 //                                .addReference(REFERENCE_FOR_CRAM_TESTS)
 //                                .addBooleanArgument("interleaved", true)
-//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.cram")),
+//                                .addFileArgument("input", )(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.cram")),
 //                        STANDARD_DUAL_INDEX_PAIRED},
 
                 // standardize a SAM file with misencoded qualities (Illumina)
                 {"misencoded.single_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("misencoded.single_index.SE.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("misencoded.single_index.SE.sam")),
                         STANDARD_SINGLE_INDEX_SE},
 
 
@@ -134,24 +134,24 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
                 {"bc_in_read_name.single_index.SE",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("barcodeInReadName", true)
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.single_index.SE.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.single_index.SE.sam")),
                         STANDARD_SINGLE_INDEX_SE},
                 {"bc_in_read_name.dual_index.SE",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("barcodeInReadName", true)
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.dual_index.SE.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.dual_index.SE.sam")),
                         STANDARD_DUAL_INDEX_SE},
                 {"bc_in_read_name.single_index.paired",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("barcodeInReadName", true)
                                 .addBooleanArgument("interleaved", true)
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.single_index.paired.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.single_index.paired.sam")),
                         STANDARD_SINGLE_INDEX_PAIRED},
                 {"bc_in_read_name.dual_index.paired",
                         new ArgumentsBuilder()
                                 .addBooleanArgument("barcodeInReadName", true)
                                 .addBooleanArgument("interleaved", true)
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.dual_index.paired.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.dual_index.paired.sam")),
                         STANDARD_DUAL_INDEX_PAIRED},
 
                 // standardize a SAM file with dual index stored in BC/B2 tags (e.g., illumina2bam)
@@ -159,21 +159,21 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
                         new ArgumentsBuilder()
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2")
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.SE.sam")),
                         STANDARD_DUAL_INDEX_SE},
                 {"bc_in_two_tags.dual_index.paired",
                         new ArgumentsBuilder()
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2")
                                 .addBooleanArgument("interleaved", true)
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam")),
                         STANDARD_DUAL_INDEX_PAIRED},
 
                 // standardize FASTQ files
                 // with Casava read names
                 {"casava.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("casava.single_index.paired_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("casava.single_index.paired_1.fq"))
                                 .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("casava.single_index.paired_2.fq")),
                         STANDARD_SINGLE_INDEX_PAIRED},
                 // TODO: with Casava format, single-end data is marked as first of pair
@@ -183,57 +183,57 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
                 // TODO: we should enable this test once it is solved
 //                {"casava.single_index.SE",
 //                        new ArgumentsBuilder()
-//                                .addInput(TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq")),
+//                                .addFileArgument("input", )(TestResourcesUtils.getWalkthroughDataFile("casava.single_index.SE.fq")),
 //                        STANDARD_SINGLE_INDEX_SE},
                 // with Illumina-legacy read names
                 // misencoded qualities (Illumina)
                 {"legacy.single_index.illumina_quality.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq")),
                         STANDARD_SINGLE_INDEX_SE},
                 // misencoded qualities (Illumina)
                 {"legacy.single_index.illumina_quality.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
                                 .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq")),
                         STANDARD_SINGLE_INDEX_PAIRED},
                  // interleaved FASTQ
                 {"legacy.dual_index.interleaved",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.interleaved.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.interleaved.fq"))
                                 .addBooleanArgument("interleaved", true),
                         STANDARD_DUAL_INDEX_PAIRED
                 },
                 // several standard FASTQ files
                 {"legacy.dual_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq"))
                                 .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_2.fq")),
                         STANDARD_DUAL_INDEX_PAIRED},
                 {"legacy.dual_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.SE.fq")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.SE.fq")),
                         STANDARD_DUAL_INDEX_SE},
                 {"legacy.single_index.interleaved.fq",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.interleaved.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.interleaved.fq"))
                                 .addBooleanArgument("interleaved", true),
                         STANDARD_SINGLE_INDEX_PAIRED},
                 {"legacy.single_index.paired",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"))
                                 .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq")),
                         STANDARD_SINGLE_INDEX_PAIRED
                 },
                 {"legacy.single_index.SE",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.SE.fq")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.SE.fq")),
                         STANDARD_SINGLE_INDEX_SE},
 
                 // test for barcode quality tags option (not in the Walkthrough data)
                 {"StandardizeReads_single_SAM_quals",
                         new ArgumentsBuilder()
-                                .addInput(getTestFile("small.single.quals.sam"))
+                                .addFileArgument("input", getTestFile("small.single.quals.sam"))
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2")
                                 .addArgument("rawBarcodeQualityTag", "QT")
@@ -250,7 +250,7 @@ public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
         // output is always in
         final File output = new File(TEST_TEMP_DIR, name + ".sam");
         // add output and remove from tests the program record
-        args.addOutput(output)
+        args.addFileArgument("output", output)
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
         runCommandLine(args);
 

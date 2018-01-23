@@ -48,7 +48,7 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
     private static ArgumentsBuilder getRequiredArguments() {
         // input argument name changed -> same as GATK
         // added the argument to do not output the program group for easy checks
-        return new ArgumentsBuilder().addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
+        return new ArgumentsBuilder().addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
                 .addBooleanArgument("addOutputSAMProgramRecord", false);
     }
 
@@ -116,7 +116,7 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
 
         // now there is not output prefix but bam output
         final ArgumentsBuilder args = builder
-                .addOutput(outputName)
+                .addFileArgument("output", outputName)
                 .addBooleanArgument("keepDiscarded", keepDiscarded);
         // running the command line
         runCommandLine(args);
@@ -145,8 +145,8 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
 
         // tun with a very simple fastq file with a read that only contains Ns
         runCommandLine(new ArgumentsBuilder()
-                .addInput(getTestFile("onlyN.fq"))
-                .addOutput(outputFile));
+                .addFileArgument("input", getTestFile("onlyN.fq"))
+                .addFileArgument("output", outputFile));
 
         // assert that the output file exists and it is empty
         Assert.assertTrue(outputFile.exists());

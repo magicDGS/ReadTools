@@ -52,8 +52,8 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
     public void testMappedSortFile() throws Exception {
         final File outputPrefix = new File(TEST_TEMP_DIR, "testMappedSortFile");
         final ArgumentsBuilder args = new ArgumentsBuilder()
-                .addInput(getTestFile("mapped.sort.sam"))
-                .addOutput(outputPrefix);
+                .addFileArgument("input", getTestFile("mapped.sort.sam"))
+                .addFileArgument("output", outputPrefix);
         runCommandLine(args);
         assertFileIsEmpty(new File(outputPrefix.getAbsolutePath() + "_SE.fq.gz"));
         testFiles(Arrays.asList(
@@ -70,12 +70,12 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                 // SAM standardized
                 {"test_SAM_single_standard",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.sam")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.sam")),
                         Collections.singletonList(TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.SE.fq")),
                         false},
                 {"test_SAM_paired_standard",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.sam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.paired.sam"))
                                 .addBooleanArgument("interleaved", true),
                         Arrays.asList(
                                 TestResourcesUtils.getWalkthroughDataFile("legacy.dual_index.paired_1.fq"),
@@ -85,12 +85,12 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                 {"test_FASTQ_single_standard",
                         new ArgumentsBuilder()
                                 .addArgument("rawBarcodeSequenceTags", "null")
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq")),
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality.SE.fq")),
                         Collections.singletonList(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.SE.fq")),
                         false},
                 {"test_FASTQ_paired_standard",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_1.fq"))
                                 .addFileArgument("input2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.illumina_quality_2.fq")),
                         Arrays.asList(
                                 TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq"),
@@ -99,7 +99,7 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                 // test no standard SAMs
                 {"test_SAM_paired_2_tags",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_two_tags.dual_index.paired.sam"))
                                 .addBooleanArgument("interleaved", true)
                                 .addArgument("rawBarcodeSequenceTags", "BC")
                                 .addArgument("rawBarcodeSequenceTags", "B2"),
@@ -109,7 +109,7 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
                         true},
                 {"test_SAM_paired_read_names",
                         new ArgumentsBuilder()
-                                .addInput(TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.dual_index.paired.sam"))
+                                .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("bc_in_read_name.dual_index.paired.sam"))
                                 .addBooleanArgument("interleaved", true)
                                 .addBooleanArgument("barcodeInReadName", true),
                         Arrays.asList(
@@ -123,7 +123,7 @@ public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
     public void testReadsToFastq(final String testName, final ArgumentsBuilder args,
             final List<File> expectedFiles, final boolean paired) {
         final File outputName = new File(TEST_TEMP_DIR, testName);
-        args.addOutput(outputName);
+        args.addFileArgument("output", outputName);
         final List<File> pairedFiles = Arrays.asList(
                 new File(TEST_TEMP_DIR, testName + "_1.fq.gz"),
                 new File(TEST_TEMP_DIR, testName + "_2.fq.gz"));
