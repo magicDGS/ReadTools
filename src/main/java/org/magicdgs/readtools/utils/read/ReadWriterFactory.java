@@ -207,20 +207,30 @@ public final class ReadWriterFactory {
             final Path output) {
         checkOutputAndCreateDirs(output);
         try {
-            // TODO - this will blow up if the java.nio.Path is not a file
-            // TODO - it requires an HTSJDK change not yet in the basecode (https://github.com/samtools/htsjdk/pull/1005)
-            final File referenceFile = (referencePath == null) ? null : referencePath.toFile();
-            return samFactory.makeWriter(header, presorted, output, referenceFile);
+            return samFactory.makeWriter(header, presorted, output, getReferenceAsFile());
         } catch (final SAMException e) {
             // catch SAM exceptions as IO errors -> this are the ones that may fail
             throw new UserException.CouldNotCreateOutputFile(output.toUri().toString(), e.getMessage(), e);
         }
     }
 
+    // TODO - this will blow up if the java.nio.Path is not a file and the output is CRAM
+    // TODO - it requires an HTSJDK change not yet in the basecode (https://github.com/samtools/htsjdk/pull/1005)
+    private File getReferenceAsFile() {
+        try {
+            return (referencePath == null) ? null : referencePath.toFile();
+        } catch (final UnsupportedOperationException e) {
+            // log a warning saying the limitation
+            logger.warn("{} is not in the deafult file system and cannot be use for writing outputs (would fail for CRAM files). This limitation might be removed in the future.",
+                    referencePath::toUri);
+            return null;
+        }
+    }
+
     /** Creates a SAM/BAM/CRAM writer from a String path. */
     public GATKReadWriter createSAMWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
-        if (null == referencePath && output.endsWith(CramIO.CRAM_FILE_EXTENSION)) {
+        if (output.endsWith(CramIO.CRAM_FILE_EXTENSION) && getReferenceAsFile() == null) {
             throw new UserException.MissingReference(
                     "A reference file is required for writing CRAM files");
         }
