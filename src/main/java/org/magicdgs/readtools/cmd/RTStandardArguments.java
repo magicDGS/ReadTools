@@ -87,6 +87,38 @@ public class RTStandardArguments {
     // END OF OLD-STYLE GATK ARGUMENTS
     //////////////////////////////////
 
+    /////////////////////////////////
+    // PICARD ARGUMENTS
+    // TODO - picard does not have a culture of storing arguments in static variables
+    // TODO - but I would like to access to some of them
+    // TODO - I would submit a PR to include the ones that we should use
+
+    // AddOrReplaceReadGroups arguments in use
+
+    public static final String RGLB_LONG_NAME = "RGLB";
+    public static final String RGLB_SHORT_NAME = "LB";
+
+    public static final String RGPL_LONG_NAME = "RGPL";
+    public static final String RGPL_SHORT_NAME = "PL";
+
+    public static final String RGPU_LONG_NAME = "RGPU";
+    public static final String RGPU_SHORT_NAME = "PU";
+
+    public static final String RGCN_LONG_NAME = "RGCN";
+    public static final String RGCN_SHORT_NAME = "CN";
+
+    public static final String RGDT_LONG_NAME = "RGDT";
+    public static final String RGDT_SHORT_NAME = "DT";
+
+    public static final String RGPI_LONG_NAME = "RGPI";
+    public static final String RGPI_SHORT_NAME = "PI";
+
+    public static final String RGPM_LONG_NAME = "RGPM";
+    public static final String RGPM_SHORT_NAME = "PM";
+
+    // END OF PICARD ARGUMENTS
+    //////////////////////////////////
+
     // OUTPUT PARAMS
 
     /** Output for force overwrite in the tools. */
