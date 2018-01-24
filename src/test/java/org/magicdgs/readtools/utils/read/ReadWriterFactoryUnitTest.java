@@ -24,18 +24,22 @@
 
 package org.magicdgs.readtools.utils.read;
 
+import org.magicdgs.readtools.TestResourcesUtils;
 import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.fastq.FastqGATKWriter;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
+import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.broadinstitute.hellbender.exceptions.UserException;
+import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GATKReadWriter;
 import org.broadinstitute.hellbender.utils.read.SAMFileGATKReadWriter;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
+import org.broadinstitute.hellbender.utils.test.MiniClusterUtils;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -44,6 +48,8 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,8 +71,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         return new Object[][] {
                 {new File(testDir, "example.bam"), SAMFileGATKReadWriter.class},
                 {new File(testDir, "example.sam"), SAMFileGATKReadWriter.class},
-                // TODO: uncomment by adding a known reference file
-                // {new File(testDir, "example.cram"), SAMFileGATKReadWriter.class},
+                {new File(testDir, "example.cram"), SAMFileGATKReadWriter.class},
                 {new File(testDir, "example.fq"), FastqGATKWriter.class},
                 {new File(testDir, "example.fq.gz"), FastqGATKWriter.class},
                 {new File(testDir, "example.fastq"), FastqGATKWriter.class},
@@ -79,8 +84,8 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
             final Class<? extends GATKReadWriter> writerClass) {
         Assert.assertFalse(outputFile.exists());
         outputFile.deleteOnExit();
-        // TODO: add a FASTA file as reference to test CRAM writer creation
         Assert.assertEquals(new ReadWriterFactory()
+                        .setReferencePath(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa").toPath())
                         .createWriter(outputFile.getAbsolutePath(), new SAMFileHeader(), true).getClass(),
                 writerClass);
         Assert.assertTrue(outputFile.exists());
@@ -95,8 +100,33 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
     public void testCramFailingWithNonExistingReference() {
         new ReadWriterFactory()
                 .setReferencePath(new File("notExisting.fasta").toPath())
-                .createWriter(new File(testDir, "example.cram").getAbsolutePath(),
+                .createWriter(new File(testDir, "notExisting.example.cram").getAbsolutePath(),
                         new SAMFileHeader(), true);
+    }
+
+    @Test
+    public void testCramWithHdfsReference() throws Exception {
+        // create mini cluster
+        final MiniDFSCluster cluster =  MiniClusterUtils.getMiniCluster();
+        try {
+            // first copy the reference to the mini cluster
+            final Path localRef = TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa").toPath();
+            final Path hdfsRef = IOUtils.getPath(cluster.getFileSystem().getUri().toString()
+                            + "/2L.fragment.fa");
+            Files.copy(localRef, hdfsRef);
+
+            // TODO - this is failing temporarily because the reference is in HDFS
+            // TODO - but it should not be a problem
+            Assert.assertThrows(UserException.MissingReference.class, () ->
+                    new ReadWriterFactory().setReferencePath(hdfsRef)
+                            .createWriter(new File(testDir, "hdfs.example.cram").getAbsolutePath(),
+                                    new SAMFileHeader(), true)
+            );
+
+        } finally {
+            // always stop the mini-cluster
+            MiniClusterUtils.stopCluster(cluster);
+        }
     }
 
     @Test(expectedExceptions = RTUserExceptions.OutputFileExists.class)
