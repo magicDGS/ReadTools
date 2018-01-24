@@ -280,7 +280,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
 
     @Test(dataProvider = "differentBarcodeNumberForFailure", expectedExceptions = UserException.MalformedFile.class)
     public void testFailureForDifferentBarcodesInDictionaryAndInput(final ArgumentsBuilder args) {
-        final File outputPrefix = new File(createTestTempDir(getTestedToolName()), args.toString() + ".sam");
+        final File outputPrefix = new File(createTestTempDir(getTestedToolName()), args.hashCode() + ".sam");
         runCommandLine(args.addFileArgument("output", outputPrefix));
     }
 }

@@ -104,7 +104,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         final ArgumentsBuilder args = new ArgumentsBuilder();
         final File expectedOutput = getTestFile("parts-00000-to-00003.sam");
         final File output = new File(TEST_TEMP_DIR,
-                args.toString() + ".local.presorted." + expectedOutput.getName() + ".sam");
+                args.hashCode() + ".local.presorted." + expectedOutput.getName() + ".sam");
         testDonwloadDistmapResult(args, distmapFolder.getAbsolutePath() + "/presorted", output, expectedOutput);
     }
 
@@ -113,7 +113,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
             throws Exception {
         // output in SAM format for text comparison
         final File output = new File(TEST_TEMP_DIR,
-                args.toString() + ".local." + expectedOutput.getName() + ".sam");
+                args.hashCode() + ".local." + expectedOutput.getName() + ".sam");
         testDonwloadDistmapResult(args, distmapFolder.getAbsolutePath(), output, expectedOutput);
     }
 
@@ -122,7 +122,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
             throws Exception {
         // output in SAM format for text comparison
         final File output = new File(TEST_TEMP_DIR,
-                args.toString() + ".cluster." + expectedOutput.getName() + ".sam");
+                args.hashCode() + ".cluster." + expectedOutput.getName() + ".sam");
         testDonwloadDistmapResult(args, clusterInputFolder, output, expectedOutput);
     }
 
@@ -152,7 +152,7 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
 
     @Test(dataProvider = "getInvalidArguments", expectedExceptions = UserException.class)
     public void invalidArguments(final ArgumentsBuilder args) throws Exception {
-        args.addFileArgument("output", new File(TEST_TEMP_DIR, args.toString() + ".bam"));
+        args.addFileArgument("output", new File(TEST_TEMP_DIR, args.hashCode() + ".bam"));
         runCommandLine(args);
     }
 
