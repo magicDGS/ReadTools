@@ -86,7 +86,7 @@ public class RTOutputBamSplitArgumentCollectionUnitTest extends RTBaseTest {
             final boolean sample, final boolean id, final boolean library) throws Exception {
         // creates output prefix
         final File outputPrefix = new File(
-                createTestTempDir(this.getClass().getSimpleName()).getAbsolutePath() + "split",
+                createTempDir(this.getClass().getSimpleName()).getAbsolutePath() + "split",
                 String.format("sample%s_id%s_library%s", sample, id, library)
         );
 

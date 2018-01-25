@@ -69,7 +69,7 @@ public class RTOutputBamArgumentCollectionUnitTest extends RTBaseTest {
 
     @DataProvider(name = "outputWriterProvider")
     public Object[][] getOutputWriterData() {
-        final File testDir = createTestTempDir(this.getClass().getSimpleName());
+        final File testDir = createTempDir(this.getClass().getSimpleName());
         final SAMProgramRecord record = new SAMProgramRecord("test");
         record.setCommandLine("command line");
         return new Object[][] {

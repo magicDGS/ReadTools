@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
 
     private static final File TEST_TEMP_DIR =
-            createTestTempDir(ReadsToDistmapIntegrationTest.class.getSimpleName());
+            createTempDir(ReadsToDistmapIntegrationTest.class.getSimpleName());
 
     private MiniDFSCluster cluster;
     private String clusterOutputFolder;

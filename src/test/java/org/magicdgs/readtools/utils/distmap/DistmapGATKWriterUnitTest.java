@@ -46,7 +46,7 @@ import java.io.Writer;
  */
 public class DistmapGATKWriterUnitTest extends RTBaseTest {
 
-    private static final File TEST_TMP_DIR = createTestTempDir("DistmapGATKWriterUnitTest");
+    private static final File TEST_TMP_DIR = createTempDir("DistmapGATKWriterUnitTest");
 
     private static final GATKRead READ_1 = ArtificialReadUtils.createArtificialUnmappedRead(
             null, new byte[] {'A', 'T', 'C', 'G'}, new byte[] {33, 0, 0, 33});

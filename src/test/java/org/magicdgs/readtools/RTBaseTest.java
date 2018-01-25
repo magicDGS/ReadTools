@@ -63,19 +63,6 @@ public class RTBaseTest extends BaseTest {
                 getClass().getPackage().getName().replace(".", "/") + "/" + getTestedClassName());
     }
 
-    /**
-     * Creates a temp directory for tests, deleting recursively on exit.
-     *
-     * @param prefix the prefix for the test directory.
-     *
-     * @return temp directory file.
-     */
-    public static File createTestTempDir(final String prefix) {
-        final File dir = IOUtils.tempDir(prefix, "");
-        IOUtils.deleteRecursivelyOnExit(dir);
-        return dir;
-    }
-
 
     /** Returns a file in the class test directory with the provided file name. */
     public File getTestFile(final String fileName) {

@@ -180,7 +180,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
         final File expextedFilePrefix = getTestFile(testName);
 
         // add the outputs
-        final File actualOutputPrefix = new File(createTestTempDir(deprecatedTool), testName);
+        final File actualOutputPrefix = new File(createTempDir(deprecatedTool), testName);
         builder.addBooleanArgument("splitSample", testSplit);
 
         // get the extensions to check
@@ -198,7 +198,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
                 .addFileArgument("barcodeFile", UNIQUE_BARCODE_FILE)
                 .addFileArgument("input", getTestFile("some_reads_without_barcode.sam"));
 
-        final File testFilePrefix = new File(createTestTempDir(getTestedToolName()), "testSomeReadsWithoutBarcode");
+        final File testFilePrefix = new File(createTempDir(getTestedToolName()), "testSomeReadsWithoutBarcode");
 
         testAddReadGroupByBarcodeRun(args, testFilePrefix, expectedFilePrefix, Collections.singletonList(".sam"));
     }
@@ -280,7 +280,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
 
     @Test(dataProvider = "differentBarcodeNumberForFailure", expectedExceptions = UserException.MalformedFile.class)
     public void testFailureForDifferentBarcodesInDictionaryAndInput(final ArgumentsBuilder args) {
-        final File outputPrefix = new File(createTestTempDir(getTestedToolName()), args.hashCode() + ".sam");
+        final File outputPrefix = new File(createTempDir(getTestedToolName()), args.hashCode() + ".sam");
         runCommandLine(args.addFileArgument("output", outputPrefix));
     }
 }

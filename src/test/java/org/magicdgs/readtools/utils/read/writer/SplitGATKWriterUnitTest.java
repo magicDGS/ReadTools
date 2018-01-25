@@ -62,7 +62,7 @@ public class SplitGATKWriterUnitTest extends RTBaseTest {
 
     // test directory for outputs
     private final static File TEMP_TEST_DIR =
-            createTestTempDir(SplitGATKWriterUnitTest.class.getSimpleName());
+            createTempDir(SplitGATKWriterUnitTest.class.getSimpleName());
 
     // default factories for the test
     private static final ReadWriterFactory WRITER_FACTORY = new ReadWriterFactory();
@@ -142,7 +142,7 @@ public class SplitGATKWriterUnitTest extends RTBaseTest {
 
     @Test
     public void testWriteAndReadSplitBySample() throws Exception {
-        final File testPrefix = new File(createTestTempDir("testNoNewOutputWhenRepeatedSplitBy"),
+        final File testPrefix = new File(createTempDir("testNoNewOutputWhenRepeatedSplitBy"),
                 "testNoNewOutputWhenRepeatedSplitBy");
         // set the read groups
         final List<SAMReadGroupRecord> readGroups = IntStream.range(0, 5).mapToObj(n -> {
