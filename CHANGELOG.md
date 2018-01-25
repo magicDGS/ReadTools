@@ -3,11 +3,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- User error error for corrupted BAM file instead of unexpected error
+
 ### Added
 - Trimming support for `ReadsToDistmap`
+- Support of input CRAM files with reference in HDFS (might fail if used also for output)
+
+### Changed
+- Argument expansion for collections is now **.args** instead of **.list**
+- Support for several libraries in `LibraryReadFilter` (GATK v4 change)
+- Update documentation
 
 ### Developer
 - Refactored trimming engine for improved re-usability
+- Updated jacoco version to 0.8.0
+- Removed VersionEye due to end of the service
+- Using our own classes for argument definitions instead of relying in GATK
+- More test and consistency on them
+- Extending `BaseTest` form GATK to add functionality to `RTBaseTest`
 
 ## [1.1.0] - 2017-10-04
 
