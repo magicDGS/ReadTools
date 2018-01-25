@@ -33,8 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.barclay.utils.Utils;
 import org.broadinstitute.hellbender.exceptions.UserException;
-import org.broadinstitute.hellbender.utils.text.parsers.TabbedInputParser;
-import org.broadinstitute.hellbender.utils.text.parsers.TabbedTextFileWithHeaderParser;
+import picard.util.TabbedInputParser;
+import picard.util.TabbedTextFileWithHeaderParser;
 import scala.Tuple3;
 
 import java.io.IOException;
