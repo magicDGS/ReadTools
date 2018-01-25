@@ -49,7 +49,7 @@ repositories {
     }
 }
 // versions for the dependencies to resolve conflicts
-final gatkVersion = '4.beta.5-55-g577c763-SNAPSHOT'
+final gatkVersion = '4.beta.6-SNAPSHOT'
 final htsjdkVersion = '2.12.0'
 final testNGVersion = '6.11'
 final mockitoVersion = '2.7.19'
