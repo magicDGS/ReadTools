@@ -32,6 +32,8 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.cram.ref.CRAMReferenceSource;
+import htsjdk.samtools.cram.ref.ReferenceSource;
 import htsjdk.samtools.util.IOUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,7 +76,7 @@ final class DistmapPartDownloader {
     private double secondsBetweenProgressUpdates = ProgressMeter.DEFAULT_SECONDS_BETWEEN_UPDATES;
 
     @Argument(fullName = RTStandardArguments.REFERENCE_LONG_NAME, shortName = RTStandardArguments.REFERENCE_SHORT_NAME, doc = "Reference sequence file. Required for CRAM input/output.", optional = true, common = true)
-    private File referenceFile = null;
+    private String referenceFile = null;
 
     @ArgumentCollection
     private RTOutputArgumentCollection outputArgumentCollection =
@@ -104,11 +106,24 @@ final class DistmapPartDownloader {
 
     private SamReaderFactory getSamReaderFactory() {
         if (factory == null) {
+            // TODO - a method for set a Path reference sequence should be included in HTSJDK
+            // TODO - this should be changed to the Path setter in HTSJDK (https://github.com/samtools/htsjdk/pull/1005)
+            final CRAMReferenceSource source = new ReferenceSource(getReferencePath());
             factory = SamReaderFactory.makeDefault()
-                    .referenceSequence(referenceFile)
+                    .referenceSource(source)
                     .validationStringency(readValidationStringency);
         }
         return factory;
+    }
+
+    // reference path constructed on demand
+    private Path referencePath = null;
+
+    private Path getReferencePath() {
+        if (referencePath == null && referenceFile != null) {
+            referencePath = IOUtils.getPath(referenceFile);
+        }
+        return referencePath;
     }
 
     // helper method to construct always in the same way a progress meter
@@ -157,7 +172,7 @@ final class DistmapPartDownloader {
 
         writeReads(toMerge,
                 outputArgumentCollection.outputWriter(header, () -> programRecord.apply(header),
-                        presorted, referenceFile),
+                        presorted, getReferencePath()),
                 mergingProgress);
 
         toMerge.close();

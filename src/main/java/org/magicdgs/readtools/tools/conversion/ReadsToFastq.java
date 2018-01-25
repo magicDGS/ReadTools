@@ -84,7 +84,7 @@ public final class ReadsToFastq extends ReadToolsWalker {
             headerFromReads.setSortOrder(SAMFileHeader.SortOrder.queryname);
         }
         writer = outputBamArgumentCollection.outputWriter(headerFromReads,
-                () -> getProgramRecord(headerFromReads), true, getReferenceFile()
+                () -> getProgramRecord(headerFromReads), true, getReferencePath()
         );
     }
 

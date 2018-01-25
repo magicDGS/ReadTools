@@ -56,7 +56,10 @@ public class ReadToolsWalkerUnitTest extends RTCommandLineProgramTest {
         return new Object[][] {
                 {Arrays.asList("-I", TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.sam").getAbsolutePath()), 103, false},
                 {Arrays.asList("-I", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_1.fq").getAbsolutePath(),
-                        "-I2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq").getAbsolutePath()), 206, true}
+                        "-I2", TestResourcesUtils.getWalkthroughDataFile("legacy.single_index.paired_2.fq").getAbsolutePath()), 206, true},
+                // test also CRAM with reference
+                {Arrays.asList("-I", TestResourcesUtils.getWalkthroughDataFile("standard.dual_index.SE.cram").getAbsolutePath(),
+                        "-R", TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa").getAbsolutePath()), 103, false}
         };
     }
 

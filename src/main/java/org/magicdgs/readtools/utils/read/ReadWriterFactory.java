@@ -83,7 +83,7 @@ public final class ReadWriterFactory {
     private final SAMFileWriterFactory samFactory;
 
     // the reference file to use with CRAM
-    private File referenceFile = null;
+    private Path referencePath = null;
     // false if we do not check for existence
     private boolean forceOverwrite = RTDefaults.FORCE_OVERWRITE;
 
@@ -159,9 +159,10 @@ public final class ReadWriterFactory {
     }
 
     /** Sets the reference file. This is required for CRAM writers. */
-    public ReadWriterFactory setReferenceFile(final File referenceFile) {
+    public ReadWriterFactory setReferencePath(final Path referencePath) {
         logger.debug("Reference file for FASTQ/Distmap writers is ignored");
-        this.referenceFile = referenceFile;
+        // TODO - this should set the reference Path in the samFactory (https://github.com/magicDGS/ReadTools/issues/376)
+        this.referencePath = referencePath;
         return this;
     }
 
@@ -207,17 +208,30 @@ public final class ReadWriterFactory {
             final Path output) {
         checkOutputAndCreateDirs(output);
         try {
-            return samFactory.makeWriter(header, presorted, output.toFile(), referenceFile);
+            return samFactory.makeWriter(header, presorted, output, getReferenceAsFile());
         } catch (final SAMException e) {
             // catch SAM exceptions as IO errors -> this are the ones that may fail
-            throw new UserException.CouldNotCreateOutputFile(output.toFile(), e.getMessage(), e);
+            throw new UserException.CouldNotCreateOutputFile(output.toUri().toString(), e.getMessage(), e);
+        }
+    }
+
+    // TODO - this will blow up if the java.nio.Path is not a file and the output is CRAM (https://github.com/magicDGS/ReadTools/issues/376)
+    // TODO - it requires an HTSJDK change not yet in their codebase (https://github.com/samtools/htsjdk/pull/1005)
+    private File getReferenceAsFile() {
+        try {
+            return (referencePath == null) ? null : referencePath.toFile();
+        } catch (final UnsupportedOperationException e) {
+            // log a warning saying the limitation
+            logger.warn("{} is not in the deafult file system and cannot be use for writing outputs (would fail for CRAM files). This limitation might be removed in the future.",
+                    referencePath::toUri);
+            return null;
         }
     }
 
     /** Creates a SAM/BAM/CRAM writer from a String path. */
     public GATKReadWriter createSAMWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
-        if (null == referenceFile && output.endsWith(CramIO.CRAM_FILE_EXTENSION)) {
+        if (output.endsWith(CramIO.CRAM_FILE_EXTENSION) && getReferenceAsFile() == null) {
             throw new UserException.MissingReference(
                     "A reference file is required for writing CRAM files");
         }

@@ -57,7 +57,7 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
 
     // this is the factory for tests, including reference sequence for CRAM
     private final ReadReaderFactory FACTORY_FOR_TEST = new ReadReaderFactory()
-            .setReferenceSequence(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa"));
+            .setReferenceSequence(TestResourcesUtils.getWalkthroughDataFile("2L.fragment.fa").toPath());
 
     // empty header for Walkthrough data - we do not expect headers to contain more information
     private final static SAMFileHeader EMPTY_HEADER = new SAMFileHeader();

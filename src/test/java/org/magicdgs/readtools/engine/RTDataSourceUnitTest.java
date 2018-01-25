@@ -84,7 +84,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
         // this allows CRAM tests by providing a FASTQ file to the data source
         RTDataSource.setReadReaderFactory(new ReadReaderFactory()
                 .setReferenceSequence(TestResourcesUtils
-                        .getWalkthroughDataFile("2L.fragment.fa")));
+                        .getWalkthroughDataFile("2L.fragment.fa").toPath()));
     }
 
     @AfterClass
