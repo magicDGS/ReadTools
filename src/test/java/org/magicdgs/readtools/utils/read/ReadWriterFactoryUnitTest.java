@@ -115,8 +115,8 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
                             + "/2L.fragment.fa");
             Files.copy(localRef, hdfsRef);
 
-            // TODO - this is failing temporarily because the reference is in HDFS
-            // TODO - but it should not be a problem
+            // TODO - this should fail temporarily due to https://github.com/magicDGS/ReadTools/issues/376
+            // TODO - after addressing, it should not thrown any exception
             Assert.assertThrows(UserException.MissingReference.class, () ->
                     new ReadWriterFactory().setReferencePath(hdfsRef)
                             .createWriter(new File(testDir, "hdfs.example.cram").getAbsolutePath(),

@@ -161,6 +161,7 @@ public final class ReadWriterFactory {
     /** Sets the reference file. This is required for CRAM writers. */
     public ReadWriterFactory setReferencePath(final Path referencePath) {
         logger.debug("Reference file for FASTQ/Distmap writers is ignored");
+        // TODO - this should set the reference Path in the samFactory (https://github.com/magicDGS/ReadTools/issues/376)
         this.referencePath = referencePath;
         return this;
     }
@@ -214,8 +215,8 @@ public final class ReadWriterFactory {
         }
     }
 
-    // TODO - this will blow up if the java.nio.Path is not a file and the output is CRAM
-    // TODO - it requires an HTSJDK change not yet in the basecode (https://github.com/samtools/htsjdk/pull/1005)
+    // TODO - this will blow up if the java.nio.Path is not a file and the output is CRAM (https://github.com/magicDGS/ReadTools/issues/376)
+    // TODO - it requires an HTSJDK change not yet in their codebase (https://github.com/samtools/htsjdk/pull/1005)
     private File getReferenceAsFile() {
         try {
             return (referencePath == null) ? null : referencePath.toFile();
