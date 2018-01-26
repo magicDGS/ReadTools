@@ -50,7 +50,8 @@ repositories {
 }
 // versions for the dependencies to resolve conflicts
 final gatkVersion = '4.beta.6-87-g13bb6e0-SNAPSHOT'
-final htsjdkVersion = '2.13.1'
+final htsjdkVersion = '2.13.2'
+final picardVersion = '2.17.1'
 final testNGVersion = '6.11'
 final mockitoVersion = '2.7.19'
 
@@ -67,8 +68,9 @@ configurations {
 
 configurations.all {
     resolutionStrategy {
-        // force the htsjdk version so we don't get a different one transitively or GATK
+        // force the htsjdk /picardversion so we don't get a different one transitively or GATK
         force 'com.github.samtools:htsjdk:' + htsjdkVersion
+        force 'com.github.broadinstitute:picard:' + picardVersion
         // later versions explode Hadoop
         // TODO: this is the same in GATK, but we should check if they solve this issue in the future
         force 'com.google.protobuf:protobuf-java:3.0.0-beta-1'
@@ -86,6 +88,7 @@ dependencies {
         exclude module: 'jgrapht' // this is not required
     }
     compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
+    compile group: 'com.github.broadinstitute', name: 'picard', version: picardVersion
 
     // compilation for testing
     testCompile 'org.testng:testng:' + testNGVersion
