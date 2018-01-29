@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
+## [1.2.0]
+
 ### Fixed
 - User error error for corrupted BAM file instead of unexpected error
 
@@ -195,3 +198,4 @@ First pre-release
 [0.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/0.3.0
 [1.0.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.0.0
 [1.1.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.1.0
+[1.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.0
