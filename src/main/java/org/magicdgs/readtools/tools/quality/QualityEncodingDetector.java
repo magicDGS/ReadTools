@@ -34,7 +34,7 @@ import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocumentedFeature;
-import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
+import org.broadinstitute.hellbender.cmdline.programgroups.DiagnosticsAndQCProgramGroup;
 
 import java.io.IOException;
 
@@ -43,7 +43,7 @@ import java.io.IOException;
  */
 @CommandLineProgramProperties(oneLineSummary = "Detects the quality encoding format for all kind of sources for ReadTools.",
         summary = "Detects the quality encoding for a SAM/BAM/CRAM/FASTQ files, output to the STDOUT the quality encoding.",
-        programGroup = QCProgramGroup.class)
+        programGroup = DiagnosticsAndQCProgramGroup.class)
 @DocumentedFeature
 public final class QualityEncodingDetector extends ReadToolsProgram {
 
