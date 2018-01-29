@@ -44,14 +44,15 @@ echo "[$(date)] Generate documentation site"
 rm -fr docs/javadoc && mv build/docs/javadoc docs/
 mv build/docs/readtools/*.yml docs/_data/ && rm -fr docs/readtools/* && mv build/docs/readtools/*.md docs/readtools/
 
+echo "[$(date)] Update CHANGELOG version"
+awk -v var=$version '{print $0}; $0=="## [Unreleased]"{print "\n\n## ["var"]"}END{print "["var"]: https://github.com/magicDGS/ReadTools/releases/tag/"var}' CHANGELOG.md > CHANGELOG.md.new
+mv CHANGELOG.md.new CHANGELOG.md
+
 ## commit and push
 echo "[$(date)] Upload to GitHub"
 git add docs/javadoc && git commit -m "Release javadoc" && git push
 git add docs/ && git commit -am "Release documentation site" && git push
-
-
-# TODO: Update version in CHANGELOG
-echo "WARNING: CHANGELOG version is not updated!! Please, update manually"
+git add CHANGELOG.md && git commit -am "Update CHANGELOG" && git push
 
 echo "Please, upload to the release page the following file(s):"
 echo "* build/libs/ReadTools.jar"
