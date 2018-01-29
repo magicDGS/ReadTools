@@ -4,7 +4,7 @@ TODO: it requires a new version of FreeMarker for accessing some mehtods
 <#if arg.minValue?is_number || arg.maxValue?is_number><#if arg.minValue != "-INF" && arg.maxValue != "INF"><br/>[${arg.minValue}, ${arg.maxValue}]</#if></#if>
 -->
 <#macro argtype arg>${arg.type}</#macro>
-<#macro argdesc arg><#if arg.fulltext != "">${arg.fulltext}<#else>${arg.summary}</#if><#if arg.options?size != 0><br/><br/><@argoptions arg=arg/></#if></#macro>
+<#macro argdesc arg><#if arg.fulltext != ""><@compress single_line=true>${arg.fulltext}</@compress><#else>${arg.summary}</#if><#if arg.options?size != 0><br/><br/><@argoptions arg=arg/></#if></#macro>
 <#macro argoptions arg><b>Possible values:</b> <#list arg.options as opt><i>${opt.name}</i><#if opt.summary != ""> (${opt.summary})</#if><#if opt_has_next>, </#if></#list></#macro>
 <#macro argumentlist name myargs show_default=true>
     <#if myargs?size != 0>
