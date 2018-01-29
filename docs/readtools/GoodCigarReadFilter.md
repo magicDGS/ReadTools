@@ -2,12 +2,15 @@
 title: GoodCigarReadFilter
 summary: Keep only reads containing good CIGAR string
 permalink: GoodCigarReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
 
-Keep only reads containing good CIGAR strings:
+Keep only reads containing good CIGAR strings.
+
+ <p>Good CIGAR strings have the following properties:</p>
+
  <ul>
      <li>Valid according to the <a href="http://samtools.github.io/hts-specs/SAMv1.pdf">SAM specifications.</a></li>
      <li>Does not start or end with deletions (with or without preceding clips).</li>

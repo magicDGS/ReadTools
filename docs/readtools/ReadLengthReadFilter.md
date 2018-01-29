@@ -2,7 +2,7 @@
 title: ReadLengthReadFilter
 summary: Keep only reads whose length is within a certain range
 permalink: ReadLengthReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description

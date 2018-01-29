@@ -2,13 +2,14 @@
 title: ReadGroupReadFilter
 summary: Keep only reads from the specified read group
 permalink: ReadGroupReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
 
 Keep only reads from the specified read group. Discards reads lacking an RG tag.
- Matching is done by case-sensitive exact match.
+
+ <p>Matching is done by case-sensitive exact match.</p>
 
 ## Arguments
 

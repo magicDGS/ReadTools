@@ -2,13 +2,14 @@
 title: ReadNameReadFilter
 summary: Keep only reads with this read name
 permalink: ReadNameReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
 
 Keep only reads with this read name.
- Matching is done by case-sensitive exact match.
+
+ <p>Matching is done by case-sensitive exact match.</p>
 
 ## Arguments
 

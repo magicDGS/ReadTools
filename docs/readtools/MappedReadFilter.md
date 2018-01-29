@@ -2,12 +2,14 @@
 title: MappedReadFilter
 summary: Filter out unmapped reads
 permalink: MappedReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
 
-Filter out unmapped reads. Umapped reads are defined by three criteria:
+Filter out unmapped reads.
+
+ <p>Unmapped reads are defined by three criteria:</p>
 
  <ul>
      <li>SAM flag value 0x4</li>

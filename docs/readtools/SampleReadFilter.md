@@ -2,13 +2,14 @@
 title: SampleReadFilter
 summary: Keep only reads for a given sample
 permalink: SampleReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
 
 Keep only reads for a given sample.
- Matching is done by case-sensitive exact match.
+
+ <p>Matching is done by case-sensitive exact match.</p>
 
 ## Arguments
 

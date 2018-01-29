@@ -2,7 +2,7 @@
 title: TrimReads
 summary: Applies a trimming pipeline to any kind of sources for ReadTools
 permalink: TrimReads.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
@@ -45,8 +45,8 @@ Applies a trimming/filtering pipeline to the reads:
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
 | `--arguments_file` | List[File] | [] | read one or more arguments files and add them to the command line |
-| `--disable3pTrim`<br/>`-D3PT` | boolean | false | Disable 3'-trimming. Cannot be true when argument disable5pTrim(D5PT) is true. |
-| `--disable5pTrim`<br/>`-D5PT` | boolean | false | Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified by the 5' mapping position. Cannot be true when argument disable3pTrim(D3PT) is true. |
+| `--disable3pTrim`<br/>`-D3PT` | boolean | false | Disable 3'-trimming. Cannot be true when argument disable5pTrim (D5PT) is true. |
+| `--disable5pTrim`<br/>`-D5PT` | boolean | false | Disable 5'-trimming. May be useful for downstream mark of duplicate reads, usually identified by the 5' mapping position. Cannot be true when disable3pTrim (D3P) is true. |
 | `--disableAllDefaultTrimmers`<br/>`-disableAllDefaultTrimmers` | boolean | false | Disable all default trimmers. It may be useful to reorder the trimmers. |
 | `--disableReadFilter`<br/>`-DF` | List[String] | [] | Read filters to be disabled after trimming |
 | `--disableToolDefaultReadFilters`<br/>`-disableToolDefaultReadFilters` | boolean | false | Disable all tool default read filters for trimming |
@@ -71,7 +71,7 @@ Applies a trimming/filtering pipeline to the reads:
 | `--interleavedInput`<br/>`-interleaved` | boolean | false | Interleaved input. |
 | `--QUIET` | Boolean | false | Whether to suppress job-summary info on System.err. |
 | `--readValidationStringency`<br/>`-VS` | ValidationStringency | SILENT | Validation stringency for all SAM/BAM/CRAM files read by this program. The default stringency value SILENT can improve performance when processing a BAM file in which variable-length data (read, qualities, tags) do not otherwise need to be decoded.<br/><br/><b>Possible values:</b> <i>STRICT</i>, <i>LENIENT</i>, <i>SILENT</i> |
-| `--reference`<br/>`-R` | File | null | Reference sequence file. Required for CRAM input. |
+| `--reference`<br/>`-R` | String | null | Reference sequence file. Required for CRAM input. |
 | `--secondsBetweenProgressUpdates`<br/>`-secondsBetweenProgressUpdates` | double | 10.0 | Output traversal statistics every time this many seconds elapse. |
 | `--TMP_DIR` | List[File] | [] | Undocumented option |
 | `--use_jdk_deflater`<br/>`-jdk_deflater` | boolean | false | Whether to use the JdkDeflater (as opposed to IntelDeflater) |

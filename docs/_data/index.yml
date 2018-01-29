@@ -1,10 +1,10 @@
 ReadTools:
-  version: 1.1.0
-  timestamp: 04-49-2017 12:49:37
+  version: 1.2.0
+  timestamp: 29-03-2018 04:03:32
 
 tools:
-  - group: Diagnostics and Quality Control Tools
-    summary: Tools for Diagnostics and Quality Control
+  - group: Diagnostics and Quality Control
+    summary: Tools that collect sequencing quality-related and comparative metrics
     components:
       - name: QualityEncodingDetector
         summary: Detects the quality encoding format for all kind of sources for ReadTools.
@@ -32,7 +32,7 @@ tools:
   
 utilities:
   - group: Read Filters
-    summary: Read Filters used by the engine to select reads to be included for analysis
+    summary: Applied by engine to select reads for analysis
     components:
       - name: AlignmentAgreesWithHeaderReadFilter
         summary: Filters out reads where the alignment does not match the contents of the header
