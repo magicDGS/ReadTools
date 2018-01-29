@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 - Removed VersionEye due to end of the service
 - Using our own classes for argument definitions instead of relying in GATK
 - More test and consistency on them
-- Extending `BaseTest` form GATK to add functionality to `RTBaseTest`
+- Fix FreeMarker template to properly format jekyll tables
 
 ## [1.1.0] - 2017-10-04
 
