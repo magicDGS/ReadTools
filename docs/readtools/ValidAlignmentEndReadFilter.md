@@ -2,13 +2,15 @@
 title: ValidAlignmentEndReadFilter
 summary: Keep only reads where the read end is properly aligned
 permalink: ValidAlignmentEndReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
 
 Keep only reads where the read end corresponds to a proper alignment -- that is, the read ends after the start
- (non-negative number of bases in the reference), calculated as:
+ (non-negative number of bases in the reference).
+
+ <p>This is calculated as:</p>
 
  <p>
  <code>

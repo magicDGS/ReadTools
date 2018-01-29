@@ -2,7 +2,7 @@
 title: CigarContainsNoNOperator
 summary: Filter out reads with CIGAR containing N operator
 permalink: CigarContainsNoNOperator.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description

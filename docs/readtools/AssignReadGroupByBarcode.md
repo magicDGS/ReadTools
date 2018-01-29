@@ -2,7 +2,7 @@
 title: AssignReadGroupByBarcode
 summary: Assigns read groups based on barcode tag(s) for all kind of sources for ReadTools.
 permalink: AssignReadGroupByBarcode.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
@@ -74,7 +74,7 @@ Assigns read groups (@RG) using the barcode information present in the raw barco
 | `--QUIET` | Boolean | false | Whether to suppress job-summary info on System.err. |
 | `--rawBarcodeSequenceTags`<br/>`-rawBarcodeSequenceTags` | List[String] | [BC] | Include the barcodes encoded in this tag(s) in the read name. Note: this is not necessary for input FASTQ files. WARNING: this tag(s) will be removed/updated as necessary. |
 | `--readValidationStringency`<br/>`-VS` | ValidationStringency | SILENT | Validation stringency for all SAM/BAM/CRAM files read by this program. The default stringency value SILENT can improve performance when processing a BAM file in which variable-length data (read, qualities, tags) do not otherwise need to be decoded.<br/><br/><b>Possible values:</b> <i>STRICT</i>, <i>LENIENT</i>, <i>SILENT</i> |
-| `--reference`<br/>`-R` | File | null | Reference sequence file. Required for CRAM input. |
+| `--reference`<br/>`-R` | String | null | Reference sequence file. Required for CRAM input. |
 | `--secondsBetweenProgressUpdates`<br/>`-secondsBetweenProgressUpdates` | double | 10.0 | Output traversal statistics every time this many seconds elapse. |
 | `--TMP_DIR` | List[File] | [] | Undocumented option |
 | `--use_jdk_deflater`<br/>`-jdk_deflater` | boolean | false | Whether to use the JdkDeflater (as opposed to IntelDeflater) |

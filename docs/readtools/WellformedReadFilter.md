@@ -2,7 +2,7 @@
 title: WellformedReadFilter
 summary: Keep only reads that are well-formed
 permalink: WellformedReadFilter.html
-last_updated: 04-49-2017 12:49:37
+last_updated: 29-03-2018 04:03:32
 ---
 
 ## Description
