@@ -82,11 +82,11 @@ Our API for developers is still not stable, and changes for developers are refle
 
 ## License and citing
 
-_ReadTools_ is licensed under the [MIT License(https://opensource.org/licenses/MIT). See [LICENSE]({{https://github.com/magicDGS/ReadTools/blob/master/LICENSE}}) file.
+_ReadTools_ is licensed under the [MIT License](https://opensource.org/licenses/MIT). See [LICENSE]({{https://github.com/magicDGS/ReadTools/blob/master/LICENSE}}) file.
 
 If you use _ReadTools_, please cite:
 
-> Gómez-Sánchez, D. and Schlötterer, C. (2017), ReadTools: a universal toolkit for handling sequence data from different sequencing platforms. Mol Ecol Resour. Accepted Author Manuscript. [doi:10.1111/1755-0998.12741](http://onlinelibrary.wiley.com/doi/10.1111/1755-0998.12741/abstract)
+> Gómez-Sánchez D, Schlötterer C. _ReadTools_: A universal toolkit for handling sequence data from different sequencing platforms. Mol Ecol Resour. 2017;00:1–5. [doi:10.1111/1755-0998.12741](http://onlinelibrary.wiley.com/doi/10.1111/1755-0998.12741/abstract)
 
 
 
