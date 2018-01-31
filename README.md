@@ -3,6 +3,8 @@
 [![Language](http://img.shields.io/badge/language-java-brightgreen.svg)](https://www.java.com/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dd842750e7a74112870a5156a24a8cbf)](https://www.codacy.com/app/daniel-gomez-sanchez/ReadTools?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=magicDGS/ReadTools&amp;utm_campaign=Badge_Grade)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Github Releases](https://img.shields.io/github/release/magicDGS/ReadTools.svg?logo=github)](https://github.com/magicDGS/ReadTools/releases/latest)
+[![Github Releases](https://img.shields.io/github/downloads/atom/atom/total.svg?logo=github)](http://www.somsubhra.com/github-release-stats/?username=magicDGS&repository=ReadTools)
 
 # _ReadTools_: a universal toolkit for handling sequence data from different sequencing platforms
 
