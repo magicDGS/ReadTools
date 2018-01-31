@@ -12,8 +12,10 @@ _ReadTools_ provides a consistent and highly tested set of tools for processing 
 Diverse formats were developed for storing reads (see [Read sources](read_sources.html)), but _ReadTools_ opt for following the [SAM specs]({{site.data.formats.specs.sam}}) to maintain a common data format to store both raw/mapped reads. Thus, _ReadTools_ also helps to standardize sequencing data in different formats.
 
 ## Download
+[![Github Releases](https://img.shields.io/github/downloads/atom/atom/total.svg?logo=github)](http://www.somsubhra.com/github-release-stats/?username=magicDGS&repository=ReadTools)
 
-Executable jar files for all released versions can be found under [Releases]. For using unreleased versions, see the [README]({{site.data.repo.readme}}).
+Download the latest executable jar from the top of the page. Previous versions can be retrieved from the [GitHub Releases page]({{site.data.repo.releases}}).
+If you would like to use an unreleased version, see the [README]({{site.data.repo.readme}}).
 
 Both released and unreleased changes are reported in the [CHANGELOG]({{site.data.repo.changelog}}).
 
