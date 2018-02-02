@@ -156,4 +156,57 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         runCommandLine(args);
     }
 
+
+    @DataProvider
+    public Object[][] pgTagsToRemove() throws Exception {
+        // data with PG tags in the records to be removed
+        // first input directory, second expected output
+        return new Object[][] {
+                // this files have exactly equal PGs (including CL)
+                // and thus they are merged together
+                {new File(distmapFolder, "pg/equal"),
+                        new File(distmapFolder, "pg/equal/parts-00000-00003.sam")}
+                // TODO - files without no-compatible CL
+        };
+    }
+
+    @Test(dataProvider = "pgTagsToRemove")
+    public void testPartsWithPGtagCorrectlyRemoved(final File inputFolder, final File expectedOutput) throws Exception {
+        final File output = new File(TEST_TEMP_DIR, expectedOutput.hashCode() + ".no_pg.sam");
+        final ArgumentsBuilder args = new ArgumentsBuilder()
+                .addBooleanArgument("addOutputSAMProgramRecord", false)
+                .addFileArgument("input", inputFolder)
+                .addFileArgument("output", output);
+        runCommandLine(args);
+
+        // using text file concordance
+        IntegrationTestSpec.assertEqualTextFiles(output, expectedOutput);
+    }
+
+    @DataProvider
+    public Object[][] pgTagsToMerge() throws Exception {
+        // data with PG tags in the records to be removed
+        // first input directory, second expected output
+        return new Object[][] {
+                // this files have exactly equal PGs (including CL)
+                // and thus they are merged together
+                {new File(distmapFolder, "pg/equal"),
+                        new File(distmapFolder, "pg/equal/parts-00000-00003.pg.sam")}
+                // TODO - files without no-compatible CL
+        };
+    }
+
+    @Test(dataProvider = "pgTagsToMerge")
+    public void testPartsWithPGtagCorrectlyMerged(final File inputFolder, final File expectedOutput) throws Exception {
+        final File output = new File(TEST_TEMP_DIR, expectedOutput.hashCode() + ".pg.sam");
+        final ArgumentsBuilder args = new ArgumentsBuilder()
+                .addBooleanArgument("addOutputSAMProgramRecord", false)
+                .addBooleanArgument("noRemoveTaskProgramGroup", true)
+                .addFileArgument("input", inputFolder)
+                .addFileArgument("output", output);
+        runCommandLine(args);
+
+        // using text file concordance
+        IntegrationTestSpec.assertEqualTextFiles(output, expectedOutput);
+    }
 }

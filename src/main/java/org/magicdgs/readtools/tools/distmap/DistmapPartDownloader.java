@@ -30,6 +30,7 @@ import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection
 import avro.shaded.com.google.common.collect.Lists;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
+import htsjdk.samtools.SAMTag;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.cram.ref.CRAMReferenceSource;
@@ -68,6 +69,8 @@ import java.util.stream.Collectors;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 final class DistmapPartDownloader {
+
+    private static final String PG_TAG = SAMTag.PG.name();
 
     protected final Logger logger = LogManager.getLogger(this.getClass());
 
@@ -170,7 +173,7 @@ final class DistmapPartDownloader {
         final ProgressMeter mergingProgress = buildProgressMeter();
         mergingProgress.start();
 
-        writeReads(toMerge,
+        writeReads(toMerge, header,
                 outputArgumentCollection.outputWriter(header, () -> programRecord.apply(header),
                         presorted, getReferencePath()),
                 mergingProgress);
@@ -221,9 +224,16 @@ final class DistmapPartDownloader {
      *
      * <p>Note: the writer is closed before returning.
      */
-    private void writeReads(final ReadsDataSource reads, final GATKReadWriter writer,
+    private void writeReads(final ReadsDataSource reads, final SAMFileHeader header,
+            final GATKReadWriter writer,
             final ProgressMeter progressMeter) {
         for (final GATKRead read : reads) {
+            // check if the read has a PG tag and if it is included in the header
+            final String readPg = read.getAttributeAsString(PG_TAG);
+            if (readPg != null && header.getProgramRecord(readPg) == null) {
+                // if it isn't, it clears the PG tag
+                read.clearAttribute(PG_TAG);
+            }
             writer.addRead(read);
             progressMeter.update(read);
         }
@@ -258,7 +268,7 @@ final class DistmapPartDownloader {
             final SAMFileHeader batchHeader = entry.getValue().getHeader();
             final boolean preSorted = isPresorted(batchHeader);
             logger.debug("Downloading batch: {} (pre-sorted=).", () -> batchName, () -> preSorted);
-            writeReads(entry.getValue(),
+            writeReads(entry.getValue(), batchHeader,
                     // create based on the batch name, which is BAM and does not require the reference
                     outputArgumentCollection.getWriterFactory()
                             // do not create indexes for the files that are batches
