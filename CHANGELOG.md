@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Bug fix: remove PG tag in records while `DownloadDistmapResult` drops PG headers
 
 ## [1.2.0]
 
