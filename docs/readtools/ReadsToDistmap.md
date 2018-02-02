@@ -2,7 +2,7 @@
 title: ReadsToDistmap
 summary: Converts any kind of ReadTools source to Distmap format.
 permalink: ReadsToDistmap.html
-last_updated: 29-03-2018 04:03:32
+last_updated: 02-17-2018 10:17:07
 ---
 
 ## Description
