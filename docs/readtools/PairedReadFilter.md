@@ -2,7 +2,7 @@
 title: PairedReadFilter
 summary: Filter out unpaired reads
 permalink: PairedReadFilter.html
-last_updated: 29-03-2018 04:03:32
+last_updated: 02-17-2018 10:17:07
 ---
 
 ## Description

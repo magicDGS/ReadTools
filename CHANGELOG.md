@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
+## [1.2.1]
+
 ### Fixed
 - Bug fix: remove PG tag in records while `DownloadDistmapResult` drops PG headers
 
@@ -201,3 +204,4 @@ First pre-release
 [1.0.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.0.0
 [1.1.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.1.0
 [1.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.0
+[1.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.1

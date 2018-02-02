@@ -2,7 +2,7 @@
 title: PlatformUnitReadFilter
 summary: Filter out reads with matching platform unit attribute
 permalink: PlatformUnitReadFilter.html
-last_updated: 29-03-2018 04:03:32
+last_updated: 02-17-2018 10:17:07
 ---
 
 ## Description

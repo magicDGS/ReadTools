@@ -2,7 +2,7 @@
 title: AssignReadGroupByBarcode
 summary: Assigns read groups based on barcode tag(s) for all kind of sources for ReadTools.
 permalink: AssignReadGroupByBarcode.html
-last_updated: 29-03-2018 04:03:32
+last_updated: 02-17-2018 10:17:07
 ---
 
 ## Description
