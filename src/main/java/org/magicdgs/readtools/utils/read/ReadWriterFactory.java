@@ -309,29 +309,33 @@ public final class ReadWriterFactory {
     }
 
     /**
-     * Wraps teh output stream into a compressed stream in case that it is detected by the
-     * following:
+     * Wraps the output stream into a compressed stream if needed.
      *
-     * - {@link AbstractFeatureReader#hasBlockCompressedExtension(URI)}: handled as GZIP compressed
-     * using {@link CustomGzipOutputStream}.
-     * - {@link BZip2Utils#isCompressedFilename(String)}: handled as Bzip2 compressed using
-     * {@link #bzip2} codec (loaded on demand). This allows to split on the disk easier for HDFS.
+     * <p>Detection of compression is done as following:
+     *
+     * <ul>
+     *     <li>If a {@link HadoopPath}, delegates in the installed compressors.</li>
+     *     <li>If {@link AbstractFeatureReader#hasBlockCompressedExtension(URI)} returns {@code true}, then it is open as GZIP (HTSJDK compatible).</li>
+     *     <li>If {@link BZip2Utils#isCompressedFilename(String)} returns {@code true}, then it is open as a Bzip compressed input using commons-compress</li>
+     * </ul>
      */
     private OutputStream maybeCompressedWrap(final OutputStream outputStream,
             final Path outputPath) throws IOException {
-        // handle the gzip format with the CustomGzipOutputStream from HTSJDK for backwards-compatibility
+        // for HaddopPath use the installed compressors
+        if (outputPath instanceof HadoopPath) {
+            logger.debug("Delegating to Hadoop to choose compressor for {}", outputPath::toUri);
+            return HadoopUtils.maybeCompressedOutputStream((HadoopPath) outputPath, outputStream);
+        }
+        // for local files use commons compress except for gzip compression:
+        // use CustomGzipOutputStream from HTSJDK for backwards-compatibility
         if (AbstractFeatureReader.hasBlockCompressedExtension(outputPath.toUri())) {
+            // TODO: maybe we should use bgzip?
             logger.debug("Using gzip compression for {}", outputPath::toUri);
             return new CustomGzipOutputStream(outputStream, IOUtil.getCompressionLevel());
         } else if (BZip2Utils.isCompressedFilename(outputPath.toString())) {
-            if (outputPath instanceof HadoopPath) {
-                logger.debug("Using HDFS bzip2 compressor for {}", outputPath::toUri);
-                return HadoopUtils.wrapBzip2Stream(outputStream);
-            } else {
-                logger.debug("Using non-HDFS bzip2 compressor for {}", outputPath::toUri);
-                // TODO: should we set a block-size here?
-                return new BZip2CompressorOutputStream(outputStream);
-            }
+            // kept for backwards compatibility - TODO: remove support for local bzip2
+            logger.debug("Using bzip2 compressor for {}", outputPath::toUri);
+            return new BZip2CompressorOutputStream(outputStream);
         } else {
             logger.debug("Not using compression for {}", outputPath::toUri);
             return outputStream;

@@ -24,10 +24,14 @@
 
 package org.magicdgs.readtools.utils;
 
+import com.google.common.annotations.VisibleForTesting;
 import hdfs.jsr203.HadoopPath;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,11 +49,12 @@ import java.io.OutputStream;
  */
 public final class HadoopUtils {
 
+    private static final Logger logger = LogManager.getLogger(HadoopUtils.class);
+
     // cannot be instantiated
     private HadoopUtils() {}
 
-    // bzip2 codec, initialized on demand
-    private static BZip2Codec bzip2 = null;
+    private static CompressionCodecFactory compressionFactory = null;
 
     /**
      * Gets an output stream from an HDFS file.
@@ -79,24 +84,24 @@ public final class HadoopUtils {
                 blockSize);
     }
 
-    /**
-     * Wraps the output stream with the hadoop {@link BZip2Codec}.
-     *
-     * <p>Note: this method can be used also for non-HDFS files. Nevertheless, if the Hadoop-library
-     * is not present it might fail.
-     *
-     * @param outputStream output stream to wrap.
-     *
-     * @return a wrapped output stream with bzip2 compression.
-     */
-    public static OutputStream wrapBzip2Stream(final OutputStream outputStream)
-            throws IOException {
-        if (bzip2 == null) {
-            // require initialize with a default configuration
-            // initialize only if required for the output
-            bzip2 = new BZip2Codec();
-            bzip2.setConf(new Configuration());
+    // TODO: add javadoc
+    public static OutputStream maybeCompressedOutputStream(final HadoopPath path, final OutputStream outputStream) throws IOException {
+        // get the codec to compress
+        final CompressionCodec codec = getCompressionCodec(path);
+        if (codec != null) {
+            logger.debug("Using {} compressor for {}", codec::getCompressorType, path::toUri);
+            return codec.createOutputStream(outputStream);
         }
-        return bzip2.createOutputStream(outputStream);
+        // do not use compression
+        return outputStream;
+    }
+
+    @VisibleForTesting
+    protected static CompressionCodec getCompressionCodec(final HadoopPath path) {
+        if (compressionFactory == null) {
+            compressionFactory = new CompressionCodecFactory(new Configuration());
+            logger.debug("Loaded compressors: {}", compressionFactory);
+        }
+        return compressionFactory.getCodec(path.getRawResolvedPath());
     }
 }
