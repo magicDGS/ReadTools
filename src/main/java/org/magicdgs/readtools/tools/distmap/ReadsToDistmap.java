@@ -85,7 +85,7 @@ public final class ReadsToDistmap extends ReadToolsWalker {
 
     @Advanced
     @Argument(fullName = RTStandardArguments.HDFS_BLOCK_SIZE_NAME, shortName = RTStandardArguments.HDFS_BLOCK_SIZE_NAME, doc = "Block-size (in bytes) for files in HDFS. If not provided, use default configuration.", optional = true)
-    public Integer blockSize = null;
+    public Long blockSize = null;
 
     @ArgumentCollection
     public FixBarcodeAbstractArgumentCollection fixBarcodeTags =
