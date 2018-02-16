@@ -1,5 +1,6 @@
 import javax.tools.ToolProvider
 import java.nio.file.Files
+import com.github.jengelman.gradle.plugins.shadow.transformers.ApacheLicenseResourceTransformer
 
 // Dependencies for the buildscript (not the program)
 buildscript {
@@ -190,6 +191,7 @@ task currentJar(type: Copy){
 
 shadowJar {
     zip64 true
+    transform(ApacheLicenseResourceTransformer)
     mergeServiceFiles()
     finalizedBy currentJar
 }
