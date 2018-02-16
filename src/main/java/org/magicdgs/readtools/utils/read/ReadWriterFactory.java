@@ -297,7 +297,7 @@ public final class ReadWriterFactory {
         // if it is a Hadoop path, get the stream with its API always
         if (path instanceof HadoopPath) {
             return HadoopUtils.getOutputStream((HadoopPath) path, forceOverwrite, bufferSize,
-                    // TODO: extract also replication param?
+                    // TODO: include an argument for replication (https://github.com/magicDGS/ReadTools/issues/410)
                     null, hdfsBlockSize);
         }
         if (hdfsBlockSize != null) {
@@ -312,8 +312,14 @@ public final class ReadWriterFactory {
      * <p>Detection of compression is done as following:
      *
      * <ul>
-     *     <li>If {@link AbstractFeatureReader#hasBlockCompressedExtension(URI)} returns {@code true}, then it is open as GZIP (HTSJDK compatible).</li>
-     *     <li>If {@link BZip2Utils#isCompressedFilename(String)} returns {@code true}, then it is open as a Bzip compressed input using commons-compress</li>
+     * <li>
+     * If {@link AbstractFeatureReader#hasBlockCompressedExtension(URI)} returns {@code true}, then
+     * it is open as GZIP (HTSJDK compatible).
+     * </li>
+     * <li>
+     * If {@link BZip2Utils#isCompressedFilename(String)} returns {@code true}, then it is open as a
+     * Bzip compressed input using commons-compress
+     * </li>
      * </ul>
      *
      * <p>Warning:for HDFS files, compression is handled by the Hadoop codecs.
@@ -327,13 +333,12 @@ public final class ReadWriterFactory {
         }
         // for local files use commons compress except for gzip compression:
         // use CustomGzipOutputStream from HTSJDK for backwards-compatibility
+        // TODO: we should be more consistent with the supported compression formats (https://github.com/magicDGS/ReadTools/issues/411)
         if (AbstractFeatureReader.hasBlockCompressedExtension(outputPath.toUri())) {
-            // TODO: maybe we should use bgzip?
             logger.debug("Using gzip compression for {}", outputPath::toUri);
             return new CustomGzipOutputStream(outputStream, IOUtil.getCompressionLevel());
         } else if (BZip2Utils.isCompressedFilename(outputPath.toString())) {
             // kept for backwards compatibility
-            // TODO: remove support for local bzip2? support other compressors from apache-commons?
             logger.debug("Using bzip2 compressor for {}", outputPath::toUri);
             return new BZip2CompressorOutputStream(outputStream);
         } else {

@@ -48,12 +48,11 @@ import java.io.OutputStream;
  */
 public final class HadoopUtils {
 
-    private static final Logger logger = LogManager.getLogger(HadoopUtils.class);
-    private static CompressionCodecFactory compressionFactory = null;
+    private static final Logger LOGGER = LogManager.getLogger(HadoopUtils.class);
+    private static CompressionCodecFactory COMPRESSION_FACTORY = null;
 
     // cannot be instantiated
     private HadoopUtils() {}
-
 
     /**
      * Gets an output stream from an HDFS file.
@@ -99,20 +98,20 @@ public final class HadoopUtils {
     public static OutputStream maybeCompressedOutputStream(final HadoopPath path,
             final OutputStream outputStream) throws IOException {
         // init the compression factory on demand
-        if (compressionFactory == null) {
-            compressionFactory = new CompressionCodecFactory(new Configuration());
-            logger.debug("Loaded compressors: {}", compressionFactory);
+        if (COMPRESSION_FACTORY == null) {
+            COMPRESSION_FACTORY = new CompressionCodecFactory(new Configuration());
+            LOGGER.debug("Loaded compressors: {}", COMPRESSION_FACTORY);
         }
 
         // get the codec to compress
-        final CompressionCodec codec = compressionFactory.getCodec(path.getRawResolvedPath());
+        final CompressionCodec codec = COMPRESSION_FACTORY.getCodec(path.getRawResolvedPath());
         if (codec != null) {
-            logger.debug("Using {} compressor for {}", codec::getCompressorType, path::toUri);
+            LOGGER.debug("Using {} compressor for {}", codec::getCompressorType, path::toUri);
             return codec.createOutputStream(outputStream);
         }
 
         // do not use compression
-        logger.debug("No compressor for {}", path::toUri);
+        LOGGER.debug("No compressor for {}", path::toUri);
         return outputStream;
     }
 }

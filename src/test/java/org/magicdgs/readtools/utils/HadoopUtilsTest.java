@@ -54,12 +54,11 @@ import java.nio.file.Files;
  */
 public class HadoopUtilsTest extends RTBaseTest {
 
+    private static final CompressorStreamFactory APACHE_COMPRESSOR_FACTORY = new CompressorStreamFactory();
     // this is a random text file generated with bash to use for the tests
     private final File randomFile = getTestFile("random_file.txt");
-
     private MiniDFSCluster cluster;
 
-    private static final CompressorStreamFactory compressorFactory = new CompressorStreamFactory();
 
     // init the cluster and copy the files there
     @BeforeClass(alwaysRun = true)
@@ -100,7 +99,7 @@ public class HadoopUtilsTest extends RTBaseTest {
         // now check if the compressor is the same
         try (InputStream is = new BufferedInputStream(Files.newInputStream(path))) {
             // first open as a compressed stream
-            final CompressorInputStream cis = compressorFactory.createCompressorInputStream(is);
+            final CompressorInputStream cis = APACHE_COMPRESSOR_FACTORY.createCompressorInputStream(is);
             // then check that the classes are the same
             Assert.assertEquals(cis.getClass(), compressorClass);
 
