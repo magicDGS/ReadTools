@@ -28,6 +28,7 @@ import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
 
 import htsjdk.samtools.SAMTag;
+import htsjdk.samtools.fastq.FastqConstants;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -448,5 +449,29 @@ public class RTReadUtils {
         return read.getName()
                 + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
                 + String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes);
+    }
+
+    /**
+     * Gets a read name equal to the Illumina format.
+     *
+     * <p>If present, includes the barcode and the pair-end information.
+     *
+     * @param read read to get the name from.
+     *
+     * @return illumina formatted read name.
+     */
+    public static String getIlluminaReadName(final GATKRead read) {
+        // adding the raw barcode information if found
+        final String readName = RTReadUtils.getReadNameWithIlluminaBarcode(read);
+
+        // early termination
+        if (!read.isPaired()) {
+            return readName;
+
+        }
+
+        // add the pair-end information
+        return readName + (read.isFirstOfPair()
+                ? FastqConstants.FIRST_OF_PAIR : FastqConstants.SECOND_OF_PAIR);
     }
 }

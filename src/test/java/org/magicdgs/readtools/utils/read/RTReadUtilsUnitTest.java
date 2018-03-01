@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -378,8 +379,8 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
         Assert.assertEquals(read2.getAttributeAsString(tag), expectedTagValue2);
     }
 
-    @DataProvider(name = "illuminaNames")
-    public Object[][] getReadWithIlluminaNames() {
+    @DataProvider(name = "barcodesNames")
+    public Object[][] getReadWithBarcodesInIlluminaNames() {
         final GATKRead readWithBarcodes = ArtificialReadUtils.createArtificialRead("1M");
         readWithBarcodes.setName("readWithBarcodes");
         readWithBarcodes.setAttribute("BC", "ACTG-ACCC");
@@ -391,8 +392,46 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
         };
     }
 
-    @Test(dataProvider = "illuminaNames")
+    @Test(dataProvider = "barcodesNames")
     public void testGetReadNameWithIlluminaBarcode(final GATKRead read, final String expectedName) {
         Assert.assertEquals(RTReadUtils.getReadNameWithIlluminaBarcode(read), expectedName);
+    }
+
+    @DataProvider(name = "illuminaNames")
+    public Object[][] getReadWithIlluminaNames() {
+        final String readName = "readName";
+        final String barcode = "ACTG-ACCC";
+
+        final GATKRead readWithNoBarcodes = ArtificialReadUtils.createArtificialRead("1M");
+        readWithNoBarcodes.setName(readName);
+
+        final GATKRead readWithBarcodes = ArtificialReadUtils.createArtificialRead("1M");
+        readWithBarcodes.setName(readName);
+        readWithBarcodes.setAttribute("BC", barcode);
+
+        final List<GATKRead> pairs = ArtificialReadUtils.createPair(header, readName, 1, 1, 5, true, false);
+
+        final List<GATKRead> pairsWithBarcode = pairs.stream()
+                // copy the read and add barcode
+                .map(r -> {GATKRead n = r.deepCopy(); n.setAttribute("BC", barcode); return n;})
+                .collect(Collectors.toList());
+
+        return new Object[][] {
+                // this should be the same
+                {readWithNoBarcodes, readWithNoBarcodes.getName()},
+                // this should have the barcodes attached
+                {readWithBarcodes, readName + "#" + barcode},
+                // append 1 and 2 to the pair
+                {pairs.get(0), readName + "/1"},
+                {pairs.get(1), readName + "/2"},
+                // append 1 and to to the pair, after barcodes
+                {pairsWithBarcode.get(0), readName + "#" + barcode + "/1"},
+                {pairsWithBarcode.get(1), readName + "#" + barcode +"/2"}
+        };
+    }
+
+    @Test(dataProvider = "illuminaNames")
+    public void testGetIlluminaReadName(final GATKRead read, final String expectedName) {
+        Assert.assertEquals(RTReadUtils.getIlluminaReadName(read), expectedName);
     }
 }

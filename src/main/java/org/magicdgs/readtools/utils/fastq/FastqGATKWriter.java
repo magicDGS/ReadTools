@@ -52,14 +52,7 @@ public class FastqGATKWriter implements GATKReadWriter {
 
     @Override
     public void addRead(final GATKRead read) {
-        // adding the raw barcode information if found
-        String readName = RTReadUtils.getReadNameWithIlluminaBarcode(read);
-        // adding the pair information
-        if (read.isPaired()) {
-            readName += (read.isFirstOfPair())
-                    ? FastqConstants.FIRST_OF_PAIR : FastqConstants.SECOND_OF_PAIR;
-        }
-        writer.write(new FastqRecord(readName,
+        writer.write(new FastqRecord(RTReadUtils.getIlluminaReadName(read),
                 read.getBasesString(),
                 read.getAttributeAsString(SAMTag.CO.name()),
                 ReadUtils.getBaseQualityString(read)));
