@@ -24,6 +24,10 @@
 
 package org.magicdgs.readtools.utils.distmap;
 
+import org.magicdgs.readtools.utils.distmap.encoder.CurrentDistmapCodec;
+import org.magicdgs.readtools.utils.distmap.encoder.DistmapCodec;
+
+import com.google.common.annotations.Beta;
 import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.util.CloserUtil;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -41,10 +45,12 @@ import java.util.function.Supplier;
  * Writer for GATKRead into the Distmap format.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
- * @see DistmapEncoder
+ * @see DistmapCodec
  */
 public class DistmapGATKWriter implements GATKReadWriter {
 
+    // codec for writting the distmap result
+    private final DistmapCodec codec;
     // the name of the source for the output
     private final String sourceName;
     // where to write the records
@@ -54,7 +60,7 @@ public class DistmapGATKWriter implements GATKReadWriter {
     private final Consumer<GATKRead> singleEndHandler;
 
     /**
-     * Public constructor.
+     * Constructor for the default version of Distmap.
      *
      * @param writer     output to write the reads on.
      * @param paired     if {@code true}, the file will be written as paired; otherwise,
@@ -63,11 +69,29 @@ public class DistmapGATKWriter implements GATKReadWriter {
      */
     public DistmapGATKWriter(final Writer writer, final String sourceName,
             final boolean paired) {
+        this(writer, sourceName, paired, CurrentDistmapCodec.SINGLETON);
+    }
+
+    /**
+     * Constructor to allow some experimental codecs to be tested.
+     *
+     * <p>Note: this constructor is not for general use. This is for developmental testing only
+     * (e.g., new and more efficient version of Distmap codecs for HDFS to integrate in Distmap).
+     *
+     * @param writer     output to write the reads on.
+     * @param paired     if {@code true}, the file will be written as paired; otherwise,
+     *                   it will be written as single.
+     * @param sourceName the name for the source where we are writing to.
+     * @param codec      codec to convert a record to a String.
+     */
+    public DistmapGATKWriter(final Writer writer, final String sourceName, final boolean paired,
+            final DistmapCodec codec) {
+        this.codec = codec;
         this.writer = writer;
         this.sourceName = sourceName;
         this.singleEndHandler = (paired)
                 ? new DistmapPairedConsumer(this::addPair)
-                : read -> printAndCheckError(() -> DistmapEncoder.encode(read));
+                : read -> printAndCheckError(() -> codec.encode(read));
     }
 
     /**
@@ -85,7 +109,7 @@ public class DistmapGATKWriter implements GATKReadWriter {
      * @param pair the pair of reads.
      */
     public void addPair(final Tuple2<GATKRead, GATKRead> pair) {
-        printAndCheckError(() -> DistmapEncoder.encode(pair));
+        printAndCheckError(() -> codec.encode(pair));
     }
 
     /**

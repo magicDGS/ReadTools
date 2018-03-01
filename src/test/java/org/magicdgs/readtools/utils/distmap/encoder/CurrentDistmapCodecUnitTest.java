@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Daniel Gomez-Sanchez
+ * Copyright (c) 2018 Daniel Gomez-Sanchez
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,10 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.utils.distmap;
+package org.magicdgs.readtools.utils.distmap.encoder;
 
 import org.magicdgs.readtools.RTBaseTest;
+import org.magicdgs.readtools.utils.distmap.DistmapException;
 
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
@@ -35,7 +36,7 @@ import scala.Tuple2;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class DistmapEncoderUnitTest extends RTBaseTest {
+public class CurrentDistmapCodecUnitTest extends RTBaseTest {
 
     @DataProvider(name = "singleEnd")
     public Object[][] getDistmapSinleReadStrings() {
@@ -49,15 +50,15 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "singleEnd")
     public void testIsPairedFalse(final String singleEndDistmapString) {
-        Assert.assertFalse(DistmapEncoder.isPaired(singleEndDistmapString));
+        Assert.assertFalse(CurrentDistmapCodec.SINGLETON.isPaired(singleEndDistmapString));
     }
 
     @Test(dataProvider = "singleEnd")
     public void testSingleReadRoundtrip(final String distmapString) {
         // decode the read, encode it again, and re-decoded
-        final GATKRead decodedRead = DistmapEncoder.decodeSingle(distmapString);
-        final String encodedString = DistmapEncoder.encode(decodedRead);
-        final GATKRead reDecodedRead = DistmapEncoder.decodeSingle(encodedString);
+        final GATKRead decodedRead = CurrentDistmapCodec.SINGLETON.decodeSingle(distmapString);
+        final String encodedString = CurrentDistmapCodec.SINGLETON.encode(decodedRead);
+        final GATKRead reDecodedRead = CurrentDistmapCodec.SINGLETON.decodeSingle(encodedString);
 
         Assert.assertEquals(encodedString, distmapString,
                 "String roundtrip error: " + distmapString + " vs. " + encodedString);
@@ -67,7 +68,7 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "singleEnd")
     public void testSingleEndFlags(final String distmapString) {
-        final GATKRead decodedRead = DistmapEncoder.decodeSingle(distmapString);
+        final GATKRead decodedRead = CurrentDistmapCodec.SINGLETON.decodeSingle(distmapString);
         Assert.assertFalse(decodedRead.isPaired());
     }
 
@@ -83,17 +84,17 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "pairEnd")
     public void testIsPairedTrue(final String singleEndDistmapString) {
-        Assert.assertTrue(DistmapEncoder.isPaired(singleEndDistmapString));
+        Assert.assertTrue(CurrentDistmapCodec.SINGLETON.isPaired(singleEndDistmapString));
     }
 
     @Test(dataProvider = "pairEnd")
     public void testPairedReadRountrip(final String distmapString) {
         // decode the read, encode it again, and re-decoded
         final Tuple2<GATKRead, GATKRead> decodedPair =
-                DistmapEncoder.decodePaired(distmapString);
-        final String encodedString = DistmapEncoder.encode(decodedPair);
+                CurrentDistmapCodec.SINGLETON.decodePaired(distmapString);
+        final String encodedString = CurrentDistmapCodec.SINGLETON.encode(decodedPair);
         final Tuple2<GATKRead, GATKRead> reDecodedPair =
-                DistmapEncoder.decodePaired(encodedString);
+                CurrentDistmapCodec.SINGLETON.decodePaired(encodedString);
 
         Assert.assertEquals(encodedString, distmapString,
                 "String roundtrip error: " + distmapString + " vs. " + encodedString);
@@ -105,7 +106,7 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "pairEnd")
     public void testPairEndFlags(final String distmapString) {
-        final Tuple2<GATKRead, GATKRead> pair = DistmapEncoder.decodePaired(distmapString);
+        final Tuple2<GATKRead, GATKRead> pair = CurrentDistmapCodec.SINGLETON.decodePaired(distmapString);
 
         Assert.assertTrue(pair._1.getName().equals(pair._2.getName()));
 
@@ -118,12 +119,12 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "pairEnd", expectedExceptions = DistmapException.class)
     public void testWrongSingleEnd(final String pairedDistmapString) {
-        DistmapEncoder.decodeSingle(pairedDistmapString);
+        CurrentDistmapCodec.SINGLETON.decodeSingle(pairedDistmapString);
     }
 
     @Test(dataProvider = "singleEnd", expectedExceptions = DistmapException.class)
     public void testWrongPairedEnd(final String singleDistmapString) {
-        DistmapEncoder.decodePaired(singleDistmapString);
+        CurrentDistmapCodec.SINGLETON.decodePaired(singleDistmapString);
     }
 
     @DataProvider(name = "wrongStrings")
@@ -143,16 +144,16 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
     @Test(dataProvider = "wrongStrings")
     public void testWrongEncoding(final String wrongDistmapString) {
         Assert.assertThrows(IllegalArgumentException.class,
-                () -> DistmapEncoder.decodeSingle(wrongDistmapString));
+                () -> CurrentDistmapCodec.SINGLETON.decodeSingle(wrongDistmapString));
         Assert.assertThrows(IllegalArgumentException.class,
-                () -> DistmapEncoder.decodePaired(wrongDistmapString));
+                () -> CurrentDistmapCodec.SINGLETON.decodePaired(wrongDistmapString));
     }
 
     @Test(dataProvider = "pairEnd", expectedExceptions = DistmapException.class)
     public void testEncodeDifferentNamesThrows(final String distmapString) {
-        final Tuple2<GATKRead, GATKRead> pair = DistmapEncoder.decodePaired(distmapString);
+        final Tuple2<GATKRead, GATKRead> pair = CurrentDistmapCodec.SINGLETON.decodePaired(distmapString);
         pair._1.setName("read1");
         pair._2.setName("read2");
-        DistmapEncoder.encode(pair);
+        CurrentDistmapCodec.SINGLETON.encode(pair);
     }
 }
