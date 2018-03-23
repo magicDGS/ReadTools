@@ -30,11 +30,13 @@ import org.magicdgs.readtools.engine.ReadToolsProgram;
 import org.magicdgs.readtools.engine.sourcehandler.ReadsSourceHandler;
 import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 
+import htsjdk.samtools.ValidationStringency;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineException;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.programgroups.DiagnosticsAndQCProgramGroup;
+import org.broadinstitute.hellbender.utils.read.ReadConstants;
 
 import java.io.IOException;
 
@@ -53,6 +55,12 @@ public final class QualityEncodingDetector extends ReadToolsProgram {
     @Argument(fullName = "maximumReads", shortName = "maximumReads", doc = "Maximum number of reads to use for detect the quality encoding.", optional = true)
     public Long recordsToIterate = RTDefaults.MAX_RECORDS_FOR_QUALITY;
 
+    @Argument(fullName = RTStandardArguments.READ_VALIDATION_STRINGENCY_LONG_NAME, shortName = RTStandardArguments.READ_VALIDATION_STRINGENCY_SHORT_NAME,
+            doc = RTStandardArguments.READ_VALIDATION_STRINGENCY_DOC,
+            common = true, optional = true)
+    public ValidationStringency readValidationStringency =
+            ReadConstants.DEFAULT_READ_VALIDATION_STRINGENCY;
+
     @Override
     protected String[] customCommandLineValidation() {
         if (recordsToIterate <= 0) {
@@ -64,7 +72,7 @@ public final class QualityEncodingDetector extends ReadToolsProgram {
 
     @Override
     protected Object doWork() {
-        try (final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(sourceString, new ReadReaderFactory())) {
+        try (final ReadsSourceHandler handler = ReadsSourceHandler.getHandler(sourceString, new ReadReaderFactory().setValidationStringency(readValidationStringency))) {
             return handler.getQualityEncoding(recordsToIterate);
         } catch (IOException e) {
             logger.debug(e);

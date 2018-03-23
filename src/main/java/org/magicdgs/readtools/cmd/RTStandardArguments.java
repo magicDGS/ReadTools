@@ -68,6 +68,9 @@ public class RTStandardArguments {
 
     public static final String READ_VALIDATION_STRINGENCY_LONG_NAME = "readValidationStringency";
     public static final String READ_VALIDATION_STRINGENCY_SHORT_NAME = "VS";
+    public static final String READ_VALIDATION_STRINGENCY_DOC = "Validation stringency for all SAM/BAM/CRAM files read by this program. "
+            + "The default stringency value SILENT can improve performance when processing "
+            + "a BAM file in which variable-length data (read, qualities, tags) do not otherwise need to be decoded.";
 
     // TODO - the long name was not in StandardArgumentDefinitions
     // TODO - and the short one wil be removed in https://github.com/broadinstitute/gatk/pull/4232
