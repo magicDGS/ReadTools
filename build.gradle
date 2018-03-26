@@ -1,5 +1,4 @@
 import javax.tools.ToolProvider
-import java.nio.file.Files
 import com.github.jengelman.gradle.plugins.shadow.transformers.ApacheLicenseResourceTransformer
 
 // Dependencies for the buildscript (not the program)
@@ -78,6 +77,8 @@ configurations.all {
         // be sure that mockito is in the same version for our tests
         force 'org.mockito:mockito-core:' + mockitoVersion
     }
+    // exclude all junit to avoid using it on our tests
+    all*.exclude group: 'junit', module: 'junit'
 }
 
 dependencies {
