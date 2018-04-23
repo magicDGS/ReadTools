@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning (SemVer)](http://semver.org/).
+The meaning of each entry is user-based and can be found in our
+[Wiki Versioning page](https://github.com/magicDGS/ReadTools/wiki/Versioning).
+
 ## [Unreleased]
 
 
