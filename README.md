@@ -61,7 +61,8 @@ a new [issue][issue_tracker].
 ## Versioning
 
 This project adheres to [Semantic Versioning (SemVer)](http://semver.org/) for the user-side.
-A short description with notable changes appears in each [release](https://github.com/magicDGS/ReadTools/releases). All the changes can be found in the [CHANGELOG](https://github.com/magicDGS/ReadTools/blob/master/CHANGELOG.md).
+A short description with notable changes appears in each [release](https://github.com/magicDGS/ReadTools/releases).
+All the changes can be found in the [CHANGELOG](https://github.com/magicDGS/ReadTools/blob/master/CHANGELOG.md).
 
 
 ## License
@@ -73,7 +74,9 @@ _ReadTools_ is licensed under the [MIT License][mit-license]. See [LICENSE](http
 
 If you use _ReadTools_, please cite:
 
-> Gómez-Sánchez D, Schlötterer C. _ReadTools_: A universal toolkit for handling sequence data from different sequencing platforms. Mol Ecol Resour. 2017;00:1–5. [doi:10.1111/1755-0998.12741](http://onlinelibrary.wiley.com/doi/10.1111/1755-0998.12741/abstract)
+> Gómez-Sánchez D, Schlötterer C. _ReadTools_: A universal toolkit for handling sequence data from
+different sequencing platforms. Mol Ecol Resour. 2017;00:1–5.
+[doi:10.1111/1755-0998.12741](http://onlinelibrary.wiley.com/doi/10.1111/1755-0998.12741/abstract)
 
 [mit-license]: https://opensource.org/licenses/MIT
 [documentation-page]: http://magicdgs.github.io/ReadTools/
