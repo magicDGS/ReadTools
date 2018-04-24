@@ -59,3 +59,6 @@ entries:
     - title: ReadTools Java Properties
       url: /readtools_java_properties.html
       output: web
+    - title: Custom Java classpath
+      url: /custom_java_classpath.html
+      output: web
