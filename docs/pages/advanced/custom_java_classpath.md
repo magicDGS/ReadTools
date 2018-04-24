@@ -19,15 +19,19 @@ extension in _ReadTools_ are:
 
 ## How to run _ReadTools_ with a custom classpath
 
+A list of jar files separated by `:` should be provided to the `-cp`
+option of java in addition to the `ReadTools.jar`. For example, to include
+one or two services (packaged in _**service1.jar**_ and _**service2.jar**_):
+
 For an unique jar file containing the extension for any service, named
-_**service.jar**_:
+_**service1.jar**_
 
 ```bash
-java -cp ReadTools.jar:service.jar org.magicdgs.readtools.Main
+# only service 1
+java -cp ReadTools.jar:service1.jar org.magicdgs.readtools.Main
+# service 1 and 2
+java -cp ReadTools.jar:service1.jar:service2.jar org.magicdgs.readtools.Main
 ```
-
-If several services are in different jar files, the `-cp` option might
-have a list of the jars separated by `:`.
 
 ## Bundled services
 
@@ -38,7 +42,7 @@ jar, providing out-of-the-box support for:
 - [Google Cloud Storage](https://cloud.google.com/storage/) (GCS) paths
 - Hadoop defaults
 
-## Example usage
+## Example usage: 4mc compression for distmap
 
 One common usage of the custom classpath is to support in your Hadoop
 cluster non-default compression format, which integrates with the
