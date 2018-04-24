@@ -39,7 +39,7 @@ cd ReadTools
 
 The jar file would be located in __build/libs/ReadTools.jar__.
 
-__To build a released version of ReadTools, use `git checkout ${version_number}`.
+_To build a released version of ReadTools, use `git checkout ${version_number}`._
 
 
 ## Contributing
