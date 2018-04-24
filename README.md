@@ -20,9 +20,6 @@ For more user-friendly information about the project, visit our
 [Documentation Page][documentation-page]. There, you can find the information
 for download and the complete tool documentation for the current version.
 
-For developers, please check our [Wiki][wiki-page] for more details or fill an [issue][issue_tracker] if you have any question: we would be happy to include any extra information
-to the [Wiki][wiki-page] with your feedback!
-
 ### Pre-requisites
 
 - A Java 8 JDK
@@ -31,8 +28,8 @@ to the [Wiki][wiki-page] with your feedback!
 
 ### Building
 
-**Important: to build ReadTools, you should clone the git repository (release
-zip files would not work).
+_**Important: to build ReadTools, you should clone the git repository (release
+zip files would not work).**_
 
 ```
 git clone https://github.com/magicDGS/ReadTools.git
@@ -49,6 +46,10 @@ __To build a released version of ReadTools, use `git checkout ${version_number}`
 
 Please read [CONTRIBUTING.md](https://github.com/magicDGS/ReadTools/blob/master/CONTRIBUTING.md)
 for details on our code of conduct, and the process for collaborating on the project.
+
+For developers, please check our [Wiki][wiki-page] for more details. If you have any question
+uncovered by the [Wiki][wiki-page], feel free to fill in an [ssue][issue_tracker]: we would
+be happy to include any extra information with your feedback!
 
 ### Bug reports
 

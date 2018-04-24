@@ -1,6 +1,6 @@
 # Contributing to _ReadTools_
 
-The following is a set of guidelines to contribute to SwimPool.
+The following is a set of guidelines to contribute to _ReadTools_.
 There is no rule that cannot be broken, so feel free to propose
 any change to this document.
 
@@ -11,14 +11,13 @@ any change to this document.
   - [Suggesting enhancements/features](#suggesting-enhancements-and-features)
   - [Code contributions](#code-contributions)
 * [Recognition model](#recognition-model)
-  - [Become a maintainer](#become-a-maintainer)
 
 ---
 
 ## Code of conduct
 
 This project and everyone participating in it is governed by the
-[ReadTools Code of Conduct][code_of_conduct]. By participating, you are
+[_ReadTools_ Code of Conduct][code_of_conduct]. By participating, you are
 expected to uphold this code. Please report unacceptable behavior to
 <daniel.gomez.sanchez@hotmail.es>.
 
@@ -43,9 +42,18 @@ in our [Issue Tracker][issue_tracker].
 
 You should [make a fork](https://help.github.com/articles/fork-a-repo/) and
 [submit a Pull Request](https://help.github.com/articles/about-pull-requests/)
-to contribute. Please, check our [Wiki][wiki-page] to see the guidelines for
-developers.
+to contribute. Please, check our [Wiki](https://github.com/magicDGS/ReadTools/wiki)
+to see the guidelines for developers.
 
 [code_of_conduct]: https://github.com/magicDGS/ReadTools/blob/master/CODE_OF_CONDUCT.md
 [issue_tracker]: https://github.com/magicDGS/ReadTools/issues
 [pull_requests]: https://github.com/magicDGS/ReadTools/pulls
+
+## Recognition model
+
+If you contribute to _ReadTools_ significatly (e.g., with a Pull Request), we would add
+your name to a `CONTRIBUTORS.md` file with details about your contribution(s).
+
+Currently we do not have any major contributor to the project. Be the first!
+
+*Note: this is not limited to code contributions.*
