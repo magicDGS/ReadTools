@@ -8,6 +8,18 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+### Fixed
+- Fix failing uncompression of the jar file on OSX due to name collisions
+
+### Added
+- Include validation stringency argument in `QualityEncodingDetector`
+- Support for Hadoop compression service in the classpath
+
+### Security
+- Update documentation page dependencies, which had security issues
+
+### Developer
+- Exluce `junit` from gradle configuration
 
 ## [1.2.1]
 
