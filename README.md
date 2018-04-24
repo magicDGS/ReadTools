@@ -48,7 +48,7 @@ Please read [CONTRIBUTING.md](https://github.com/magicDGS/ReadTools/blob/master/
 for details on our code of conduct, and the process for collaborating on the project.
 
 For developers, please check our [Wiki][wiki-page] for more details. If you have any question
-uncovered by the [Wiki][wiki-page], feel free to fill in an [ssue][issue_tracker]: we would
+uncovered by the [Wiki][wiki-page], feel free to fill in an [issue][issue_tracker]: we would
 be happy to include any extra information with your feedback!
 
 ### Bug reports
