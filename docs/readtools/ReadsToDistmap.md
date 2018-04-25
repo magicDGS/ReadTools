@@ -2,7 +2,7 @@
 title: ReadsToDistmap
 summary: Converts any kind of ReadTools source to Distmap format.
 permalink: ReadsToDistmap.html
-last_updated: 02-17-2018 10:17:07
+last_updated: 25-37-2018 02:37:45
 ---
 
 ## Description
@@ -64,7 +64,7 @@ Converts to the Distmap format
 
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
-| `--hdfsBlockSize`<br/>`-hdfsBlockSize` | Integer | null | Block-size (in bytes) for files in HDFS. If not provided, use default configuration. |
+| `--hdfsBlockSize`<br/>`-hdfsBlockSize` | Long | null | Block-size (in bytes) for files in HDFS. If not provided, use default configuration. |
 | `--showHidden`<br/>`-showHidden` | boolean | false | display hidden arguments |
 
 

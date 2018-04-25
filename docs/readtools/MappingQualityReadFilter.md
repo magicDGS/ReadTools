@@ -2,7 +2,7 @@
 title: MappingQualityReadFilter
 summary: Keep only reads with mapping qualities within a specified range
 permalink: MappingQualityReadFilter.html
-last_updated: 02-17-2018 10:17:07
+last_updated: 25-37-2018 02:37:45
 ---
 
 ## Description

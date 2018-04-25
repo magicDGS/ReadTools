@@ -2,7 +2,7 @@
 title: QualityEncodingDetector
 summary: Detects the quality encoding format for all kind of sources for ReadTools.
 permalink: QualityEncodingDetector.html
-last_updated: 02-17-2018 10:17:07
+last_updated: 25-37-2018 02:37:45
 ---
 
 ## Description
@@ -32,6 +32,7 @@ Detects the quality encoding for a SAM/BAM/CRAM/FASTQ files, output to the STDOU
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
 | `--QUIET` | Boolean | false | Whether to suppress job-summary info on System.err. |
+| `--readValidationStringency`<br/>`-VS` | ValidationStringency | SILENT | Validation stringency for all SAM/BAM/CRAM files read by this program. The default stringency value SILENT can improve performance when processing a BAM file in which variable-length data (read, qualities, tags) do not otherwise need to be decoded.<br/><br/><b>Possible values:</b> <i>STRICT</i>, <i>LENIENT</i>, <i>SILENT</i> |
 | `--TMP_DIR` | List[File] | [] | Undocumented option |
 | `--use_jdk_deflater`<br/>`-jdk_deflater` | boolean | false | Whether to use the JdkDeflater (as opposed to IntelDeflater) |
 | `--use_jdk_inflater`<br/>`-jdk_inflater` | boolean | false | Whether to use the JdkInflater (as opposed to IntelInflater) |
