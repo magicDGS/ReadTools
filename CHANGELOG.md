@@ -8,6 +8,9 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+
+## [1.3.0]
+
 ### Fixed
 - Fix failing uncompression of the jar file on OSX due to name collisions
 - More concise repository README without redundant information
@@ -227,3 +230,4 @@ First pre-release
 [1.1.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.1.0
 [1.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.0
 [1.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.1
+[1.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.3.0
