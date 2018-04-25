@@ -2,7 +2,7 @@
 title: AlignmentAgreesWithHeaderReadFilter
 summary: Filters out reads where the alignment does not match the contents of the header
 permalink: AlignmentAgreesWithHeaderReadFilter.html
-last_updated: 02-17-2018 10:17:07
+last_updated: 25-37-2018 02:37:45
 ---
 
 ## Description

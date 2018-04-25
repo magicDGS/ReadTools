@@ -1,6 +1,6 @@
 ReadTools:
-  version: 1.2.1
-  timestamp: 02-17-2018 10:17:07
+  version: 1.3.0
+  timestamp: 25-37-2018 02:37:45
 
 tools:
   - group: Diagnostics and Quality Control
