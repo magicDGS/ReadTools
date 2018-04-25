@@ -23,9 +23,6 @@ A list of jar files separated by `:` should be provided to the `-cp`
 option of java in addition to the `ReadTools.jar`. For example, to include
 one or two services (packaged in _**service1.jar**_ and _**service2.jar**_):
 
-For an unique jar file containing the extension for any service, named
-_**service1.jar**_
-
 ```bash
 # only service 1
 java -cp ReadTools.jar:service1.jar org.magicdgs.readtools.Main
