@@ -8,6 +8,23 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+### Fixed
+- Fix failing uncompression of the jar file on OSX due to name collisions
+- More concise repository README without redundant information
+- Clarify usage of `DownloadDistmapResult` --noRemoveTaskProgramGroup
+
+### Added
+- Include validation stringency argument in `QualityEncodingDetector`
+- Support for Hadoop compression service in the classpath and documentation in help pages
+
+### Security
+- Update documentation page dependencies, which had security issues
+
+### Developer
+- Exluce `junit` from gradle configuration
+- Add Wiki for developers (repository level)
+- Add contribution information and code of conduct
+- Remove warnings in help pages (jekyll build) 
 
 ## [1.2.1]
 
