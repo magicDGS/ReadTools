@@ -16,6 +16,7 @@ org.magicdgs.readtools.tools.conversion
 org.magicdgs.readtools.tools.distmap
 org.magicdgs.readtools.tools.quality
 org.magicdgs.readtools.tools.trimming
+org.magicdgs.readtools.utils
 org.magicdgs.readtools.utils.distmap
 org.magicdgs.readtools.utils.fastq
 org.magicdgs.readtools.utils.iterators
