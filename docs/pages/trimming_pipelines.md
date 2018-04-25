@@ -3,8 +3,8 @@ title: Trimming Pipelines
 sidebar: home_sidebar
 permalink: trimming_pipelines.html
 ---
-{% assign trimmer_groups = (site.data.index.utilities | where:"group","Trimmers") %}
-{% assign filter_groups = (site.data.index.utilities | where:"group","Read Filters") %}
+{% assign trimmer_groups = site.data.index.utilities | where:"group","Trimmers" %}
+{% assign filter_groups = site.data.index.utilities | where:"group","Read Filters" %}
 
 [TrimReads](TrimReads.html) applies a trimming/filtering pipeline that can be highly customized by the user. The tool includes default trimmers/filters, but they could be disabled or other ones included. The order of the pipeline is the following:
 
