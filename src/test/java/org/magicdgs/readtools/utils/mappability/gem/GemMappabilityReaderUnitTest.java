@@ -24,26 +24,9 @@
 
 package org.magicdgs.readtools.utils.mappability.gem;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
-import java.util.regex.Matcher;
-
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class GemMappabilityReaderUnitTest {
-
-    @Test
-    private void testEncodingExpression() {
-        System.err.println(GemMappabilityReader.ENCODING_EXPRESSION);
-        final Matcher matcher = GemMappabilityReader.ENCODING_EXPRESSION.matcher("' '~[0-0]");
-        System.err.println(matcher.find());
-        System.err.println(matcher.group(0));
-        System.err.println(matcher.group(1));
-        System.err.println(matcher.group(2));
-        System.err.println(matcher.group(3));
-        Assert.assertTrue(GemMappabilityReader.ENCODING_EXPRESSION.matcher("' '~[0-0]").matches());
-    }
 
 }

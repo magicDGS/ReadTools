@@ -24,71 +24,140 @@
 
 package org.magicdgs.readtools.utils.mappability.gem;
 
-import com.google.common.annotations.VisibleForTesting;
+import htsjdk.samtools.util.RuntimeIOException;
+import org.apache.commons.lang3.Range;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class GemMappabilityReader {
+public class GemMappabilityReader implements Iterator<GemMappabilityRecord> {
 
-    private static final String RECORD_PREFIX = "~";
-    private static final String HEADER_PREFIX = "~~";
+    private static final char HEADER_PREFIX = '~';
 
-    private static final String KMER_LENGTH_HEADER = HEADER_PREFIX + "K-MER LENGTH";
-    private static final String APPROX_THRESHOLD_HEADER = HEADER_PREFIX + "APPROXIMATION THRESHOLD";
-    private static final String MAX_MISMATCH_HEADER = HEADER_PREFIX + "MAX MISMATCHES";
-    private static final String MAX_ERRORS_HEADER = HEADER_PREFIX + "MAX ERRORS";
-    private static final String MAX_INDEL_LENGTH_HEADER = HEADER_PREFIX + "MAX BIG INDEL LENGTH";
-    private static final String MIN_MATCH_HEADER = HEADER_PREFIX + "MIN MATCHED BASES";
-    private static final String STRATA_AFTER_BEST_HEADER = HEADER_PREFIX + "STRATA AFTER BEST";
-    private static final String ENCODING_HEADER = HEADER_PREFIX + "ENCODING";
+    private static final String KMER_LENGTH_HEADER_TEXT = "K-MER LENGTH";
+    private static final String APPROX_THRESHOLD_HEADER_TEXT = "APPROXIMATION THRESHOLD";
+    private static final String MAX_MISMATCH_HEADER_TEXT = "MAX MISMATCHES";
+    private static final String MAX_ERRORS_HEADER_TEXT = "MAX ERRORS";
+    private static final String MAX_INDEL_LENGTH_HEADER_TEXT = "MAX BIG INDEL LENGTH";
+    private static final String MIN_MATCH_HEADER_TEXT = "MIN MATCHED BASES";
+    private static final String STRATA_AFTER_BEST_HEADER_TEXT = "STRATA AFTER BEST";
+    private static final String ENCODING_HEADER_TEXT = "ENCODING";
 
-    @VisibleForTesting
-    static final Pattern ENCODING_EXPRESSION = Pattern.compile("'(.)'~\\[(\\d)+-(\\d)+]");
+    private static final Pattern ENCODING_PATTERN = Pattern.compile("'(.)'~\\[(\\d)+-(\\d)+]");
 
-    private BufferedReader reader;
 
-    private GemMappabilityHeader header;
+    private final BufferedReader reader;
+    private final GemMappabilityHeader header;
+    private String currentSequence;
+    private long currentSequencePosition;
 
-    private GemMappabilityHeader readHeader() throws IOException {
+    public GemMappabilityReader(final Path path) throws IOException {
+        this.reader = Files.newBufferedReader(path);
+        this.header = readHeader(reader);
+        this.currentSequence = advanceSequence();
+        this.currentSequencePosition = 0;
+    }
+
+    public GemMappabilityHeader getHeader() {
+        return header;
+    }
+
+    @Override
+    public boolean hasNext() {
+        // TODO: should be implemented
+        throw new IllegalStateException("Not implemented");
+    }
+
+    @Override
+    public GemMappabilityRecord next() {
+        try {
+            // changing to next sequence
+            if (isSequenceHeader(reader)) {
+                this.currentSequence = advanceSequence();
+                this.currentSequencePosition = 0;
+            }
+            currentSequencePosition++;
+            return new GemMappabilityRecord(this.currentSequence,
+                    this.currentSequencePosition,
+                    header.getEncodedValues((byte) reader.read()));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private String advanceSequence() throws IOException {
+        if (isSequenceHeader(reader)) {
+            // remove the first character
+            return reader.readLine().substring(1);
+        }
+        throw new IllegalStateException("Should not be called now");
+    }
+
+    //////////////////////////
+    // METADATA RELATED-METHODS
+
+    public static GemMappabilityHeader readHeader(final BufferedReader reader) throws IOException {
         return new GemMappabilityHeader(
-                readIntHeader(KMER_LENGTH_HEADER),
-                readIntHeader(APPROX_THRESHOLD_HEADER),
-                readIntHeader(MAX_MISMATCH_HEADER),
-                readIntHeader(MAX_ERRORS_HEADER),
-                readIntHeader(MAX_INDEL_LENGTH_HEADER),
-                readIntHeader(MIN_MATCH_HEADER),
-                readIntHeader(STRATA_AFTER_BEST_HEADER),
-                readEncoding());
+                readIntHeader(reader, KMER_LENGTH_HEADER_TEXT),
+                readIntHeader(reader, APPROX_THRESHOLD_HEADER_TEXT),
+                readIntHeader(reader, MAX_MISMATCH_HEADER_TEXT),
+                readIntHeader(reader, MAX_ERRORS_HEADER_TEXT),
+                readIntHeader(reader, MAX_INDEL_LENGTH_HEADER_TEXT),
+                readIntHeader(reader, MIN_MATCH_HEADER_TEXT),
+                readIntHeader(reader, STRATA_AFTER_BEST_HEADER_TEXT),
+                readEncoding(reader));
     }
 
-    private Map<Character, int[]> readEncoding() throws IOException {
-        final String encoding = reader.readLine();
-        if (encoding.equals(ENCODING_HEADER)) {
-            // TODO: better exception
-            throw new IOException(String.format("Wrong header line: expected '%s' but found '%s'",
-                    ENCODING_HEADER, encoding));
-        }
 
-
-        // TODO: fill in the header
-        return null;
-    }
-
-    private int readIntHeader(final String expected) throws IOException {
-        final String descLine = reader.readLine();
-        if (!descLine.equals(expected)) {
-            // TODO: better exception
-            throw new IOException(String.format("Wrong header line: expected '%s' but found '%s'",
-                    expected, descLine));
-        }
-        // TODO: handle exception
+    private static int readIntHeader(final BufferedReader reader, final String expected) throws IOException {
+        skipMetadataLine(reader, expected);
         return Integer.parseInt(reader.readLine());
     }
 
+    private static Map<Byte, Range<Integer>> readEncoding(final BufferedReader reader) throws IOException {
+        skipMetadataLine(reader, ENCODING_HEADER_TEXT);
+        final Map<Byte, Range<Integer>> map = new LinkedHashMap<>();
+
+        while(!isSequenceHeader(reader)) {
+            final String line = reader.readLine();
+            final Matcher matcher = ENCODING_PATTERN.matcher(line);
+            if (!matcher.find()) {
+                throw new IOException(String.format("Wrong encoding line: %s (expected mathicg %s)", line,
+                        ENCODING_PATTERN));
+            }
+            map.put(Byte.parseByte(matcher.group(1)), Range.between(
+                    Integer.parseInt(matcher.group(2)),
+                    Integer.parseInt(matcher.group(3))));
+
+        }
+        return map;
+    }
+
+    private static void skipMetadataLine(final BufferedReader reader, final String text) throws IOException {
+        final String headerLine = reader.readLine();
+        if (headerLine.charAt(0) == HEADER_PREFIX && headerLine.charAt(1) == HEADER_PREFIX && headerLine.endsWith(text)) {
+            return;
+        }
+        throw new IOException(String.format("Wrong header line: %s (expected %s)", headerLine, text));
+    }
+
+    ///////////////////////
+    // HELPER METHODS
+
+    private static boolean isSequenceHeader(final BufferedReader reader) throws IOException{
+        reader.mark(0);
+        final boolean res = reader.read() == HEADER_PREFIX;
+        reader.reset();
+        return res;
+    }
 }

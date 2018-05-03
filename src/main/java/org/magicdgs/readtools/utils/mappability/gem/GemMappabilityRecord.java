@@ -24,12 +24,32 @@
 
 package org.magicdgs.readtools.utils.mappability.gem;
 
+import org.apache.commons.lang3.Range;
+
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class GemMappabilityRecord {
+    private final String sequenceName;
+    private final long position;
+    private final Range<Integer> range;
 
-    private String recordName;
+    public GemMappabilityRecord(final String sequenceName, final long position, final Range<Integer> range) {
+        this.sequenceName = sequenceName;
+        this.position = position;
+        this.range = range;
+    }
 
-    private char[] values;
+    public String getSequenceName() {
+        return sequenceName;
+    }
+
+    public long getPosition() {
+        return position;
+    }
+
+    public Range<Integer> getRange() {
+        return range;
+    }
+
 }

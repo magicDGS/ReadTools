@@ -24,6 +24,7 @@
 
 package org.magicdgs.readtools.utils.mappability.gem;
 
+import org.apache.commons.lang3.Range;
 
 import java.util.Map;
 
@@ -46,11 +47,11 @@ public class GemMappabilityHeader {
 
     private final int strataAfterBest;
 
-    private final Map<Character, int[]> encoding;
+    private final Map<Byte, Range<Integer>> encoding;
 
     public GemMappabilityHeader(int kmerLength, int approximationThreshold, int maxMismatches,
             int maxErrors, int maxBigIndelLength, int minMatchedBases, int strataAfterBest,
-            Map<Character, int[]> encoding) {
+            Map<Byte, Range<Integer>> encoding) {
         this.kmerLength = kmerLength;
         this.approximationThreshold = approximationThreshold;
         this.maxMismatches = maxMismatches;
@@ -59,5 +60,37 @@ public class GemMappabilityHeader {
         this.minMatchedBases = minMatchedBases;
         this.strataAfterBest = strataAfterBest;
         this.encoding = encoding;
+    }
+
+    public int getKmerLength() {
+        return kmerLength;
+    }
+
+    public int getApproximationThreshold() {
+        return approximationThreshold;
+    }
+
+    public int getMaxMismatches() {
+        return maxMismatches;
+    }
+
+    public int getMaxErrors() {
+        return maxErrors;
+    }
+
+    public int getMaxBigIndelLength() {
+        return maxBigIndelLength;
+    }
+
+    public int getMinMatchedBases() {
+        return minMatchedBases;
+    }
+
+    public int getStrataAfterBest() {
+        return strataAfterBest;
+    }
+
+    public Range<Integer> getEncodedValues(final byte c) {
+        return encoding.get(c);
     }
 }
