@@ -24,32 +24,59 @@
 
 package org.magicdgs.readtools.utils.mappability.gem;
 
+import htsjdk.samtools.util.Locatable;
 import org.apache.commons.lang3.Range;
+import org.broadinstitute.hellbender.utils.Utils;
 
 /**
+ * {@link Locatable} implementation of GEM-mappability record.
+ *
+ * <p>In GEM-mappability, every position of the genome is associated with a number of mappings. For
+ * large number of mappings, the value is encoded as a char representing a range of values. This
+ * class holds the information per-base.
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class GemMappabilityRecord {
-    private final String sequenceName;
-    private final long position;
+public final class GemMappabilityRecord implements Locatable {
+    private final String contig;
+    private final int position;
     private final Range<Integer> range;
 
-    public GemMappabilityRecord(final String sequenceName, final long position, final Range<Integer> range) {
-        this.sequenceName = sequenceName;
+    /**
+     * Default constructor.
+     *
+     * @param contig   contig for the record.
+     * @param position position for the record.
+     * @param range    range of values in GEM-mappability file associated with this position.
+     */
+    public GemMappabilityRecord(final String contig, final int position,
+            final Range<Integer> range) {
+        this.contig = Utils.nonNull(contig);
         this.position = position;
-        this.range = range;
+        this.range =  Utils.nonNull(range, () -> "null range for " + contig + ":" + position);
     }
 
-    public String getSequenceName() {
-        return sequenceName;
-    }
-
-    public long getPosition() {
-        return position;
-    }
-
+    /**
+     * Gets the range of values of this position reported by GEM-mappability.
+     *
+     * @return range of values.
+     */
     public Range<Integer> getRange() {
         return range;
     }
 
+    @Override
+    public String getContig() {
+        return contig;
+    }
+
+    @Override
+    public int getStart() {
+        return position;
+    }
+
+    @Override
+    public int getEnd() {
+        return position;
+    }
 }

@@ -29,26 +29,24 @@ import org.apache.commons.lang3.Range;
 import java.util.Map;
 
 /**
+ * TODO: documentation
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class GemMappabilityHeader {
 
+    // information contained in the header
     private final int kmerLength;
-
     private final int approximationThreshold;
-
     private final int maxMismatches;
-
     private final int maxErrors;
-
     private final int maxBigIndelLength;
-
     private final int minMatchedBases;
-
     private final int strataAfterBest;
 
     private final Map<Byte, Range<Integer>> encoding;
 
+    // TODO: documentation
     public GemMappabilityHeader(int kmerLength, int approximationThreshold, int maxMismatches,
             int maxErrors, int maxBigIndelLength, int minMatchedBases, int strataAfterBest,
             Map<Byte, Range<Integer>> encoding) {
@@ -62,35 +60,48 @@ public class GemMappabilityHeader {
         this.encoding = encoding;
     }
 
+    // TODO: documentation
     public int getKmerLength() {
         return kmerLength;
     }
 
+    // TODO: documentation
     public int getApproximationThreshold() {
         return approximationThreshold;
     }
 
+    // TODO: documentation
     public int getMaxMismatches() {
         return maxMismatches;
     }
 
+    // TODO: documentation
     public int getMaxErrors() {
         return maxErrors;
     }
 
+    // TODO: documentation
     public int getMaxBigIndelLength() {
         return maxBigIndelLength;
     }
 
+    // TODO: documentation
     public int getMinMatchedBases() {
         return minMatchedBases;
     }
 
+    // TODO: documentation
     public int getStrataAfterBest() {
         return strataAfterBest;
     }
 
+    // TODO: documentation
     public Range<Integer> getEncodedValues(final byte c) {
-        return encoding.get(c);
+        // TODO: throw exception if not present?
+        final Range<Integer> range = encoding.get(c);
+        if (range != null) {
+            return range;
+        }
+        throw new IllegalArgumentException("No encoding for: " + (char) c);
     }
 }
