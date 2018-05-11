@@ -43,8 +43,19 @@ public class GemMappabilityException extends UserException {
      * @param msg        exception message.
      */
     public GemMappabilityException(final Path path, final int lineNumber, final String msg) {
+        this(path, lineNumber, msg, null);
+    }
+
+    /**
+     * Constructor for a concrete file and line number.
+     *
+     * @param path       the path for the GEM-mappability file.
+     * @param lineNumber line number on the file (approx.)
+     * @param msg        exception message.
+     */
+    public GemMappabilityException(final Path path, final int lineNumber, final String msg, final Throwable e) {
         super(String.format("Invalid GEM-mappability file %s at line %s: %s",
-                path, lineNumber, msg));
+                getPathName(path), lineNumber, msg), e);
     }
 
     /**
@@ -70,6 +81,11 @@ public class GemMappabilityException extends UserException {
     public static GemMappabilityException readingException(final Path path, final int lineNumber,
             final Exception exception) {
         return new GemMappabilityException(String.format("Error reading GEM-mappability file %s at %s",
-                        path.toUri().toString(), lineNumber), exception);
+                        getPathName(path), lineNumber), exception);
+    }
+
+
+    private static final String getPathName(final Path path) {
+        return (path == null) ? "unknown" : path.toUri().toString();
     }
 }

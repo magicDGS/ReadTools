@@ -97,11 +97,56 @@ public class GemMappabilityHeader {
 
     // TODO: documentation
     public Range<Integer> getEncodedValues(final byte c) {
-        // TODO: throw exception if not present?
-        final Range<Integer> range = encoding.get(c);
-        if (range != null) {
-            return range;
+        // TODO: will return null if not encoded
+        return encoding.get(c);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-        throw new IllegalArgumentException("No encoding for: " + (char) c);
+        if (!(o instanceof GemMappabilityHeader)) {
+            return false;
+        }
+
+        GemMappabilityHeader that = (GemMappabilityHeader) o;
+
+        if (kmerLength != that.kmerLength) {
+            return false;
+        }
+        if (approximationThreshold != that.approximationThreshold) {
+            return false;
+        }
+        if (maxMismatches != that.maxMismatches) {
+            return false;
+        }
+        if (maxErrors != that.maxErrors) {
+            return false;
+        }
+        if (maxBigIndelLength != that.maxBigIndelLength) {
+            return false;
+        }
+        if (minMatchedBases != that.minMatchedBases) {
+            return false;
+        }
+        if (strataAfterBest != that.strataAfterBest) {
+            return false;
+        }
+
+        return encoding.equals(that.encoding);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = kmerLength;
+        result = 31 * result + approximationThreshold;
+        result = 31 * result + maxMismatches;
+        result = 31 * result + maxErrors;
+        result = 31 * result + maxBigIndelLength;
+        result = 31 * result + minMatchedBases;
+        result = 31 * result + strataAfterBest;
+        result = 31 * result + encoding.hashCode();
+        return result;
     }
 }

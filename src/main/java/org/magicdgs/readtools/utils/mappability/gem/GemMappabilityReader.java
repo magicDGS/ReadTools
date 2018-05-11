@@ -29,6 +29,8 @@ import htsjdk.samtools.util.BufferedLineReader;
 import htsjdk.samtools.util.CloseableIterator;
 import htsjdk.samtools.util.RuntimeIOException;
 import org.apache.commons.lang3.Range;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.Utils;
 
 import java.io.IOException;
@@ -73,7 +75,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     private static final String ENCODING_HEADER_TEXT = "ENCODING";
 
     // pattern for the encoding (char to value range)
-    protected static final Pattern ENCODING_PATTERN = Pattern.compile("'(.)'~\\[(\\d)+-(\\d)+]");
+    protected static final Pattern ENCODING_PATTERN = Pattern.compile("'(.)'~\\[(\\d+)-(\\d+)]");
 
     // stored for error message and get the identity of the path
     private final Path path;
@@ -82,9 +84,12 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     // header from the file, read on construction
     private final GemMappabilityHeader header;
 
-    // cached values to keep track of the current sequence
+    // iteration values to keep track of the current sequence
     private String currentSequence = null;
     private int currentSequencePosition = -1;
+
+    // logger
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     /**
      * Loads a gem-mappability formatted file.
@@ -131,15 +136,26 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
             this.currentSequence = readLineWrappingException().substring(1);
             this.currentSequencePosition = 0;
         }
+
+        final Range<Integer> range = header.getEncodedValues(readByteWrappingException());
+
+        if (range == null) {
+            // TODO: exception message
+            throw new GemMappabilityException(path, reader.getLineNumber(), "");
+        }
+
         // advance the position one and generate the record
         return new GemMappabilityRecord(
                 this.currentSequence,
                 ++this.currentSequencePosition,
-                header.getEncodedValues(readByteWrappingException()));
+                range);
     }
 
     @Override
     public void close() {
+        // set iteration values to unitialize
+        currentSequence = null;
+        currentSequencePosition = -1;
         // throws RuntimeIOException if IO
         reader.close();
     }
@@ -148,6 +164,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     // METADATA RELATED-METHODS
 
     public GemMappabilityHeader readHeader() {
+        logger.debug("Reading header");
         return new GemMappabilityHeader(
                 readIntHeader(KMER_LENGTH_HEADER_TEXT),
                 readIntHeader(APPROX_THRESHOLD_HEADER_TEXT),
@@ -161,47 +178,56 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
 
 
     private int readIntHeader(final String expected) {
+        logger.debug("Readig meta-data line: {}", expected);
         skipMetadataLine(expected);
         final String line = readLineWrappingException();
         try {
             return Integer.parseInt(line);
         } catch (final NumberFormatException e) {
             throw new GemMappabilityException(path,
-                    reader.getLineNumber() - line.length(),
+                    reader.getLineNumber(),
                     String.format("integer expected for %s header (found %s)", expected, line));
         }
     }
 
     private Map<Byte, Range<Integer>> readEncoding() {
+        logger.debug("Reading encoding meta-data");
         skipMetadataLine(ENCODING_HEADER_TEXT);
         final Map<Byte, Range<Integer>> map = new LinkedHashMap<>();
 
-        while (!isAtHeaderLine()) {
+        while (hasNext() && !isAtHeaderLine()) {
             final String line = readLineWrappingException();
+            // break if there is no next
             final Matcher matcher = ENCODING_PATTERN.matcher(line);
             if (!matcher.find()) {
                 throw new GemMappabilityException(path,
-                        reader.getLineNumber() - line.length(),
+                        reader.getLineNumber(),
                         String.format("encoding should match %s (found %s)", ENCODING_PATTERN, line));
             }
-            // this should not fail because the pattern matches.
-            map.put(Byte.parseByte(matcher.group(1)), Range.between(
+            // this should not fail because the pattern matches
+            map.put((byte) matcher.group(1).charAt(0), Range.between(
                     Integer.parseInt(matcher.group(2)),
                     Integer.parseInt(matcher.group(3))));
 
+        }
+        if (map.isEmpty()) {
+            throw new GemMappabilityException(path,
+                    reader.getLineNumber(),
+                    String.format("%s header does not have any entry", ENCODING_HEADER_TEXT));
         }
         return map;
     }
 
     private void skipMetadataLine(final String text) {
         final String headerLine = readLineWrappingException();
-        if (headerLine.charAt(0) == HEADER_PREFIX && headerLine.charAt(1) == HEADER_PREFIX
-                && headerLine.endsWith(text)) {
+        if (headerLine != null && !headerLine.isEmpty() &&
+                headerLine.charAt(0) == HEADER_PREFIX && headerLine.charAt(1) == HEADER_PREFIX &&
+                headerLine.endsWith(text)) {
             return;
         }
         // invalid format
         throw new GemMappabilityException(path,
-                reader.getLineNumber() - headerLine.length(),
+                reader.getLineNumber(),
                 String.format("expected header is %s (found %s)", headerLine, text));
     }
 
@@ -236,4 +262,16 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         }
     }
 
+    ////////////////////////
+    // METHODS FOR TESTING
+
+    @VisibleForTesting
+    protected String getCurrentSequence() {
+        return currentSequence;
+    }
+
+    @VisibleForTesting
+    protected int getCurrentSequencePosition() {
+        return currentSequencePosition;
+    }
 }
