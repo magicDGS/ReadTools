@@ -25,7 +25,6 @@
 package org.magicdgs.readtools.tools.mapped;
 
 import htsjdk.samtools.SAMRecord;
-import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
  * TODO: remove class
@@ -57,17 +56,6 @@ public class Threshold {
         }
     }
 
-    public Threshold() { }
-
-    /**
-     *
-     * @param args String array in the form tag, operation, threshold
-     * @throws Exception
-     */
-    public Threshold(String tag, String operation, String threshold) {
-        ThresholdConstructor(tag, operation, threshold);
-    }
-
     public Threshold(String threshold_string) {
         String split = "";
         if(threshold_string.contains(">")) {
@@ -88,20 +76,6 @@ public class Threshold {
             this.threshold = Integer.parseInt(threshold);
         } catch(IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid operation: "+operation);
-        }
-    }
-
-    /**
-     *
-     * @param record	First pair
-     * @param mate	Second pair
-     * @return	1 if the pair fullfill the threshold; 0 otherwise
-     */
-    public boolean operate(SAMRecord record, SAMRecord mate) {
-        if(isInThreshold(record) && isInThreshold(mate)) {
-            return true;
-        } else {
-            return false;
         }
     }
 

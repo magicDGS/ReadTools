@@ -129,7 +129,8 @@ public final class TagByWindow extends ReadToolsProgram {
             boolean first_read_flag = true;
             boolean sc = false;
             boolean ind = false;
-            OutputWindow current_window = new OutputWindow();
+            // TODO: changed to null, not necessary until construction in the first read
+            OutputWindow current_window = null;
 
             // For logging the progress
             ProgressLogger progress = new ProgressLogger(logger);
@@ -141,7 +142,10 @@ public final class TagByWindow extends ReadToolsProgram {
                 // System.out.println(record);
                 // if is unmapped count it and continue to the next
                 // TODO: use read.isUnmapped() instead of record.getAlignmentStart() == 0
-                if(record.getAlignmentStart() == 0) {
+                // TODO: not concordant due to record.getAlignmentStart != 0 for some unmapped reads which mate maps
+                // TODO: that is wrong, because we aare considering it mapping properly when it was positioned there just due to the mate
+                // TODO: by now, this is equivalent to read.getAssignedStart()
+                if(read.getAssignedStart() == 0) {
                     unmapped++;
                     progress.record(record);
                     continue;
@@ -152,7 +156,11 @@ public final class TagByWindow extends ReadToolsProgram {
                     unmapped = 0;
                 }
                 // get the reference name
-                String reference = record.getReferenceName();
+                // TODO: use read.getContig() instead of record.getReferenceName
+                // TODO: might throw exception, because it might return null if the read is unmapped
+                // TODO: this should not happen if record.isUnmapped() is used previously
+                // TODO: by now, this is equivalent to read.getAssignedContig()
+                String reference = read.getAssignedContig();
 
                 // if is the first read
                 if(first_read_flag) {
@@ -168,6 +176,7 @@ public final class TagByWindow extends ReadToolsProgram {
                     logger.info("Analysing {}", reference);
                 }
 
+                // TODO: try to use read instead
                 // if the record is not in this window
                 while(!current_window.isInWin(record)) {
                     // if the reference is different form the current window
@@ -196,16 +205,20 @@ public final class TagByWindow extends ReadToolsProgram {
                     }
                     // if the record is in the window
                 }
+                // TODO: try to use read instead
                 // Now the record is in the window and we could compute all the stuff
                 // First if is proper
                 boolean prop = RecordOperation.isProper(record);
                 // initialize empty values
                 boolean[] values;
                 if(prop) {
+                    // TODO: try to use read instead
                     // if softclip, compute the clipping
-                    if(softclip) sc = RecordOperation.isClip(record);
+                    if(softclip) sc = RecordOperation.isClip(read);
+                    // TODO: try to use read instead
                     // if indel, compute the indels
-                    if(indel) ind = RecordOperation.isIndel(record);
+                    if(indel) ind = RecordOperation.isIndel(read);
+                    // TODO: try to use read instead
                     // compute the values for the tag
                     values = RecordOperation.tagValueThreshold(record, thresholds);
                 } else {
@@ -214,12 +227,16 @@ public final class TagByWindow extends ReadToolsProgram {
                     values = new boolean[thresholds.length];
                     Arrays.fill(values, false);
                 }
+                // TODO: try to use read instead
                 // add the record to the window
                 current_window.addRecord(record, prop, values, sc, ind);
+                // TODO: try to use read instead
                 // if the mate is before
                 if(!RecordOperation.isMateDownstream(record)) {
+                    // TODO: try to use read instead
                     // update the queue, storing the values for this window to add
                     int[] cur_vals = updateQueue(record, values);
+                    // TODO: try to use read instead
                     // if the mate is not in this window, add the values (if not, is already updated)
                     if(!current_window.isMateInWin(record)) current_window.addValues(cur_vals);
                 }
@@ -295,7 +312,9 @@ public final class TagByWindow extends ReadToolsProgram {
         for(OutputWindow win: windowQueue) {
             iterations++;
             if(iterations < windowQueue.size()) {
+                // TODO: try to use read instead
                 if(win.isMateInWin(record)) {
+                    // TODO: try to use read instead
                     return_vals = win.mateUpdate(record, values);
                     break;
                 }

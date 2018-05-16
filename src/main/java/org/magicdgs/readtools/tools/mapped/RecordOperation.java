@@ -24,8 +24,7 @@
 
 package org.magicdgs.readtools.tools.mapped;
 
-import htsjdk.samtools.Cigar;
-import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
 import htsjdk.samtools.SAMRecord;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
@@ -36,36 +35,24 @@ public class RecordOperation {
     /**
      * Check if a record is soft clipped
      *
-     * @param record	Record to check
+     * @param read	Record to check
      * @return	true if the read contains a soft clip; false otherwise
      */
-    public static boolean isClip(SAMRecord record) {
-        Cigar cigar = record.getCigar();
-        for(CigarElement elem: cigar.getCigarElements()) {
-            switch (elem.getOperator()) {
-                case S:
-                    return true;
-            }
-        }
-        return false;
+    public static boolean isClip(final GATKRead read) {
+        // TODO: I don't see any putative problem with this
+        return read.getCigarElements().stream().anyMatch(s -> s.getOperator() == CigarOperator.S);
     }
 
     /**
      * Check if a record contain indels
      *
-     * @param record	Record to check
+     * @param read	Record to check
      * @return	true if the read contains an indel; false otherwise
      */
-    public static boolean isIndel(SAMRecord record) {
-        Cigar cigar = record.getCigar();
-        for(CigarElement elem: cigar.getCigarElements()) {
-            switch (elem.getOperator()) {
-                case I:
-                case D:
-                    return true;
-            }
-        }
-        return false;
+    public static boolean isIndel(final GATKRead read) {
+        // TODO: I don't see any putative problem with this
+        return read.getCigarElements().stream()
+                .anyMatch(s -> s.getOperator() == CigarOperator.I || s.getOperator() == CigarOperator.D);
     }
 
     /**
@@ -81,8 +68,6 @@ public class RecordOperation {
     public static boolean isMateDownstream(SAMRecord record) {
         return isProper(record) && (record.getMateAlignmentStart() > record.getAlignmentStart());
     }
-
-
 
     /**
      * Operate each threshold for a pair of records
