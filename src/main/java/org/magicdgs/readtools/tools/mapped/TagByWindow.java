@@ -30,6 +30,7 @@ import org.magicdgs.readtools.engine.ReadToolsProgram;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.util.CloserUtil;
+import org.apache.commons.math3.util.Pair;
 import org.broadinstitute.barclay.argparser.Advanced;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.BetaFeature;
@@ -43,10 +44,13 @@ import org.broadinstitute.hellbender.utils.runtime.ProgressLogger;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Copied as it was (very bad implementation) with small modifications to be able to integrate with
@@ -73,8 +77,12 @@ public final class TagByWindow extends ReadToolsProgram {
     public Integer window;
 
     // TODO: tagged areguments would be great here!
-    @Argument(fullName = "tag-threshold-definition", doc = "Integer tag and the threshold required. The format is TAG>INT or TAG<threshold. E.g.: NM>2")
-    public List<String> tagThresholdDefinition;
+    @Argument(fullName = "tag-count-greater-than", shortName = "tag-gt", doc = "Threshold for count reads with TAG larger than and integer. The format is TAG:INT. E.g.: NM:2 for NM>2", optional = true)
+    public List<String> largerTags;
+
+    // TODO: tagged areguments would be great here!
+    @Argument(fullName = "tag-count-lower-than", shortName = "tag-lt", doc = "Threshold for count reads with TAG lower than an integer. The format is TAG:INT. E.g., NM:10 for NM<10", optional = true)
+    public List<String> lowerTags;
 
     @Argument(fullName = "soft-clip", doc = "Count the number of soft clipped reads in the window")
     public boolean softclip = false;
@@ -93,12 +101,13 @@ public final class TagByWindow extends ReadToolsProgram {
     public ReadsDataSource reads;
     // TODO: change PrintWriter for better printer
     public PrintWriter OUT_TAB;
-    // TODO: threshold class is not needed! - better a Pair<String, FunctionalInterface> to test
-    public static Threshold[] thresholds;
     // TODO: the OutputWindow implementation is shit! use a different stuff for it (e.g., Shard<read> and TableFeature for results)
     // TODO: in addition, all the logic in OutputWindow should be move outside here
     public static Queue<OutputWindow> windowQueue= new LinkedList<>(); // TODO: LinkedList is inefficient!
 
+
+    // operations to apply
+    public List<IntTagFunction> operations = new ArrayList<>();
 
     @Override
     public String[] customCommandLineValidation() {
@@ -111,9 +120,18 @@ public final class TagByWindow extends ReadToolsProgram {
             throw new UserException.CouldNotCreateOutputFile(outputArg, e);
         }
 
-        thresholds = tagThresholdDefinition.stream().map(Threshold::new).toArray(Threshold[]::new);
+        operations = Stream.concat(
+                largerTags.stream().map(TagByWindow::parseTag).map(s -> IntTagFunction.getLargerThan(s.getFirst(), s.getValue())),
+                lowerTags.stream().map(TagByWindow::parseTag).map(s -> IntTagFunction.getLowerThan(s.getFirst(), s.getValue()))
+        ).collect(Collectors.toList());
 
         return super.customCommandLineValidation();
+    }
+
+    private static Pair<String, Integer> parseTag(final String tag) {
+        // TODO: validate
+        final String[] pair = tag.split(":");
+        return Pair.create(pair[0], Integer.parseInt(pair[1]));
     }
 
     @Override
@@ -167,7 +185,7 @@ public final class TagByWindow extends ReadToolsProgram {
                     // Print the header for the output
                     PrintTabDelimHeader();
                     // Initialize the current window
-                    current_window = new OutputWindow(reference, start, end, header_context, thresholds.length, softclip, indel);
+                    current_window = new OutputWindow(reference, start, end, header_context, operations.size(), softclip, indel);
                     // Add the current window to the queue
                     windowQueue.add(current_window);
                     // remove the flag
@@ -198,7 +216,7 @@ public final class TagByWindow extends ReadToolsProgram {
                     }
                     try {
                         // create the new current window and add to the queue
-                        current_window = new OutputWindow(reference, start, end, header_context, thresholds.length, softclip, indel);
+                        current_window = new OutputWindow(reference, start, end, header_context, operations.size(), softclip, indel);
                         windowQueue.add(current_window);
                     } catch(IllegalArgumentException e) {
                         break;
@@ -210,7 +228,7 @@ public final class TagByWindow extends ReadToolsProgram {
                 // First if is proper
                 boolean prop = RecordOperation.isProper(record);
                 // initialize empty values
-                boolean[] values;
+                Boolean[] values;
                 if(prop) {
                     // TODO: try to use read instead
                     // if softclip, compute the clipping
@@ -220,11 +238,11 @@ public final class TagByWindow extends ReadToolsProgram {
                     if(indel) ind = RecordOperation.isIndel(read);
                     // TODO: try to use read instead
                     // compute the values for the tag
-                    values = RecordOperation.tagValueThreshold(record, thresholds);
+                    values = operations.stream().map(s -> s.apply(read)).toArray(Boolean[]::new);
                 } else {
                     sc = false;
                     ind = false;
-                    values = new boolean[thresholds.length];
+                    values = new Boolean[operations.size()];
                     Arrays.fill(values, false);
                 }
                 // TODO: try to use read instead
@@ -246,7 +264,6 @@ public final class TagByWindow extends ReadToolsProgram {
             outputLastEmptyWindows(current_window, header_context);
             // Print the final log and exit
             logger.info("Succesfully parsed {} reads.", progress.getCount());
-            System.exit(0);
         } finally {
             CloserUtil.close(Arrays.asList(reads, OUT_TAB));
         }
@@ -263,7 +280,7 @@ public final class TagByWindow extends ReadToolsProgram {
                     start+=window;
                     end+=window;
                     try {
-                        lastWindow = new OutputWindow(reference, start, end, header_context, thresholds.length, softclip, indel);
+                        lastWindow = new OutputWindow(reference, start, end, header_context, operations.size(), softclip, indel);
                         OUT_TAB.println(lastWindow);
                     } catch(IllegalArgumentException e) {
                         break;
@@ -306,7 +323,7 @@ public final class TagByWindow extends ReadToolsProgram {
      * @param values	The values of this record
      * @return values for the mate upstream
      */
-    public int[] updateQueue(SAMRecord record, boolean[] values) {
+    public int[] updateQueue(SAMRecord record, Boolean[] values) {
         int iterations = 0;
         int[] return_vals = new int[values.length];
         for(OutputWindow win: windowQueue) {
@@ -333,10 +350,7 @@ public final class TagByWindow extends ReadToolsProgram {
     public void PrintTabDelimHeader() {
         StringBuilder newString = new StringBuilder();
         newString.append("Ref\tStart\tEnd\tTotal\tProper");
-        for(Threshold thr: thresholds) {
-            newString.append("\t");
-            newString.append(thr.toString());
-        }
+        operations.forEach(s -> newString.append("\t").append(s.toString()));
         if(softclip) newString.append("\tSoftClip");
         if(indel) newString.append("\tIndels");
         OUT_TAB.println(newString);

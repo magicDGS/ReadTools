@@ -28,7 +28,6 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,7 +38,7 @@ import java.util.HashMap;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class OutputWindow extends Window {
-    private HashMap<String, boolean[]> visited = new HashMap<>();
+    private HashMap<String, Boolean[]> visited = new HashMap<>();
     private int total;
     private int proper;
     private int softclip;
@@ -128,7 +127,7 @@ public class OutputWindow extends Window {
      * @param softclip	If is softclip
      * @param indel	If is indel
      */
-    public void addRecord(SAMRecord record, boolean proper, boolean[] values, boolean softclip, boolean indel) {
+    public void addRecord(SAMRecord record, boolean proper, Boolean[] values, boolean softclip, boolean indel) {
         // add to the total
         addTotal();
         // if is proper, perform the rest
@@ -167,7 +166,7 @@ public class OutputWindow extends Window {
      * @param values	Values from this record
      * @return	values for this record-mate pair
      */
-    public int[] mateUpdate(SAMRecord record, boolean[] values) {
+    public int[] mateUpdate(SAMRecord record, Boolean[] values) {
         int[] vals = getVisitedValue(record, values);
         addValues(vals, 1);
         removeVisited(record);
@@ -190,8 +189,8 @@ public class OutputWindow extends Window {
      * @param values	The values for the record
      * @return	The values for this window
      */
-    private int[] getVisitedValue(SAMRecord record, boolean[] values) {
-        boolean[] vals = visited.get(record.getReadName());
+    private int[] getVisitedValue(SAMRecord record, Boolean[] values) {
+        Boolean[] vals = visited.get(record.getReadName());
         int[] return_vals = new int[this.values.length];
         Arrays.fill(return_vals, 0);
         if(vals != null) {

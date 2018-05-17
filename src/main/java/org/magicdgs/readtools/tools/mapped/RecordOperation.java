@@ -68,22 +68,5 @@ public class RecordOperation {
     public static boolean isMateDownstream(SAMRecord record) {
         return isProper(record) && (record.getMateAlignmentStart() > record.getAlignmentStart());
     }
-
-    /**
-     * Operate each threshold for a pair of records
-     *
-     * @param record	Record 1
-     * @param thresholds	Array with the thresholds to test
-     * @return	Array with 1 is both are over/under the threshold for each one; 0 otherwise
-     */
-    public static boolean[] tagValueThreshold(SAMRecord record, Threshold[] thresholds) {
-        boolean[] values = new boolean[thresholds.length];
-        int i = 0;
-        for(Threshold thr: thresholds) {
-            values[i] = thr.isInThreshold(record);
-            i += 1;
-        }
-        return values;
-    }
 }
 
