@@ -198,7 +198,7 @@ public final class TagByWindow extends ReadToolsProgram {
                 // if the record is not in this window
                 while(!current_window.isInWin(record)) {
                     // if the reference is different form the current window
-                    if(!current_window.getRef().equals(reference)) {
+                    if(!current_window.getContig().equals(reference)) {
                         // output the complete queue
                         flushQueue();
                         // output last empty window
@@ -271,7 +271,7 @@ public final class TagByWindow extends ReadToolsProgram {
     }
 
     public void outputLastEmptyWindows(OutputWindow lastWindow, SAMFileHeader header_context) {
-        String reference = lastWindow.getRef();
+        String reference = lastWindow.getContig();
         if(!lastWindow.isLast()) {
             if(EMPTY) {
                 int start = lastWindow.getStart();
