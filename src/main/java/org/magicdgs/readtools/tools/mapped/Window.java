@@ -77,11 +77,6 @@ public class Window {
         }
     }
 
-    /**
-     * Empty constructor
-     */
-    public Window() {}
-
     public String getRef() { return reference; }
 
     public int getStart() { return winStart; }

@@ -39,7 +39,7 @@ import java.util.HashMap;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class OutputWindow extends Window {
-    private HashMap<String, boolean[]> visited = new HashMap<String, boolean[]>();
+    private HashMap<String, boolean[]> visited = new HashMap<>();
     private int total;
     private int proper;
     private int softclip;
@@ -48,25 +48,6 @@ public class OutputWindow extends Window {
     private boolean ind;
     private int[] values;
     private Logger logger = LogManager.getLogger(this.getClass());
-    /**
-     * Empty constructor
-     */
-    public OutputWindow() {
-        super();
-    }
-
-    /**
-     * Public constructor
-     *
-     * @param ref	Reference name of the window
-     * @param start	Start position of the window
-     * @param end	End position of the window
-     * @param headerContext	Context	Context of the window (header of the file)
-     * @param nTags	Number of tags recorded for this window
-     */
-    public OutputWindow(String ref, int start, int end, SAMFileHeader headerContext, int nTags) throws IllegalArgumentException {
-        this(ref, start, end, headerContext, nTags, false, false);
-    }
 
     /**
      * Public constructor
@@ -146,7 +127,6 @@ public class OutputWindow extends Window {
      * @param values	The values for the record
      * @param softclip	If is softclip
      * @param indel	If is indel
-     * @return	true if the mate is in this window; false otherwise
      */
     public void addRecord(SAMRecord record, boolean proper, boolean[] values, boolean softclip, boolean indel) {
         // add to the total
@@ -204,16 +184,6 @@ public class OutputWindow extends Window {
     }
 
     /**
-     * Update the window for reads mates already visited
-     *
-     * @param record	Record which mate is in this window
-     * @param values	Values for this read
-     */
-    private void updateVisited(SAMRecord record, boolean[] values) {
-        addValues(getVisitedValue(record, values), 1);
-    }
-
-    /**
      * Get the visited values for a record
      *
      * @param record	Record to recover the mate in the window
@@ -236,7 +206,7 @@ public class OutputWindow extends Window {
     public String toString() {
         // Warning if the visited is not empty
         if(!visited.isEmpty()) {
-            logger.warn("{} proper reads with missing pairs in the file at {}",visited.size(), super.toIntervalString());
+            logger.warn("{} proper reads with missing pairs in the file at {}", visited.size(), super.toIntervalString());
         }
         StringBuilder builder = new StringBuilder();
         builder.append(super.toString());	builder.append("\t");
