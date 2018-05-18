@@ -25,19 +25,19 @@
 package org.magicdgs.readtools.tools.mapped;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.util.Locatable;
 import htsjdk.tribble.SimpleFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.IntervalUtils;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- * TODO: remove class
+ * TODO: substitute class for PairEndStatWindowCalculator
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -152,13 +152,13 @@ public class OutputWindow implements Locatable {
     /**
      * Add the record to the window an perform all the operations
      *
-     * @param record	Record to add
+     * @param read	Record to add
      * @param proper	If is proper pair
      * @param values	The values for the record
      * @param softclip	If is softclip
      * @param indel	If is indel
      */
-    public void addRecord(SAMRecord record, boolean proper, Boolean[] values, boolean softclip, boolean indel) {
+    public void addRecord(GATKRead read, boolean proper, Boolean[] values, boolean softclip, boolean indel) {
         // add to the total
         addTotal();
         // if is proper, perform the rest
@@ -169,14 +169,14 @@ public class OutputWindow implements Locatable {
             if(softclip) addSoftClip();
             if(indel) addIndel();
             // if visited
-            if(visited.containsKey(record.getReadName())) {
+            if(visited.containsKey(read.getName())) {
                 // Add the values
-                addValues(getVisitedValue(record.getReadName(), values), 2);
+                addValues(getVisitedValue(read.getName(), values), 2);
                 // remove from the hash
-                removeVisited(record.getReadName());
+                removeVisited(read.getName());
                 // if not add to the visited only if the mate is downstream
             } else {
-                if(RecordOperation.isMateDownstream(record)) visited.put(record.getReadName(), values);
+                if(RecordOperation.isMateDownstream(read)) visited.put(read.getName(), values);
             }
         }
     }
@@ -235,14 +235,19 @@ public class OutputWindow implements Locatable {
     @Override
     public String toString() {
         // Warning if the visited is not empty
+        // TODO: this is another BUG and breaking change
+        // TODO: if they are not visited, proper reads and total should be reduced by visited.size()
+        // TODO: otherwise, the stat is distorted
         if(!visited.isEmpty()) {
             logger.warn("{} proper reads with missing pairs in the file at {}", visited.size(), IntervalUtils.locatableToString(interval));
+            logger.warn("Less reads will be in the total and proper will produce a wrong result");
         }
         StringBuilder builder = new StringBuilder();
         builder.append(getContig()); builder.append("\t");
         builder.append(getStart()); builder.append("\t");
         builder.append(getEnd()); builder.append("\t");
-        builder.append(total);				builder.append("\t");
+        // TODO: breaking change!
+        builder.append(total - visited.size());				builder.append("\t");
         builder.append(proper);
         for(int val: values) {
             builder.append("\t");			builder.append(val);

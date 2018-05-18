@@ -29,7 +29,6 @@ import org.magicdgs.readtools.engine.ReadToolsProgram;
 
 import htsjdk.samtools.CigarOperator;
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.util.CloserUtil;
 import org.apache.commons.math3.util.Pair;
 import org.broadinstitute.barclay.argparser.Advanced;
@@ -96,7 +95,6 @@ public final class TagByWindow extends ReadToolsProgram {
     public boolean EMPTY = true; // TODO: change capital and default value to false (or true, but change flag name)?
 
 
-
     // TODO: change by a ReadsDataSource - and change name
     // public SamReader bam_reader;
     public ReadsDataSource reads;
@@ -157,31 +155,25 @@ public final class TagByWindow extends ReadToolsProgram {
             progress.start();
 
             // for each record
-            // TODO: changed to use GATKRead to test possible problems due to impl details
+            // TODO: this should be converted to an engine class, and the tool to a ReadWalker
+            // TODO: that will provide a way to change the engine to a better implementation without changing the main class
+            // TODO: and maybe create a Spark tool at some point for multi-thread
+            // TODO: in that case, a ReadWalker should have a MappedReadFilter to avoid unmapped stuff
             for(final GATKRead read: reads) {
-                // TODO: conversion to maintain compatibility
-                final SAMRecord record = read.convertToSAMRecord(header_context);
                 // if is unmapped count it and continue to the next
-                // TODO: use read.isUnmapped() instead of record.getAlignmentStart() == 0
-                // TODO: not concordant due to record.getAlignmentStart != 0 for some unmapped reads which mate maps
-                // TODO: that is wrong, because we aare considering it mapping properly when it was positioned there just due to the mate
-                // TODO: by now, this is equivalent to read.getAssignedStart()
-                if(read.getAssignedStart() == 0) {
+                // TODO: breaking change!
+                if (read.isUnmapped()) {
                     unmapped++;
                     progress.update(read);
                     continue;
                 }
                 // if there are unmmaped, output a warning
                 if(unmapped != 0) {
-                    logger.warn("Skipped {} unmapped reads.", unmapped);
+                    logger.debug("Skipped {} unmapped reads.", unmapped);
                     unmapped = 0;
                 }
                 // get the reference name
-                // TODO: use read.getContig() instead of record.getReferenceName
-                // TODO: might throw exception, because it might return null if the read is unmapped
-                // TODO: this should not happen if record.isUnmapped() is used previously
-                // TODO: by now, this is equivalent to read.getAssignedContig()
-                String reference = read.getAssignedContig();
+                final String reference = read.getContig();
 
                 // if is the first read
                 if(first_read_flag) {
@@ -198,8 +190,7 @@ public final class TagByWindow extends ReadToolsProgram {
                 }
 
                 // if the record is not in this window
-                // TODO: change for using getContig and getStart
-                while(!current_window.isInWin(read.getAssignedContig(), read.getAssignedStart())) {
+                while(!current_window.isInWin(read.getContig(), read.getStart())) {
                     // if the reference is different form the current window
                     if(!current_window.getContig().equals(reference)) {
                         // output the complete queue
@@ -226,10 +217,10 @@ public final class TagByWindow extends ReadToolsProgram {
                     }
                     // if the record is in the window
                 }
-                // TODO: try to use read instead
+
                 // Now the record is in the window and we could compute all the stuff
                 // First if is proper
-                boolean prop = RecordOperation.isProper(record);
+                boolean prop = RecordOperation.isProper(read);
                 // initialize empty values
                 Boolean[] values;
                 if(prop) {
@@ -237,7 +228,7 @@ public final class TagByWindow extends ReadToolsProgram {
                     if(softclip) sc = read.getCigarElements().stream().anyMatch(s -> s.getOperator() == CigarOperator.S);
                     // if indel, compute the indels
                     if(indel) ind = read.getCigarElements().stream().anyMatch(s -> s.getOperator().isIndel());
-                    // TODO: try to use read instead
+
                     // compute the values for the tag
                     values = operations.stream().map(s -> s.apply(read)).toArray(Boolean[]::new);
                 } else {
@@ -246,18 +237,15 @@ public final class TagByWindow extends ReadToolsProgram {
                     values = new Boolean[operations.size()];
                     Arrays.fill(values, false);
                 }
-                // TODO: try to use read instead
+
                 // add the record to the window
-                current_window.addRecord(record, prop, values, sc, ind);
-                // TODO: try to use read instead
+                current_window.addRecord(read, prop, values, sc, ind);
                 // if the mate is before
-                if(!RecordOperation.isMateDownstream(record)) {
-                    // TODO: try to use read instead
+                if(!RecordOperation.isMateDownstream(read)) {
                     // update the queue, storing the values for this window to add
-                    int[] cur_vals = updateQueue(record, values);
+                    int[] cur_vals = updateQueue(read, values);
                     // if the mate is not in this window, add the values (if not, is already updated)
-                    // TODO: use read and the getMateContig/getStart (unmapped reads problems)
-                    if(!current_window.isInWin(record.getMateReferenceName(), record.getMateAlignmentStart())) current_window.addValues(cur_vals);
+                    if(!current_window.isInWin(read.getMateContig(), read.getMateStart())) current_window.addValues(cur_vals);
                 }
 
                 progress.update(read);
@@ -325,16 +313,14 @@ public final class TagByWindow extends ReadToolsProgram {
      * @param values	The values of this record
      * @return values for the mate upstream
      */
-    public int[] updateQueue(SAMRecord record, Boolean[] values) {
+    public int[] updateQueue(GATKRead record, Boolean[] values) {
         int iterations = 0;
         int[] return_vals = new int[values.length];
         for(OutputWindow win: windowQueue) {
             iterations++;
             if(iterations < windowQueue.size()) {
-                // TODO: try to use read instead
-                if(win.isInWin(record.getMateReferenceName(), record.getMateAlignmentStart())) {
-                    // TODO: try to use read instead
-                    return_vals = win.mateUpdate(record.getReadName(), values);
+                if(win.isInWin(record.getMateContig(), record.getMateStart())) {
+                    return_vals = win.mateUpdate(record.getName(), values);
                     break;
                 }
             } else {

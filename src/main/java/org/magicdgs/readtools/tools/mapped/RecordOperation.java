@@ -25,6 +25,7 @@
 package org.magicdgs.readtools.tools.mapped;
 
 import htsjdk.samtools.SAMRecord;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -34,15 +35,17 @@ public class RecordOperation {
     /**
      * Check if a record is proper (the mate is mapped in the same reference)
      *
-     * @param record	Record to check
+     * @param read	read to check
      * @return true if is proper; false otherwise
      */
-    public static boolean isProper(SAMRecord record) {
-        return record.getReferenceIndex() == record.getMateReferenceIndex() && (record.getAlignmentStart() != record.getMateAlignmentStart());
+    public static boolean isProper(final GATKRead read) {
+        return !read.isUnmapped() && !read.mateIsUnmapped() && read.getContig().equals(read.getMateContig());
+        // TODO: previously the getAlignmentStart was used as the unmapped filter
+        // return record.getReferenceIndex() == record.getMateReferenceIndex() && (record.getAlignmentStart() != record.getMateAlignmentStart());
     }
 
-    public static boolean isMateDownstream(SAMRecord record) {
-        return isProper(record) && (record.getMateAlignmentStart() > record.getAlignmentStart());
+    public static boolean isMateDownstream(final GATKRead read) {
+        return isProper(read) && (read.getMateStart() > read.getStart());
     }
 }
 
