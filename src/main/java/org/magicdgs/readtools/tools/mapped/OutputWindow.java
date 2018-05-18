@@ -55,6 +55,9 @@ public class OutputWindow implements Locatable {
     private int[] values;
     private Logger logger = LogManager.getLogger(this.getClass());
 
+    private final boolean compatible;
+    private final SAMFileHeader headerContext;
+
     /**
      * Public constructor
      *
@@ -66,7 +69,7 @@ public class OutputWindow implements Locatable {
      * @param softclip
      * @param indel
      */
-    public OutputWindow(String ref, int start, int end, SAMFileHeader headerContext, int nTags, boolean softclip, boolean indel) throws IllegalArgumentException {
+    public OutputWindow(String ref, int start, int end, SAMFileHeader headerContext, int nTags, boolean softclip, boolean indel, final boolean compatible) throws IllegalArgumentException {
         interval = IntervalUtils.trimIntervalToContig(ref, start, end, headerContext.getSequence(ref).getSequenceLength());
         if (interval == null) {
             // TODO: something downstream relies on this exception!!!
@@ -82,6 +85,8 @@ public class OutputWindow implements Locatable {
         ind = indel;
         values = new int[nTags];
         Arrays.fill(values, 0);
+        this.compatible = compatible;
+        this.headerContext = headerContext;
     }
 
     @Override
@@ -176,7 +181,7 @@ public class OutputWindow implements Locatable {
                 removeVisited(read.getName());
                 // if not add to the visited only if the mate is downstream
             } else {
-                if(RecordOperation.isMateDownstream(read)) visited.put(read.getName(), values);
+                if(TagByWindowEngine.isMateDownstream(read, headerContext, compatible)) visited.put(read.getName(), values);
             }
         }
     }
@@ -247,7 +252,12 @@ public class OutputWindow implements Locatable {
         builder.append(getStart()); builder.append("\t");
         builder.append(getEnd()); builder.append("\t");
         // TODO: breaking change!
-        builder.append(total - visited.size());				builder.append("\t");
+        if (compatible) {
+            builder.append(total);
+        } else {
+            builder.append(total - visited.size());
+        }
+        builder.append("\t");
         builder.append(proper);
         for(int val: values) {
             builder.append("\t");			builder.append(val);
