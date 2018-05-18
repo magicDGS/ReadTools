@@ -27,6 +27,7 @@ package org.magicdgs.readtools.tools.mapped;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.util.Locatable;
+import htsjdk.tribble.SimpleFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.IntervalUtils;
@@ -41,10 +42,7 @@ import java.util.HashMap;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class OutputWindow implements Locatable {
-    // TODO: this should be done with a simple interval?
-    private String reference;
-    private int winStart;
-    private int winEnd;
+    private final SimpleInterval interval;
     private boolean isLast;
 
     private HashMap<String, Boolean[]> visited = new HashMap<>();
@@ -69,19 +67,12 @@ public class OutputWindow implements Locatable {
      * @param indel
      */
     public OutputWindow(String ref, int start, int end, SAMFileHeader headerContext, int nTags, boolean softclip, boolean indel) throws IllegalArgumentException {
-        reference = ref;
-        winStart = start;
-        winEnd = end;
-        int hard_end = headerContext.getSequence(ref).getSequenceLength();
-        if(hard_end < end) {
-            winEnd = hard_end;
-            isLast = true;
-        } else {
-            isLast = false;
+        interval = IntervalUtils.trimIntervalToContig(ref, start, end, headerContext.getSequence(ref).getSequenceLength());
+        if (interval == null) {
+            // TODO: something downstream relies on this exception!!!
+            throw new IllegalArgumentException(String.format("BUGBUG: %s:%s-%s (%s) provides null contig", ref, start, end, headerContext.getSequence(ref)));
         }
-        if(winStart > winEnd) {
-            throw new IllegalArgumentException("Window cannot have a length less than 0 (end > start)");
-        }
+        isLast = interval.getEnd() != end;
 
         total = 0;
         proper = 0;
@@ -95,41 +86,31 @@ public class OutputWindow implements Locatable {
 
     @Override
     public String getContig() {
-        return reference;
+        return interval.getContig();
     }
 
     @Override
-    public int getStart() { return winStart; }
+    public int getStart() { return interval.getStart(); }
 
     @Override
-    public int getEnd() { return winEnd; }
+    public int getEnd() { return interval.getEnd(); }
 
     public boolean isLast() { return isLast; }
 
-    /**
-     * Check if the record is in the window
-     *
-     * @param record	Record to know if is in the windows
-     * @return	True if in window; false otherwise
-     */
-    public boolean isInWin(SAMRecord record) {
-        // TODO: maybe this can be modified with SimpleInterval methods - not covered by small real data
-        return record.getAlignmentStart() >= getStart() && record.getAlignmentStart() <= getEnd() && record.getReferenceName().equals(getContig());
-    }
+
 
     /**
-     * Check if the record mate is in the window
+     * Check if the position is present in this window.
      *
-     * @param record	Record to know if mate is in the windows
-     * @return	True if in window; false otherwise
+     * @param contig chromosome to check.
+     * @param start start coordinate for the position.
+     * @return {@code true} if the position overlaps the window; {@code false} otherwise.
      */
-    public boolean isMateInWin(SAMRecord record) {
-        // TODO: we should use the SimpleInterval method - not covered by small real data
-        // TODO: I believe that this is wrong in the original implementation
-        // TODO: it should be record.getMateReferenceName instead of the reference name
-        // TODO: it might be the same, because only proper pairs are passing through (I guess)
-        return record.getMateAlignmentStart() >= getStart() && record.getMateAlignmentStart() <= getEnd() && record.getReferenceName().equals(getContig());
+    public boolean isInWin(final String contig, final int start) {
+        // simplification of previously implemented isMateInWin and isInWin
+        return new SimpleFeature(contig, start, start).overlaps(interval);
     }
+
 
     /**
      * Add 1 to the total
@@ -169,16 +150,6 @@ public class OutputWindow implements Locatable {
     }
 
     /**
-     * Check if the record is visited
-     * @param record
-     * @return	true if is already visited; false otherwise
-     */
-    public boolean isVisited(SAMRecord record) {
-        if(visited.containsKey(record.getReadName())) return true;
-        return false;
-    }
-
-    /**
      * Add the record to the window an perform all the operations
      *
      * @param record	Record to add
@@ -198,11 +169,11 @@ public class OutputWindow implements Locatable {
             if(softclip) addSoftClip();
             if(indel) addIndel();
             // if visited
-            if(isVisited(record)) {
+            if(visited.containsKey(record.getReadName())) {
                 // Add the values
-                addValues(getVisitedValue(record, values), 2);
+                addValues(getVisitedValue(record.getReadName(), values), 2);
                 // remove from the hash
-                removeVisited(record);
+                removeVisited(record.getReadName());
                 // if not add to the visited only if the mate is downstream
             } else {
                 if(RecordOperation.isMateDownstream(record)) visited.put(record.getReadName(), values);
@@ -213,23 +184,23 @@ public class OutputWindow implements Locatable {
     /**
      * Remove the record from visited
      *
-     * @param record Record to remove
+     * @param readName Record name to remove
      */
-    public void removeVisited(SAMRecord record) {
-        visited.remove(record.getReadName());
+    public void removeVisited(final String readName) {
+        visited.remove(readName);
     }
 
     /**
      * Update the window for a mate. Return the values for the updated record; array of 0s otherwise
      *
-     * @param record	Record to update the mate
+     * @param readName	Record name to update the mate
      * @param values	Values from this record
      * @return	values for this record-mate pair
      */
-    public int[] mateUpdate(SAMRecord record, Boolean[] values) {
-        int[] vals = getVisitedValue(record, values);
+    public int[] mateUpdate(String readName, Boolean[] values) {
+        int[] vals = getVisitedValue(readName, values);
         addValues(vals, 1);
-        removeVisited(record);
+        removeVisited(readName);
         return vals;
     }
 
@@ -245,12 +216,12 @@ public class OutputWindow implements Locatable {
     /**
      * Get the visited values for a record
      *
-     * @param record	Record to recover the mate in the window
+     * @param readName	Record name to recover the mate in the window
      * @param values	The values for the record
      * @return	The values for this window
      */
-    private int[] getVisitedValue(SAMRecord record, Boolean[] values) {
-        Boolean[] vals = visited.get(record.getReadName());
+    private int[] getVisitedValue(String readName, Boolean[] values) {
+        Boolean[] vals = visited.get(readName);
         int[] return_vals = new int[this.values.length];
         Arrays.fill(return_vals, 0);
         if(vals != null) {
@@ -265,12 +236,12 @@ public class OutputWindow implements Locatable {
     public String toString() {
         // Warning if the visited is not empty
         if(!visited.isEmpty()) {
-            logger.warn("{} proper reads with missing pairs in the file at {}:{}-{}", visited.size(), reference, winStart, winEnd);
+            logger.warn("{} proper reads with missing pairs in the file at {}", visited.size(), IntervalUtils.locatableToString(interval));
         }
         StringBuilder builder = new StringBuilder();
-        builder.append(reference); builder.append("\t");
-        builder.append(winStart); builder.append("\t");
-        builder.append(winEnd); builder.append("\t");
+        builder.append(getContig()); builder.append("\t");
+        builder.append(getStart()); builder.append("\t");
+        builder.append(getEnd()); builder.append("\t");
         builder.append(total);				builder.append("\t");
         builder.append(proper);
         for(int val: values) {

@@ -27,6 +27,7 @@ package org.magicdgs.readtools.tools.mapped;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 
+import htsjdk.samtools.CigarOperator;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.util.CloserUtil;
@@ -36,11 +37,11 @@ import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.BetaFeature;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.hellbender.cmdline.programgroups.ReadDataProgramGroup;
+import org.broadinstitute.hellbender.engine.ProgressMeter;
 import org.broadinstitute.hellbender.engine.ReadsDataSource;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
-import org.broadinstitute.hellbender.utils.runtime.ProgressLogger;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -150,14 +151,16 @@ public final class TagByWindow extends ReadToolsProgram {
             // TODO: changed to null, not necessary until construction in the first read
             OutputWindow current_window = null;
 
-            // For logging the progress
-            ProgressLogger progress = new ProgressLogger(logger);
+
+            final ProgressMeter progress = new ProgressMeter();
+            progress.setRecordLabel("reads");
+            progress.start();
+
             // for each record
             // TODO: changed to use GATKRead to test possible problems due to impl details
-            for(GATKRead read: reads) {
+            for(final GATKRead read: reads) {
                 // TODO: conversion to maintain compatibility
                 final SAMRecord record = read.convertToSAMRecord(header_context);
-                // System.out.println(record);
                 // if is unmapped count it and continue to the next
                 // TODO: use read.isUnmapped() instead of record.getAlignmentStart() == 0
                 // TODO: not concordant due to record.getAlignmentStart != 0 for some unmapped reads which mate maps
@@ -165,7 +168,7 @@ public final class TagByWindow extends ReadToolsProgram {
                 // TODO: by now, this is equivalent to read.getAssignedStart()
                 if(read.getAssignedStart() == 0) {
                     unmapped++;
-                    progress.record(record);
+                    progress.update(read);
                     continue;
                 }
                 // if there are unmmaped, output a warning
@@ -194,9 +197,9 @@ public final class TagByWindow extends ReadToolsProgram {
                     logger.info("Analysing {}", reference);
                 }
 
-                // TODO: try to use read instead
                 // if the record is not in this window
-                while(!current_window.isInWin(record)) {
+                // TODO: change for using getContig and getStart
+                while(!current_window.isInWin(read.getAssignedContig(), read.getAssignedStart())) {
                     // if the reference is different form the current window
                     if(!current_window.getContig().equals(reference)) {
                         // output the complete queue
@@ -230,12 +233,10 @@ public final class TagByWindow extends ReadToolsProgram {
                 // initialize empty values
                 Boolean[] values;
                 if(prop) {
-                    // TODO: try to use read instead
                     // if softclip, compute the clipping
-                    if(softclip) sc = RecordOperation.isClip(read);
-                    // TODO: try to use read instead
+                    if(softclip) sc = read.getCigarElements().stream().anyMatch(s -> s.getOperator() == CigarOperator.S);
                     // if indel, compute the indels
-                    if(indel) ind = RecordOperation.isIndel(read);
+                    if(indel) ind = read.getCigarElements().stream().anyMatch(s -> s.getOperator().isIndel());
                     // TODO: try to use read instead
                     // compute the values for the tag
                     values = operations.stream().map(s -> s.apply(read)).toArray(Boolean[]::new);
@@ -254,16 +255,17 @@ public final class TagByWindow extends ReadToolsProgram {
                     // TODO: try to use read instead
                     // update the queue, storing the values for this window to add
                     int[] cur_vals = updateQueue(record, values);
-                    // TODO: try to use read instead
                     // if the mate is not in this window, add the values (if not, is already updated)
-                    if(!current_window.isMateInWin(record)) current_window.addValues(cur_vals);
+                    // TODO: use read and the getMateContig/getStart (unmapped reads problems)
+                    if(!current_window.isInWin(record.getMateReferenceName(), record.getMateAlignmentStart())) current_window.addValues(cur_vals);
                 }
-                progress.record(record);
+
+                progress.update(read);
             }
             flushQueue();
             outputLastEmptyWindows(current_window, header_context);
             // Print the final log and exit
-            logger.info("Succesfully parsed {} reads.", progress.getCount());
+            progress.stop();
         } finally {
             CloserUtil.close(Arrays.asList(reads, OUT_TAB));
         }
@@ -330,9 +332,9 @@ public final class TagByWindow extends ReadToolsProgram {
             iterations++;
             if(iterations < windowQueue.size()) {
                 // TODO: try to use read instead
-                if(win.isMateInWin(record)) {
+                if(win.isInWin(record.getMateReferenceName(), record.getMateAlignmentStart())) {
                     // TODO: try to use read instead
-                    return_vals = win.mateUpdate(record, values);
+                    return_vals = win.mateUpdate(record.getReadName(), values);
                     break;
                 }
             } else {

@@ -24,36 +24,12 @@
 
 package org.magicdgs.readtools.tools.mapped;
 
-import htsjdk.samtools.CigarOperator;
 import htsjdk.samtools.SAMRecord;
-import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class RecordOperation {
-    /**
-     * Check if a record is soft clipped
-     *
-     * @param read	Record to check
-     * @return	true if the read contains a soft clip; false otherwise
-     */
-    public static boolean isClip(final GATKRead read) {
-        // TODO: I don't see any putative problem with this
-        return read.getCigarElements().stream().anyMatch(s -> s.getOperator() == CigarOperator.S);
-    }
-
-    /**
-     * Check if a record contain indels
-     *
-     * @param read	Record to check
-     * @return	true if the read contains an indel; false otherwise
-     */
-    public static boolean isIndel(final GATKRead read) {
-        // TODO: I don't see any putative problem with this
-        return read.getCigarElements().stream()
-                .anyMatch(s -> s.getOperator() == CigarOperator.I || s.getOperator() == CigarOperator.D);
-    }
 
     /**
      * Check if a record is proper (the mate is mapped in the same reference)
