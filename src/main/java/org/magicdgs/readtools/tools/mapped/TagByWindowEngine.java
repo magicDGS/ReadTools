@@ -41,6 +41,7 @@ import java.util.Queue;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+@Deprecated
 public class TagByWindowEngine implements Closeable {
 
     private Logger logger = LogManager.getLogger(this.getClass());

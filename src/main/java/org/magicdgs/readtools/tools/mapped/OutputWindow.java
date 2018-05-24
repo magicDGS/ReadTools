@@ -37,10 +37,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- * TODO: substitute class for PairEndStatWindowCalculator
+ * TODO: substitute class for StatWindowCalculator
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+@Deprecated
 public class OutputWindow implements Locatable {
     private final SimpleInterval interval;
     private boolean isLast;

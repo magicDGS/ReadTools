@@ -61,6 +61,7 @@ import java.util.stream.Stream;
         programGroup = ReadDataProgramGroup.class) // TODO: add program group for mapped files
 @BetaFeature // TODO: this should be experimental, which isn't integrated into the GATK version used yet
 // TODO: this should probably be a converted to a SlidingWindowReadWalker
+@Deprecated
 public final class TagByWindow extends ReadToolsProgram {
 
     // TODO: maybe a different kind of argument would be necessary

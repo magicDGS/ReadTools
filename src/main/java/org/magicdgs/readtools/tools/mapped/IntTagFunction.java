@@ -35,6 +35,7 @@ import java.util.function.Function;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 // TODO: substitutes threshold
+@Deprecated
 public abstract class IntTagFunction implements Function<GATKRead, Boolean> {
 
     protected final String tag;
