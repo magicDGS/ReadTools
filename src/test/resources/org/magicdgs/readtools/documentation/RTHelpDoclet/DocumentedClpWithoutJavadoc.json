@@ -21,5 +21,7 @@
   ],
   "description": "Inline summary",
   "name": "DocumentedClpWithoutJavadoc",
-  "group": "Test Tools"
+  "group": "Test Tools",
+  "beta": false,
+  "experimental": false
 }
