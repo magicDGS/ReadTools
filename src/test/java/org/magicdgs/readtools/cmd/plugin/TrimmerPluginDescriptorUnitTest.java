@@ -70,10 +70,10 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
                 new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), Collections.singletonList(anonymous));
 
         // test all instances is empty
-        Assert.assertTrue(pluginDescriptor.getAllInstances().isEmpty());
+        Assert.assertTrue(pluginDescriptor.getUserEnabledTrimmers().isEmpty());
 
         // test that default instances are not
-        final List<Object> defaultInsances = pluginDescriptor.getDefaultInstances();
+        final List<TrimmingFunction> defaultInsances = pluginDescriptor.getDefaultInstances();
         Assert.assertEquals(defaultInsances.size(), 1);
         Assert.assertSame(defaultInsances.get(0), anonymous);
     }
@@ -92,9 +92,9 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
                 new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), Collections.emptyList());
         // pass twice the class to exercise IllegalArgumentException path
         // this will only happen if there are duplicated packages
-        pluginDescriptor.getInstance(MottQualityTrimmer.class);
+        pluginDescriptor.createInstanceForPlugin(MottQualityTrimmer.class);
         Assert.assertThrows(IllegalArgumentException.class,
-                () -> pluginDescriptor.getInstance(MottQualityTrimmer.class));
+                () -> pluginDescriptor.createInstanceForPlugin(MottQualityTrimmer.class));
     }
 
     @DataProvider(name = "defaultTrimmingFunctionsForHelp")
@@ -119,17 +119,16 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
         final TrimmerPluginDescriptor pluginDescriptor = new TrimmerPluginDescriptor(new TrimReadsTrimmerPluginArgumentCollection(), defaults);
         // test valid trimmers -> without CMD they are not found by reflection
         final Set<String> allowedTrimmers = pluginDescriptor
-                .getAllowedValuesForDescriptorArgument("trimmer");
+                .getAllowedValuesForDescriptorHelp("trimmer");
         Assert.assertEquals(allowedTrimmers.size(), 0);
 
         // test default trimmers
         final Set<String> allowedDisabledTrimmers = pluginDescriptor
-                .getAllowedValuesForDescriptorArgument("disableTrimmer");
+                .getAllowedValuesForDescriptorHelp("disableTrimmer");
         Assert.assertEquals(allowedDisabledTrimmers, expectedDefaults);
 
-        // test invalid long name
-        Assert.assertThrows(IllegalArgumentException.class,
-                () -> pluginDescriptor.getAllowedValuesForDescriptorArgument("trimmingAlgorithm"));
+        // test invalid long name returns null
+        Assert.assertNull(pluginDescriptor.getAllowedValuesForDescriptorHelp("trimmingAlgorithm"));
     }
 
     //////////////////////////////////
@@ -227,7 +226,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
                 "defaults are wrong: " + tpd.getDefaultInstances());
 
         // test the parsed by the user
-        final List<TrimmingFunction> parsedUser = tpd.getAllInstances();
+        final List<TrimmingFunction> parsedUser = tpd.getUserEnabledTrimmers();
         Assert.assertEquals(parsedUser.size(), expectedClassesUser.size(),
                 "not equal number of classes: " + parsedUser);
 
@@ -250,7 +249,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
                 Collections.emptySet());
         clp.parseArguments(NULL_PRINT_STREAM, new String[] {});
         Assert.assertEquals(clp.getPluginDescriptor(TrimmerPluginDescriptor.class)
-                        .getAllowedValuesForDescriptorArgument("trimmer").size(),
+                        .getAllowedValuesForDescriptorHelp("trimmer").size(),
                 NUMBER_OF_TRIMMERS_IMPLEMENTED);
     }
 
