@@ -47,10 +47,12 @@ repositories {
     maven {
         url "https://broadinstitute.jfrog.io/broadinstitute/libs-snapshot/"
     }
+    // TODO: remove the GitHub-based repo once we are not using a patched GATK version
+    maven { url 'https://jitpack.io' }
 }
 // versions for the dependencies to resolve conflicts
-final gatkVersion = '4.beta.6-87-g13bb6e0-SNAPSHOT'
-final htsjdkVersion = '2.13.2'
+final gatkVersion = '4.0.2.1'
+final htsjdkVersion = '2.14.3'
 final testNGVersion = '6.11'
 final mockitoVersion = '2.7.19'
 
@@ -83,7 +85,9 @@ configurations.all {
 
 dependencies {
     // use the same GATK dependency for compile and documentation
-    final gatkDependency = 'org.broadinstitute:gatk:' + gatkVersion
+    // TODO: uncomment next line when we are not using a patched GATK version
+    // final gatkDependency = 'org.broadinstitute:gatk:' + gatkVersion
+    final gatkDependency = 'com.github.magicDGS:gatk:' + gatkVersion + "-ReadTools"
     compile (gatkDependency) {
         exclude module: 'jgrapht' // this is not required
     }
