@@ -70,6 +70,7 @@ public final class Main extends org.broadinstitute.hellbender.Main {
     }
 
     /** Returns the command line that will appear in the usage. */
+    @Override
     protected String getCommandLineName() {
         return "java -jar ReadTools.jar";
     }

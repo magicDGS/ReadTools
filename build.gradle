@@ -113,7 +113,9 @@ tasks.withType(Jar) {
         attributes 'Implementation-Title': rootProject.name,
             'Implementation-Version': project.version,
             'Implementation-Vendor': developer + " (" + contact + ")",
-            'Main-Class': project.mainClassName
+            'Main-Class': project.mainClassName,
+            'htsjdk-Version': htsjdkVersion,
+            'GATK-Version': gatkVersion
     }
 }
 
