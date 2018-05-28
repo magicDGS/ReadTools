@@ -83,8 +83,6 @@ public final class RTHelpConstants {
     // initialize on demand the mapping between supercategories and group names
     private static Map<String, String> getSuperCategoryMap() {
         if (groupToSuperCategory == null) {
-            // TODO: initialize with GATK's and/or Picard's supercat map
-            // TODO: https://github.com/magicDGS/ReadTools/issues/370
             // do this only on demand since we only need it during docgen
             groupToSuperCategory = new HashMap<>();
 

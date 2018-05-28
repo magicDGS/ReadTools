@@ -47,7 +47,7 @@ repositories {
     maven {
         url "https://broadinstitute.jfrog.io/broadinstitute/libs-snapshot/"
     }
-    // TODO: remove the GitHub-based repo once we are not using a patched GATK version
+    // TODO: remove the GitHub-based repo once we are not using a patched GATK version (https://github.com/magicDGS/ReadTools/issues/443)
     maven { url 'https://jitpack.io' }
 }
 // versions for the dependencies to resolve conflicts
@@ -85,12 +85,10 @@ configurations.all {
 
 dependencies {
     // use the same GATK dependency for compile and documentation
-    // TODO: uncomment next line when we are not using a patched GATK version
+    // TODO: uncomment next line when we are not using a patched GATK version (https://github.com/magicDGS/ReadTools/issues/443)
     // final gatkDependency = 'org.broadinstitute:gatk:' + gatkVersion
-    final gatkDependency = 'com.github.magicDGS:gatk:' + gatkVersion + "-ReadTools"
-    compile (gatkDependency) {
-        exclude module: 'jgrapht' // this is not required
-    }
+    final gatkDependency = 'com.github.bioinformagik:gatk:' + gatkVersion + "-ReadTools"
+    compile gatkDependency
     compile group: 'com.github.samtools', name: 'htsjdk', version: htsjdkVersion
 
     // compilation for testing
