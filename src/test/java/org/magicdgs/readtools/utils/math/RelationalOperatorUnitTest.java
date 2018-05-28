@@ -26,15 +26,11 @@ package org.magicdgs.readtools.utils.math;
 
 import org.magicdgs.readtools.RTBaseTest;
 
-import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**

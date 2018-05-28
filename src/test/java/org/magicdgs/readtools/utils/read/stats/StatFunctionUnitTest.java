@@ -24,8 +24,6 @@
 
 package org.magicdgs.readtools.utils.read.stats;
 
-import static org.testng.Assert.*;
-
 import org.magicdgs.readtools.RTBaseTest;
 
 import org.mockito.Mockito;
