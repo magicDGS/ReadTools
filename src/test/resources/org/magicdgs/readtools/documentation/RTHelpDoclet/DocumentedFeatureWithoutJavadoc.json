@@ -3,5 +3,7 @@
   "arguments": [],
   "description": "Inline summary",
   "name": "DocumentedFeatureWithoutJavadoc",
-  "group": "Inline groupName"
+  "group": "Inline groupName",
+  "beta": false,
+  "experimental": false
 }

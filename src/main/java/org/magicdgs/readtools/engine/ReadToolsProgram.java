@@ -32,12 +32,43 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
 /**
  * Abstract class for all the ReadTools programs.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public abstract class ReadToolsProgram extends CommandLineProgram {
+
+    @Override
+    protected void printLibraryVersions() {
+        // print versions from the MANIFEST
+        try {
+            final String classPath = getClass().getResource(getClass().getSimpleName() + ".class").toString();
+            if (classPath.startsWith("jar")) {
+                final String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+                try ( final InputStream manifestStream = new URL(manifestPath).openStream() ) {
+                    final Attributes manifestAttributes = new Manifest(manifestStream).getMainAttributes();
+                    final String htsjdkVersion = manifestAttributes.getValue("htsjdk-Version");
+                    final String picardVersion = manifestAttributes.getValue("GATK-Version");
+
+                    logger.info("HTSJDK Version: " + (htsjdkVersion != null ? htsjdkVersion : "unknown"));
+                    logger.info("GATK Version: " + (picardVersion != null ? picardVersion : "unknown"));
+
+                }
+            }
+        }
+        catch (IOException ignored) {
+        }
+        // log that we are using a patched version of GATK
+        // TODO: remove once https://github.com/magicDGS/ReadTools/issues/443 is fixed
+        logger.info("Using GATK patch from https://github.com/bioinformagik/gatk");
+    }
 
     @Override
     protected void printSettings() {

@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.utils.trimming;
 
-import org.magicdgs.readtools.cmd.plugin.TrimmerPluginDescriptor;
 import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmerMetric;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
@@ -33,10 +32,9 @@ import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultRea
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 
 import com.google.common.annotations.VisibleForTesting;
-import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMTag;
 import org.broadinstitute.barclay.argparser.CommandLineException;
-import org.broadinstitute.hellbender.cmdline.GATKPlugin.GATKReadFilterPluginDescriptor;
+import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
 import org.broadinstitute.hellbender.engine.filters.ReadFilter;
 import org.broadinstitute.hellbender.transformers.ReadTransformer;
 import org.broadinstitute.hellbender.utils.Utils;
@@ -46,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 /**
  * Implements a pipeline for trimming in place (through {@link TrimmingFunction}) and filter
@@ -271,31 +268,15 @@ public class TrimAndFilterPipeline extends ReadFilter {
      * @throws CommandLineException.BadArgumentValue if no trimmer and filter instances are
      *                                               specified.
      */
-    // TODO: change the signature once the new version of Barclay includes the method to get defaults
     public static TrimAndFilterPipeline fromPluginDescriptors(
-            final TrimmerPluginDescriptor trimmingPlugin,
-            final GATKReadFilterPluginDescriptor filterPlugin) {
+            final CommandLinePluginDescriptor<TrimmingFunction> trimmingPlugin,
+            final CommandLinePluginDescriptor<ReadFilter> filterPlugin) {
 
         // add the default and afterwards the ones provided by the user
-        final List<TrimmingFunction> trimmers = trimmingPlugin.getDefaultInstances().stream()
-                .map(tf -> (TrimmingFunction) tf) // TODO: this is necessary because it is now a set of filters
-                .collect(Collectors.toList());
-        trimmers.addAll(trimmingPlugin.getAllInstances());
-
-        // TODO: change to the same for the ReadFilter once the Barclay interface is fixed
-        // TODO: https://github.com/broadinstitute/barclay/pull/38
-        // the same for filters
-//        final List<ReadFilter> filters = filterPlugin.getDefaultInstances().stream()
-//                .map(rf -> (ReadFilter) rf) // TODO: this is necessary because it is now a set of filters
-//                .collect(Collectors.toList());
-//        filters.addAll(filterPlugin.getAllInstances());
+        final List<TrimmingFunction> trimmers = trimmingPlugin.getResolvedInstances();
 
         // using the getMergedReadFilter is hack, because it does not return any merged filter
-        final List<ReadFilter> filters = new ArrayList<>(filterPlugin.getAllInstances().size());
-        filterPlugin.getMergedReadFilter(new SAMFileHeader(), (finalFilters, header) -> {
-                    filters.addAll(finalFilters);
-                    return null;
-        });
+        final List<ReadFilter> filters = filterPlugin.getResolvedInstances();
 
         // throw if not pipeline is specified
         if (trimmers.isEmpty() && filters.isEmpty()) {

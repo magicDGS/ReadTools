@@ -24,8 +24,6 @@
 
 package org.magicdgs.readtools;
 
-import org.broadinstitute.hellbender.utils.help.HelpConstants;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,9 +52,6 @@ public final class RTHelpConstants {
     //////////////////////////////////////////////////
     // PROGRAM GROUP NAMES AND DESCRIPTIONS FOR TOOLS
 
-    /** Supercategory for tools */
-    private final static String DOC_SUPERCAT_TOOLS = "tools";
-
     /** Documentation name for reads manipulation. */
     public static final String DOC_CAT_READS_MANIPULATION = "Reads manipulation";
     /** Documentation description for reads manipulation. */
@@ -78,9 +73,6 @@ public final class RTHelpConstants {
     ///////////////////////////////
     // DOCUMENTATION FOR UTILITIES
 
-    /** Supercategory for utilities. */
-    private final static String DOC_SUPERCAT_UTILITIES = "utilities";
-
     /** Documentation name for Trimmer 'utilities'. */
     public static final String DOC_CAT_TRIMMERS = "Trimmers";
     public static final String DOC_CAT_TRIMMERS_SUMMARY = "Algorithms used to trim the reads.";
@@ -91,20 +83,19 @@ public final class RTHelpConstants {
     // initialize on demand the mapping between supercategories and group names
     private static Map<String, String> getSuperCategoryMap() {
         if (groupToSuperCategory == null) {
-            // TODO: initialize with GATK's and/or Picard's supercat map
             // do this only on demand since we only need it during docgen
             groupToSuperCategory = new HashMap<>();
 
             // supercat Tools
-            groupToSuperCategory.put(DOC_CAT_READS_MANIPULATION, DOC_SUPERCAT_TOOLS);
-            groupToSuperCategory.put(DOC_CAT_READS_CONVERSION, DOC_SUPERCAT_TOOLS);
-            groupToSuperCategory.put(DOC_CAT_DISTMAP, DOC_SUPERCAT_TOOLS);
-            // include GATK's tool definitions
-            groupToSuperCategory.put(HelpConstants.DOC_CAT_DIAGNOSTICS_AND_QC, DOC_SUPERCAT_TOOLS);
+            groupToSuperCategory.put(DOC_CAT_READS_MANIPULATION, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
+            groupToSuperCategory.put(DOC_CAT_READS_CONVERSION, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
+            groupToSuperCategory.put(DOC_CAT_DISTMAP, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
+            // include Picard's tool definitions
+            groupToSuperCategory.put(picard.util.help.HelpConstants.DOC_CAT_DIAGNOSTICS_AND_QC, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
 
             // supercat utilities (trimmers and filters)
-            groupToSuperCategory.put(DOC_CAT_TRIMMERS, DOC_SUPERCAT_UTILITIES);
-            groupToSuperCategory.put(HelpConstants.DOC_CAT_READFILTERS, DOC_SUPERCAT_UTILITIES);
+            groupToSuperCategory.put(DOC_CAT_TRIMMERS, picard.util.help.HelpConstants.DOC_SUPERCAT_UTILITIES);
+            groupToSuperCategory.put(org.broadinstitute.hellbender.utils.help.HelpConstants.DOC_CAT_READFILTERS, picard.util.help.HelpConstants.DOC_SUPERCAT_UTILITIES);
         }
         return groupToSuperCategory;
     }

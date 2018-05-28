@@ -19,5 +19,7 @@
   ],
   "description": "Description in javadoc.",
   "name": "DocumentedClpWithJavadoc",
-  "group": "Test Tools"
+  "group": "Test Tools",
+  "beta": false,
+  "experimental": false
 }

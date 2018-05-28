@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +53,8 @@ import java.util.stream.Collectors;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+// TODO - requires clean-up after updating with latest barclay interface
+// TODO - https://github.com/magicDGS/ReadTools/issues/189
 public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<TrimmingFunction> {
 
     protected transient Logger logger = LogManager.getLogger(this.getClass());
@@ -66,7 +67,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
 
     private static final String pluginPackageName =
             "org.magicdgs.readtools.utils.read.transformer.trimming";
-    private static final Class<?> pluginBaseClass = TrimmingFunction.class;
+    private static final Class<TrimmingFunction> pluginBaseClass = TrimmingFunction.class;
 
     @ArgumentCollection
     private final TrimmerPluginArgumentCollection trimmerArgs;
@@ -122,18 +123,16 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     }
 
     @Override
-    public Class<?> getPluginClass() {
+    public Class<TrimmingFunction> getPluginBaseClass() {
         return pluginBaseClass;
     }
 
     // we require to remove the base class, which is abstract
     @Override
-    public Predicate<Class<?>> getClassFilter() {
-        return c -> {
-            // don't use the base class nor the unit test implementations
-            return !c.getName().equals(this.getPluginClass().getName())
-                    && !c.getName().contains("UnitTest$");
-        };
+    public boolean includePluginClass(Class<?> c) {
+        // don't use the base class nor the unit test implementations
+        return !c.getName().equals(this.getPluginBaseClass().getName())
+                && !c.getName().contains("UnitTest$");
     }
 
     @Override
@@ -142,7 +141,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     }
 
     @Override
-    public Object getInstance(Class<?> pluggableClass)
+    public TrimmingFunction createInstanceForPlugin(Class<?> pluggableClass)
             throws IllegalAccessException, InstantiationException {
         TrimmingFunction trimmingFunction;
         final String simpleName = pluggableClass.getSimpleName();
@@ -171,7 +170,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     }
 
     @Override
-    public Set<String> getAllowedValuesForDescriptorArgument(String longArgName) {
+    public Set<String> getAllowedValuesForDescriptorHelp(String longArgName) {
         if (longArgName.equals(RTStandardArguments.TRIMMER_LONG_NAME)) {
             // in the case of the trimmer argument, return all the names obtained by reflection
             return allTrimmerNames;
@@ -180,8 +179,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
             // linked set to return then in order
             return new LinkedHashSet<>(toolDefaultTrimmerNamesInOrder);
         }
-        throw new IllegalArgumentException(
-                "Allowed values request for unrecognized string argument: " + longArgName);
+        return null;
     }
 
     @Override
@@ -200,7 +198,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     }
 
     @Override
-    public void validateArguments() throws CommandLineException {
+    public void validateAndResolvePlugins() throws CommandLineException {
         // validate here the arguments for disabling 5/3 prime
         if (trimmerArgs.disable3pTrim && trimmerArgs.disable5pTrim) {
             // TODO: contribute to Barclay to create special CommandLineException for this cases
@@ -304,16 +302,21 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
      *
      * Note: only the enabled trimmers will be returned.
      */
-    //
-    // TODO: the signature should be change in Barclay: https://github.com/broadinstitute/barclay/pull/32
     @Override
-    public List<Object> getDefaultInstances() {
+    public List<TrimmingFunction> getDefaultInstances() {
         return (trimmerArgs.getDisableToolDefaultTrimmers())
                 ? Collections.emptyList()
                 : toolDefaultTrimmerNamesInOrder.stream()
                         .filter(s -> !trimmerArgs.getUserDisabledTrimmerNames().contains(s))
                         .map(s -> toolDefaultTrimmers.get(s))
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TrimmingFunction> getResolvedInstances() {
+        final List<TrimmingFunction> resolved = new ArrayList<>(getDefaultInstances());
+        resolved.addAll(getUserEnabledTrimmers());
+        return resolved;
     }
 
     /**
@@ -323,8 +326,7 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
      * Note: if all default trimmers are disable, this list include all the command line ones;
      * otherwise, the defaults will be excluded.
      */
-    @Override
-    public List<TrimmingFunction> getAllInstances() {
+    public List<TrimmingFunction> getUserEnabledTrimmers() {
         // start with the tool's default trimmers in the order they were specified, and remove any
         // that were disabled on the command line
 
@@ -354,7 +356,11 @@ public final class TrimmerPluginDescriptor extends CommandLinePluginDescriptor<T
     }
 
     @Override
-    public Class<?> getClassForInstance(String pluginName) {
-        return trimmers.get(pluginName).getClass();
+    public Class<?> getClassForPluginHelp(String pluginName) {
+        final TrimmingFunction t = trimmers.get(pluginName);
+        if (t != null) {
+            return t.getClass();
+        }
+        throw new IllegalArgumentException(String.format("Can't resolve Trimmer plugin for name %s", pluginName));
     }
 }
