@@ -29,17 +29,11 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 /**
  * Basic function for single-end reads ({@link GATKRead}).
  *
+ * <p>The {@link #compute(Object)} method returns the statistic value for a single read ({@link GATKRead}).
+ *
  * @param <S> statistic value.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public interface SingleReadStatFunction<S> extends StatFunction<S, GATKRead> {
-
-    /**
-     * Applies the function to a single read.
-     *
-     * @return the statistic applied to the read.
-     */
-    public S compute(final GATKRead read);
-
 }

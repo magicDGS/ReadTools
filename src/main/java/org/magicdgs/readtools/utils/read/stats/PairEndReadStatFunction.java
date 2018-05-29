@@ -30,21 +30,19 @@ import scala.Tuple2;
 /**
  * Function for pair-end reads ({@link GATKRead}) that can be computed in two steps.
  *
- * <p>This is useful when iterating over a file where the order keep read-pairs separated (e.g.
- * coordinate). It allows to cache needed information in a temporary object and use it when the
- * other read is reached.
+ * <p>The main function is {@link #compute(Tuple2)}, which define was is the expected behavior.
  *
- * <p>The main function is {@link #compute(Tuple2)}, which define was is the expected behavior. If
- * iteration is performed with unordered read pairs, the caller is expected to find the read
- * pairs and call the following methods when found:
+ *
+ * <p>This class could be used for iteration over record where the read-pairs are separated. In
+ * that case, it allows to cache needed information in a temporary object of type {@code T}, which
+ * can be used when the next read is found. To maintain the same behavior as te main function
+ * {@link #compute(Tuple2)}, the following methods should be called:
  *
  * <ol>
  *  <li>{@link #computeIntermediateFirst(GATKRead)} on the first pair ({@link Tuple2#_1()}</li>
  *  <li>{@link #computeIntermediateSecond(GATKRead)} on the second pair ({@link Tuple2#_2()}</li>
  *  <li>{@link #mergePairValues(Object, Object)} on returned objects.</li>
  * </ol>
- *
- * <p>For details on how to use this method, please refer to TODO
  *
  * @param <S> statistic value.
  * @param <T> temporary value (might be the same or different).

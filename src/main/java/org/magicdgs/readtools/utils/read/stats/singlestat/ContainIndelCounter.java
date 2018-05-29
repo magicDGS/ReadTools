@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.utils.read.stats.singlestat;
 
-
 import org.magicdgs.readtools.utils.read.stats.SingleReadStatFunction;
 import org.magicdgs.readtools.utils.read.stats.StatFunctionUtils;
 
@@ -35,7 +34,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: add group for this and documented feature once is a plugin
+// TODO: add group for this and documented feature once is a plugin (https://github.com/magicDGS/ReadTools/issues/448)
 public class ContainIndelCounter implements SingleReadStatFunction<Integer> {
 
     @Override

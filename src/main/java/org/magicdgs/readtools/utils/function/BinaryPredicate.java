@@ -24,7 +24,6 @@
 
 package org.magicdgs.readtools.utils.function;
 
-
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -35,11 +34,10 @@ import java.util.function.Predicate;
  *
  * <p>This is a functional interface whose functional method is {@link #test(Object, Object)}.
  *
- * @param <T> the type of the operands and result of the operator
+ * @param <T> the type of the operands and result of the operator.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 @FunctionalInterface
 public interface BinaryPredicate<T> extends BiPredicate<T, T> {
-
 }

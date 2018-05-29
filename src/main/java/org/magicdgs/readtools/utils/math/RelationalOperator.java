@@ -35,11 +35,17 @@ import java.util.function.IntPredicate;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public enum RelationalOperator implements BinaryPredicate<Comparable> {
+    /** Equal. */
     EQ(i -> i == 0, "="),
+    /** Not equal. */
     NE(i -> i != 0, "!="),
+    /** Greater than.*/
     GT(i -> i > 0, ">"),
+    /** Greater or equal. */
     GE(i -> i >= 0, ">="),
+    /** Lower than. */
     LT(i -> i < 0, "<"),
+    /** Lower or equal. */
     LE(i -> i <= 0, "<=");
 
     private final IntPredicate eval;

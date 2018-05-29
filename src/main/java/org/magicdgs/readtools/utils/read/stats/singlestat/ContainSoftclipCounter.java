@@ -35,7 +35,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: add group for this and documented feature once is a plugin
+// TODO: add group for this and documented feature once is a plugin (https://github.com/magicDGS/ReadTools/issues/448)
 public class ContainSoftclipCounter implements SingleReadStatFunction<Integer> {
 
     @Override

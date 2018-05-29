@@ -38,11 +38,9 @@ import org.broadinstitute.hellbender.utils.read.ReadUtils;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: add group for this and documented feature once is a plugin
+// TODO: add group for this and documented feature once is a plugin (https://github.com/magicDGS/ReadTools/issues/448)
 public class PairIntegerTagCounter implements PairEndReadStatFunction<Integer, Boolean> {
 
-    // TODO: maybe this could be more liek a TaggedArgument and then initialize the counters
-    // TODO: something like --count-pair-int-tag:NM:EQ 2
     public static final String TAG_ARG_NAME = "count-pair-int-tag";
     public static final String TAG_ARG_DESCRIPTION = "Integer SAM tag to count for pairs";
     public static final String OP_ARG_NAME = "count-pair-int-tag-operator";
@@ -82,7 +80,10 @@ public class PairIntegerTagCounter implements PairEndReadStatFunction<Integer, B
     public PairIntegerTagCounter() { }
 
     /**
-     * Validates that the field/arguments are non-null and that the tag is correctly formatted.
+     * Validates that the tag is a valid one (as defined in the SAM specifications) and non-null
+     * operation and threshold.
+     *
+     * @throws IllegalArgumentException if validation fails.
      */
     @Override
     public void init() {

@@ -40,13 +40,14 @@ import java.util.stream.Collectors;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: add group for this and documented feature once is a plugin
+// TODO: add group for this and documented feature once is a plugin (https://github.com/magicDGS/ReadTools/issues/448)
 public class PairIntegerTagListCounter implements PairEndReadStatFunction<List<Integer>, List<Boolean>> {
 
     public static final String TAG_ARG_NAME = PairIntegerTagCounter.TAG_ARG_NAME + "-list";
     public static final String OP_ARG_NAME = PairIntegerTagCounter.OP_ARG_NAME + "-list";
     public static final String VAL_ARG_NAME = PairIntegerTagCounter.VAL_ARG_NAME + "-list";
 
+    // TODO: maybe we should change to a tagged argument (https://github.com/magicDGS/ReadTools/issues/449)
     @Argument(fullName = TAG_ARG_NAME, doc = PairIntegerTagCounter.TAG_ARG_NAME)
     public List<String> tag;
 
@@ -85,7 +86,11 @@ public class PairIntegerTagListCounter implements PairEndReadStatFunction<List<I
     }
 
     /**
-     * Validates the arguments and initialize the counters for each tag-op-threshold trio.
+     * First perform validation (non-null and non-empty list arguments, size of the lists are
+     * the same) and initialize a list of {@link PairIntegerTagCounter} with the arguments.
+     *
+     * <p>Note: for each tag-operation-threshold, the {@link PairIntegerTagCounter} constructor
+     * might throw {@link IllegalArgumentException} if validation fails.
      */
     @Override
     public void init() {
@@ -163,6 +168,5 @@ public class PairIntegerTagListCounter implements PairEndReadStatFunction<List<I
         return counters.stream().map(PairIntegerTagCounter::tableMissingFormat)
                 .collect(Collectors.joining("\t"));
     }
-
 
 }

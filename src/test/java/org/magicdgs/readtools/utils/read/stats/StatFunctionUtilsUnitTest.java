@@ -48,5 +48,4 @@ public class StatFunctionUtilsUnitTest {
     public void testSumReduce(final Integer first, final Integer second, final Integer result) throws Exception {
         Assert.assertEquals(StatFunctionUtils.sumReduce(first, second), result);
     }
-
 }
