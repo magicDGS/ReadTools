@@ -52,7 +52,7 @@ repositories {
 }
 // versions for the dependencies to resolve conflicts
 final gatkVersion = '4.0.2.1'
-final htsjdkVersion = '2.14.3'
+final htsjdkVersion = '2.15.0'
 final testNGVersion = '6.11'
 final mockitoVersion = '2.7.19'
 
