@@ -8,6 +8,23 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+### Changed
+- Read filters does not support short arguments anymore (GATK update)
+
+### Fixed
+- Improve command line startup information
+- Better error message for invalid tool names
+
+### Added
+- Add support for long reference sequences in BAM (HTSJDK update)
+- Add support for long CIGAR in BAM (HTSJDK update)
+- Improvement in Intel compression (GKL update)
+
+### Developer
+- Update HTSJDK to 2.15.0
+- Update to released GATK 4.0.2.1 (patched-version for ReadTools)
+- Update to barclay 2.0.0 and other transitive dependencies from GATK
+- Configuration from GATK is made by the default Owner config file
 
 ## [1.3.0]
 
