@@ -12,6 +12,7 @@
       <#assign datum_summary = datum.summary?replace("\n", " ", 'r')>
       - name: ${datum.name}
         summary: ${datum_summary}
+        status: '<#if datum.beta?? && datum.beta == "true">_BETA_<#elseif datum.experimental?? && datum.experimental == "true">_**EXPERIMENTAL**_<#else>null</#if>'
       </#if>
     </#list>
 </#macro>

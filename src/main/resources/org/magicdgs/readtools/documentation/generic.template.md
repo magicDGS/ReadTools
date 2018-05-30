@@ -21,7 +21,7 @@ TODO: it requires a new version of FreeMarker for accessing some mehtods
 	</#if>
 </#macro>
 ---
-title: <#if beta?? && beta == true>**BETA** <#elseif experimental?? && experimental == true>**EXPERIMENTAL** </#if>${name}
+title: ${name}<#if beta?? && beta == true> (BETA)<#elseif experimental?? && experimental == true> (EXPERIMENTAL)</#if>
 summary: ${summary}
 permalink: ${name}.html
 last_updated: ${timestamp}
