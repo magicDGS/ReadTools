@@ -21,11 +21,15 @@ TODO: it requires a new version of FreeMarker for accessing some mehtods
 	</#if>
 </#macro>
 ---
-title: ${name}
+title: <#if beta?? && beta == true>**BETA** <#elseif experimental?? && experimental == true>**EXPERIMENTAL** </#if>${name}
 summary: ${summary}
 permalink: ${name}.html
 last_updated: ${timestamp}
 ---
+
+<#if beta?? && beta == true>{% include warning.html content="This a BETA feature and is not yet ready for use in production" %}
+<#elseif experimental?? && experimental == true>{% include warning.html content="This a EXPERIMENTAL tool and should not be used for production" %}
+</#if>
 
 ## Description
 
