@@ -1,0 +1,9 @@
+{
+  "summary": "Inline oneLineSummary",
+  "arguments": [],
+  "description": "Inline summary",
+  "name": "DocumentedClpExperimental",
+  "group": "Test Tools",
+  "beta": false,
+  "experimental": true
+}
