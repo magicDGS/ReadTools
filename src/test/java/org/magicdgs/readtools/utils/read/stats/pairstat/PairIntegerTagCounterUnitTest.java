@@ -87,6 +87,22 @@ public class PairIntegerTagCounterUnitTest extends RTBaseTest {
     }
 
     @Test
+    public void testNotCountReadWithoutTag() {
+        final Tuple2<GATKRead, GATKRead> reads = Tuple2.apply(
+                ArtificialReadUtils.createArtificialRead("100M"),
+                ArtificialReadUtils.createArtificialRead("100M")
+        );
+
+        // if none of them have the tag -> do not count
+        Assert.assertEquals(COUNT_NM_EQUAL_TEN.compute(reads).intValue(), 0);
+
+        // if only one has the tag -> do not count
+        reads._1.setAttribute("NM", 10);
+        Assert.assertEquals(COUNT_NM_EQUAL_TEN.compute(reads).intValue(), 0);
+        Assert.assertEquals(COUNT_NM_EQUAL_TEN.compute(reads.swap()).intValue(), 0);
+    }
+
+    @Test
     public void testStatName() throws Exception {
         Assert.assertEquals(COUNT_NM_EQUAL_TEN.getStatName(), "pair.NM.eq.10");
     }
