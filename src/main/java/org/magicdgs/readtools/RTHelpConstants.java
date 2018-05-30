@@ -24,11 +24,21 @@
 
 package org.magicdgs.readtools;
 
+import org.magicdgs.readtools.utils.read.RTReadUtils;
+
+import org.apache.logging.log4j.Logger;
+import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
- * Constants for help/documentation purposes.
+ * Constants and utility methods for help/documentation purposes.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -109,5 +119,91 @@ public final class RTHelpConstants {
      */
     public static String getSuperCategoryProperty(final String groupName) {
         return getSuperCategoryMap().getOrDefault(groupName, DOC_SUPERCAT_OTHER);
+    }
+
+    /**
+     * Output versions of important dependencies to the logger.
+     *
+     * <p>This methods <b>MUST</b> be used as following in every tool extending directly
+     * {@link CommandLineProgram} or sub-classes not present in ReadTools:
+     *
+     * <ul>
+     *     <li>Override the {@link CommandLineProgram#printLibraryVersions()}</li>
+     *     <li>Call this method</li>
+     *     <li><b>SHOULD NOT</b> call the super method</li>
+     * </ul>
+     */
+    public static void printLibraryVersions(final Class<? extends CommandLineProgram> callerClazz, final Logger logger) {
+        // print versions from the MANIFEST
+        String htsjdkVersion = null;
+        String gatkVersion = null;
+        try {
+            final String classPath = callerClazz.getResource(callerClazz.getSimpleName() + ".class").toString();
+            if (classPath.startsWith("jar")) {
+                final String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+                try ( final InputStream manifestStream = new URL(manifestPath).openStream() ) {
+                    final Attributes manifestAttributes = new Manifest(manifestStream).getMainAttributes();
+                    htsjdkVersion = manifestAttributes.getValue("htsjdk-Version");
+                    gatkVersion = manifestAttributes.getValue("GATK-Version");
+
+                }
+            }
+        } catch (final IOException ignored) {
+            // intentionally ignored
+        }
+        // log the versions
+        logger.info("HTSJDK Version: " + (htsjdkVersion != null ? htsjdkVersion : "unknown"));
+        logger.info("GATK Version: " + (gatkVersion != null ? gatkVersion : "unknown"));
+        // log that we are using a patched version of GATK
+        // TODO: remove once https://github.com/magicDGS/ReadTools/issues/443 is fixed
+        logger.info("Using GATK patch from https://github.com/bioinformagik/gatk");
+    }
+
+    /**
+     * Output a curated set of important settings to the logger.
+     *
+     * <p>This methods <b>MUST</b> be used as following in every tool extending directly
+     * {@link CommandLineProgram} or sub-classes not present in ReadTools:
+     *
+     * <ul>
+     *     <li>Override the {@link CommandLineProgram#printSettings()}</li>
+     *     <li>Implementation <b>SHOULD</b> call first the super method</li>
+     *     <li>Then call this method</li>
+     * </ul>
+     */
+    public static void printSettings(final Logger logger) {
+        logger.info("Barcode sequence ({}) separator: '{}'",
+                () -> RTReadUtils.RAW_BARCODE_TAG,
+                () -> RTDefaults.BARCODE_INDEX_DELIMITER);
+        logger.info("Barcode quality ({}) separator: '{}'",
+                () -> RTReadUtils.RAW_BARCODE_QUALITY_TAG,
+                () -> RTDefaults.BARCODE_QUALITY_DELIMITER);
+        logger.info("Number of records to detect quality: {}",
+                () -> RTDefaults.MAX_RECORDS_FOR_QUALITY);
+        // for debugging
+        logger.debug("sampling_quality_checking_frequency : {}",
+                () -> RTDefaults.SAMPLING_QUALITY_CHECKING_FREQUENCY);
+        logger.debug("force_overwrite : {}",
+                () -> RTDefaults.FORCE_OVERWRITE);
+        logger.debug("discarded_output_suffix : {}",
+                () -> RTDefaults.DISCARDED_OUTPUT_SUFFIX);
+    }
+
+    /**
+     * Gets the String containing information about hot to get support.
+     *
+     * <p>This methods <b>MUST</b> be used as following in every tool extending directly
+     * {@link CommandLineProgram} or sub-classes not present in ReadTools:
+     *
+     * <ul>
+     *     <li>Override the {@link CommandLineProgram#getSupportInformation()}</li>
+     *     <li>Call this method</li>
+     *     <li><b>SHOULD NOT</b> call the super method</li>
+     * </ul>
+     *
+     * @return ReadTools specific support information.
+     */
+    public static String getSupportInformation() {
+        return "For support and documentation go to " + DOCUMENTATION_PAGE;
     }
 }
