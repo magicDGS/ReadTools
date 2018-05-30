@@ -28,7 +28,6 @@ import org.magicdgs.readtools.utils.read.stats.PairEndReadStatFunction;
 import org.magicdgs.readtools.utils.read.stats.SingleReadStatFunction;
 import org.magicdgs.readtools.utils.read.stats.StatFunction;
 
-import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.util.CoordMath;
 import htsjdk.samtools.util.Locatable;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
@@ -48,12 +47,18 @@ import java.util.Objects;
  * Calculator for several {@link StatFunction} over a window.
  *
  * <p>This calculator works only for {@link GATKRead} functions, concretely using implementations of
- * {@link SingleReadStatFunction} and {@link PairEndReadStatFunction}.
+ * {@link SingleReadStatFunction} and {@link PairEndReadStatFunction}. Users should provide
+ * reads to the {@link #addRead(GATKRead)} method to include the read on the calculation (if
+ * applicable). Importantly, supplementary/secondary alignment should not be added because the
+ * calculator expects two fragments per template (unpredictable results otherwise); unmapped reads
+ * can be added, but they would be ignored as they are not included on the window.
  *
- * <p>Computation of statistics happens only for pair-end reads. By default, the calculator computes
- * all the reads that are in the window ("total"), all proper pairs ("proper") and missing pairs in
- * the file ("missing"). Values for {@link SingleReadStatFunction} are only computed for "proper"
- * pairs; for {@link PairEndReadStatFunction} "missing" reads are not considered.
+ * <p>By default, the calculator computes all the reads that are in the window ("total"), proper
+ * pairs inclued ("proper", as defined in {@link #mappedPairSameContig(GATKRead)}) and pairs
+ * missing in the file ("missing").
+ *
+ * <p>Computation for both single and pair statisticsis only triggered for "proper pairs". In the
+ * case of {@link PairEndReadStatFunction}, pairs with "missing" reads are not considered.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
@@ -79,11 +84,8 @@ final class ProperStatWindowCalculator implements Locatable {
     // store the current results (single)
     private final Map<SingleReadStatFunction, Object> singleResult;
 
-    // TODO: check if we can improve performance with a differen Map and a sensible cache value
-    // TODO: maybe a good idea is to use the PatriciaTrie<Map<PairEndReadStatFunction, Object>> instead
-    // TODO: an avoid the ProperReadHash
-    // stores a cache of Hash for the first read and list of temporary stats
-    // the key is the read name hashCode
+    // TODO: performance improvements related with the cache (https://github.com/magicDGS/ReadTools/issues/451)
+    // stores a cache of hash for the first added read and list of temporary stats
     private final Map<ProperReadHash, Map<PairEndReadStatFunction, Object>> firstCache = new HashMap<>();
 
     // cached column names
@@ -96,9 +98,12 @@ final class ProperStatWindowCalculator implements Locatable {
     /**
      * Constructor for a window calculator with default column names.
      *
+     * <p>Note: for all the statistics, the {@link StatFunction#init()} method should be already
+     * called. Otherwise, the statistic might throw an exception or be wrong.
+     *
      * @param window      interval to compute the statistic.
-     * @param singleStats single-read statistics to compute (init should be already called)
-     * @param pairStats   pair-end statistics to compute (init should be already called).
+     * @param singleStats single-read statistics to compute.
+     * @param pairStats   pair-end statistics to compute.
      */
     ProperStatWindowCalculator(final SimpleInterval window,
             final List<SingleReadStatFunction> singleStats,
@@ -109,10 +114,15 @@ final class ProperStatWindowCalculator implements Locatable {
     /**
      * Constructor for a window calculator with different column names.
      *
+     * <p>Note: for all the statistics, the {@link StatFunction#init()} method should be already
+     * called. Otherwise, the statistic might throw an exception or be wrong.
+     *
      * @param window      interval to compute the statistic.
-     * @param singleStats single-read statistics to compute (init should be already called)
-     * @param pairStats   pair-end statistics to compute (init should be already called).
-     * @param columnNames column-names for the statistics.
+     * @param singleStats single-read statistics to compute.
+     * @param pairStats   pair-end statistics to compute.
+     * @param columnNames column-names for the statistics. Best practice is to call
+     *                    {@link #createColumnNames(List, List)} to cache the column names and
+     *                    construct several calculators for the same set of statistics.
      */
     ProperStatWindowCalculator(final SimpleInterval window,
             final List<SingleReadStatFunction> singleStats,
@@ -148,7 +158,7 @@ final class ProperStatWindowCalculator implements Locatable {
      *
      * <p>Use this method on construction to modify the number.
      */
-    static List<String> createColumnNames(final List<SingleReadStatFunction> singleStats,
+    protected static List<String> createColumnNames(final List<SingleReadStatFunction> singleStats,
             final List<PairEndReadStatFunction> pairStats) {
         final List<String> columns = new ArrayList<>(
                 singleStats.size() + pairStats.size() + DEFAULT_COLUMN_NAMES.size());
@@ -223,7 +233,12 @@ final class ProperStatWindowCalculator implements Locatable {
     }
 
     /**
-     * Add the read to the window calculator.
+     * Adds the read to the window calculator.
+     *
+     * <p>WARNING: this method should not be called if {@link GATKRead#isSecondaryAlignment()}
+     * or {@link GATKRead#isSupplementaryAlignment()} is {@code true}. Only two fragments are
+     * expected per template - adding secondary/supplementary alignments might produce unpredictable
+     * results.
      *
      * <p>Statistics are computed as following:
      * <ul>
@@ -233,7 +248,7 @@ final class ProperStatWindowCalculator implements Locatable {
      *         until the pair is added.</li>
      * </ul>
      *
-     * @param read read to be added.
+     * @param read alignment to be added.
      *
      * @return {@code true} if the read was added or downstream reads (in coordinate order) should
      * be added; {@code false} otherwise.
@@ -247,6 +262,7 @@ final class ProperStatWindowCalculator implements Locatable {
             addSingleRead(read, isProper);
         }
 
+        // TODO: maybe check first if there is any pair-end stat to check (performance improvemen - https://github.com/magicDGS/ReadTools/issues/451)
         // only if it is proper and in the window or if it is cached
         if (isProper && (isInWin || startOverlaps(read.getMateContig(), read.getMateStart()))) {
             // compute the readKey and check if there is a cached value
@@ -264,11 +280,11 @@ final class ProperStatWindowCalculator implements Locatable {
     }
 
     /**
-     * Add a single read, updating counts and statistics.
+     * Adds a single read, updating counts and statistics.
      *
      * <p>Note: statistics are only computed if the read is considered proper.
      *
-     * @param read     read to add.
+     * @param read     alignment to add.
      * @param isProper pre-computed proper status.
      */
     @SuppressWarnings("unchecked")
@@ -284,10 +300,10 @@ final class ProperStatWindowCalculator implements Locatable {
     }
 
     /**
-     * Add to the cache the intermediate values for the first read.
+     * Adds to the cache the intermediate values for the first read.
      *
      * @param readKey pre-computed read hash.
-     * @param read    read to add to the cache.
+     * @param read    alignment to add to the cache.
      */
     private void addToCache(final ProperReadHash readKey, final GATKRead read) {
         final Map<PairEndReadStatFunction, Object> cache = new HashMap<>(pairEndResult.size());
@@ -318,11 +334,15 @@ final class ProperStatWindowCalculator implements Locatable {
     }
 
     /**
-     * Check if the read is proper pair for the sake of this calculator.
+     * Checks if the read is "proper pair".
      *
-     * @param read the read to check.
+     * <p>A "proper" pair" for the calculator is the one where the read and the mate are mapped on
+     * the same contig. Note that unmapped reads/mates with assigned positions are not "proper" with
+     * this definition.
      *
-     * @return {@code true} if it is proper; {@code false} otherwise.
+     * @param read alignment to check.
+     *
+     * @return {@code true} if it is part of a "proper pair"; {@code false} otherwise.
      */
     private static boolean mappedPairSameContig(final GATKRead read) {
         // the unmapped check is important to do not have NPE
@@ -333,7 +353,7 @@ final class ProperStatWindowCalculator implements Locatable {
     }
 
     /**
-     * Check if the position overlaps with the window.
+     * Checks if the position overlaps with the window.
      *
      * @param contig the contig.
      * @param start  the start position.
@@ -349,7 +369,7 @@ final class ProperStatWindowCalculator implements Locatable {
     }
 
     /**
-     * Summarize the window in a table format.
+     * Summarizes the window in a table format.
      *
      * <p>This method recomputes the feature in every call, so it might be expensive if lots
      * of statistics are computed.
@@ -359,7 +379,7 @@ final class ProperStatWindowCalculator implements Locatable {
      *
      * @return table feature with the information for the statistics.
      */
-    public TableFeature format() {
+    public TableFeature toTableFeature() {
         // first, add the total/proper/missing
         final List<String> values = new ArrayList<>(columnNames.size());
         values.add(String.valueOf(total));
@@ -374,7 +394,7 @@ final class ProperStatWindowCalculator implements Locatable {
     }
 
     /**
-     * Format the results as a String and add to a container of results.
+     * Formats the results as a String and add to a container of results.
      *
      * @param results   results to format.
      * @param formatted container of formatted results.
@@ -390,7 +410,7 @@ final class ProperStatWindowCalculator implements Locatable {
      * Returns an string representation of this calculator.
      *
      * <p>Note: this string does not show the state of the calculation, but just the definition.
-     * For formatting purposes, use {@link #format()}.
+     * For formatting purposes, use {@link #toTableFeature()}.
      *
      * @return calculator representation.
      */
@@ -404,7 +424,9 @@ final class ProperStatWindowCalculator implements Locatable {
     private static class ProperReadHash {
         private final String name;
         private final int hashCode;
-        public final boolean isInWin;
+        // true if this hash comes from a read that was on the window; false otherwise
+        // this is important to mark reads as missing (only if they are in the window)
+        private final boolean isInWin;
 
         private ProperReadHash(final GATKRead read, final boolean isInWin) {
             this.name = read.getName();
@@ -421,6 +443,5 @@ final class ProperStatWindowCalculator implements Locatable {
         public int hashCode() {
             return hashCode;
         }
-
     }
 }

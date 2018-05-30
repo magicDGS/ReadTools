@@ -27,7 +27,6 @@ package org.magicdgs.readtools.utils.read.stats.engine;
 import org.magicdgs.readtools.RTBaseTest;
 import org.magicdgs.readtools.utils.math.RelationalOperator;
 import org.magicdgs.readtools.utils.read.stats.pairstat.PairIntegerTagCounter;
-import org.magicdgs.readtools.utils.read.stats.singlestat.ContainIndelCounter;
 import org.magicdgs.readtools.utils.read.stats.singlestat.ContainSoftclipCounter;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -176,7 +175,7 @@ public class ProperStatWindowCalculatorUnitTest extends RTBaseTest {
     public void testAddOneReadRunningStats(final String desc, final GATKRead read, final int total, final int proper, final int missing) {
         final ProperStatWindowCalculator calculator = createTestWindow();
         calculator.addRead(read);
-        final TableFeature feature = calculator.format();
+        final TableFeature feature = calculator.toTableFeature();
         Assert.assertEquals(feature.get("total"), String.valueOf(total), "total " + desc);
         Assert.assertEquals(feature.get("proper"), String.valueOf(proper), "proper " + desc);
         Assert.assertEquals(feature.get("missing"), String.valueOf(missing), "missing " + desc);
@@ -211,7 +210,7 @@ public class ProperStatWindowCalculatorUnitTest extends RTBaseTest {
         final ProperStatWindowCalculator calculator = createTestWindow();
         calculator.addRead(pair._1);
         calculator.addRead(pair._2);
-        final TableFeature feature = calculator.format();
+        final TableFeature feature = calculator.toTableFeature();
         Assert.assertEquals(feature.get("total"), String.valueOf(total), "total " + desc);
         Assert.assertEquals(feature.get("proper"), String.valueOf(proper), "proper " + desc);
         Assert.assertEquals(feature.get("missing"), String.valueOf(missing), "missing " + desc);
@@ -267,7 +266,7 @@ public class ProperStatWindowCalculatorUnitTest extends RTBaseTest {
         final ProperStatWindowCalculator calculator = createTestWindow();
         calculator.addRead(pair._1);
         calculator.addRead(pair._2);
-        final TableFeature feature = calculator.format();
+        final TableFeature feature = calculator.toTableFeature();
         // check the single-read stat (depends on how many were added)
         final int singleStat;
         if (first && second) {
@@ -284,18 +283,16 @@ public class ProperStatWindowCalculatorUnitTest extends RTBaseTest {
 
 
     @Test
-    public void testFormatEmptyWindow() throws Exception {
+    public void testToTableFeatureEmptyWindow() throws Exception {
         final ProperStatWindowCalculator calculator = createTestWindow();
-        final TableFeature feature = calculator.format();
+        final TableFeature feature = calculator.toTableFeature();
         Assert.assertEquals(feature.columnCount(), EXPECTED_COLUMN_NAMES.size());
         Assert.assertEquals(feature.getHeader(), EXPECTED_COLUMN_NAMES);
-        Assert.assertEquals(feature.toString(), String.join("\t",
-                Arrays.asList(
-                        // interval info
-                        TEST_INTERVAL.getContig() + ":" + TEST_INTERVAL.getStart() + "-" + TEST_INTERVAL.getEnd(),
+        Assert.assertEquals(feature.getLocation(), TEST_INTERVAL);
+        Assert.assertEquals(feature.getAllValues(), Arrays.asList(
                         // total/proper/missing
                         "0", "0", "0",
                         // statistics
-                        SOFTCLIP_COUNTER.tableMissingFormat(), NM_EQ_ZERO_COUNTER.tableMissingFormat())));
+                        SOFTCLIP_COUNTER.tableMissingFormat(), NM_EQ_ZERO_COUNTER.tableMissingFormat()));
     }
 }
