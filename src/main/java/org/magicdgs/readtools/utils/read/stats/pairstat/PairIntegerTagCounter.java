@@ -36,6 +36,9 @@ import org.broadinstitute.hellbender.utils.read.ReadUtils;
 /**
  * Counts the number of read pairs whose integer SAM tag is compared to a threshold.
  *
+ * <p>If the tag is not present for any of the read pairs, that pair is not included in the
+ * count.</p>
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 // TODO: add group for this and documented feature once is a plugin (https://github.com/magicDGS/ReadTools/issues/448)
@@ -99,7 +102,9 @@ public class PairIntegerTagCounter implements PairEndReadStatFunction<Integer, B
 
     @Override
     public Boolean computeIntermediateFirst(final GATKRead read) {
-        return op.test(read.getAttributeAsInteger(tag), threshold);
+        // null values never met the threshold
+        final Integer val = read.getAttributeAsInteger(tag);
+        return val != null && op.test(val, threshold);
     }
 
     @Override

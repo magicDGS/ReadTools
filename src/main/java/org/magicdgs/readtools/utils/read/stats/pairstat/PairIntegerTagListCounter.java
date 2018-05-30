@@ -38,6 +38,9 @@ import java.util.stream.Collectors;
 /**
  * Counts the number of read pairs whose integer SAM tag(s) is compared to a threshold(s).
  *
+ * <p>If the tag(s) is not present for any of the read pairs, that pair is not included in that tag
+ * count.</p>
+ *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 // TODO: add group for this and documented feature once is a plugin (https://github.com/magicDGS/ReadTools/issues/448)
