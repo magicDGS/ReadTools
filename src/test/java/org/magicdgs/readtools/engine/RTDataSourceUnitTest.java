@@ -31,6 +31,7 @@ import org.magicdgs.readtools.utils.read.ReadReaderFactory;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMTextHeaderCodec;
 import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.util.BufferedLineReader;
 import htsjdk.samtools.util.FastqQualityFormat;
 import htsjdk.samtools.util.StringLineReader;
 import org.broadinstitute.hellbender.exceptions.UserException;
@@ -106,7 +107,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
     @DataProvider(name = "indexed")
     public Object[][] indexedDataSource() {
         final SAMFileHeader header = new SAMTextHeaderCodec().decode(
-                new StringLineReader("@HD\tVN:1.4\tSO:coordinate\n"
+                BufferedLineReader.fromString("@HD\tVN:1.4\tSO:coordinate\n"
                         + "@SQ\tSN:2L\tLN:59940\n"
                         // TODO: this header should be changed by using 2L.fragment.fa
                         + "@PG\tID:bwa\tPN:bwa\tVN:0.7.12-r1039\tCL:bwa mem fragment.fa SRR1931701_1.fq SRR1931701_2.fq"
