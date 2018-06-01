@@ -47,47 +47,18 @@ public abstract class ReadToolsProgram extends CommandLineProgram {
 
     @Override
     protected void printLibraryVersions() {
-        // print versions from the MANIFEST
-        try {
-            final String classPath = getClass().getResource(getClass().getSimpleName() + ".class").toString();
-            if (classPath.startsWith("jar")) {
-                final String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
-                try ( final InputStream manifestStream = new URL(manifestPath).openStream() ) {
-                    final Attributes manifestAttributes = new Manifest(manifestStream).getMainAttributes();
-                    final String htsjdkVersion = manifestAttributes.getValue("htsjdk-Version");
-                    final String picardVersion = manifestAttributes.getValue("GATK-Version");
-
-                    logger.info("HTSJDK Version: " + (htsjdkVersion != null ? htsjdkVersion : "unknown"));
-                    logger.info("GATK Version: " + (picardVersion != null ? picardVersion : "unknown"));
-
-                }
-            }
-        }
-        catch (IOException ignored) {
-        }
-        // log that we are using a patched version of GATK
-        // TODO: remove once https://github.com/magicDGS/ReadTools/issues/443 is fixed
-        logger.info("Using GATK patch from https://github.com/bioinformagik/gatk");
+        RTHelpConstants.printLibraryVersions(this.getClass(), logger);
     }
 
     @Override
     protected void printSettings() {
         super.printSettings();
-        logger.info("Barcode sequence ({}) separator: '{}'",
-                () -> RTReadUtils.RAW_BARCODE_TAG,
-                () -> RTDefaults.BARCODE_INDEX_DELIMITER);
-        logger.info("Barcode quality ({}) separator: '{}'",
-                () -> RTReadUtils.RAW_BARCODE_QUALITY_TAG,
-                () -> RTDefaults.BARCODE_QUALITY_DELIMITER);
-        logger.info("Number of records to detect quality: {}",
-                () -> RTDefaults.MAX_RECORDS_FOR_QUALITY);
-        // for debugging
-        logger.debug("sampling_quality_checking_frequency : {}",
-                () -> RTDefaults.SAMPLING_QUALITY_CHECKING_FREQUENCY);
-        logger.debug("force_overwrite : {}",
-                () -> RTDefaults.FORCE_OVERWRITE);
-        logger.debug("discarded_output_suffix : {}",
-                () -> RTDefaults.DISCARDED_OUTPUT_SUFFIX);
+        RTHelpConstants.printSettings(logger);
+    }
+
+    @Override
+    protected String getSupportInformation() {
+        return RTHelpConstants.getSupportInformation();
     }
 
     /**
@@ -128,7 +99,7 @@ public abstract class ReadToolsProgram extends CommandLineProgram {
      * Returns the name of this tool, which is the combination of
      * {@link RTHelpConstants#PROGRAM_NAME} and the simple class name.
      */
-    public final String getToolName() {
+    private final String getToolName() {
         return RTHelpConstants.PROGRAM_NAME + " " + getClass().getSimpleName();
     }
 }
