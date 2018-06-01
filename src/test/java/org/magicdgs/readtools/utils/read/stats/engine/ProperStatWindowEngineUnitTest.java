@@ -57,7 +57,7 @@ public class ProperStatWindowEngineUnitTest extends RTBaseTest {
 
     private static final String NL = "\n";
     private static final String EXPECTED_OUTPUT_HEADER = String.join("\t",
-            "window", "total", "proper", "missing",
+            ProperStatWindowEngine.HEADER_DELIMITER, "total", "proper", "missing",
             SOFTCLIP_COUNTER.getStatName(), NM_EQ_ZERO_COUNTER.getStatName()) + NL;
 
     private static final String EMPTY_PRINTALL_RESULT = EXPECTED_OUTPUT_HEADER +

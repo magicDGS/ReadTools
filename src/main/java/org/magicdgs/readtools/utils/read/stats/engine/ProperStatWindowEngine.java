@@ -30,7 +30,6 @@ import org.magicdgs.readtools.utils.read.stats.StatFunction;
 
 import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.SAMSequenceDictionary;
-import htsjdk.samtools.util.IOUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.IntervalUtils;
@@ -38,7 +37,6 @@ import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.codecs.table.TableFeature;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
-import org.broadinstitute.hellbender.utils.read.ReadCoordinateComparator;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -47,43 +45,38 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
- * Engine to compute several {@link StatFunction} over the provided windows.
+ * Engine to compute several {@link StatFunction} over the provided window(s).
  *
- * <p>This class takes a list of intervals and {@link StatFunction} and expects reads to be added
- * to compute on-the-fly the statistics provided. Nevertheless, the engine has the following
- * assumptions that the caller of {@link #addRead(GATKRead)} should met:
- *
- * <p>The engine has the following assumptions to work:
+ * <p>This class takes a list of intervals (coordinate sorted) and {@link StatFunction} and
+ * computes the statistics on-the-fly as they are added. Prior to pass the {@link GATKRead} to
+ * {@link #addRead(GATKRead)}, the caller should met the following assumptions of {@link #addRead(GATKRead)}:
  *
  * <ul>
- *     <li>Provided intervals are coordinate-sorted.</li>
  *     <li>Reads are added in a coordinate-sorted manner.</li>
  *     <li>Only two fragments per template will be added (supplementary/secondary alignments are filtered.</li>
  * </ul>
  *
  * <p>If these assumptions are not met, windows are output without all the data and statistics
- * would be incorrect.
+ * would be incorrect and unpredictable.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class ProperStatWindowEngine implements Closeable {
 
+    // TODO: use the TableFeature constant (requires https://github.com/broadinstitute/gatk/issues/4842)
+    protected static final String HEADER_DELIMITER = "HEADER";
+
     private final Logger logger = LogManager.getLogger(this.getClass());
 
     // list with all output windows
-    // TODO: possible performance improvements:
-    // TODO: - use IntervalsSkipList: retrieve overlapping intervals per read and add only there
-    // TODO: - it also requires to retrieve overlapping windows for the mate (extract location)
+    // TODO: possible performance improvements - use IntervalsSkipList (https://github.com/magicDGS/ReadTools/issues/458)
     private final SortedMap<String, List<ProperStatWindowCalculator>> windowsPerContig;
 
     // cache column names
@@ -91,18 +84,20 @@ public class ProperStatWindowEngine implements Closeable {
     // option to print all the windows
     private final boolean printAll;
     // ouptut writer
+    // TODO: output improvement - see https://github.com/magicDGS/ReadTools/issues/459
     private final PrintStream writer;
 
     /**
      * Constructor for the engine.
      *
-     * @param dict sequence dictionary to use with intervals.
-     * @param intervals coordinate-sorted intervals to compute the statistics.
+     * @param dict        sequence dictionary to use with intervals.
+     * @param intervals   coordinate-sorted intervals to compute the statistics.
      * @param singleStats statistics for single-reads (without considering pairs).
-     * @param pairStats statistics for pair-reads (considering the mate).
-     * @param output output file to populate the results.
-     * @param printAll if {@code false}, windows with 0 reads will be discarded; otherwise,
-     *                 they will be populated.
+     * @param pairStats   statistics for pair-reads (considering the mate).
+     * @param output      output file to populate the results.
+     * @param printAll    if {@code false}, windows with 0 reads will be discarded; otherwise,
+     *                    they will be populated.
+     *
      * @throws IOException if an I/O error occurs while opening the output.
      */
     public ProperStatWindowEngine(final SAMSequenceDictionary dict,
@@ -111,7 +106,6 @@ public class ProperStatWindowEngine implements Closeable {
             final List<PairEndReadStatFunction> pairStats,
             final Path output,
             final boolean printAll) throws IOException {
-        // TODO: maybe support also compressed output if end with a compressed extension?
         this(dict, intervals, singleStats, pairStats, Files.newOutputStream(output), printAll);
     }
 
@@ -120,13 +114,13 @@ public class ProperStatWindowEngine implements Closeable {
      *
      * <p>Use a {@link OutputStream} storing the results to test them.
      *
-     * @param dict sequence dictionary to use with intervals.
-     * @param intervals coordinate-sorted intervals to compute the statistics.
+     * @param dict        sequence dictionary to use with intervals.
+     * @param intervals   coordinate-sorted intervals to compute the statistics.
      * @param singleStats statistics for single-reads (without considering pairs).
-     * @param pairStats statistics for pair-reads (considering the mate).
-     * @param stream stream for the output.
-     * @param printAll if {@code false}, windows with 0 reads will be discarded; otherwise,
-     *                 they will be populated.
+     * @param pairStats   statistics for pair-reads (considering the mate).
+     * @param stream      stream for the output.
+     * @param printAll    if {@code false}, windows with 0 reads will be discarded; otherwise,
+     *                    they will be populated.
      */
     @VisibleForTesting
     ProperStatWindowEngine(final SAMSequenceDictionary dict,
@@ -156,7 +150,6 @@ public class ProperStatWindowEngine implements Closeable {
                     return v;
                 }));
 
-
         // create the writer and write first the header
         this.writer = new PrintStream(stream);
         this.printAll = printAll;
@@ -179,10 +172,8 @@ public class ProperStatWindowEngine implements Closeable {
      */
     public void addRead(final GATKRead read) {
         final List<ProperStatWindowCalculator> wins = flushUpToRead(read);
-        for (final ProperStatWindowCalculator w: wins) {
-            // TODO: performance improvement - should add a check for break the for loop once
-            // TODO: there are no-windows requiring this read
-            // TODO: if using IntervalsSkipList it might be easier by querying needed ones
+        for (final ProperStatWindowCalculator w : wins) {
+            // TODO: possible performance improvements - break the loop for downstream windows (https://github.com/magicDGS/ReadTools/issues/458)
             w.addRead(read);
         }
     }
@@ -191,6 +182,7 @@ public class ProperStatWindowEngine implements Closeable {
      * Flushes the queue of windows up to the provided read.
      *
      * @param read next read to be added.
+     *
      * @return windows overlapping with the read.
      */
     private List<ProperStatWindowCalculator> flushUpToRead(final GATKRead read) {
@@ -206,17 +198,21 @@ public class ProperStatWindowEngine implements Closeable {
             logger.debug("Flush up to {} ({} contigs)", read::toString, windowsPerContig::size);
             final String readContig = read.getContig();
             // remove the contigs that are before the current read
-            while (!windowsPerContig.isEmpty() && windowsPerContig.comparator().compare(firstKey, readContig) < 0) {
+            while (windowsPerContig.comparator().compare(firstKey, readContig) < 0) {
                 logger.debug("Output contig {}", firstKey);
                 windowsPerContig.remove(firstKey).forEach(this::maybeWriteWindow);
-                firstKey = (windowsPerContig.isEmpty()) ? null : windowsPerContig.firstKey();
+                if (windowsPerContig.isEmpty()) {
+                    // early termination in this case
+                    logger.debug("No contigs are left after {}", readContig);
+                    return Collections.emptyList();
+                }
+                firstKey = windowsPerContig.firstKey();
             }
             logger.debug("After flush {} contigs remain", windowsPerContig::size);
         }
-        // TODO: performance improvement - here we can also flush the List<ProperStatWindowCalculator>
-        // TODO: if the list is sorted, we should check for overlapping windows with the left-most coordinate (read or mate)
 
-        return (firstKey == null) ? Collections.emptyList() : windowsPerContig.get(firstKey);
+        // TODO: possible performance improvements - flush the upstream windows (https://github.com/magicDGS/ReadTools/issues/458)
+        return windowsPerContig.get(firstKey);
     }
 
     /**
@@ -224,7 +220,7 @@ public class ProperStatWindowEngine implements Closeable {
      */
     private void writeHeader() {
         // the column names from the first window is the one to take into account
-        writer.println("window\t" + Utils.join("\t", columnNames));
+        writer.println(HEADER_DELIMITER + "\t" + Utils.join("\t", columnNames));
     }
 
     /**
@@ -245,12 +241,13 @@ public class ProperStatWindowEngine implements Closeable {
      * @param feature the feature to be written.
      */
     private void writeWindow(final TableFeature feature) {
-        if (logger.isWarnEnabled() ) {
+        if (logger.isWarnEnabled()) {
             final int missing = Integer.valueOf(feature.get("missing"));
             if (missing != 0) {
                 logger.warn("{} missing pairs for {}", missing, IntervalUtils.locatableToString(feature));
             }
         }
+        // TODO: change based on https://github.com/magicDGS/ReadTools/issues/459
         writer.println(feature.toString());
     }
 
