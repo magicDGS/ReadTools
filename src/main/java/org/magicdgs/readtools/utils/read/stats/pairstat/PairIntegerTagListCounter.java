@@ -50,14 +50,16 @@ public class PairIntegerTagListCounter implements PairEndReadStatFunction<List<I
     public static final String OP_ARG_NAME = PairIntegerTagCounter.OP_ARG_NAME + "-list";
     public static final String VAL_ARG_NAME = PairIntegerTagCounter.VAL_ARG_NAME + "-list";
 
+    private static final String ARGS_SUFFIX = ". Should be specified the same number of time as --" + TAG_ARG_NAME;
+
     // TODO: maybe we should change to a tagged argument (https://github.com/magicDGS/ReadTools/issues/449)
-    @Argument(fullName = TAG_ARG_NAME, doc = PairIntegerTagCounter.TAG_ARG_NAME)
+    @Argument(fullName = TAG_ARG_NAME, doc = PairIntegerTagCounter.TAG_ARG_DESCRIPTION)
     public List<String> tag;
 
-    @Argument(fullName = OP_ARG_NAME, doc = PairIntegerTagCounter.OP_ARG_DESCRIPTION)
+    @Argument(fullName = OP_ARG_NAME, doc = PairIntegerTagCounter.OP_ARG_DESCRIPTION + ARGS_SUFFIX)
     public List<RelationalOperator> op;
 
-    @Argument(fullName = VAL_ARG_NAME, doc = PairIntegerTagCounter.VAL_ARG_DESCRIPTION)
+    @Argument(fullName = VAL_ARG_NAME, doc = PairIntegerTagCounter.VAL_ARG_DESCRIPTION + ARGS_SUFFIX)
     public List<Integer> threshold;
 
     // counters to be used
