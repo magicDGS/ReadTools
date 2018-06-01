@@ -126,6 +126,7 @@ public class RTStandardArguments {
 
     /** Output for force overwrite in the tools. */
     public static final String FORCE_OVERWRITE_NAME = "forceOverwrite";
+    public static final String FORCE_OVERWRITE_DOC = "Force output overwriting if it exists";
 
     /** Output format of the tool. */
     public static final String OUTPUT_FORMAT_NAME = "outputFormat";

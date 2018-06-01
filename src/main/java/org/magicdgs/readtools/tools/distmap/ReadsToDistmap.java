@@ -77,7 +77,7 @@ public final class ReadsToDistmap extends ReadToolsWalker {
             + "Find more information about this tool in "
             + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsToDistmap.html";
 
-    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = "Force output overwriting if it exists", common = true, optional = true)
+    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = RTStandardArguments.FORCE_OVERWRITE_DOC, common = true, optional = true)
     public Boolean forceOverwrite = false;
 
     @Argument(fullName = RTStandardArguments.OUTPUT_LONG_NAME, shortName = RTStandardArguments.OUTPUT_SHORT_NAME, doc = "Output in Distmap format. Expected to be in an HDFS file system.", optional = false)
