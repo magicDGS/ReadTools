@@ -80,6 +80,12 @@ public final class RTHelpConstants {
     public static final String DOC_CAT_DISTMAP_SUMMARY =
             "Tools for integration with the DistMap (Pandey & Schlötterer 2013).";
 
+    /** Documentation name for Mapped reads. */
+    public static final String DOC_CAT_MAPPED = "Mapped reads";
+    /** Documentation description for Mapped reads. */
+    public static final String DOC_CAT_MAPPED_SUMMARY =
+            "Tools operating on already mapped reads (SAM/BAM/CRAM only)";
+
     ///////////////////////////////
     // DOCUMENTATION FOR UTILITIES
 
@@ -100,6 +106,7 @@ public final class RTHelpConstants {
             groupToSuperCategory.put(DOC_CAT_READS_MANIPULATION, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
             groupToSuperCategory.put(DOC_CAT_READS_CONVERSION, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
             groupToSuperCategory.put(DOC_CAT_DISTMAP, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
+            groupToSuperCategory.put(DOC_CAT_MAPPED, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
             // include Picard's tool definitions
             groupToSuperCategory.put(picard.util.help.HelpConstants.DOC_CAT_DIAGNOSTICS_AND_QC, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
 
