@@ -50,7 +50,7 @@ public class PairIntegerTagListCounter implements PairEndReadStatFunction<List<I
     public static final String OP_ARG_NAME = PairIntegerTagCounter.OP_ARG_NAME + "-list";
     public static final String VAL_ARG_NAME = PairIntegerTagCounter.VAL_ARG_NAME + "-list";
 
-    private static final String ARGS_SUFFIX = ". Should be specified the same number of time as --" + TAG_ARG_NAME;
+    private static final String ARGS_SUFFIX = ". Should be specified the same number of times as --" + TAG_ARG_NAME;
 
     // TODO: maybe we should change to a tagged argument (https://github.com/magicDGS/ReadTools/issues/449)
     @Argument(fullName = TAG_ARG_NAME, doc = PairIntegerTagCounter.TAG_ARG_DESCRIPTION)
