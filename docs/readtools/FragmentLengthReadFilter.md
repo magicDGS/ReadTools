@@ -2,8 +2,9 @@
 title: FragmentLengthReadFilter
 summary: Keep only read pairs with insert length less than or equal to the given value
 permalink: FragmentLengthReadFilter.html
-last_updated: 25-37-2018 02:37:45
+last_updated: 05-39-2018 02:39:16
 ---
+
 
 ## Description
 
@@ -19,6 +20,6 @@ Keep only read pairs (0x1) with absolute insert length less than or equal to the
 
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
-| `--maxFragmentLength`<br/>`-maxFragmentLength` | int | 1000000 | Maximum length of fragment (insert size) |
+| `--maxFragmentLength` | int | 1000000 | Maximum length of fragment (insert size) |
 
 

@@ -2,8 +2,9 @@
 title: ReadStrandFilter
 summary: Keep only reads whose strand is as specified
 permalink: ReadStrandFilter.html
-last_updated: 25-37-2018 02:37:45
+last_updated: 05-39-2018 02:39:16
 ---
+
 
 ## Description
 
@@ -17,6 +18,6 @@ Keep only reads whose strand is either forward (not 0x10) or reverse (0x10), as 
 
 | Argument name(s) | Type | Description |
 | :--------------- | :--: | :------ |
-| `--keepReverse`<br/>`-keepReverse` | Boolean | Keep only reads on the reverse strand |
+| `--keepReverseStrandOnly` | Boolean | Keep only reads on the reverse strand |
 
 

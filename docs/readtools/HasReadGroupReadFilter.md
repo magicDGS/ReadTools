@@ -2,8 +2,9 @@
 title: HasReadGroupReadFilter
 summary: Filter out reads without Read Group
 permalink: HasReadGroupReadFilter.html
-last_updated: 25-37-2018 02:37:45
+last_updated: 05-39-2018 02:39:16
 ---
+
 
 ## Description
 
