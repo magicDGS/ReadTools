@@ -9,7 +9,7 @@ toc: false
 {% for filter_group in filter_groups %}
     {% for filter in filter_group.components %}
 ### [{{filter.name}}]({{filter.name}}.html)
-{{filter.summary}}
+{% if filter.status != "null" %} {{filter.status}}. {% endif %}{{filter.summary}}
 
     {% endfor %}
 {% endfor %}

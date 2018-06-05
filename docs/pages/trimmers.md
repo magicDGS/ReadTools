@@ -10,7 +10,7 @@ toc: false
 {% for trimmer_group in trimmer_groups %}
     {% for trimmer in trimmer_group.components %}
 ### [{{trimmer.name}}]({{trimmer.name}}.html)
-{{trimmer.summary}}
+{% if trimmer.status != "null" %} {{trimmer.status}}. {% endif %}{{trimmer.summary}}
 
     {% endfor %}
 {% endfor %}

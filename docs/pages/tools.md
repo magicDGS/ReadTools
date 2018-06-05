@@ -9,7 +9,7 @@ permalink: tools.html
 > {{tool_group.summary}}
 
     {% for tool in tool_group.components %}
-- [{{tool.name}}]({{tool.name}}.html): {{tool.summary}}
+- [{{tool.name}}]({{tool.name}}.html): {% if tool.status != "null" %} {{tool.status}}. {% endif %}{{tool.summary}}
 
     {% endfor %}
 {% endfor %}

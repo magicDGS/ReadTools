@@ -37,6 +37,7 @@ import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.argparser.ExperimentalFeature;
+import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.engine.FeatureContext;
 import org.broadinstitute.hellbender.engine.ReferenceContext;
 import org.broadinstitute.hellbender.engine.Shard;
@@ -86,6 +87,7 @@ import java.util.stream.Collectors;
  * @ReadTools.warning Please, note that disabling default read filters on this tool will produce
  * wrong results.
  */
+@DocumentedFeature
 @ExperimentalFeature
 @CommandLineProgramProperties(oneLineSummary = "Computes proper-paired reads statistics over windows ",
         summary = ComputeProperStatByWindow.SUMMARY,
