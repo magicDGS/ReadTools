@@ -8,6 +8,9 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+
+## [1.4.0]
+
 ### Changed
 - Read filters does not support short arguments anymore (GATK update)
 
@@ -253,3 +256,4 @@ First pre-release
 [1.2.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.0
 [1.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.1
 [1.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.3.0
+[1.4.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.0
