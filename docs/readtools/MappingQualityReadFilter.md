@@ -2,8 +2,9 @@
 title: MappingQualityReadFilter
 summary: Keep only reads with mapping qualities within a specified range
 permalink: MappingQualityReadFilter.html
-last_updated: 25-37-2018 02:37:45
+last_updated: 05-39-2018 02:39:16
 ---
+
 
 ## Description
 
@@ -22,7 +23,7 @@ Keep only reads with mapping qualities within a specified range.
 
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
-| `--maximumMappingQuality`<br/>`-maximumMappingQuality` | Integer | null | Maximum mapping quality to keep (inclusive) |
-| `--minimumMappingQuality`<br/>`-minimumMappingQuality` | int | 10 | Minimum mapping quality to keep (inclusive) |
+| `--maximumMappingQuality` | Integer | null | Maximum mapping quality to keep (inclusive) |
+| `--minimumMappingQuality` | int | 10 | Minimum mapping quality to keep (inclusive) |
 
 

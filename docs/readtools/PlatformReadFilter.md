@@ -2,8 +2,9 @@
 title: PlatformReadFilter
 summary: Keep only reads with matching Read Group platform
 permalink: PlatformReadFilter.html
-last_updated: 25-37-2018 02:37:45
+last_updated: 05-39-2018 02:39:16
 ---
+
 
 ## Description
 
@@ -17,6 +18,6 @@ Keep only reads where the the Read Group platform attribute (RG:PL tag) contains
 
 | Argument name(s) | Type | Description |
 | :--------------- | :--: | :------ |
-| `--PLFilterName`<br/>`-PLFilterName` | Set[String] | Platform attribute (PL) to match |
+| `--platformFilterName` | Set[String] | Platform attribute (PL) to match |
 
 

@@ -2,8 +2,9 @@
 title: TrailingNtrimmer
 summary: Trims the end of the read containing unknown bases.
 permalink: TrailingNtrimmer.html
-last_updated: 25-37-2018 02:37:45
+last_updated: 05-39-2018 02:39:16
 ---
+
 
 ## Description
 

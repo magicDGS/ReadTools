@@ -2,8 +2,9 @@
 title: OverclippedReadFilter
 summary: Filter out reads that are over-soft-clipped
 permalink: OverclippedReadFilter.html
-last_updated: 25-37-2018 02:37:45
+last_updated: 05-39-2018 02:39:16
 ---
+
 
 ## Description
 
@@ -23,7 +24,7 @@ Filter out reads where the number of bases without soft-clips (M, I, X, and = CI
 
 | Argument name(s) | Type | Default value(s) | Description |
 | :--------------- | :--: | :--------------: | :------ |
-| `--dontRequireSoftClipsBothEnds`<br/>`-dontRequireSoftClipsBothEnds` | boolean | false | Allow a read to be filtered out based on having only 1 soft-clipped block. By default, both ends must have a soft-clipped block, setting this flag requires only 1 soft-clipped block |
-| `--filterTooShort`<br/>`-filterTooShort` | int | 30 | Minimum number of aligned bases |
+| `--dontRequireSoftClipsBothEnds` | boolean | false | Allow a read to be filtered out based on having only 1 soft-clipped block. By default, both ends must have a soft-clipped block, setting this flag requires only 1 soft-clipped block |
+| `--filterTooShort` | int | 30 | Minimum number of aligned bases |
 
 
