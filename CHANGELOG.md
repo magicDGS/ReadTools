@@ -16,11 +16,16 @@ The meaning of each entry is user-based and can be found in our
 - Better error message for invalid tool names
 
 ### Added
+- Experimental tool for compute mapped pair-end statistics per window (`ComputeProperStatByWindow`)
 - Add support for long reference sequences in BAM (HTSJDK update)
 - Add support for long CIGAR in BAM (HTSJDK update)
 - Improvement in Intel compression (GKL update)
 
 ### Developer
+- New framework for read statistics
+- New program group for mapped reads
+- New walker class for reads (SAM/BAM/CRAM) - use only for mapped reads
+- New templates for documentation to integrate experimental/beta features
 - Update HTSJDK to 2.15.0
 - Update to released GATK 4.0.2.1 (patched-version for ReadTools)
 - Update to barclay 2.0.0 and other transitive dependencies from GATK
