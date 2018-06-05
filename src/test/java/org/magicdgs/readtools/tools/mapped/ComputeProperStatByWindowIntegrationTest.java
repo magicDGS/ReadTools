@@ -35,7 +35,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -121,13 +120,13 @@ public class ComputeProperStatByWindowIntegrationTest extends RTCommandLineProgr
     public Object[][] badArgs() throws Exception{
         // except output and window-size
         final ArgumentsBuilder nonThrowingArgs = new ArgumentsBuilder()
-                .addFileArgument("input", exampleBam)
                 .addArgument("count-pair-int-tag-list", "NM")
                 .addArgument("count-pair-int-tag-operator-list", "LT")
                 .addArgument("count-pair-int-tag-threshold-list", "2");
         return new Object[][]{
                 // problem creating output file (non-overwrite)
                 {new ArgumentsBuilder(nonThrowingArgs.getArgsArray())
+                        .addFileArgument("input", exampleBam)
                         .addFileArgument("output", File.createTempFile("exists", ".table"))
                         .addArgument("window-size", "100")
                 },
@@ -140,24 +139,20 @@ public class ComputeProperStatByWindowIntegrationTest extends RTCommandLineProgr
                 },
                 // intervals provided (temporary unsupported)
                 {new ArgumentsBuilder(nonThrowingArgs.getArgsArray())
+                        .addFileArgument("input", exampleBam)
                         .addArgument("L", "contig1:1-100")
                         .addArgument("window-size", "100")
                         .addFileArgument("output", BaseTest.getSafeNonExistentFile("intervals.table"))
                 },
                 // incorrect tag-list arguments (two tags, only one operator/threshold)
-                {new ArgumentsBuilder()
+                {new ArgumentsBuilder(nonThrowingArgs.getArgsArray())
                         .addFileArgument("input", exampleBam)
                         .addArgument("window-size", "100")
                         .addArgument("count-pair-int-tag-list", "NM")
-                        .addArgument("count-pair-int-tag-list", "NM")
-                        .addArgument("count-pair-int-tag-operator-list", "LT")
-                        .addArgument("count-pair-int-tag-threshold-list", "2")
                         .addFileArgument("output", BaseTest.getSafeNonExistentFile("intervals.table"))
-
                 }
         };
     }
-
 
     // set timeOut to ensure that if it does not fail, the program does not proceed consuming time
     @Test(dataProvider = "badArgs", expectedExceptions = UserException.class, timeOut = 1500)

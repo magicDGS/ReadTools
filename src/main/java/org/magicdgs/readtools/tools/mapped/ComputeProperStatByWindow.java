@@ -33,7 +33,6 @@ import org.magicdgs.readtools.utils.read.stats.engine.ProperStatWindowEngine;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMSequenceDictionary;
-import org.broadinstitute.barclay.argparser.Advanced;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
@@ -103,8 +102,6 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
             + "Find more information about this tool in "
             + RTHelpConstants.DOCUMENTATION_PAGE + "ComputeProperStatByWindow.html";
 
-
-
     /**
      * Tab-delimited output file with the statistic over the windows. A header defines the order of
      * each statistic and the first column the window in the form contig:start-end.
@@ -125,13 +122,12 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
     public List<String> contig = new ArrayList<>();
 
     // TODO: support sliding-window (depends on the engine supporting it)
-    @Argument(fullName = "window-size", doc = "Window size to perform the analysis")
+    @Argument(fullName = "window-size", doc = "Window size to perform the analysis", minValue = 1)
     public Integer window;
 
     // TODO: this should be a plugin (https://github.com/magicDGS/ReadTools/issues/448)
     @ArgumentCollection
     public ComputeProperStatByWindowArgs engineArgs = new ComputeProperStatByWindowArgs();
-
 
     @Override
     public List<ReadFilter> getDefaultReadFilters() {
@@ -153,13 +149,9 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
 
         // TODO: get rid of this limitation (requires engine changes)
         if (getHeaderForReads().getSortOrder() != SAMFileHeader.SortOrder.coordinate) {
-            throw new UserException(getToolName() + " only supports coordinate-sorted inputs.");
-        }
-
-        // validate that there is a sequence dictionary
-        final SAMSequenceDictionary dictionary = getBestAvailableSequenceDictionary();
-        if (dictionary == null) {
-            throw new UserException(getToolName() + " requires a sequence dictionary.");
+            throw new UserException(String.format(
+                    "%s only supports coordinate-sorted inputs (found %s)",
+                    getToolName(), getHeaderForReads().getSortOrder()));
         }
 
         // TODO: get rid of this limitation requires:
@@ -172,6 +164,8 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
                     getToolName(), WINDOW_CONTIG_NAME));
         }
 
+        // validate that there is a sequence dictionary
+        final SAMSequenceDictionary dictionary = getBestAvailableSequenceDictionary();
         engine = engineArgs
                 .getProperStatWindowEngine(path, makeWindows(dictionary, contig, window), dictionary);
     }
@@ -187,7 +181,6 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
                 .map(ShardBoundary::getInterval)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public void apply(final GATKRead read, final ReferenceContext referenceContext,
