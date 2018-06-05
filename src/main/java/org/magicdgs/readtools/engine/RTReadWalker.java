@@ -42,7 +42,7 @@ import org.broadinstitute.hellbender.transformers.ReadTransformer;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: decide if we should add other defaults (filters/transformers/arguments)
+// TODO: decide other defaults (https://github.com/magicDGS/ReadTools/issues/465)
 public abstract class RTReadWalker extends ReadWalker {
 
     @Override

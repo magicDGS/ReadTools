@@ -84,8 +84,8 @@ public class ComputeProperStatByWindowIntegrationTest extends RTCommandLineProgr
                                 .addArgument("count-pair-int-tag-list", "NM")
                                 .addArgument("count-pair-int-tag-operator-list", "LT")
                                 .addArgument("count-pair-int-tag-threshold-list", "2")
-                                .addBooleanArgument("ContainSoftclipCounter", true)
-                                .addBooleanArgument("ContainIndelCounter", true)
+                                .addArgument("stat", "ContainIndelCounter")
+                                .addArgument("stat", "ContainSoftclipCounter")
                 },
                 // smaller window-size to test (slower) but only limited to contigs
                 {"example/contigs.testCount_NM_LT_2.w5000",

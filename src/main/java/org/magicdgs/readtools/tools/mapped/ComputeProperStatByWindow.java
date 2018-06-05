@@ -121,7 +121,7 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
     @Argument(fullName = WINDOW_CONTIG_NAME, doc = "Limit the computation to the provided contig(s)", optional = true)
     public List<String> contig = new ArrayList<>();
 
-    // TODO: support sliding-window (depends on the engine supporting it)
+    // TODO: support sliding-window (https://github.com/magicDGS/ReadTools/issues/466)
     @Argument(fullName = "window-size", doc = "Window size to perform the analysis", minValue = 1)
     public Integer window;
 
@@ -132,7 +132,6 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
     @Override
     public List<ReadFilter> getDefaultReadFilters() {
         // using the mapped filter speeds-up processing
-        // TODO: should we also add WellFormedReadFilter?
         return Arrays.asList(ReadFilterLibrary.MAPPED, ReadFilterLibrary.PRIMARY_LINE);
     }
 
@@ -147,17 +146,14 @@ public final class ComputeProperStatByWindow extends RTReadWalker {
             throw new RTUserExceptions.OutputFileExists(outputArg);
         }
 
-        // TODO: get rid of this limitation (requires engine changes)
+        // TODO: get rid of this limitation (https://github.com/magicDGS/ReadTools/issues/466)
         if (getHeaderForReads().getSortOrder() != SAMFileHeader.SortOrder.coordinate) {
             throw new UserException(String.format(
                     "%s only supports coordinate-sorted inputs (found %s)",
                     getToolName(), getHeaderForReads().getSortOrder()));
         }
 
-        // TODO: get rid of this limitation requires:
-        // TODO: - access the interval for traversal (to divide into shards) = GATK issue
-        // TODO: - access reads to set intervals for traversal properly (pair-reads should be included) = GATK issue
-        // TODO: - being able to iterate over concrete regions but with associated mates
+        // TODO: get rid of this limitation (https://github.com/magicDGS/ReadTools/issues/466)
         if (hasIntervals()) {
             throw new UserException(String.format(
                     "%s does not support intervals (use --%s to limit contigs in the output). This limitation might be removed in the future.",

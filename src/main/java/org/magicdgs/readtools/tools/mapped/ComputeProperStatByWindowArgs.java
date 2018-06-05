@@ -42,7 +42,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Argument collection for {@link ComputeProperStatByWindow}.
@@ -62,10 +65,26 @@ class ComputeProperStatByWindowArgs {
 
     @ArgumentCollection
     public PairIntegerTagListCounter tagListCounter = new PairIntegerTagListCounter();
-    @Argument(fullName = "ContainSoftclipCounter", doc = "Counts the number of reads containing soft-clips (cigar 'S')")
-    public boolean softclip = false;
-    @Argument(fullName = "ContainIndelCounter", doc = "Counts the number of reads containing indels (cigar 'I' or 'D')")
-    public boolean indel = false;
+
+    @Argument(fullName = "stat", doc = "Statistics to compute (currently only for single-reads)", optional = true)
+    public Set<Statistic> stats = new LinkedHashSet<>(2);
+
+    enum Statistic {
+        /** Counts the number of reads containing soft-clips (cigar 'S') **/
+        ContainSoftclipCounter(new ContainSoftclipCounter()),
+        /** Counts the number of reads containing indels (cigar 'I' or ' D') **/
+        ContainIndelCounter(new ContainIndelCounter());
+
+        private final SingleReadStatFunction stat;
+
+        Statistic(SingleReadStatFunction stat) {
+            this.stat = stat;
+        }
+
+        SingleReadStatFunction getStat() {
+            return stat;
+        }
+    }
 
     /**
      * Gets the engine for computing proper-pair statistics.
@@ -80,7 +99,6 @@ class ComputeProperStatByWindowArgs {
             final Path output,
             final List<SimpleInterval> windows,
             final SAMSequenceDictionary dictionary) {
-
         try {
             return new ProperStatWindowEngine(
                     dictionary,
@@ -97,14 +115,7 @@ class ComputeProperStatByWindowArgs {
 
     // constructs requested single-read statistics
     private List<SingleReadStatFunction> getSingleReadStats() {
-        final List<SingleReadStatFunction> stats = new ArrayList<>(2);
-        if (indel) {
-            stats.add(new ContainIndelCounter());
-        }
-        if (softclip) {
-            stats.add(new ContainSoftclipCounter());
-        }
-        return stats;
+        return stats.stream().map(Statistic::getStat).collect(Collectors.toList());
     }
 
     // constructs requested pair-end statistics
