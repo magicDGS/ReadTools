@@ -29,6 +29,7 @@ import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.programgroups.DistmapProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
 
+import org.broadinstitute.barclay.argparser.Advanced;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
@@ -75,13 +76,22 @@ public final class DownloadDistmapResult extends ReadToolsProgram {
             + "Find more information about this tool in "
             + RTHelpConstants.DOCUMENTATION_PAGE + "DownloadDistmapResult.html";
 
+    // success checks variables
+    private static final String SUCCESS_FILE_NAME = "_SUCCESS";
 
     @Argument(fullName = RTStandardArguments.INPUT_LONG_NAME, shortName = RTStandardArguments.INPUT_SHORT_NAME, doc = "Input folder to look for Distmap multi-part file results. Expected to be in an HDFS file system.", common = true, optional = false)
     public String inputFolder;
 
+    private final static String PART_NAME_ARG_NAME = "partName";
     @Hidden
-    @Argument(fullName = "partName", shortName = "partName", doc = "Only download this part(s). For debugging.", optional = true)
+    @Argument(fullName = PART_NAME_ARG_NAME, shortName = PART_NAME_ARG_NAME, doc = "Only download this part(s). For debugging.", optional = true)
     public Set<String> partNames = new HashSet<>();
+
+
+    private static final String DISABLE_SUCCESS_CHECK_ARG_NAME = "disable-success-check";
+    @Advanced
+    @Argument(fullName = DISABLE_SUCCESS_CHECK_ARG_NAME, doc = "Disable the check for the _SUCCESS file on the input folder.", optional = true)
+    public boolean disableSuccessCheck = false;
 
     @ArgumentCollection
     public DistmapPartDownloader downloader = new DistmapPartDownloader();
@@ -95,14 +105,9 @@ public final class DownloadDistmapResult extends ReadToolsProgram {
         if (!inputPath.toUri().getScheme().startsWith("hdfs")) {
             logger.warn("Input folder is not in HDFS: {}", inputPath::toUri);
         }
-        try {
-            Files.list(inputPath)
-                    // add only part files
-                    .filter(path -> path.getFileName().toString().startsWith("part-"))
-                    .forEach(partFiles::add);
-        } catch (IOException e) {
-            throw new UserException.CouldNotReadInputFile(inputPath, e.getMessage(), e);
-        }
+
+        findPartFiles(inputPath);
+
         if (partFiles.isEmpty()) {
             throw new UserException.BadInput(inputFolder + " does not contain part files");
         }
@@ -113,6 +118,26 @@ public final class DownloadDistmapResult extends ReadToolsProgram {
 
     }
 
+    /** Find all the part files **/
+    private void findPartFiles(final Path inputPath) {
+        // first check the _SUCCESS file
+        if (!disableSuccessCheck && !Files.exists(inputPath.resolve(SUCCESS_FILE_NAME))) {
+            throw new UserException(String.format(
+                    "Unable to find %s file. Input folder might not contain a successful run (--%s to disable this check, which might produce a truncated output).",
+                    SUCCESS_FILE_NAME, DISABLE_SUCCESS_CHECK_ARG_NAME));
+        }
+
+        // then, return all the part files found
+        try {
+            Files.list(inputPath)
+                    // add only part files
+                    .filter(path -> path.getFileName().toString().startsWith("part-"))
+                    .forEach(partFiles::add);
+        } catch (final IOException e) {
+            throw new UserException.CouldNotReadInputFile(inputPath, e.getMessage(), e);
+        }
+    }
+
     /** Subsets the part files if the hidden argument for download only some parts is provided. */
     private void subsetPartsToDebug() {
         // only for debugging
@@ -120,9 +145,8 @@ public final class DownloadDistmapResult extends ReadToolsProgram {
             partFiles.removeIf(p -> !partNames.contains(p.getFileName().toString()));
 
             if (partFiles.size() != partNames.size()) {
-                throw new UserException.BadInput("Not found"
-                        + (partFiles.size() - partNames.size())
-                        + " parts specified with --partNames");
+                throw new UserException.BadInput(String.format("Not found %d part(s) specified with --%s",
+                        (partNames.size() - partFiles.size()), PART_NAME_ARG_NAME));
             }
 
             logger.warn("Only {} parts will be downloaded.", partNames::size);
