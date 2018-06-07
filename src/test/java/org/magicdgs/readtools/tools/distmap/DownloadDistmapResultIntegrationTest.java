@@ -68,6 +68,8 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         for (final File file: distmapFolder.listFiles((d, f) -> f.startsWith("part-"))) {
             Files.copy(file.toPath(), IOUtils.getPath(clusterInputFolder + "/" + file.getName()));
         }
+        // and the _SUCCESS file to ensure that it is considered a successful run
+        Files.copy(new File(distmapFolder, "_SUCCESS").toPath(), IOUtils.getPath(clusterInputFolder + "/_SUCCESS"));
     }
 
     // stop the mini-cluster
@@ -101,7 +103,9 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
 
     @Test
     public void testLocalPreSorted() throws Exception {
-        final ArgumentsBuilder args = new ArgumentsBuilder();
+        // this test does not have a _SUCCESS file
+        final ArgumentsBuilder args = new ArgumentsBuilder()
+                .addBooleanArgument("disable-success-check", true);
         final File expectedOutput = getTestFile("parts-00000-to-00003.sam");
         final File output = new File(TEST_TEMP_DIR,
                 args.hashCode() + ".local.presorted." + expectedOutput.getName() + ".sam");
@@ -145,8 +149,14 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
         return new Object[][]{
                 {new ArgumentsBuilder().addFileArgument("input", distmapFolder)
                         .addArgument("partName", "part-52.gz")},
-                {new ArgumentsBuilder().addFileArgument("input", new File(TEST_TEMP_DIR, "noFile"))},
-                {new ArgumentsBuilder().addFileArgument("input", TEST_TEMP_DIR)}
+                {new ArgumentsBuilder()
+                        .addBooleanArgument("disable-success-check", true)
+                        .addFileArgument("input", new File(TEST_TEMP_DIR, "noFile"))},
+                {new ArgumentsBuilder()
+                        .addBooleanArgument("disable-success-check", true)
+                        .addFileArgument("input", TEST_TEMP_DIR)},
+                {new ArgumentsBuilder()
+                        .addFileArgument("input", TEST_TEMP_DIR)}
         };
     }
 
@@ -173,7 +183,9 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
     @Test(dataProvider = "pgTagsToRemove")
     public void testPartsWithPGtagCorrectlyRemoved(final File inputFolder, final File expectedOutput) throws Exception {
         final File output = new File(TEST_TEMP_DIR, expectedOutput.hashCode() + ".no_pg.sam");
+        // this test does not have a _SUCCESS file
         final ArgumentsBuilder args = new ArgumentsBuilder()
+                .addBooleanArgument("disable-success-check", true)
                 .addBooleanArgument("addOutputSAMProgramRecord", false)
                 .addFileArgument("input", inputFolder)
                 .addFileArgument("output", output);
@@ -199,7 +211,9 @@ public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTe
     @Test(dataProvider = "pgTagsToMerge")
     public void testPartsWithPGtagCorrectlyMerged(final File inputFolder, final File expectedOutput) throws Exception {
         final File output = new File(TEST_TEMP_DIR, expectedOutput.hashCode() + ".pg.sam");
+        // this test does not have a _SUCCESS file
         final ArgumentsBuilder args = new ArgumentsBuilder()
+                .addBooleanArgument("disable-success-check", true)
                 .addBooleanArgument("addOutputSAMProgramRecord", false)
                 .addBooleanArgument("noRemoveTaskProgramGroup", true)
                 .addFileArgument("input", inputFolder)
