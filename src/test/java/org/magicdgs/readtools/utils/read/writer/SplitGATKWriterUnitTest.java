@@ -180,7 +180,7 @@ public class SplitGATKWriterUnitTest extends RTBaseTest {
         Assert.assertTrue(multipleFile.exists());
 
         // test the multiple
-        try (final SamReader reader = new ReadReaderFactory().openSamReader(multipleFile)) {
+        try (final SamReader reader = new ReadReaderFactory().openSamReader(multipleFile.toPath())) {
             Assert.assertEquals(reader.getFileHeader(), header);
             final Iterator<SAMRecord> it = reader.iterator();
             multipleReads.forEach(r -> Assert.assertEquals(it.next(), r.convertToSAMRecord(header)));
