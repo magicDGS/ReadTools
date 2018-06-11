@@ -8,6 +8,9 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+
+## [1.4.1]
+
 ### Fixed
 - Support non-local FASTQ inputs (e.g., HDFS or GCS)
 - `DownloadDistmapResult` checks for successful job (*_SUCCESS* file)
@@ -260,3 +263,4 @@ First pre-release
 [1.2.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.2.1
 [1.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.3.0
 [1.4.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.0
+[1.4.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.1

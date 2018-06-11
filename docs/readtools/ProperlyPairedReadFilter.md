@@ -2,7 +2,7 @@
 title: ProperlyPairedReadFilter
 summary: Keep only reads that are properly paired
 permalink: ProperlyPairedReadFilter.html
-last_updated: 05-39-2018 02:39:16
+last_updated: 11-25-2018 03:25:45
 ---
 
 
