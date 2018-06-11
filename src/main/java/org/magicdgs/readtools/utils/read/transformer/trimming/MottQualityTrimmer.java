@@ -67,8 +67,8 @@ public final class MottQualityTrimmer extends TrimmingFunction {
      */
     @Override
     protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
-        final int[] trimPoints =
-                TrimmingUtil.trimPointsMott(read.getBaseQualities(), qualThreshold);
+        // it is safe not to use the defensive copy, because TrimmingUtil does not modify qualities
+        final int[] trimPoints = TrimmingUtil.trimPointsMott(read.getBaseQualitiesNoCopy(), qualThreshold);
         toFill[0] = trimPoints[0];
         toFill[1] = trimPoints[1];
     }
