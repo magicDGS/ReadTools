@@ -2,7 +2,7 @@
 title: MetricsReadFilter
 summary: Filter out reads that fail platform quality checks, are unmapped and represent secondary/supplementary alignments
 permalink: MetricsReadFilter.html
-last_updated: 05-39-2018 02:39:16
+last_updated: 11-25-2018 03:25:45
 ---
 
 

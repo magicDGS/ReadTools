@@ -2,7 +2,7 @@
 title: MateOnSameContigOrNoMappedMateReadFilter
 summary: Keep only reads whose mate maps to the same contig or is unmapped
 permalink: MateOnSameContigOrNoMappedMateReadFilter.html
-last_updated: 05-39-2018 02:39:16
+last_updated: 11-25-2018 03:25:45
 ---
 
 

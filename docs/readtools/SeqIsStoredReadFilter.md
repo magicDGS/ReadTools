@@ -2,7 +2,7 @@
 title: SeqIsStoredReadFilter
 summary: Keep only reads with sequenced bases
 permalink: SeqIsStoredReadFilter.html
-last_updated: 05-39-2018 02:39:16
+last_updated: 11-25-2018 03:25:45
 ---
 
 
