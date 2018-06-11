@@ -31,6 +31,7 @@ import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.cram.ref.CRAMReferenceSource;
 import htsjdk.samtools.cram.ref.ReferenceSource;
 import htsjdk.samtools.fastq.FastqReader;
+import htsjdk.samtools.util.IOUtil;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
 import java.io.File;
@@ -85,25 +86,9 @@ public class ReadReaderFactory {
         return openWrappingException(() -> samFactory.open(path), path::toString);
     }
 
-    /** Open a new SAMReader from a file. */
-    public SamReader openSamReader(final File file) {
-        return openWrappingException(() -> samFactory.open(file), file::getAbsolutePath);
-    }
-
-    /** Open a new SAMReader from a resource. */
-    public SamReader openSamReader(final SamInputResource resource) {
-        // TODO: probably this should disappear in favour of a String open.
-        return openWrappingException(() -> samFactory.open(resource), resource::toString);
-    }
-
     /** Open a new FastqReader from a path. */
     public FastqReader openFastqReader(final Path path) {
-        return openFastqReader(path.toFile());
-    }
-
-    /** Open a new FastqReaderr from a file. */
-    public FastqReader openFastqReader(final File file) {
-        return openWrappingException(() -> new FastqReader(file), file::getAbsolutePath);
+        return openWrappingException(() -> new FastqReader(IOUtil.openFileForBufferedReading(path)), () -> path.toUri().toString());
     }
 
     // any exception caused by open a file will thrown a could not read input file exception

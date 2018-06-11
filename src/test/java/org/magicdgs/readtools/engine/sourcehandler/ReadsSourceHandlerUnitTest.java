@@ -243,7 +243,7 @@ public class ReadsSourceHandlerUnitTest extends RTBaseTest {
     }
 
     private final SAMFileHeader getHeaderForFile(final File file) {
-        try (final SamReader reader = FACTORY_FOR_TEST.openSamReader(file)) {
+        try (final SamReader reader = FACTORY_FOR_TEST.openSamReader(file.toPath())) {
             return reader.getFileHeader();
         } catch (IOException e) {
             // do nothing

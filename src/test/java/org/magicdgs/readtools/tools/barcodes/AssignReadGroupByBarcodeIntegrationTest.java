@@ -236,8 +236,8 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
     private void testSamFileEquivalentForBarcodeDetection(final File actualSam, File expectedSam)
             throws Exception {
         final ReadReaderFactory factory = new ReadReaderFactory();
-        try (final SamReader actualReader = factory.openSamReader(actualSam);
-                final SamReader expectedReader = factory.openSamReader(expectedSam)) {
+        try (final SamReader actualReader = factory.openSamReader(actualSam.toPath());
+                final SamReader expectedReader = factory.openSamReader(expectedSam.toPath())) {
             final SAMFileHeader actualHeader = actualReader.getFileHeader();
             final SAMFileHeader expectedHeader = expectedReader.getFileHeader();
             // check headers are equal
