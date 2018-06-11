@@ -117,7 +117,17 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
                         // no pair-end, PF information
                         false, false, false,
                         // no barcode
-                        new String[0]}
+                        new String[0]},
+                // ENA service FTP service donwload (ERR1424597)
+                {FastqReadNameEncoding.ILLUMINA,
+                        "@ERR1424597.1 HWI-ST486:301:C0JFPACXX:6:1101:1437:1999/2",
+                        // expected value without space
+                        "@ERR1424597.1", // TODO: maybe it should be detected that the proper name is "@HWI-ST486:301:C0JFPACXX:6:1101:1437:1999"?
+                        // pair-end information should be present, but not PF
+                        false, true, false,
+                        // no barcode in this concrete case
+                        new String[0]
+                }
         };
     }
 

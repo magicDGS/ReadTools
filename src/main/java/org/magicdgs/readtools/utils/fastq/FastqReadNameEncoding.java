@@ -27,13 +27,13 @@ package org.magicdgs.readtools.utils.fastq;
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,8 +91,7 @@ public enum FastqReadNameEncoding {
      *
      * @throws IllegalArgumentException if the name is wrongly encoded.
      */
-    @VisibleForTesting
-    String getPlainName(final String readName) {
+    public String getPlainName(final String readName) {
         final Matcher matcher = pattern.matcher(readName);
         if (!matcher.find()) {
             throw new IllegalArgumentException(
@@ -130,16 +129,21 @@ public enum FastqReadNameEncoding {
      *
      * @return the pair state 1 or 2; 0 if not information.
      */
-    public String getPairedState(final String readName) {
+    public RTFastqContstants.PairEndInfo getPairedState(final String readName) {
         if (pairInfoGroup == -1) {
-            return "0";
+            // TODO: to maintain current behavior this is single - but it should be unknown
+            return RTFastqContstants.PairEndInfo.SINGLE;
         }
         final Matcher matcher = pattern.matcher(readName);
         String pairInfo = null;
         if (matcher.find()) {
             pairInfo = matcher.group(pairInfoGroup);
         }
-        return pairInfo == null ? "0" : pairInfo;
+        // TODO: this if clause maintains current behavior - remove to return unknown!
+        if (pairInfo == null) {
+            return RTFastqContstants.PairEndInfo.SINGLE;
+        }
+        return RTFastqContstants.PairEndInfo.fromString(pairInfo);
     }
 
     /**
@@ -152,7 +156,7 @@ public enum FastqReadNameEncoding {
      * @return {@code true} if the read have the '2' mark; {@code false} otherwise.
      */
     public boolean isSecondOfPair(final String readName) {
-        return getPairedState(readName).equals("2");
+        return RTFastqContstants.PairEndInfo.SECOND == getPairedState(readName);
     }
 
     /**
@@ -165,7 +169,7 @@ public enum FastqReadNameEncoding {
      * @return {@code true} if the read have the '1' mark; {@code false} otherwise.
      */
     public boolean isFirstOfPair(final String readName) {
-        return getPairedState(readName).equals("1");
+        return RTFastqContstants.PairEndInfo.FIRST == getPairedState(readName);
     }
 
     /**
@@ -188,6 +192,13 @@ public enum FastqReadNameEncoding {
         return new String[0];
     }
 
+    // TODO: add documentation!
+    public static Optional<FastqReadNameEncoding> detectReadNameEncoding(final String readName) {
+        return Arrays.stream(FastqReadNameEncoding.values())
+                .filter(e -> e.pattern.matcher(readName).find())
+                .findFirst();
+    }
+
     /**
      * Detects the format for the read name provided, and updates the read information.
      *
@@ -203,34 +214,8 @@ public enum FastqReadNameEncoding {
      * @param read     the read to update.
      * @param readName the read name from a FASTQ file.
      */
+    // TODO: should be deprecated in favor of the codec code!
     public static void updateReadFromReadName(final GATKRead read, final String readName) {
-        // gets the firt encoding that match, in the order of the enum
-        final FastqReadNameEncoding encoding = Arrays.stream(FastqReadNameEncoding.values())
-                .filter(e -> e.pattern.matcher(readName).find())
-                .findFirst().orElse(null);
-        if (encoding == null) {
-            throw new GATKException.ShouldNeverReachHereException("Encoding should not be null.");
-        } else {
-            logger.debug("Detected encoding: {}", encoding);
-            read.setName(encoding.getPlainName(readName));
-            final String pairState = encoding.getPairedState(readName);
-            switch (pairState) {
-                case "0":
-                    read.setIsPaired(false);
-                    break;
-                case "1":
-                    read.setIsFirstOfPair();
-                    break;
-                case "2":
-                    read.setIsSecondOfPair();
-                    break;
-                default:
-                    throw new GATKException.ShouldNeverReachHereException(
-                            "Incorrect detection of pair-state: " + pairState);
-            }
-            read.setFailsVendorQualityCheck(encoding.isPF(readName));
-            RTReadUtils.addBarcodesTagToRead(read, encoding.getBarcodes(readName));
-        }
+        updateReadFromReadName(read, readName);
     }
-
 }

@@ -24,6 +24,12 @@
 
 package org.magicdgs.readtools.utils.fastq;
 
+import htsjdk.samtools.SAMRecord;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 /**
  * FASTQ constants for ReadTools.
  *
@@ -36,4 +42,45 @@ public class RTFastqContstants {
 
     /** Barcode delimiter in read names for Illumina encoding (e.g. readName#barcode). */
     public static final String ILLUMINA_NAME_BARCODE_DELIMITER = "#";
+
+    // TODO: this is better for the FastqReadNameEncoding and to move forward to SAMRecord FASTQ implementations
+    public enum PairEndInfo {
+        SINGLE("0", r -> r.setIsPaired(false), r -> {r.setReadPairedFlag(false); r.setProperPairFlag(false);}),
+        FIRST("1", GATKRead::setIsFirstOfPair, r -> {r.setReadPairedFlag(true); r.setFirstOfPairFlag(true); r.setSecondOfPairFlag(false);}),
+        SECOND("2", GATKRead::setIsSecondOfPair, r -> {r.setReadPairedFlag(true); r.setFirstOfPairFlag(false); r.setSecondOfPairFlag(true);}),
+        UNKNOWN("", r -> {}, r -> {});
+
+        private final String printable;
+        private final Consumer<GATKRead> gatkReadFlagSetter;
+        private final Consumer<SAMRecord> samRecordFlagSetter;
+
+        PairEndInfo(final String printable,
+                final Consumer<GATKRead> gatkReadFlagSetter,
+                final Consumer<SAMRecord> samRecordFlagSetter) {
+            this.printable = printable;
+            this.gatkReadFlagSetter = gatkReadFlagSetter;
+            this.samRecordFlagSetter = samRecordFlagSetter;
+        }
+
+        public void setFlags(final GATKRead read) {
+            gatkReadFlagSetter.accept(read);
+        }
+
+        public void setFlags(final SAMRecord record) {
+            samRecordFlagSetter.accept(record);
+        }
+
+        @Override
+        public String toString() {
+            return printable;
+        }
+
+        public static PairEndInfo fromString(final String s) {
+            if (s == null) {
+                return UNKNOWN;
+            }
+            return Stream.of(values()).filter(v -> v.printable.equals(s))
+                    .findFirst().orElse(UNKNOWN);
+        }
+    }
 }
