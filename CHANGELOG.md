@@ -8,6 +8,9 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+### Fixed
+- Support non-local FASTQ inputs (e.g., HDFS or GCS)
+- `DownloadDistmapResult` checks for successful job (*_SUCCESS* file)
 
 ## [1.4.0]
 
