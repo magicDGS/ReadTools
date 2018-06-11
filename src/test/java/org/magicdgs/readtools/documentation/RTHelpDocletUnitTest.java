@@ -85,7 +85,7 @@ public class RTHelpDocletUnitTest extends RTBaseTest {
     @Test
     public void testCustomDoclet() throws Exception {
         // run javadoc with our custom doclet to check if everything is working
-        final File outputDir = createTestTempDir("DocGenTest");
+        final File outputDir = createTempDir("DocGenTest");
         final List<String> docArgList = Arrays.asList(
                 "-build-timestamp", "2016/01/01 01:01:01",      // dummy, constant timestamp
                 "-absolute-version", "11.1",                    // dummy version

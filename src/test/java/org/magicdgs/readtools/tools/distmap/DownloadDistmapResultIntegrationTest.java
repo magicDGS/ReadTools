@@ -47,7 +47,7 @@ import java.nio.file.Path;
 public class DownloadDistmapResultIntegrationTest extends RTCommandLineProgramTest {
 
     private static final File TEST_TEMP_DIR =
-            createTestTempDir(DownloadDistmapResultIntegrationTest.class.getSimpleName());
+            createTempDir(DownloadDistmapResultIntegrationTest.class.getSimpleName());
 
     private MiniDFSCluster cluster;
     private String clusterInputFolder;

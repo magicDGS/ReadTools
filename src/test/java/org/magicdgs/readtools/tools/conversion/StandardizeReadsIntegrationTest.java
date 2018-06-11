@@ -40,7 +40,7 @@ import java.io.File;
 public class StandardizeReadsIntegrationTest extends RTCommandLineProgramTest {
 
     private final static File TEST_TEMP_DIR =
-            createTestTempDir(StandardizeReadsIntegrationTest.class.getSimpleName());
+            createTempDir(StandardizeReadsIntegrationTest.class.getSimpleName());
 
     // test files already in standard formatting
     private final static File STANDARD_SINGLE_INDEX_SE = TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.sam");

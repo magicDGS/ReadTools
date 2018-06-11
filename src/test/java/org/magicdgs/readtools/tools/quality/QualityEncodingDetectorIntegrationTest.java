@@ -50,12 +50,12 @@ public class QualityEncodingDetectorIntegrationTest extends RTCommandLineProgram
 
     @DataProvider(name = "notExistingFiles")
     public Object[][] getNotExisting() {
-        return new Object[][] {{"doesNotExists.bam"}, {"doesNotExists.fq"}};
+        return new Object[][] {{getSafeNonExistentFile("doesNotExists.bam")}, {getSafeNonExistentFile("doesNotExists.fq")}};
     }
 
     @Test(dataProvider = "notExistingFiles", expectedExceptions = UserException.CouldNotReadInputFile.class)
-    public void testFileDoesNotExists(final String fileName) throws Exception {
-        runCommandLine(Arrays.asList("-I", fileName));
+    public void testFileDoesNotExists(final File fileName) throws Exception {
+        runCommandLine(Arrays.asList("-I", fileName.getAbsolutePath().toString()));
     }
 
     @DataProvider(name = "filesWithQualities")

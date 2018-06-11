@@ -64,7 +64,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
             .createArtificialRead("5M");
 
     // temp directory for this tests
-    private final File testDir = createTestTempDir(this.getClass().getSimpleName());
+    private final File testDir = createTempDir(this.getClass().getSimpleName());
 
     @DataProvider(name = "namesAndClass")
     public Object[][] outpueNamesProvider() {
@@ -192,7 +192,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
 
     @DataProvider(name = "allSetterValues")
     public Iterator<Object[]> allSetterValues() {
-        final File tempDir = createTestTempDir("temp_directory");
+        final File tempDir = createTempDir("temp_directory");
         final List<Object[]> data = new ArrayList<>();
         final boolean[] trueOrFalse = new boolean[] {true, false};
         for (final boolean useAsyncIo : trueOrFalse) {
