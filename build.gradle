@@ -13,8 +13,8 @@ plugins {
     id "java"
     id "application"
     id "jacoco"
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
-    id 'com.palantir.git-version' version '0.5.2' // for the git version
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id 'com.palantir.git-version' version '0.11.0' // for the git version
 }
 
 apply from: 'gradle/jacoco.coverage.gradle'
@@ -104,8 +104,8 @@ dependencies {
 }
 
 // for managing the wrapper task
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.3'
+wrapper {
+    gradleVersion = '4.8'
 }
 
 tasks.withType(Jar) {
