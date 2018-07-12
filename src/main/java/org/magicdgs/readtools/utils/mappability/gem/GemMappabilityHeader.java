@@ -24,18 +24,32 @@
 
 package org.magicdgs.readtools.utils.mappability.gem;
 
+import avro.shaded.com.google.common.annotations.Beta;
 import org.apache.commons.lang3.Range;
 
 import java.util.Map;
 
 /**
- * TODO: documentation
+ * Header from the gem-mappability file format.
+ *
+ * <p>NOTE: this class is a component of a beta feature.
+ *
+ * <p>Includes information about:
+ *
+ * <ol>
+ *     <li>Parameters used for the gem-mapper/mappability algorithm.</li>
+ *     <li>Character-encoding for the values of mappability (range of number of mappings)</li>
+ * </ol>
+ *
+ * <p>This class expose getters for the parameters and {@link Range<Integer>} represented by a
+ * concree character.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
+@Beta
 public class GemMappabilityHeader {
 
-    // information contained in the header
+    // information contained in the header (algorithm params)
     private final int kmerLength;
     private final int approximationThreshold;
     private final int maxMismatches;
@@ -44,9 +58,21 @@ public class GemMappabilityHeader {
     private final int minMatchedBases;
     private final int strataAfterBest;
 
+    // map of byte to range of integers
     private final Map<Byte, Range<Integer>> encoding;
 
-    // TODO: documentation
+    /**
+     * Default constructor.
+     *
+     * @param kmerLength                read/k-mer length (mappability argument).
+     * @param approximationThreshold    approximation threshold (mappability argument).
+     * @param maxMismatches             maximum mismatches (mapper argument).
+     * @param maxErrors                 maximum errors (mapper argument).
+     * @param maxBigIndelLength         maximum indel length (mapper argument).
+     * @param minMatchedBases           minimum matched bases (mapper argument).
+     * @param strataAfterBest           strata after best (mapper argument).
+     * @param encoding                  mapping of encodings to integer range.
+     */
     public GemMappabilityHeader(int kmerLength, int approximationThreshold, int maxMismatches,
             int maxErrors, int maxBigIndelLength, int minMatchedBases, int strataAfterBest,
             Map<Byte, Range<Integer>> encoding) {
@@ -60,44 +86,76 @@ public class GemMappabilityHeader {
         this.encoding = encoding;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the k-mer length.
+     *
+     * @return length of the k-mer/read.
+     */
     public int getKmerLength() {
         return kmerLength;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the approximation threshold.
+     *
+     * @return approximation threshold.
+     */
     public int getApproximationThreshold() {
         return approximationThreshold;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the maximum mismatches.
+     *
+     * @return maximum mismatches.
+     */
     public int getMaxMismatches() {
         return maxMismatches;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the maximum errors.
+     *
+     * @return maximum errors.
+     */
     public int getMaxErrors() {
         return maxErrors;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the maximum indel length.
+     *
+     * @return maximum indel length.
+     */
     public int getMaxBigIndelLength() {
         return maxBigIndelLength;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the minimum matched bases.
+     *
+     * @return minimum matched bases.
+     */
     public int getMinMatchedBases() {
         return minMatchedBases;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the strata after best.
+     *
+     * @return strata after best.
+     */
     public int getStrataAfterBest() {
         return strataAfterBest;
     }
 
-    // TODO: documentation
+    /**
+     * Gets the range of mappings for a concrete character.
+     *
+     * @param c character to convert to a range.
+     * @return the range of mappings for the character; {@code null} if not present.
+     */
     public Range<Integer> getEncodedValues(final byte c) {
-        // TODO: will return null if not encoded
         return encoding.get(c);
     }
 

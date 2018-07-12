@@ -81,7 +81,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
      * Sets up the test header test encoding.
      */
     @BeforeClass
-    private void setup() {
+    public void setup() {
         // fill in with simple ranges
         for(byte i = 32; i <= 42; i++) {
             TEST_ENCODING.put(i, Range.is((int) i - 31));
@@ -89,7 +89,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
     }
 
     @DataProvider
-    private Object[][] wrongHeaders() {
+    public Object[][] wrongHeaders() {
         final GemMappabilityHeader header = getTestHeader();
         return new Object[][] {
                 // empty file
@@ -112,7 +112,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
     }
 
     @Test(dataProvider = "wrongHeaders", expectedExceptions = GemMappabilityException.class)
-    private void testWrongHeader(final CharSequence wrongHeader) throws Exception {
+    public void testWrongHeader(final CharSequence wrongHeader) throws Exception {
         // create temp file
         final Path path = Files.createTempFile("gem" + wrongHeader.hashCode(), ".mappability");
         Files.write(path, Collections.singletonList(wrongHeader));
@@ -122,7 +122,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
     }
 
     @Test
-    private void testReadSimpleFile() throws Exception {
+    public void testReadSimpleFile() throws Exception {
         final String contig = "chr1";
         final GemMappabilityHeader header = getTestHeader();
 
@@ -154,7 +154,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
     }
 
     @Test
-    private void testIterationSingleContig() {
+    public void testIterationSingleContig() {
         final String contig = "chr1";
         final GemMappabilityReader reader = new GemMappabilityReader(
                 BufferedLineReader.fromString(getAllBytesForContigRecord(contig)),
@@ -171,7 +171,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
     }
 
     @Test
-    private void testIterationTwoContigs() {
+    public void testIterationTwoContigs() {
         final String contig1 = "chr1";
         final String contig2 = "chr2";
         final GemMappabilityReader reader = new GemMappabilityReader(
@@ -191,7 +191,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
     }
 
     @Test
-    private void testInvalidEncodedChar() {
+    public void testInvalidEncodedChar() {
         final String contig = "chr1";
         final GemMappabilityReader reader = new GemMappabilityReader(
                 BufferedLineReader.fromString(getAllBytesForContigRecord(contig) + TEST_ENCODING.lastKey() + 1),

@@ -84,7 +84,7 @@ public class GemMappabilityException extends UserException {
                         getPathName(path), lineNumber), exception);
     }
 
-
+    // helper method to get the Path name (if known)
     private static final String getPathName(final Path path) {
         return (path == null) ? "unknown" : path.toUri().toString();
     }

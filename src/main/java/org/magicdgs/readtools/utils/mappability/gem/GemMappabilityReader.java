@@ -103,6 +103,12 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         this.header = readHeader();
     }
 
+    /**
+     * Testing constructor.
+     *
+     * @param reader reader starting from the encodings.
+     * @param header header with the meta-data storage.
+     */
     @VisibleForTesting
     protected GemMappabilityReader(final BufferedLineReader reader, final GemMappabilityHeader header) {
         this.reader = reader;
@@ -137,11 +143,13 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
             this.currentSequencePosition = 0;
         }
 
-        final Range<Integer> range = header.getEncodedValues(readByteWrappingException());
+        // read the encoded value and get the range
+        final byte encoded = readByteWrappingException();
+        final Range<Integer> range = header.getEncodedValues(encoded);
 
         if (range == null) {
-            // TODO: exception message
-            throw new GemMappabilityException(path, reader.getLineNumber(), "");
+            throw new GemMappabilityException(path, reader.getLineNumber(), String.format(
+                    "character %c not present in the header", encoded));
         }
 
         // advance the position one and generate the record
@@ -163,6 +171,11 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     //////////////////////////
     // METADATA RELATED-METHODS
 
+    /**
+     * Gets the header with the metadata from the file.
+     *
+     * @return gem-mappability heaader.
+     */
     public GemMappabilityHeader readHeader() {
         logger.debug("Reading header");
         return new GemMappabilityHeader(
@@ -176,7 +189,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
                 readEncoding());
     }
 
-
+    // reaad a meta-data line (integer value)
     private int readIntHeader(final String expected) {
         logger.debug("Readig meta-data line: {}", expected);
         skipMetadataLine(expected);
@@ -190,6 +203,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         }
     }
 
+    // read the encoding map conversion
     private Map<Byte, Range<Integer>> readEncoding() {
         logger.debug("Reading encoding meta-data");
         skipMetadataLine(ENCODING_HEADER_TEXT);
@@ -218,6 +232,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         return map;
     }
 
+    // skip a metadata line
     private void skipMetadataLine(final String text) {
         final String headerLine = readLineWrappingException();
         if (headerLine != null && !headerLine.isEmpty() &&
@@ -231,6 +246,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
                 String.format("expected header is %s (found %s)", headerLine, text));
     }
 
+    // return true for a header line (starting with ~); false otherwise
     private boolean isAtHeaderLine() {
         return peekWrappingException() == HEADER_PREFIX;
     }
@@ -238,6 +254,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     ///////////////////////
     // HELPER METHODS
 
+    // read a line wrapping the IO exceptions
     private String readLineWrappingException() {
         try {
             return reader.readLine();
@@ -245,7 +262,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
             throw GemMappabilityException.readingException(path, reader.getLineNumber(), e);
         }
     }
-
+    // peek an int wrapping the IO exceptions
     private int peekWrappingException() {
         try {
             return reader.peek();
@@ -265,13 +282,23 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     ////////////////////////
     // METHODS FOR TESTING
 
+    /**
+     * Testing method.
+     *
+     * @return current sequence where the iteration is having place.
+     */
     @VisibleForTesting
-    protected String getCurrentSequence() {
+    protected final String getCurrentSequence() {
         return currentSequence;
     }
 
+    /**
+     * Testing method.
+     *
+     * @return position on the {@link #getCurrentSequence()} where the next byte is located.
+     */
     @VisibleForTesting
-    protected int getCurrentSequencePosition() {
+    protected final int getCurrentSequencePosition() {
         return currentSequencePosition;
     }
 }
