@@ -105,7 +105,7 @@ dependencies {
 
 // for managing the wrapper task
 wrapper {
-    gradleVersion = '4.8'
+    gradleVersion = '4.8.1'
 }
 
 tasks.withType(Jar) {
