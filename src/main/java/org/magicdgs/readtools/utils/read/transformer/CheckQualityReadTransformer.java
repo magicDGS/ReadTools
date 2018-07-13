@@ -58,8 +58,8 @@ public class CheckQualityReadTransformer implements ReadTransformer {
         // sample reads randomly for checking
         if (currentReadCounter.incrementAndGet() >= SAMPLING_FREQUENCY) {
             currentReadCounter.set(0);
-            final byte[] quals = read.getBaseQualities();
-            for (final byte qual : quals) {
+            // we only check base qualities, so it is safe not to copy the base qualities
+            for (final byte qual : read.getBaseQualitiesNoCopy()) {
                 if (qual > QualityUtils.MAX_REASONABLE_Q_SCORE) {
                     throw new UserException.MisencodedQualityScoresRead(read,
                             "we encountered an extremely high quality score of " + (int) qual);

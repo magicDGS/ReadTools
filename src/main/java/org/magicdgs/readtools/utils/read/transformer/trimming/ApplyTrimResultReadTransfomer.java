@@ -78,8 +78,9 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
         RTReadUtils.clearTrimmingPointTags(read);
 
         if (read.isUnmapped()) {
-            final byte[] newBases = Arrays.copyOfRange(read.getBases(), start, end);
-            final byte[] newQuals = Arrays.copyOfRange(read.getBaseQualities(), start, end);
+            // it is safe to use the no-copy methods because we are doing a copy anyway
+            final byte[] newBases = Arrays.copyOfRange(read.getBasesNoCopy(), start, end);
+            final byte[] newQuals = Arrays.copyOfRange(read.getBaseQualitiesNoCopy(), start, end);
             read.setBases(newBases);
             read.setBaseQualities(newQuals);
         } else {
@@ -105,8 +106,9 @@ public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
     // required to modify in-place
     private static void modifyWithClipped(final GATKRead read, final GATKRead clipped) {
         // TODO: maybe this method requires something else if the ClippingRepresentation is settable
-        read.setBaseQualities(clipped.getBaseQualities());
-        read.setBases(clipped.getBases());
+        // here we use the unsafe methods, because we are not doing anything with the clipped read
+        read.setBaseQualities(clipped.getBaseQualitiesNoCopy());
+        read.setBases(clipped.getBasesNoCopy());
         read.setCigar(clipped.getCigar());
         read.setPosition(clipped); // TODO: maybe this adds to much complexity
         if (ReadUtils.hasBaseIndelQualities(read)) {
