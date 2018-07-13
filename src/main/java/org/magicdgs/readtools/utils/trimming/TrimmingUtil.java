@@ -55,7 +55,8 @@ public class TrimmingUtil {
      * or to enforce some minimum length.
      *
      * @param quals    a byte[] of quality scores in phred scaling (i.e. integer values between 0
-     *                 and ~60)
+     *                 and ~60). Note that it is safe to pass an in-use array as it would not be
+     *                 modified.
      * @param trimQual the lowest quality that is considered "good"
      *
      * @return the zero-base indexes which should be trimmed. When no trimming is required,
@@ -107,7 +108,8 @@ public class TrimmingUtil {
      * final byte[] trimmedQuals = Array.copyOfRange(quals, retval[0], retval[1])
      * final String trimmedBases = bases.substring(retval[0], retval[1])
      *
-     * @param bases a byte[] of bases (ACTGN)
+     * @param bases a byte[] of bases (ACTGN). Note that it is safe to pass an in-use array as
+     *              it would not be modified.
      *
      * @return the zero-base indexes which should be trimmed. When no trimming is required,
      * [0, quals.length] will be returned.
