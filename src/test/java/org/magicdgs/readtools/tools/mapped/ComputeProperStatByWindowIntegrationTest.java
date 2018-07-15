@@ -29,7 +29,6 @@ import org.magicdgs.readtools.TestResourcesUtils;
 
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
-import org.broadinstitute.hellbender.utils.test.BaseTest;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -43,7 +42,7 @@ import java.util.List;
  */
 public class ComputeProperStatByWindowIntegrationTest extends RTCommandLineProgramTest {
 
-    private final static File TEMP_DIR = createTestTempDir("ComputeProperStatByWindowIntegrationTest");
+    private final static File TEMP_DIR = createTempDir("ComputeProperStatByWindowIntegrationTest");
 
     // dataset generated for testing
     // includes mates in other contigs but main contigs should have more reads
@@ -134,7 +133,7 @@ public class ComputeProperStatByWindowIntegrationTest extends RTCommandLineProgr
                 {new ArgumentsBuilder(nonThrowingArgs.getArgsArray())
                         .addFileArgument("input", TestResourcesUtils.getWalkthroughDataFile("standard.single_index.SE.bam"))
                         .addArgument("window-size", "100")
-                        .addFileArgument("output", BaseTest.getSafeNonExistentFile("unsorted.table"))
+                        .addFileArgument("output", getSafeNonExistentFile("unsorted.table"))
 
                 },
                 // intervals provided (temporary unsupported)
@@ -142,14 +141,14 @@ public class ComputeProperStatByWindowIntegrationTest extends RTCommandLineProgr
                         .addFileArgument("input", exampleBam)
                         .addArgument("L", "contig1:1-100")
                         .addArgument("window-size", "100")
-                        .addFileArgument("output", BaseTest.getSafeNonExistentFile("intervals.table"))
+                        .addFileArgument("output", getSafeNonExistentFile("intervals.table"))
                 },
                 // incorrect tag-list arguments (two tags, only one operator/threshold)
                 {new ArgumentsBuilder(nonThrowingArgs.getArgsArray())
                         .addFileArgument("input", exampleBam)
                         .addArgument("window-size", "100")
                         .addArgument("count-pair-int-tag-list", "NM")
-                        .addFileArgument("output", BaseTest.getSafeNonExistentFile("intervals.table"))
+                        .addFileArgument("output", getSafeNonExistentFile("intervals.table"))
                 }
         };
     }

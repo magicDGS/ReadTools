@@ -45,7 +45,7 @@ import java.util.List;
 public class ReadsToFastqIntegrationTest extends RTCommandLineProgramTest {
 
     private static final File TEST_TEMP_DIR =
-            createTestTempDir(ReadsToFastqIntegrationTest.class.getSimpleName());
+            createTempDir(ReadsToFastqIntegrationTest.class.getSimpleName());
 
     // this is separated from the rest because it will have special treatment in the future
     @Test

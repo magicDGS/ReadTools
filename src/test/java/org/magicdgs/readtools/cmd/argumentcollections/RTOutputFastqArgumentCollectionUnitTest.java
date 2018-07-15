@@ -51,7 +51,7 @@ public class RTOutputFastqArgumentCollectionUnitTest extends RTBaseTest {
     @Test
     public void testSplitOutput() throws Exception {
         // this are the expected files with the output prefix
-        final String outputPrefix = createTestTempDir(this.getClass().getSimpleName())
+        final String outputPrefix = createTempDir(this.getClass().getSimpleName())
                 .getAbsolutePath() + "splitOutput";
         final List<File> expectedFiles = Stream.of("_1", "_2", "_SE")
                 .map(e -> new File(outputPrefix + e + ".fq.gz")).collect(Collectors.toList());
@@ -64,7 +64,7 @@ public class RTOutputFastqArgumentCollectionUnitTest extends RTBaseTest {
     @Test
     public void testInterleavedOutput() throws Exception {
         // this are the expected files with the output prefix
-        final String outputPrefix = createTestTempDir(this.getClass().getSimpleName())
+        final String outputPrefix = createTempDir(this.getClass().getSimpleName())
                 .getAbsolutePath() + "interleaved";
         final List<File> expectedFiles =
                 Collections.singletonList(new File(outputPrefix + ".fq.gz"));
@@ -78,7 +78,7 @@ public class RTOutputFastqArgumentCollectionUnitTest extends RTBaseTest {
     @Test
     public void testPlainFormat() throws Exception {
         // this are the expected files with the output prefix
-        final String outputPrefix = createTestTempDir(this.getClass().getSimpleName())
+        final String outputPrefix = createTempDir(this.getClass().getSimpleName())
                 .getAbsolutePath() + "interleaved";
         final List<File> expectedFiles =
                 Collections.singletonList(new File(outputPrefix + ".fq"));

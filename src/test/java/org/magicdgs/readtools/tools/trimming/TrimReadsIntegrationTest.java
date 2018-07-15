@@ -42,7 +42,7 @@ public class TrimReadsIntegrationTest extends RTCommandLineProgramTest {
 
     // temp directory for all the tests
     private final static File TEST_TEMP_DIR =
-            createTestTempDir(TrimReadsIntegrationTest.class.getSimpleName());
+            createTempDir(TrimReadsIntegrationTest.class.getSimpleName());
 
     // TODO: this is from concordance with legacy TrimFastq and should be removed eventually
     private static ArgumentsBuilder getRequiredArguments() {
