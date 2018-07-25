@@ -82,9 +82,6 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     // header from the file, read on construction
     private final GemMappabilityHeader header;
 
-    // TODO: we should track somehow line numbers or structure of data to report on failures
-    // TODO: e.g., use currentSequence* vars to report the sequence and position
-    // TODO: or mention the header
     private FastLineReader reader;
 
     // iteration values to keep track of the current sequence
@@ -160,8 +157,8 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         final Range<Long> range = header.getEncodedValues(encoded);
 
         if (range == null) {
-            throw new GemMappabilityException(path, String.format(
-                    "character '%c' not present in the header", encoded));
+            throw new GemMappabilityException(path, currentSequence, currentSequencePosition,
+                    String.format("character '%c' not present in the header", encoded));
         }
 
         // advance the position one and generate the record
@@ -209,8 +206,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         try {
             return Integer.parseInt(line);
         } catch (final NumberFormatException e) {
-            throw new GemMappabilityException(path,
-                    String.format("integer expected for %s header (found %s)", expected, line));
+            throw new GemMappabilityException(path, expected, "expected integer but found " + line);
         }
     }
 
@@ -225,8 +221,8 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
             // break if there is no next
             final Matcher matcher = ENCODING_PATTERN.matcher(line);
             if (!matcher.find()) {
-                throw new GemMappabilityException(path,
-                        String.format("encoding should match %s (found %s)", ENCODING_PATTERN,
+                throw new GemMappabilityException(path, ENCODING_HEADER_TEXT,
+                        String.format("should match %s (found %s)", ENCODING_PATTERN,
                                 line));
             }
             // this should not fail because the pattern matches
@@ -236,8 +232,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
 
         }
         if (map.isEmpty()) {
-            throw new GemMappabilityException(path,
-                    String.format("%s header does not have any entry", ENCODING_HEADER_TEXT));
+            throw new GemMappabilityException(path, ENCODING_HEADER_TEXT, " no entry found");
         }
         return map;
     }
@@ -251,8 +246,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
             return;
         }
         // invalid format
-        throw new GemMappabilityException(path,
-                String.format("expected header is %s (found %s)", text, headerLine));
+        throw new GemMappabilityException(path, text, "expected header not found: " + headerLine + " instead");
     }
 
     // return true for a header line (starting with ~); false otherwise
@@ -276,28 +270,5 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
             str.append((char) reader.getByte());
         }
         return str.toString();
-    }
-
-    ////////////////////////
-    // METHODS FOR TESTING
-
-    /**
-     * Testing method.
-     *
-     * @return current sequence where the iteration is having place.
-     */
-    @VisibleForTesting
-    protected final String getCurrentSequence() {
-        return currentSequence;
-    }
-
-    /**
-     * Testing method.
-     *
-     * @return position on the {@link #getCurrentSequence()} where the next byte is located.
-     */
-    @VisibleForTesting
-    protected final int getCurrentSequencePosition() {
-        return currentSequencePosition;
     }
 }

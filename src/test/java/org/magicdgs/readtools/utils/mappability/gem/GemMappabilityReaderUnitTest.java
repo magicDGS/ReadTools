@@ -257,10 +257,6 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
             i.incrementAndGet();
             final GemMappabilityRecord next = reader.next();
 
-            // test iteration variables
-            Assert.assertEquals(reader.getCurrentSequence(), contig);
-            Assert.assertEquals(reader.getCurrentSequencePosition(), i.get());
-
             // test the record
             testSingleRecord(next, contig, i.get(), i.get(), i.get());
         });
@@ -288,8 +284,6 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
         reader.close();
 
         // test iteration variables
-        Assert.assertNull(reader.getCurrentSequence());
-        Assert.assertEquals(reader.getCurrentSequencePosition(), -1);
 
         // test false for hasNext
         Assert.assertFalse(reader.hasNext());

@@ -33,52 +33,43 @@ import java.nio.file.Path;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: include other information (see GemMappabilityReader comments on this)
 public final class GemMappabilityException extends UserException {
 
     /**
-     * Constructor for a concrete file and line number.
+     * Private constructor.
      *
-     * @param path       the path for the GEM-mappability file.
-     * @param msg        exception message.
+     * <p>Should have specialized exceptions for different use-cases.
+     *
+     * @param path the path for the GEM-mappability file.
+     * @param msg  exception message.
      */
-    public GemMappabilityException(final Path path, final String msg) {
-        this(path, msg, null);
+    private GemMappabilityException(final Path path, final String msg) {
+        super(String.format("Invalid GEM-mappability file %s %s",
+                getPathName(path), msg));
     }
 
     /**
-     * Constructor for a concrete file and line number.
+     * Constructor for an exception parsing a sequence sequence line.
      *
-     * @param path       the path for the GEM-mappability file.
-     * @param msg        exception message.
+     * @param path     input file.
+     * @param sequence current sequence.
+     * @param position position at the current sequence.
+     * @param msg      error message.
      */
-    public GemMappabilityException(final Path path, final String msg, final Throwable e) {
-        super(String.format("Invalid GEM-mappability file %s: %s",
-                getPathName(path), msg), e);
+    public GemMappabilityException(final Path path, final String sequence, final long position,
+            final String msg) {
+        this(path, String.format("at position %s:%d - %s", sequence, position, msg));
     }
 
     /**
-     * Private constructor for adding a cause to the exception.
+     * Constructor for an exception parsing a header line.
      *
-     * @param msg       message.
-     * @param throwable cause.
+     * @param path   input file.
+     * @param header current header.
+     * @param msg    error message.
      */
-    private GemMappabilityException(final String msg, final Throwable throwable) {
-        super(msg, throwable);
-    }
-
-    /**
-     * Constructs an exception coming from a reading problem.
-     *
-     * @param path       the path for the GEM-mappability file.
-     * @param exception  exception causing the error (usually {@link java.io.IOException} or {@link
-     *                   htsjdk.samtools.util.RuntimeIOException}.
-     *
-     * @return exception with a message related with reading.
-     */
-    public static GemMappabilityException readingException(final Path path, final Exception exception) {
-        return new GemMappabilityException(String.format("Error reading GEM-mappability file %s",
-                        getPathName(path)), exception);
+    public GemMappabilityException(final Path path, final String header, final String msg) {
+        this(path, String.format("at '%s' header - %s", header, msg));
     }
 
     // helper method to get the Path name (if known)
