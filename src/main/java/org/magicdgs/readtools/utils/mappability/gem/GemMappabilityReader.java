@@ -82,6 +82,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     // header from the file, read on construction
     private final GemMappabilityHeader header;
 
+    // TODO: change implementation? (see https://github.com/magicDGS/ReadTools/issues/486)
     private FastLineReader reader;
 
     // iteration values to keep track of the current sequence
@@ -147,12 +148,11 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         // changing to next sequence
         if (isAtHeaderLine()) {
             this.currentSequence = readLine().substring(1);
-            this.currentSequencePosition = 0;
+            this.currentSequencePosition = 1;
         }
 
         // read the encoded value and get the range
-        // TODO: a more efficient implementation is to keep a byte[] buffer and read from there
-        // TODO: using readToEndOfOutputBufferOrEoln
+        // TODO: use buffering? (see https://github.com/magicDGS/ReadTools/issues/486)
         final byte encoded = reader.getByte();
         final Range<Long> range = header.getEncodedValues(encoded);
 
@@ -164,7 +164,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         // advance the position one and generate the record
         return new GemMappabilityRecord(
                 this.currentSequence,
-                ++this.currentSequencePosition,
+                this.currentSequencePosition++,
                 range);
     }
 
@@ -262,7 +262,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     // read a line wrapping the IO exceptions
     private String readLine() {
         final StringBuilder str = new StringBuilder();
-        // TODO: use a buffer and use with readToEndOfOutputBufferOrEoln
+        // TODO: use buffer? (see https://github.com/magicDGS/ReadTools/issues/486)
         while (!reader.skipNewlines()) {
             if (reader.eof()) {
                 break;
