@@ -27,7 +27,6 @@ package org.magicdgs.readtools.utils.mappability.gem;
 import org.apache.commons.lang3.Range;
 
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
