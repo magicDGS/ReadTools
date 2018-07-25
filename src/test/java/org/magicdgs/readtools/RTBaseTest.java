@@ -29,6 +29,7 @@ import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.Log;
 import org.apache.commons.io.output.NullOutputStream;
 import org.broadinstitute.hellbender.utils.LoggingUtils;
+import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.test.BaseTest;
 import org.broadinstitute.hellbender.utils.text.XReadLines;
 import org.testng.Assert;
@@ -45,6 +46,12 @@ import java.io.PrintStream;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public class RTBaseTest extends BaseTest {
+
+    static {
+        // set the locale in the same way as the Main class
+        // TODO: should be ported to GATK's BaseTest
+        Utils.forceJVMLocaleToUSEnglish();
+    }
 
     /** Print stream used for tests which requires it, such as CLP parsing. */
     public static final PrintStream NULL_PRINT_STREAM = new PrintStream(new NullOutputStream());
