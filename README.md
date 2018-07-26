@@ -24,7 +24,7 @@ for download and the complete tool documentation for the current version.
 
 - A Java 8 JDK
 - Git 2.5 or greater
-- Gradle 3.3 or greater
+- Gradle 4.8 or greater
 
 ### Building
 
