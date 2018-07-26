@@ -157,7 +157,6 @@ public final class ReadWriterFactory {
     /** Sets the reference file. This is required for CRAM writers. */
     public ReadWriterFactory setReferencePath(final Path referencePath) {
         logger.debug("Reference file for FASTQ/Distmap writers is ignored");
-        // TODO - this should set the reference Path in the samFactory (https://github.com/magicDGS/ReadTools/issues/376)
         this.referencePath = referencePath;
         return this;
     }
