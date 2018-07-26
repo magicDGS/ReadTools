@@ -144,4 +144,16 @@ public final class Main extends org.broadinstitute.hellbender.Main {
         }
     }
 
+    /**
+     * Get deprecation message for a tool.
+     *
+     * @param toolName command specified by the user
+     * @return deprecation message string, or null if none
+     */
+    @Override
+    public String getToolDeprecationMessage(final String toolName) {
+        // TODO: implement deprecation registry for pre-release tools
+        // TODO: https://github.com/magicDGS/ReadTools/issues/488
+        return null;
+    }
 }
