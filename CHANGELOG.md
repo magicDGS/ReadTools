@@ -8,6 +8,14 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+### Fixed
+- Improved performance for quality checking in every tool
+- Improved performance for trimming pipelines
+
+### Developer
+- Upgrade gradle and plugin versions
+- Simplify `RTBaseTest` and extend functionality with GATK's `BaseTest`
+- Force locale to US-EN in tests
 
 ## [1.4.1]
 
