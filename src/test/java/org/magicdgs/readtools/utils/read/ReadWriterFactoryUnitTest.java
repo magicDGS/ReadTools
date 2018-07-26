@@ -31,7 +31,6 @@ import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileWriter;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
