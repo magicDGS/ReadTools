@@ -204,30 +204,17 @@ public final class ReadWriterFactory {
             final Path output) {
         checkOutputAndCreateDirs(output);
         try {
-            return samFactory.makeWriter(header, presorted, output, getReferenceAsFile());
+            return samFactory.makeWriter(header, presorted, output, referencePath);
         } catch (final SAMException e) {
             // catch SAM exceptions as IO errors -> this are the ones that may fail
             throw new UserException.CouldNotCreateOutputFile(output.toUri().toString(), e.getMessage(), e);
         }
     }
 
-    // TODO - this will blow up if the java.nio.Path is not a file and the output is CRAM (https://github.com/magicDGS/ReadTools/issues/376)
-    // TODO - it requires an HTSJDK change not yet in their codebase (https://github.com/samtools/htsjdk/pull/1005)
-    private File getReferenceAsFile() {
-        try {
-            return (referencePath == null) ? null : referencePath.toFile();
-        } catch (final UnsupportedOperationException e) {
-            // log a warning saying the limitation
-            logger.warn("{} is not in the deafult file system and cannot be use for writing outputs (would fail for CRAM files). This limitation might be removed in the future.",
-                    referencePath::toUri);
-            return null;
-        }
-    }
-
     /** Creates a SAM/BAM/CRAM writer from a String path. */
     public GATKReadWriter createSAMWriter(final String output, final SAMFileHeader header,
             final boolean presorted) {
-        if (output.endsWith(CramIO.CRAM_FILE_EXTENSION) && getReferenceAsFile() == null) {
+        if (output.endsWith(CramIO.CRAM_FILE_EXTENSION) && referencePath == null) {
             throw new UserException.MissingReference(
                     "A reference file is required for writing CRAM files");
         }
@@ -334,7 +321,7 @@ public final class ReadWriterFactory {
         // for local files use commons compress except for gzip compression:
         // use CustomGzipOutputStream from HTSJDK for backwards-compatibility
         // TODO: we should be more consistent with the supported compression formats (https://github.com/magicDGS/ReadTools/issues/411)
-        if (AbstractFeatureReader.hasBlockCompressedExtension(outputPath.toUri())) {
+        if (IOUtil.hasBlockCompressedExtension(outputPath.toUri())) {
             logger.debug("Using gzip compression for {}", outputPath::toUri);
             return new CustomGzipOutputStream(outputStream, IOUtil.getCompressionLevel());
         } else if (BZip2Utils.isCompressedFilename(outputPath.toString())) {
