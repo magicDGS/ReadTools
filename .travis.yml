@@ -53,7 +53,7 @@ script:
       elif [[ $TYPE == test ]]; then
           ./gradlew jacocoTestReport;
       elif [[ $TYPE == jekyll ]]; then
-          rvm use 2.4.0 --install --binary --fuzzy &&
+          rvm use 2.5.1 --install --binary --fuzzy &&
           bundle install --gemfile docs/Gemfile &&
           ./scripts/test_documentation.sh ${BRANCH_NAME};
       elif [[ $TYPE == docgen ]]; then
