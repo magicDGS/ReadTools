@@ -8,6 +8,9 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+
+## [1.5.0]
+
 ### Fixed
 - Improved performance for quality checking in every tool
 - Improved performance for trimming pipelines
@@ -279,3 +282,4 @@ First pre-release
 [1.3.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.3.0
 [1.4.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.0
 [1.4.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.1
+[1.5.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.5.0

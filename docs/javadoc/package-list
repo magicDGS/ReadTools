@@ -14,6 +14,7 @@ org.magicdgs.readtools.tools.barcodes.dictionary
 org.magicdgs.readtools.tools.barcodes.dictionary.decoder
 org.magicdgs.readtools.tools.conversion
 org.magicdgs.readtools.tools.distmap
+org.magicdgs.readtools.tools.mappability.gem
 org.magicdgs.readtools.tools.mapped
 org.magicdgs.readtools.tools.quality
 org.magicdgs.readtools.tools.trimming
@@ -23,6 +24,7 @@ org.magicdgs.readtools.utils.fastq
 org.magicdgs.readtools.utils.function
 org.magicdgs.readtools.utils.iterators
 org.magicdgs.readtools.utils.iterators.paired
+org.magicdgs.readtools.utils.mappability.gem
 org.magicdgs.readtools.utils.math
 org.magicdgs.readtools.utils.read
 org.magicdgs.readtools.utils.read.filter

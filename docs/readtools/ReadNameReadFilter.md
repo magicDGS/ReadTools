@@ -2,7 +2,7 @@
 title: ReadNameReadFilter
 summary: Keep only reads with this read name
 permalink: ReadNameReadFilter.html
-last_updated: 11-25-2018 03:25:45
+last_updated: 27-06-2018 06:06:39
 ---
 
 

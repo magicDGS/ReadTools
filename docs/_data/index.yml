@@ -1,6 +1,6 @@
 ReadTools:
-  version: 1.4.1
-  timestamp: 11-25-2018 03:25:45
+  version: 1.5.0
+  timestamp: 27-06-2018 06:06:39
 
 tools:
   - group: Diagnostics and Quality Control
@@ -18,6 +18,12 @@ tools:
       - name: ReadsToDistmap
         summary: Converts any kind of ReadTools source to Distmap format.
         status: 'null'
+  - group: Mappabilty
+    summary: Tools related with mappability on the genome
+    components:
+      - name: GemMappabilityToBed
+        summary: Converts a GEM-mappability file into a BED-graph format
+        status: '_**EXPERIMENTAL**_'
   - group: Mapped reads
     summary: Tools operating on already mapped reads (SAM/BAM/CRAM only)
     components:
