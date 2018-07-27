@@ -8,7 +8,7 @@ import org.magicdgs.readtools.utils.mappability.gem.GemMappabilityReader;
 
 import htsjdk.samtools.util.BlockCompressedOutputStream;
 import htsjdk.samtools.util.CloserUtil;
-import htsjdk.tribble.AbstractFeatureReader;
+import htsjdk.samtools.util.IOUtil;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.argparser.ExperimentalFeature;
@@ -91,7 +91,7 @@ public final class GemMappabilityToBed extends ReadToolsProgram {
         final Path outputPath = IOUtils.getPath(output);
         try {
             // TODO: should support arbitrary compressed output (as other tools)
-            final OutputStream os = (IOUtils.hasBlockCompressedExtension(output))
+            final OutputStream os = (IOUtil.hasBlockCompressedExtension(output))
                     ? new BlockCompressedOutputStream(Files.newOutputStream(outputPath), null)
                     : Files.newOutputStream(outputPath);
             writer = new PrintStream(os);
