@@ -16,6 +16,8 @@ if [[ ! -z "$(git status -s)" ]]; then
 	exit 2
 fi
 
+# create temp directory
+mkdir -p tmp
 
 ## start creating the relase
 echo "[$(date)] Create release for version $version (from master branch)"
