@@ -33,7 +33,6 @@ import htsjdk.samtools.SAMTextHeaderCodec;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.BufferedLineReader;
 import htsjdk.samtools.util.FastqQualityFormat;
-import htsjdk.samtools.util.StringLineReader;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;

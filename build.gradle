@@ -51,8 +51,8 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 // versions for the dependencies to resolve conflicts
-final gatkVersion = '4.0.2.1'
-final htsjdkVersion = '2.15.0'
+final gatkVersion = '4.0.6.0'
+final htsjdkVersion = '2.16.0'
 final testNGVersion = '6.11'
 final mockitoVersion = '2.7.19'
 

@@ -115,14 +115,16 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
                             + "/2L.fragment.fa");
             Files.copy(localRef, hdfsRef);
 
-            // TODO - this should fail temporarily due to https://github.com/magicDGS/ReadTools/issues/376
-            // TODO - after addressing, it should not thrown any exception
-            Assert.assertThrows(UserException.MissingReference.class, () ->
-                    new ReadWriterFactory().setReferencePath(hdfsRef)
-                            .createWriter(new File(testDir, "hdfs.example.cram").getAbsolutePath(),
-                                    new SAMFileHeader(), true)
-            );
+            // create a writer should not fail
+            final File output = new File(testDir, "hdfs.example.cram");
+            final GATKReadWriter writer = new ReadWriterFactory().setReferencePath(hdfsRef)
+                            .createWriter(output.getAbsolutePath(),
+                                    new SAMFileHeader(), true);
+            // neither closing it
+            writer.close();
 
+            // and the file should exists (with no reads)
+            Assert.assertTrue(output.exists());
         } finally {
             // always stop the mini-cluster
             MiniClusterUtils.stopCluster(cluster);
