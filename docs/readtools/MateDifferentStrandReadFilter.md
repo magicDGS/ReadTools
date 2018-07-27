@@ -2,7 +2,7 @@
 title: MateDifferentStrandReadFilter
 summary: Keep only reads with mates mapped on the different strand
 permalink: MateDifferentStrandReadFilter.html
-last_updated: 11-25-2018 03:25:45
+last_updated: 27-06-2018 06:06:39
 ---
 
 

@@ -2,7 +2,7 @@
 title: ComputeProperStatByWindow (EXPERIMENTAL)
 summary: Computes proper-paired reads statistics over windows 
 permalink: ComputeProperStatByWindow.html
-last_updated: 11-25-2018 03:25:45
+last_updated: 27-06-2018 06:06:39
 ---
 
 {% include warning.html content="This a EXPERIMENTAL tool and should not be used for production" %}
@@ -58,11 +58,13 @@ Computes statistics for properly-paired reads over non-overlapping windows.
 | `--cloud-prefetch-buffer`<br/>`-CPB` | int | 40 | Size of the cloud-only prefetch buffer (in MB; 0 to disable). |
 | `--contig` | List[String] | [] | Limit the computation to the provided contig(s). This argument is used instead of interval arguments and might be removed in the future if intervals are supported. |
 | `--disable-bam-index-caching`<br/>`-DBIC` | boolean | false | If true, don't cache bam indexes, this will reduce memory requirements but may harm performance if many intervals are specified.  Caching is automatically disabled if there are no intervals specified. |
+| `--disable-sequence-dictionary-validation`<br/>`-disable-sequence-dictionary-validation` | boolean | false | If specified, do not check the sequence dictionaries from our inputs for compatibility. Use at your own risk! |
 | `--gcs_max_retries`<br/>`-gcs_retries` | int | 20 | If the GCS bucket channel errors out, how many times it will attempt to re-initiate the connection |
 | `--help`<br/>`-h` | boolean | false | display the help message |
 | `--interval-merging-rule`<br/>`-imr` | IntervalMergingRule | ALL | By default, the program merges abutting intervals (i.e. intervals that are directly side-by-side but do not actually overlap) into a single continuous interval. However you can change this behavior if you want them to be treated as separate intervals instead.<br/><br/><b>Possible values:</b> <i>ALL</i>, <i>OVERLAPPING_ONLY</i> |
 | `--intervals`<br/>`-L` | List[String] | [] | One or more genomic intervals over which to operate |
 | `--reference`<br/>`-R` | String | null | Reference sequence |
+| `--sites-only-vcf-output` | boolean | false | If true, don't emit genotype fields when writing vcf file output. |
 | `--stat` | Set[Statistic] | [] | Statistics to compute (currently only for single-reads) |
 | `--version` | boolean | false | display the version number for this tool |
 
@@ -76,9 +78,8 @@ Computes statistics for properly-paired reads over non-overlapping windows.
 | `--create-output-bam-md5`<br/>`-OBM` | boolean | false | If true, create a MD5 digest for any BAM/SAM/CRAM file created |
 | `--create-output-variant-index`<br/>`-OVI` | boolean | true | If true, create a VCF index when writing a coordinate-sorted VCF file. |
 | `--create-output-variant-md5`<br/>`-OVM` | boolean | false | If true, create a a MD5 digest any VCF file created. |
-| `--disable-sequence-dictionary-validation`<br/>`-disable-sequence-dictionary-validation` | boolean | false | If specified, do not check the sequence dictionaries from our inputs for compatibility. Use at your own risk! |
 | `--disableReadFilter`<br/>`-DF` | List[String] | [] | Read filters to be disabled before analysis |
-| `--disableToolDefaultReadFilters`<br/>`-disableToolDefaultReadFilters` | boolean | false | Disable all tool default read filters |
+| `--disableToolDefaultReadFilters`<br/>`-disableToolDefaultReadFilters` | boolean | false | Disable all tool default read filters (WARNING: many tools will not function correctly without their default read filters on) |
 | `--exclude-intervals`<br/>`-XL` | List[String] | [] | Use this argument to exclude certain parts of the genome from the analysis (like -L, but the opposite). This argument can be specified multiple times. You can use samtools-style intervals either explicitly on the command line (e.g. -XL 1 or -XL 1:100-200) or by loading in a file containing a list of intervals (e.g. -XL myFile.intervals). |
 | `--forceOverwrite`<br/>`-forceOverwrite` | Boolean | false | Force output overwriting if it exists |
 | `--interval-exclusion-padding`<br/>`-ixp` | int | 0 | Use this to add padding to the intervals specified using -XL. For example, '-XL 1:100' with a padding value of 20 would turn into '-XL 1:80-120'. This is typically used to add padding around targets when analyzing exomes. |

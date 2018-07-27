@@ -2,7 +2,7 @@
 title: NonZeroReferenceLengthAlignmentReadFilter
 summary: Filter out reads that do not align to the reference
 permalink: NonZeroReferenceLengthAlignmentReadFilter.html
-last_updated: 11-25-2018 03:25:45
+last_updated: 27-06-2018 06:06:39
 ---
 
 
