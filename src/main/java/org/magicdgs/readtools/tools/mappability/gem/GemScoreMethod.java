@@ -11,7 +11,7 @@ import java.util.function.Function;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: add also mappability measurement 1/number-of-mappings
+// TODO: add other methods (https://github.com/magicDGS/ReadTools/issues/494)
 public enum GemScoreMethod implements CommandLineParser.ClpEnum {
     /** Minimum of the range of mappings. */
     MIN(Range::getMinimum, null,

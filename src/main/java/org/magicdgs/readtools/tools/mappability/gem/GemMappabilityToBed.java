@@ -96,7 +96,8 @@ public final class GemMappabilityToBed extends ReadToolsProgram {
         writer = new PrintStream(createStream(outputPath));
     }
 
-    // TODO: this repeats some code form ReadWriterFactory - we should pull out a common class for this
+    // TODO: this repeats some code form ReadWriterFactory
+    // TODO: we should pull out a common class for this (https://github.com/magicDGS/ReadTools/issues/493)
     private OutputStream createStream(final Path outputPath) {
         if (!forceOverwrite && Files.exists(outputPath)) {
             throw new RTUserExceptions.OutputFileExists(outputPath);
@@ -104,8 +105,6 @@ public final class GemMappabilityToBed extends ReadToolsProgram {
         try {
             // first create the directories if needed
             Files.createDirectories(outputPath.toAbsolutePath().getParent());
-            // TODO: should support arbitrary compressed output (as other tools)
-            // TODO: tha should be factor out also in the factory
             final OutputStream os = Files.newOutputStream(outputPath);
             return IOUtil.hasBlockCompressedExtension(outputPath)
                     ? new BlockCompressedOutputStream(os, null)
