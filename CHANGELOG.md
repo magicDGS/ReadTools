@@ -11,11 +11,14 @@ The meaning of each entry is user-based and can be found in our
 ### Fixed
 - Improved performance for quality checking in every tool
 - Improved performance for trimming pipelines
+- Support non-local reference files for CRAM (e.g., HDFS or GCS)
 
 ### Developer
 - Upgrade gradle and plugin versions
 - Simplify `RTBaseTest` and extend functionality with GATK's `BaseTest`
 - Force locale to US-EN in tests
+- Update HTSJDK to 2.16.0
+- Update to released GATK 4.0.6.0 (patched-version for ReadTools)
 
 ## [1.4.1]
 
