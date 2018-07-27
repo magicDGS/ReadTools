@@ -86,6 +86,12 @@ public final class RTHelpConstants {
     public static final String DOC_CAT_MAPPED_SUMMARY =
             "Tools operating on already mapped reads (SAM/BAM/CRAM only)";
 
+    /** Documentation name for Mappability tools */
+    public static final String DOC_CAT_MAPPABILITY = "Mappabilty";
+    /** Documentation description for Mappability tools. */
+    public static final String DOC_CAT_MAPPABILITY_SUMMARY =
+            "Tools related with mappability on the genome";
+
     ///////////////////////////////
     // DOCUMENTATION FOR UTILITIES
 
@@ -107,6 +113,7 @@ public final class RTHelpConstants {
             groupToSuperCategory.put(DOC_CAT_READS_CONVERSION, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
             groupToSuperCategory.put(DOC_CAT_DISTMAP, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
             groupToSuperCategory.put(DOC_CAT_MAPPED, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
+            groupToSuperCategory.put(DOC_CAT_MAPPABILITY, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
             // include Picard's tool definitions
             groupToSuperCategory.put(picard.util.help.HelpConstants.DOC_CAT_DIAGNOSTICS_AND_QC, picard.util.help.HelpConstants.DOC_SUPERCAT_TOOLS);
 
