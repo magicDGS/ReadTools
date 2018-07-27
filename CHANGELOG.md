@@ -14,6 +14,9 @@ The meaning of each entry is user-based and can be found in our
 - Support non-local reference files for CRAM (e.g., HDFS or GCS)
 - Fix typo in README (building section)
 
+### Added
+- Experimental tool to parse GEM-mappability (`GemMappabilityToBed`)
+
 ### Developer
 - Upgrade gradle and plugin versions
 - Simplify `RTBaseTest` and extend functionality with GATK's `BaseTest`
