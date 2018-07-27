@@ -2,10 +2,12 @@ package org.magicdgs.readtools.tools.mappability.gem;
 
 import org.magicdgs.readtools.RTCommandLineProgramTest;
 import org.magicdgs.readtools.TestResourcesUtils;
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.mappability.gem.GemMappabilityReaderUnitTest;
 
 import htsjdk.samtools.util.BlockCompressedInputStream;
-import htsjdk.tribble.AbstractFeatureReader;
+import htsjdk.samtools.util.IOUtil;
+import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.Assert;
@@ -46,7 +48,7 @@ public class GemMappabilityToBedIntegrationTest extends RTCommandLineProgramTest
     @Test(dataProvider = "arguments")
     public void testSimpleMappabilityFile(final File input, final GemScoreMethod method,
             final File expected) throws Exception {
-        final File output = createTempFile(method.name(), expected.getName());
+        final File output = getSafeNonExistentFile(expected.getName());
 
         final ArgumentsBuilder args = new ArgumentsBuilder()
                 .addFileArgument("input", input)
@@ -61,8 +63,32 @@ public class GemMappabilityToBedIntegrationTest extends RTCommandLineProgramTest
         try (final InputStream bis = new BufferedInputStream(new FileInputStream(output))) {
             Assert.assertEquals(
                     BlockCompressedInputStream.isValidFile(bis),
-                    AbstractFeatureReader.hasBlockCompressedExtension(output));
+                    IOUtil.hasBlockCompressedExtension(output));
         }
     }
 
+    @Test(expectedExceptions = UserException.CouldNotReadInputFile.class)
+    public void testCouldNotReadInputFile() throws Exception {
+        runCommandLine(new String[]{
+            "--input", getSafeNonExistentFile("nonExistent.gem.mappability").getAbsolutePath(),
+            "--output", getSafeNonExistentFile("nonExistent.gem.bed").getAbsolutePath()
+        });
+    }
+
+    @Test(expectedExceptions = RTUserExceptions.OutputFileExists.class)
+    public void testOutputFileExists() throws Exception {
+        runCommandLine(new ArgumentsBuilder()
+                .addFileArgument("input", EXAMPLE_FILE)
+                .addFileArgument("output", createTempFile("exists", ".bed.gz")));
+    }
+
+    @Test
+    public void testForceOverwrite() throws Exception {
+        Assert.assertNull(
+            runCommandLine(new ArgumentsBuilder()
+                    .addFileArgument("input", EXAMPLE_FILE)
+                    .addFileArgument("output", createTempFile("exists", ".bed.gz"))
+                    .addBooleanArgument("forceOverwrite", true))
+        );
+    }
 }

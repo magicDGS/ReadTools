@@ -4,6 +4,7 @@ import org.magicdgs.readtools.RTHelpConstants;
 import org.magicdgs.readtools.cmd.RTStandardArguments;
 import org.magicdgs.readtools.cmd.programgroups.MappabiltityProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsProgram;
+import org.magicdgs.readtools.exceptions.RTUserExceptions;
 import org.magicdgs.readtools.utils.mappability.gem.GemMappabilityReader;
 
 import htsjdk.samtools.util.BlockCompressedOutputStream;
@@ -64,6 +65,9 @@ public final class GemMappabilityToBed extends ReadToolsProgram {
             + "Find more information about this tool in "
             + RTHelpConstants.DOCUMENTATION_PAGE + "GemMappabilityToBed.html";
 
+    @Argument(fullName = RTStandardArguments.FORCE_OVERWRITE_NAME, shortName = RTStandardArguments.FORCE_OVERWRITE_NAME, doc = RTStandardArguments.FORCE_OVERWRITE_DOC, optional = true, common = true)
+    public Boolean forceOverwrite = false;
+
     @Argument(fullName = RTStandardArguments.INPUT_LONG_NAME, shortName = RTStandardArguments.INPUT_SHORT_NAME, doc = "GEM-mappability file (FASTA-like) to parse")
     public String input;
 
@@ -89,14 +93,30 @@ public final class GemMappabilityToBed extends ReadToolsProgram {
             throw new UserException.CouldNotReadInputFile(inputPath, e);
         }
         final Path outputPath = IOUtils.getPath(output);
+        writer = new PrintStream(createStream(outputPath));
+    }
+
+    // TODO: this repeats some code form ReadWriterFactory - we should pull out a common class for this
+    private OutputStream createStream(final Path outputPath) {
+        if (!forceOverwrite && Files.exists(outputPath)) {
+            throw new RTUserExceptions.OutputFileExists(outputPath);
+        }
         try {
+            // first create the directories if needed
+            Files.createDirectories(outputPath.toAbsolutePath().getParent());
             // TODO: should support arbitrary compressed output (as other tools)
-            final OutputStream os = (IOUtil.hasBlockCompressedExtension(output))
-                    ? new BlockCompressedOutputStream(Files.newOutputStream(outputPath), null)
-                    : Files.newOutputStream(outputPath);
-            writer = new PrintStream(os);
+            // TODO: tha should be factor out also in the factory
+            final OutputStream os = Files.newOutputStream(outputPath);
+            return IOUtil.hasBlockCompressedExtension(outputPath)
+                    ? new BlockCompressedOutputStream(os, null)
+                    : os;
         } catch (final IOException e) {
-            throw new UserException.CouldNotCreateOutputFile(output, e.getClass().getSimpleName(), e);
+            throw new UserException.CouldNotCreateOutputFile(
+                    // using URI to be more informative
+                    outputPath.toUri().toString(),
+                    // use the class name, because the exception message is printed anyway
+                    e.getClass().getSimpleName(),
+                    e);
         }
     }
 
