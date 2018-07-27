@@ -12,6 +12,7 @@ The meaning of each entry is user-based and can be found in our
 - Improved performance for quality checking in every tool
 - Improved performance for trimming pipelines
 - Support non-local reference files for CRAM (e.g., HDFS or GCS)
+- Fix typo in README (building section)
 
 ### Developer
 - Upgrade gradle and plugin versions

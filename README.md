@@ -34,7 +34,7 @@ zip files would not work).**_
 ```
 git clone https://github.com/magicDGS/ReadTools.git
 cd ReadTools
-./gradle currentJar
+./gradlew currentJar
 ```
 
 The jar file would be located in __build/libs/ReadTools.jar__.
