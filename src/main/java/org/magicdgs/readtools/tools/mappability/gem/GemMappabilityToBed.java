@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Converts a GEM-mappability
@@ -91,9 +90,8 @@ public final class GemMappabilityToBed extends ReadToolsProgram {
         }
         final Path outputPath = IOUtils.getPath(output);
         try {
-            // TODO: should support arbitrary compressed input (as other tools)
-            // TODO: should use IOUtils after GATK 4.0.6.0
-            final OutputStream os = (AbstractFeatureReader.hasBlockCompressedExtension(output))
+            // TODO: should support arbitrary compressed output (as other tools)
+            final OutputStream os = (IOUtils.hasBlockCompressedExtension(output))
                     ? new BlockCompressedOutputStream(Files.newOutputStream(outputPath), null)
                     : Files.newOutputStream(outputPath);
             writer = new PrintStream(os);

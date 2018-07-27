@@ -6,7 +6,6 @@ import org.magicdgs.readtools.utils.mappability.gem.GemMappabilityReaderUnitTest
 
 import htsjdk.samtools.util.BlockCompressedInputStream;
 import htsjdk.tribble.AbstractFeatureReader;
-import org.apache.hadoop.io.compress.BlockCompressorStream;
 import org.broadinstitute.hellbender.utils.test.ArgumentsBuilder;
 import org.broadinstitute.hellbender.utils.test.IntegrationTestSpec;
 import org.testng.Assert;
@@ -17,7 +16,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
