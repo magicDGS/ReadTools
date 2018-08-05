@@ -157,7 +157,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
         final Range<Long> range = header.getEncodedValues(encoded);
 
         if (range == null) {
-            throw new GemMappabilityException(path, currentSequence, currentSequencePosition,
+            throw new GemMappabilityException(path, currentSequence, currentSequencePosition+1,
                     String.format("character '%c' not present in the header", encoded));
         }
 
