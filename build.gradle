@@ -105,7 +105,7 @@ dependencies {
 
 // for managing the wrapper task
 wrapper {
-    gradleVersion = '4.8.1'
+    gradleVersion = '4.9'
 }
 
 tasks.withType(Jar) {
@@ -131,9 +131,6 @@ tasks.withType(Test) {
     // TODO: set a system property for the test JVM(s)
     // TODO: example -> systemProperty 'some.prop', 'value'
 
-    // show the stdout/stderr of the test JVM(s) on the console
-    testLogging.showStandardStreams = true
-
     // set heap size for the test JVM(s)
     minHeapSize = "1G"
     maxHeapSize = "2G"
@@ -153,6 +150,9 @@ tasks.withType(Test) {
             }
         }
     } else {
+        // show the stdout/stderr of the test JVM(s) on the console
+        testLogging.showStandardStreams = true
+
         // log the test that is running
         beforeTest { descriptor ->
             logger.lifecycle("Running Test: " + descriptor)
