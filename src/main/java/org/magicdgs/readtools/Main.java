@@ -154,7 +154,6 @@ public final class Main extends org.broadinstitute.hellbender.Main {
      */
     @Override
     public String getToolDeprecationMessage(final String toolName) {
-        System.err.println(toolName);
         return RTDeprecatedToolsRegistry.getToolDeprecationInfo(toolName);
     }
 }
