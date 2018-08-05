@@ -3,7 +3,7 @@ apply plugin: 'jacoco'
 
 // JaCoCo version
 jacoco {
-    toolVersion = "0.8.0"
+    toolVersion = "0.8.1"
 }
 
 // JaCoCo task
@@ -30,8 +30,6 @@ jacocoTestReport {
 		def percentage = { type ->
 			def covered = 0.0
 			def missed = 0.0
-			def per = 0.0
-			def tot = 0.0
 			results.package.each {
 				def fPkgCounter = it.counter.find { it.'@type'.equals(type) }
 				if (fPkgCounter != null) {
