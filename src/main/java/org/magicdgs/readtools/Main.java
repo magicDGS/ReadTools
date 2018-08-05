@@ -24,6 +24,8 @@
 
 package org.magicdgs.readtools;
 
+import org.magicdgs.readtools.cmd.RTDeprecatedToolsRegistry;
+
 import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.util.Log;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
@@ -152,8 +154,6 @@ public final class Main extends org.broadinstitute.hellbender.Main {
      */
     @Override
     public String getToolDeprecationMessage(final String toolName) {
-        // TODO: implement deprecation registry for pre-release tools
-        // TODO: https://github.com/magicDGS/ReadTools/issues/488
-        return null;
+        return RTDeprecatedToolsRegistry.getToolDeprecationInfo(toolName);
     }
 }
