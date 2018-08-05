@@ -35,17 +35,16 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import htsjdk.samtools.metrics.MetricsFile;
 import htsjdk.samtools.metrics.StringHeader;
-import org.apache.commons.lang3.ArrayUtils;
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
 import org.broadinstitute.barclay.argparser.BetaFeature;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DocumentedFeature;
 import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
-import org.broadinstitute.hellbender.cmdline.programgroups.QCProgramGroup;
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import picard.cmdline.programgroups.DiagnosticsAndQCProgramGroup;
 import scala.Tuple2;
 
 import java.io.IOException;
@@ -55,7 +54,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 /**
  * Computes a checksum for the reads contained in any kind of read source. This checksum is
@@ -91,13 +89,10 @@ import java.util.stream.Stream;
                 + "when the information of the read itself will not be changed.\n\n"
                 + "Find more information about this tool in "
                 + RTHelpConstants.DOCUMENTATION_PAGE + "ReadsChecksum.html",
-        programGroup = QCProgramGroup.class)
+        programGroup = DiagnosticsAndQCProgramGroup.class)
 @BetaFeature
 @DocumentedFeature
 public class ReadsChecksum extends ReadToolsWalker {
-
-    // TODO: include barcode information fixer arguments, to assess that it will check correctly
-    // TODO: that they are respresenting the same
 
     @Argument(fullName = StandardArgumentDefinitions.OUTPUT_LONG_NAME, shortName = StandardArgumentDefinitions.OUTPUT_SHORT_NAME, doc = "Output the checksum metric to this file")
     public String outputFile;
