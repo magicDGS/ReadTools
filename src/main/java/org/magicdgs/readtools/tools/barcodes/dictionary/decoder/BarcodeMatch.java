@@ -24,6 +24,8 @@
 package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.broadinstitute.hellbender.utils.BaseUtils;
 
 import java.util.Set;
@@ -34,6 +36,8 @@ import java.util.Set;
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
 public final class BarcodeMatch {
+
+    private static final Logger LOGGER = LogManager.getLogger(BarcodeMatch.class);
 
     /** Unknown String for sample and barcode. */
     public static final String UNKNOWN_STRING = "UNKNOWN";
@@ -145,6 +149,7 @@ public final class BarcodeMatch {
      */
     public static BarcodeMatch getBestBarcodeMatch(final int index, final String barcodeToMatch,
             final Set<String> barcodeSet, final boolean nAsMismatches) {
+        LOGGER.debug("Index_{} '{}' agains {}", index, barcodeToMatch, barcodeSet);
         final BarcodeMatch best = new BarcodeMatch(index, barcodeToMatch.length());
         for (final String b : barcodeSet) {
             final String subBarcode = barcodeToMatch.substring(0, b.length());

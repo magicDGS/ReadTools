@@ -250,6 +250,7 @@ public class BarcodeDictionary {
         if (barcodeRGmap.isEmpty()) {
             initBarcodeRGmap();
         }
-        return barcodeRGmap.toString();
+        return barcodeRGmap.entrySet().stream().map(e -> e.getKey() + " -> " + e.getValue())
+                .collect(Collectors.joining("\n"));
     }
 }

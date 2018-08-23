@@ -158,6 +158,8 @@ public class BarcodeDictionaryFactory {
             // close the barcode parser
             barcodesParser.close();
 
+            logger.debug("Loaded dictionary: {}", dictionary);
+
             return dictionary;
 
         } catch (IOException e) {
@@ -213,6 +215,9 @@ public class BarcodeDictionaryFactory {
         final SAMReadGroupRecord unknownReadGroup = rgInfo.getReadGroupFromArguments(
                 BarcodeMatch.UNKNOWN_STRING, BarcodeMatch.UNKNOWN_STRING);
 
+        logger.debug("Creating dictionary with RG: {}", sampleReadGroups::toString);
+        logger.debug("Creating dictionary with barcodes: {}", barcodes::toString);
+        logger.debug("Unknown RG: {}", unknownReadGroup);
         // creates the barcode dictionary
         return new BarcodeDictionary(sampleReadGroups, barcodes, unknownReadGroup);
     }
