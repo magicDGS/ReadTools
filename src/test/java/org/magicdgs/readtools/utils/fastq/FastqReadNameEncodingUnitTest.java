@@ -109,6 +109,31 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
                         "@ST-E00169:175:HMTL3CCXX:7:1101:3457:1573 2:Y:0:NTGATTAC",
                         "@ST-E00169:175:HMTL3CCXX:7:1101:3457:1573", false, true, true,
                         new String[] {"NTGATTAC"}},
+                // casava with numbers instead of barcodes
+                {FastqReadNameEncoding.CASAVA,
+                        "@EAS139:136:FC706VJ:2:2104:15343:197393 1:N:18:1",
+                        "@EAS139:136:FC706VJ:2:2104:15343:197393", true, false, false,
+                        new String[] {"1"}},
+                // first of pair Casava format dual indexing with + separator (found in at least one provider)
+                {FastqReadNameEncoding.CASAVA,
+                        "@E00514:354:HLH2VCCXY:4:1101:21968:1784 1:N:0:CCCCCCCC+CCCCCCCC",
+                        // expected name without space
+                        "@E00514:354:HLH2VCCXY:4:1101:21968:1784",
+                        // first (true/false) and do not pass control (false)
+                        true, false, false,
+                        // barcode combined into one - could be modified by the java property
+                        new String[]{"CCCCCCCC+CCCCCCCC"}
+                },
+                // second of pair Casava format dual indexing with + separator (found in at least one provider)
+                {FastqReadNameEncoding.CASAVA,
+                        "@E00514:354:HLH2VCCXY:4:1101:21968:1784 2:N:0:CCCCCCCC+CCCCCCCC",
+                        // expected name without space
+                        "@E00514:354:HLH2VCCXY:4:1101:21968:1784",
+                        // second (false/true) and do not pass control (false)
+                        false, true, false,
+                        // barcode combined into one - could be modified by the java property
+                        new String[]{"CCCCCCCC+CCCCCCCC"}
+                },
                 // Nanopore name format - see https://github.com/nanopore-wgs-consortium/NA12878
                 {FastqReadNameEncoding.ILLUMINA,
                         "@455ce49b-a59e-4c03-8639-5be6272eb928_Basecall_Alignment_template MinION2_20160716_FNFAB23716_MN16454_sequencing_run_Chip86_Human_Genomic_1D_Rapid_Tuned3_99286_ch190_read287_strand1",
