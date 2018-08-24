@@ -24,9 +24,10 @@
 
 package org.magicdgs.readtools.cmd.argumentcollections;
 
-import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionary;
-import org.magicdgs.readtools.tools.barcodes.dictionary.BarcodeDictionaryFactory;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
+import org.magicdgs.readtools.utils.barcodes.BarcodeDecoderBuilder;
+import org.magicdgs.readtools.utils.barcodes.BarcodeSet;
+import org.magicdgs.readtools.utils.barcodes.BarcodeSetFactory;
+import org.magicdgs.readtools.utils.barcodes.BarcodeDecoder;
 
 import org.broadinstitute.barclay.argparser.Argument;
 import org.broadinstitute.barclay.argparser.ArgumentCollection;
@@ -50,7 +51,7 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
     // TODO: this should be pointing to the help page for more information
     // TODO: and here just add the required elements
     @Argument(fullName = "barcodeFile", shortName = "bc", optional = false, doc =
-            BarcodeDictionaryFactory.BARCODE_FILE_FORMAT_DESCRIPTION
+            BarcodeSetFactory.BARCODE_FILE_FORMAT_DESCRIPTION
                     + " Barcode file will overwrite any of Read Group arguments for the same information. "
                     // TODO: remove WARNING if a different pipeline is implemented
                     + "WARNING: this file should contain all the barcodes present in the multiplexed file.")
@@ -109,12 +110,13 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
     }
 
     public BarcodeDecoder getBarcodeDecoder() {
-        final BarcodeDictionary dictionary = BarcodeDictionaryFactory
+        final BarcodeSet dictionary = BarcodeSetFactory
                 .fromFile(org.broadinstitute.hellbender.utils.io.IOUtils
                         .getPath(barcodeFile), runID, rgArguments);
 
         // checking number of barcodes
-        final int numberOfBarcodes = dictionary.getNumberOfBarcodes();
+        // TODO: move this code to the builder
+        final int numberOfBarcodes = dictionary.getMaxNumberOfIndexes();
         final int[] maxMismatchArg =
                 paramMatchingNumberOfBarcodes("maximumMismatches", numberOfBarcodes,
                         maximumMismatches);
@@ -123,9 +125,13 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
                 paramMatchingNumberOfBarcodes("minimumDistance", numberOfBarcodes,
                         minimumDistance);
 
-        return new BarcodeDecoder(dictionary,
-                (maximumN == null) ? Integer.MAX_VALUE : maximumN,
-                !nNoMismatch, maxMismatchArg, minDistArg);
+        return new BarcodeDecoderBuilder()
+                .setBarcodeSet(dictionary)
+                .setMaximumUnknownBases(maximumN == null ? Integer.MAX_VALUE : maximumN)
+                .setTreatNsAsMismatches(!nNoMismatch)
+                .setMaximumMismatches(maxMismatchArg)
+                .setMinimumDifferenceWithSecond(minDistArg)
+                .build();
     }
 
 

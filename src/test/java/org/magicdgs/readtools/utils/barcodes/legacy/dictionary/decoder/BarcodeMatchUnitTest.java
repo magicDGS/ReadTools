@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.barcodes.dictionary.decoder;
+package org.magicdgs.readtools.utils.barcodes.legacy.dictionary.decoder;
 
 import org.magicdgs.readtools.RTBaseTest;
 

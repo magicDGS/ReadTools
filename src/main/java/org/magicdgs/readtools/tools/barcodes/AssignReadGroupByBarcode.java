@@ -33,8 +33,8 @@ import org.magicdgs.readtools.cmd.argumentcollections.RTOutputArgumentCollection
 import org.magicdgs.readtools.cmd.programgroups.RTManipulationProgramGroup;
 import org.magicdgs.readtools.engine.ReadToolsWalker;
 import org.magicdgs.readtools.metrics.barcodes.MatcherStat;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeDecoder;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.barcodes.BarcodeDecoder;
+import org.magicdgs.readtools.utils.barcodes.legacy.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.utils.read.ReadWriterFactory;
 import org.magicdgs.readtools.utils.read.writer.NullGATKWriter;
 
@@ -129,7 +129,7 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
         if (!headerForWriter.getReadGroups().isEmpty()) {
             logger.warn("Read group in the input file(s) will be removed in the output.");
         }
-        headerForWriter.setReadGroups(decoder.getDictionary().getSampleReadGroups());
+        headerForWriter.setReadGroups(decoder.getBarcodeSet().asReadGroupList());
 
         // output the writer
         writer = outputBamArgumentCollection.outputWriter(headerForWriter,
@@ -154,7 +154,7 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
     protected void apply(final GATKRead read) {
         logger.debug("Read = {}", () -> read);
         // assumes that the transformed read is modified in place
-        decoder.assignReadGroupByBarcode(fixBarcodeArguments.fixBarcodeTags(read));
+        decoder.assignReadGroup(fixBarcodeArguments.fixBarcodeTags(read));
         writeRead(read);
     }
 
@@ -172,7 +172,7 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
         logger.debug("Second: {}", () -> pair._2);
         // this only works if it is modified in place
         fixBarcodeArguments.fixBarcodeTags(pair);
-        decoder.assignReadGroupByBarcode(pair._1);
+        decoder.assignReadGroup(pair._1);
         // now use the read1 information for read2
         // assuming that the barcodes are the same for both reads
         pair._2.setReadGroup(pair._1.getReadGroup());

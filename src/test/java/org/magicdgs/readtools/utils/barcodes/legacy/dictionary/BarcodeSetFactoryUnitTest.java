@@ -22,10 +22,12 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.barcodes.dictionary;
+package org.magicdgs.readtools.utils.barcodes.legacy.dictionary;
 
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupArgumentCollection;
 import org.magicdgs.readtools.RTBaseTest;
+import org.magicdgs.readtools.utils.barcodes.BarcodeSet;
+import org.magicdgs.readtools.utils.barcodes.BarcodeSetFactory;
 
 import org.broadinstitute.hellbender.exceptions.UserException;
 import org.testng.Assert;
@@ -39,7 +41,7 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeDictionaryFactoryUnitTest extends RTBaseTest {
+public class BarcodeSetFactoryUnitTest extends RTBaseTest {
 
     private final static ReadGroupArgumentCollection RG_INFO = new ReadGroupArgumentCollection();
 
@@ -60,9 +62,9 @@ public class BarcodeDictionaryFactoryUnitTest extends RTBaseTest {
     @Test(dataProvider = "barcodeFiles")
     public void testBarcodeDictionaryFromFile(final File file, final List<String> sampleNames,
             final int numberOfBarcodes) throws Exception {
-        final BarcodeDictionary dictionary = BarcodeDictionaryFactory.fromFile(file.toPath(), "runId", RG_INFO);
-        Assert.assertEquals(dictionary.getNumberOfBarcodes(), numberOfBarcodes);
-        Assert.assertEquals(dictionary.getSampleNames(), sampleNames);
+        final BarcodeSet dictionary = BarcodeSetFactory
+                .fromFile(file.toPath(), "runId", RG_INFO);
+        Assert.assertEquals(dictionary.getMaxNumberOfIndexes(), numberOfBarcodes);
     }
 
     @DataProvider(name = "badBarcodeFiles")
@@ -74,12 +76,12 @@ public class BarcodeDictionaryFactoryUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "badBarcodeFiles", expectedExceptions = UserException.MalformedFile.class)
     public void testInvalidFiles(final File file) throws Exception {
-        BarcodeDictionaryFactory.fromFile(file.toPath(), "runId", RG_INFO);
+        BarcodeSetFactory.fromFile(file.toPath(), "runId", RG_INFO);
     }
 
     @Test(expectedExceptions = UserException.CouldNotReadInputFile.class)
     public void testNotExistingFile() throws Exception {
-        BarcodeDictionaryFactory.fromFile(new File("doesNotExists").toPath(), "runId", RG_INFO);
+        BarcodeSetFactory.fromFile(new File("doesNotExists").toPath(), "runId", RG_INFO);
     }
 
 }

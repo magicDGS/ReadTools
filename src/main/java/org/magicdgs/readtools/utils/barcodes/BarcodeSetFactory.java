@@ -22,11 +22,12 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.barcodes.dictionary;
+package org.magicdgs.readtools.utils.barcodes;
 
 import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.cmd.argumentcollections.ReadGroupArgumentCollection;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.barcodes.legacy.dictionary.BarcodeDictionary;
+import org.magicdgs.readtools.utils.barcodes.legacy.dictionary.decoder.BarcodeMatch;
 
 import htsjdk.samtools.SAMReadGroupRecord;
 import org.apache.logging.log4j.LogManager;
@@ -49,9 +50,9 @@ import java.util.function.BiConsumer;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class BarcodeDictionaryFactory {
+public class BarcodeSetFactory {
 
-    private static final Logger logger = LogManager.getLogger(BarcodeDictionaryFactory.class);
+    private static final Logger logger = LogManager.getLogger(BarcodeSetFactory.class);
 
     /**
      * Description for the current barcode file format. The barcode is a tab-delimited file with
@@ -67,18 +68,18 @@ public class BarcodeDictionaryFactory {
      */
     public static final String BARCODE_FILE_FORMAT_DESCRIPTION =
             "Tab-delimited file with header for barcode sequences ('"
-                    + BarcodeDictionaryFactory.BARCODE_SEQUENCE_COLUMN
+                    + BarcodeSetFactory.BARCODE_SEQUENCE_COLUMN
                     + "' or '"
-                    + BarcodeDictionaryFactory.BARCODE_SEQUENCE_1_COLUMN
+                    + BarcodeSetFactory.BARCODE_SEQUENCE_1_COLUMN
                     + "' for the first barcode, '"
-                    + BarcodeDictionaryFactory.BARCODE_SEQUENCE_COLUMN + "_$(number)"
+                    + BarcodeSetFactory.BARCODE_SEQUENCE_COLUMN + "_$(number)"
                     + "' for subsequent if more than one index is used), "
                     + "sample name ('"
-                    + BarcodeDictionaryFactory.SAMPLE_NAME_COLUMN
+                    + BarcodeSetFactory.SAMPLE_NAME_COLUMN
                     + "' or '"
-                    + BarcodeDictionaryFactory.BARCODE_NAME_COLUMN
+                    + BarcodeSetFactory.BARCODE_NAME_COLUMN
                     + "') and, optionally, library name ('"
-                    + BarcodeDictionaryFactory.LIBRARY_NAME_COLUMN
+                    + BarcodeSetFactory.LIBRARY_NAME_COLUMN
                     + "'). ";
 
     /** Column header name for the sample name. */
@@ -116,7 +117,7 @@ public class BarcodeDictionaryFactory {
      *
      * @throws UserException if the file is malformed or an IO error occurs.
      */
-    public static BarcodeDictionary fromFile(final Path barcodePath, final String runId,
+    public static BarcodeSet fromFile(final Path barcodePath, final String runId,
             final ReadGroupArgumentCollection rgInfo) {
         Utils.nonNull(barcodePath, "null barcodePath");
         Utils.nonNull(rgInfo, "null rgInfo");

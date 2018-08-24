@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package org.magicdgs.readtools.tools.barcodes.dictionary;
+package org.magicdgs.readtools.utils.barcodes.legacy.dictionary;
 
 import org.magicdgs.readtools.RTHelpConstants;
-import org.magicdgs.readtools.tools.barcodes.dictionary.decoder.BarcodeMatch;
+import org.magicdgs.readtools.utils.barcodes.legacy.dictionary.decoder.BarcodeMatch;
 import org.magicdgs.readtools.RTBaseTest;
 
 import htsjdk.samtools.SAMReadGroupRecord;
@@ -38,7 +38,6 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BarcodeDictionaryTest extends RTBaseTest {
 
@@ -93,50 +92,42 @@ public class BarcodeDictionaryTest extends RTBaseTest {
     }
 
     @Test
-    public void testGetNumberOfBarcodes() throws Exception {
-        Assert.assertEquals(dictionarySingle.getNumberOfBarcodes(), 1);
-        Assert.assertEquals(dictionaryDouble.getNumberOfBarcodes(), 2);
+    public void testGetMaxNumberOfIndexes() throws Exception {
+        Assert.assertEquals(dictionarySingle.getMaxNumberOfIndexes(), 1);
+        Assert.assertEquals(dictionaryDouble.getMaxNumberOfIndexes(), 2);
     }
 
     @Test
-    public void testGetSampleNames() throws Exception {
-        final List<String> sampleNames = samples.stream().map(SAMReadGroupRecord::getSample)
-                .collect(Collectors.toList());
-        Assert.assertEquals(dictionarySingle.getSampleNames(), sampleNames);
-        Assert.assertEquals(dictionaryDouble.getSampleNames(), sampleNames);
+    public void testAsReadGroupList() throws Exception {
+        Assert.assertEquals(dictionarySingle.asReadGroupList(), samples);
+        Assert.assertEquals(dictionaryDouble.asReadGroupList(), samples);
     }
 
     @Test
-    public void testGetSampleReadGroups() throws Exception {
-        Assert.assertEquals(dictionarySingle.getSampleReadGroups(), samples);
-        Assert.assertEquals(dictionaryDouble.getSampleReadGroups(), samples);
+    public void testSize() throws Exception {
+        Assert.assertEquals(dictionarySingle.size(), barcodes.length);
+        Assert.assertEquals(dictionaryDouble.size(), barcodes.length);
     }
 
     @Test
-    public void testNumberOfSamples() throws Exception {
-        Assert.assertEquals(dictionarySingle.numberOfSamples(), barcodes.length);
-        Assert.assertEquals(dictionaryDouble.numberOfSamples(), barcodes.length);
-    }
-
-    @Test
-    public void testGetBarcodesFor() throws Exception {
+    public void testGetBarcodesForSample() throws Exception {
         for (int i = 0; i < barcodes.length; i++) {
             final String[] expected = new String[2];
             Arrays.fill(expected, barcodes[i]);
-            Assert.assertEquals(dictionarySingle.getBarcodesFor(i),
-                    Arrays.copyOfRange(expected, 0, 1));
-            Assert.assertEquals(dictionaryDouble.getBarcodesFor(i), expected);
+            Assert.assertEquals(dictionarySingle.getAllBarcodesForSample(i),
+                    Arrays.asList(Arrays.copyOfRange(expected, 0, 1)));
+            Assert.assertEquals(dictionaryDouble.getAllBarcodesForSample(i), Arrays.asList(expected));
         }
     }
 
     @Test
-    public void testGetReadGroupFor() throws Exception {
+    public void testGetReadGroupForJoinedBarcode() throws Exception {
         for (int i = 0; i < barcodes.length; i++) {
             // one barcode
-            Assert.assertEquals(dictionarySingle.getReadGroupFor(barcodes[i]), samples.get(i));
+            Assert.assertEquals(dictionarySingle.getReadGroupForJoinedBarcode(barcodes[i]), samples.get(i));
             // combined barcode
-            final String combinedBarcode = dictionaryDouble.getCombinedBarcodesFor(i);
-            Assert.assertEquals(dictionaryDouble.getReadGroupFor(combinedBarcode), samples.get(i));
+            final String combinedBarcode = dictionaryDouble.getJoinedBarcodesForSample(i);
+            Assert.assertEquals(dictionaryDouble.getReadGroupForJoinedBarcode(combinedBarcode), samples.get(i));
         }
     }
 }
