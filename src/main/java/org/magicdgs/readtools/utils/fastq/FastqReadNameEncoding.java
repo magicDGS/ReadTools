@@ -55,8 +55,8 @@ public enum FastqReadNameEncoding {
     // second group = ([012])    -> the pair-information ('1', '2', or '0')
     // third group  = ([YN])     -> PF flag (vendors quality)
     // no group     = [0-9]+     -> numeric value that does not contain important information in our framework
-    // fourth group = ([ATCGN]+) -> the barcode information (restricted to nucleotides)
-    CASAVA("([\\S]+)\\s+([012]):([YN]):[0-9]+:([ATCGN]+).?", 2, 4, 3),
+    // fourth group = ([^\\s]+) -> the barcode information (restricted to any character except space to allow barcode separators)
+    CASAVA("([\\S]+)\\s+([012]):([YN]):[0-9]+:([^\\s]+).?", 2, 4, 3),
     // this ILLUMINA pattern match with/without barcodes
     // first group  = ([^#/]+)                 -> any character that is not the marker of barcode or pair-info separator
     // second group = (#([^/\\s]+))?           -> one or none of # followed by something that is not a / or white space
