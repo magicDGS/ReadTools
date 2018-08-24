@@ -53,45 +53,40 @@ public class MainUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "resultsToHandle")
     public void testHandleResult(final Object result, final String printedResult) throws Exception {
-        final Main main = new Main();
-        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                final PrintStream printStream = new PrintStream(outputStream)) {
-            main.resultOutput = printStream;
-            main.handleResult(result);
-            Assert.assertEquals(outputStream.toString(), printedResult);
-        }
+        // capture the standard output
+        final String actualOutput = captureStdout(() -> new Main().handleResult(result));
+        // check that it is the same
+        Assert.assertEquals(actualOutput, printedResult);
     }
 
     @Test
     public void testHandleUserException() throws Exception {
         final String message = "this is a test user exception";
-        final Main main = new Main();
-        try (final ByteArrayOutputStream os = new ByteArrayOutputStream();
-                final PrintStream ps = new PrintStream(os)) {
-            main.exceptionOutput = ps;
-            main.handleUserException(new RuntimeException(message));
-            final String exceptionOutput = os.toString();
+        // capture the standard error
+        final String exceptionOutput = captureStderr(
+                () -> new Main().handleUserException(new RuntimeException(message)));
 
-            // should contain the following strings
-            Assert.assertTrue(exceptionOutput.contains("A USER ERROR has occurred: "));
-            Assert.assertTrue((exceptionOutput.contains(message)));
-        }
+        // should contain the following strings
+        Assert.assertTrue(exceptionOutput.contains("A USER ERROR has occurred: "));
+        Assert.assertTrue((exceptionOutput.contains(message)));
     }
 
     @Test
     public void testHandleNonUserException() throws Exception {
         final String message = "this is a test exception";
-        final Main main = new Main();
-        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                final PrintStream printStream = new PrintStream(outputStream)) {
-            main.exceptionOutput = printStream;
-            main.handleNonUserException(new RuntimeException(message));
-            final String exceptionOutput = outputStream.toString();
-            // should contain the following strings
-            Assert.assertTrue(exceptionOutput.contains("UNEXPECTED ERROR"));
-            Assert.assertTrue(exceptionOutput.contains(message));
-            Assert.assertTrue(exceptionOutput.contains("issue tracker"));
-        }
+        // capture the standard error
+        final String exceptionOutput = captureStderr(
+                () -> new Main().handleNonUserException(new RuntimeException(message))
+        );
+        // should contain the following strings
+        Assert.assertTrue(exceptionOutput.contains("UNEXPECTED ERROR"));
+        Assert.assertTrue(exceptionOutput.contains(message));
+        Assert.assertTrue(exceptionOutput.contains("issue tracker"));
+        // should contain also the stacktrace:
+        // - the fully qualified name for the exception itself
+        Assert.assertTrue(exceptionOutput.contains(RuntimeException.class.getCanonicalName()));
+        // - the fully qualified name for the Main class
+        Assert.assertTrue(exceptionOutput.contains(Main.class.getCanonicalName()));
     }
 
     @DataProvider(name = "printVersionArgs")
@@ -108,25 +103,20 @@ public class MainUnitTest extends RTBaseTest {
 
     @Test(dataProvider = "printVersionArgs")
     public void testPrintOnlyVersion(final String[] args, final boolean printed) throws Exception {
-        final Main main = new Main();
-        main.exceptionOutput = NULL_PRINT_STREAM;
-        Assert.assertEquals(main.printOnlyVersion(args), printed);
+        Assert.assertEquals(new Main().printOnlyVersion(args), printed);
     }
 
 
     @Test(singleThreaded = true)
     public void testPrintStackTrace() throws Exception {
-        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                final PrintStream printStream = new PrintStream(outputStream)) {
-            // set the main class with the custom exception output
-            final Main main = new Main();
-            main.exceptionOutput = printStream;
-
+        try {
             // set to debug mode an try to print the stack-trace
             LoggingUtils.setLoggingLevel(Log.LogLevel.DEBUG);
-            main.printStackTrace(new RuntimeException());
+            // capture the standard error
+            final String stdError = captureStderr(
+                    () -> new Main().printStackTrace(new RuntimeException()));
             // assert non-empty stack-trace message
-            Assert.assertFalse(main.exceptionOutput.toString().isEmpty());
+            Assert.assertFalse(stdError.isEmpty(), "empty stderr");
         } finally {
             // set back to normal verbosity
             setTestVerbosity();
