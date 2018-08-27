@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.RTDefaults;
-import org.magicdgs.readtools.utils.fastq.RTFastConstants;
+import org.magicdgs.readtools.utils.fastq.RTFastqConstants;
 
 import htsjdk.samtools.SAMTag;
 import org.apache.commons.lang3.ArrayUtils;
@@ -85,7 +85,7 @@ public class RTReadUtils {
         Utils.nonNull(read, "null read");
         final String originalName = read.getName();
         final int barcodeStartIndex = originalName
-                .indexOf(RTFastConstants.ILLUMINA_NAME_BARCODE_DELIMITER);
+                .indexOf(RTFastqConstants.ILLUMINA_NAME_BARCODE_DELIMITER);
         // if not found, return an empty array
         if (barcodeStartIndex == -1) {
             return new String[0];
@@ -433,7 +433,7 @@ public class RTReadUtils {
 
     /**
      * Gets the read name with the raw barcode included into it if they are present (separated with
-     * {@link RTFastConstants#ILLUMINA_NAME_BARCODE_DELIMITER}) if present.
+     * {@link RTFastqConstants#ILLUMINA_NAME_BARCODE_DELIMITER}) if present.
      *
      * @param read the read to get the information from.
      */
@@ -446,7 +446,7 @@ public class RTReadUtils {
         }
         // if not, add them
         return read.getName()
-                + RTFastConstants.ILLUMINA_NAME_BARCODE_DELIMITER
+                + RTFastqConstants.ILLUMINA_NAME_BARCODE_DELIMITER
                 + String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes);
     }
 }
