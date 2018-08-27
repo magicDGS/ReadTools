@@ -2,7 +2,7 @@
 title: ComputeProperStatByWindow (EXPERIMENTAL)
 summary: Computes proper-paired reads statistics over windows 
 permalink: ComputeProperStatByWindow.html
-last_updated: 27-06-2018 06:06:39
+last_updated: 27-49-2018 03:49:16
 ---
 
 {% include warning.html content="This a EXPERIMENTAL tool and should not be used for production" %}

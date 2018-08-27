@@ -2,7 +2,7 @@
 title: MottQualityTrimmer
 summary: Trims low quality ends using the Mott's algorithm.
 permalink: MottQualityTrimmer.html
-last_updated: 27-06-2018 06:06:39
+last_updated: 27-49-2018 03:49:16
 ---
 
 

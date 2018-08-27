@@ -2,7 +2,7 @@
 title: PlatformReadFilter
 summary: Keep only reads with matching Read Group platform
 permalink: PlatformReadFilter.html
-last_updated: 27-06-2018 06:06:39
+last_updated: 27-49-2018 03:49:16
 ---
 
 

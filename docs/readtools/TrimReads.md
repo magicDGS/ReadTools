@@ -2,7 +2,7 @@
 title: TrimReads
 summary: Applies a trimming pipeline to any kind of sources for ReadTools
 permalink: TrimReads.html
-last_updated: 27-06-2018 06:06:39
+last_updated: 27-49-2018 03:49:16
 ---
 
 
@@ -17,13 +17,13 @@ Applies a trimming/filtering pipeline to the reads:
 
  <li>Filter out completely trim reads.</li>
 
- <li>Apply the fiters in order. If any read is filtered, the FT tag reflects the ReadFilter
+ <li>Apply the filters in order. If any read is filtered, the FT tag reflects the ReadFilter
  involved.</li>
 
  </ol>
 
 {% include warning.html content='Default trimmers/filters are applied before any other user-specified
- trimmers/filters. If you would like to apply them in a differen order, use
+ trimmers/filters. If you would like to apply them in a different order, use
  <code>--disableAllDefaultTrimmers</code>/<code>--disableAllDefaultFilters</code> in combination
  with the new ordering.' %}
 

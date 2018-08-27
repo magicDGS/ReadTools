@@ -8,6 +8,9 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+
+## [1.5.1]
+
 ### Fixed
 - Add message for unknown command referring to a legacy pre-release tool
 - Documentation update of SRA Hadbook link (previous is currently unavailable)
@@ -296,3 +299,4 @@ First pre-release
 [1.4.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.0
 [1.4.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.1
 [1.5.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.5.0
+[1.5.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.5.1
