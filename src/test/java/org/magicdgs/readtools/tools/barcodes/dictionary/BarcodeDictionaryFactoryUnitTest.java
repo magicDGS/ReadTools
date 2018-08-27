@@ -68,7 +68,8 @@ public class BarcodeDictionaryFactoryUnitTest extends RTBaseTest {
     @DataProvider(name = "badBarcodeFiles")
     public Object[][] getBadBarcodeFiles() {
         return new Object[][] {
-                {getTestFile("wrong_columns.barcodes")}
+                {getTestFile("wrong_columns.barcodes")},
+                {getTestFile("empty_column_header.barcodes")}
         };
     }
 
