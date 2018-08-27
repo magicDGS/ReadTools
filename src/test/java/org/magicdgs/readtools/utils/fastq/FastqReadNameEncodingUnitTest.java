@@ -134,6 +134,16 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
                         // barcode combined into one - could be modified by the java property
                         new String[]{"CCCCCCCC+CCCCCCCC"}
                 },
+                // previous Casava formatting but with hyphen as barcode separator (default)
+                {FastqReadNameEncoding.CASAVA,
+                        "@E00514:354:HLH2VCCXY:4:1101:21968:1784 2:N:0:CCCCCCCC-CCCCCCCC",
+                        // expected name without space
+                        "@E00514:354:HLH2VCCXY:4:1101:21968:1784",
+                        // second (false/true) and do not pass control (false)
+                        false, true, false,
+                        // barcode combined into one - could be modified by the java property
+                        new String[]{"CCCCCCCC", "CCCCCCCC"}
+                },
                 // Nanopore name format - see https://github.com/nanopore-wgs-consortium/NA12878
                 {FastqReadNameEncoding.ILLUMINA,
                         "@455ce49b-a59e-4c03-8639-5be6272eb928_Basecall_Alignment_template MinION2_20160716_FNFAB23716_MN16454_sequencing_run_Chip86_Human_Genomic_1D_Rapid_Tuned3_99286_ch190_read287_strand1",
