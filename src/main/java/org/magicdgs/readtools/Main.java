@@ -48,14 +48,6 @@ import java.util.List;
  */
 public final class Main extends org.broadinstitute.hellbender.Main {
 
-    /** Stream output for exceptions. */
-    @VisibleForTesting
-    PrintStream exceptionOutput = System.err;
-
-    /** Stream output for results. */
-    @VisibleForTesting
-    PrintStream resultOutput = System.out;
-
     /** Only includes the org.magicdgs.readtools.tools package. */
     @Override
     protected List<String> getPackageList() {
@@ -105,22 +97,22 @@ public final class Main extends org.broadinstitute.hellbender.Main {
     protected void handleResult(final Object result) {
         // TODO: print something else and/or handle metrics?
         if (result != null) {
-            resultOutput.println(result);
+            System.out.println(result);
         }
     }
 
     /**
-     * Prints in {@link #exceptionOutput} the decorated exception as an user error.
+     * Prints in {@link System#err} the decorated exception as an user error.
      * In addition, prints the stack-trace if the debug mode is enabled.
      */
     @Override
     protected void handleUserException(Exception e) {
-        printDecoratedExceptionMessage(exceptionOutput, e, "A USER ERROR has occurred: ");
+        printDecoratedExceptionMessage(System.err, e, "A USER ERROR has occurred: ");
         printStackTrace(e);
     }
 
     /**
-     * Prints in {@link #exceptionOutput} the decorated exception as an unexpected error.
+     * Prints in {@link System#err} the decorated exception as an unexpected error.
      *
      * In addition, it adds a note pointing to the issue tracker
      * ({@link RTHelpConstants#ISSUE_TRACKER}) and prints the stack-trace if the debug mode is
@@ -128,21 +120,20 @@ public final class Main extends org.broadinstitute.hellbender.Main {
      */
     @Override
     protected void handleNonUserException(final Exception e) {
-        printDecoratedExceptionMessage(exceptionOutput, e, "UNEXPECTED ERROR: ");
-        exceptionOutput
-                .println("Please, search for this error in our issue tracker or post a new one:");
-        exceptionOutput.println("\t" + RTHelpConstants.ISSUE_TRACKER);
-        printStackTrace(e);
+        printDecoratedExceptionMessage(System.err, e, "UNEXPECTED ERROR: ");
+        e.printStackTrace();
+        System.err.println("Please, search for this error in our issue tracker or post a new one:");
+        System.err.println("\t" + RTHelpConstants.ISSUE_TRACKER);
     }
 
     /**
-     * Prints the stack-trace into {@link #exceptionOutput} only if
+     * Prints the stack-trace into {@link System#err} only if
      * {@link htsjdk.samtools.util.Log.LogLevel#DEBUG} is enabled.
      */
     @VisibleForTesting
     protected final void printStackTrace(final Exception e) {
         if (Log.isEnabled(Log.LogLevel.DEBUG)) {
-            e.printStackTrace(exceptionOutput);
+            e.printStackTrace();
         }
     }
 
