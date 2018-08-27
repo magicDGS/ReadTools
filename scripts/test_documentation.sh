@@ -35,4 +35,4 @@ echo -e "\n[$(date) Executing HTML-proofer\n"
 # - Check HTML format with Nokogiri
 bundle exec -- htmlproofer ${url_ignore} --only-4xx --allow-hash-href --check-favicon --file-ignore /javadoc/ --check_html ./_site
 
-cd $current_dir
+cd ${current_dir}
