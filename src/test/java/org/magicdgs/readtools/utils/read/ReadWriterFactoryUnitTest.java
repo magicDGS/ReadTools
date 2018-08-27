@@ -79,7 +79,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         };
     }
 
-    @Test(dataProvider = "outputNamesProvider")
+    @Test(dataProvider = "namesAndClass")
     public void testCorrectGATKWriter(final File outputFile,
             final Class<? extends GATKReadWriter> writerClass) {
         Assert.assertFalse(outputFile.exists());
