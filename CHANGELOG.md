@@ -14,9 +14,13 @@ The meaning of each entry is user-based and can be found in our
 - Stacktrace is printed for non-user exceptions to help developers
 - Casava formatted files with non-standard barcode sequences (non-ACTGN) are now supported
 - Better error message for malformed barcode file with multiple-tabs separating header lines
+- Fix typos in documentation
 
 ### Developer
 - Upgrade gradle to 4.9 and jacoco plugin to 0.8.1
+- Major code cleanup and simplification
+- Rename of `RTFastqContstants` to `RTFastqConstants`
+- Rename of `ApplyTrimResultReadTransfomer` to `ApplyTrimResultReadTransformer`
 
 ## [1.5.0]
 
