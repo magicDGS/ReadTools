@@ -26,19 +26,12 @@ package org.magicdgs.readtools.documentation;
 
 import org.magicdgs.readtools.RTHelpConstants;
 
-import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
-import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
-import org.broadinstitute.barclay.argparser.CommandLinePluginProvider;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DefaultDocWorkUnitHandler;
 import org.broadinstitute.barclay.help.DocWorkUnit;
 import org.broadinstitute.barclay.help.HelpDoclet;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The ReadTools Documentation work unit handler class that is the companion to

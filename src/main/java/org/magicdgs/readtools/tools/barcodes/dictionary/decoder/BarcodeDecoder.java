@@ -205,23 +205,6 @@ public class BarcodeDecoder {
     }
 
     /**
-     * Gets the best barcode from barcode strings.
-     *
-     * @param barcode the array of barcodes to match.
-     *
-     * @return the best real barcode in the dictionary (pasted in order if there are more than one).
-     *
-     * @throws IllegalArgumentException if the length of the arrays does not match the number of
-     *                                  barcodes in the dictionary.
-     */
-    public String getBestBarcode(final String... barcode) {
-        Utils.nonNull(barcode, "null barcodes");
-        Utils.validateArg(barcode.length == dictionary.getNumberOfBarcodes(),
-                "Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
-        return getBestBarcodeString(barcode);
-    }
-
-    /**
      * Gets the best barcode using the BarcodeMatch approach.
      *
      * WARNING: does not check the number of barcodes in the input array.

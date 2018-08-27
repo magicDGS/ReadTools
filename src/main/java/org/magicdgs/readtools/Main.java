@@ -30,7 +30,6 @@ import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.util.Log;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

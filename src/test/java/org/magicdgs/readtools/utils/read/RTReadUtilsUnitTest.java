@@ -241,7 +241,7 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
                     ct = 1;
                 } else if (te == 0) {
                     ct = 2;
-                } else if (ts >= te || te <= ts) {
+                } else if (ts >= te) {
                     ct = 3;
                 } else {
                     ct = 0;
@@ -288,15 +288,15 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
     public void testSingleValueTrimmingPointSetters(final GATKRead read, final int ts, final int te,
             final int ct) throws Exception {
         // start tag
-        Assert.assertEquals(read.getAttributeAsInteger("ts"), null);
+        Assert.assertNull(read.getAttributeAsInteger("ts"));
         RTReadUtils.updateTrimmingStartPointTag(read, ts);
         Assert.assertEquals(read.getAttributeAsInteger("ts").intValue(), ts);
         // end tag
-        Assert.assertEquals(read.getAttributeAsInteger("te"), null);
+        Assert.assertNull(read.getAttributeAsInteger("te"));
         RTReadUtils.updateTrimmingEndPointTag(read, te);
         Assert.assertEquals(read.getAttributeAsInteger("te").intValue(), te);
         // completely trimmed
-        Assert.assertEquals(read.getAttributeAsInteger("ct"), null);
+        Assert.assertNull(read.getAttributeAsInteger("ct"));
         Assert.assertEquals(RTReadUtils.updateCompletelyTrimReadFlag(read), ct != 0);
         Assert.assertEquals(read.getAttributeAsInteger("ct").intValue(), ct);
         // now clear the attributes
@@ -309,9 +309,9 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
     @Test(dataProvider = "trimmingPointSetters")
     public void testUpdateAllTrimmingPoints(final GATKRead read, final int ts, final int te,
             final int ct) throws Exception {
-        Assert.assertEquals(read.getAttributeAsInteger("ts"), null);
-        Assert.assertEquals(read.getAttributeAsInteger("te"), null);
-        Assert.assertEquals(read.getAttributeAsInteger("ct"), null);
+        Assert.assertNull(read.getAttributeAsInteger("ts"));
+        Assert.assertNull(read.getAttributeAsInteger("te"));
+        Assert.assertNull(read.getAttributeAsInteger("ct"));
         RTReadUtils.updateTrimmingPointTags(read, ts, te);
         Assert.assertEquals(read.getAttributeAsInteger("ts").intValue(), ts);
         Assert.assertEquals(read.getAttributeAsInteger("te").intValue(), te);

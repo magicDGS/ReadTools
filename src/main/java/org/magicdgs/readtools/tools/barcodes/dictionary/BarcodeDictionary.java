@@ -132,16 +132,6 @@ public class BarcodeDictionary {
     }
 
     /**
-     * Get the number of unique samples in this dictionary
-     *
-     * @return the effective number of samples
-     */
-    public int numberOfUniqueSamples() {
-        // will it be better to cache this value??
-        return new HashSet<>(sampleRecord).size();
-    }
-
-    /**
      * Get the barcodes associated with certain sample
      *
      * @param sampleIndex the sample index
@@ -179,9 +169,7 @@ public class BarcodeDictionary {
         if (barcodeRGmap.isEmpty()) {
             initBarcodeRGmap();
         }
-        return (barcodeRGmap.containsKey(combinedBarcode)) ?
-                barcodeRGmap.get(combinedBarcode) :
-                unknownBarcode;
+        return barcodeRGmap.getOrDefault (combinedBarcode, unknownBarcode);
     }
 
     /**

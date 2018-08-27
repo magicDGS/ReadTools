@@ -91,7 +91,7 @@ public class RTReadUtils {
             return new String[0];
         }
         read.setName(originalName.substring(0, barcodeStartIndex));
-        return originalName.substring(barcodeStartIndex + 1, originalName.length())
+        return originalName.substring(barcodeStartIndex + 1)
                 .split(RTDefaults.BARCODE_INDEX_DELIMITER);
     }
 

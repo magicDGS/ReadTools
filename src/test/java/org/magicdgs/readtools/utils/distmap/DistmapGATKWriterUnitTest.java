@@ -113,7 +113,7 @@ public class DistmapGATKWriterUnitTest extends RTBaseTest {
     public void testUserExceptionWhilePrinting(final Exception exception) throws Exception {
         // creates a mocked writer throwing IOExceptions
         final Writer ioExceptionWriter = Mockito.mock(Writer.class,
-                (Answer) (invocation -> {throw exception;}));
+                invocation -> {throw exception;});
         // check if it throws
         new DistmapGATKWriter(ioExceptionWriter, "test", true).printAndCheckError(() -> null);
     }

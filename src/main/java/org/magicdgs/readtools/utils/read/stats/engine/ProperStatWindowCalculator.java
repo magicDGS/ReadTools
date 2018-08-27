@@ -249,9 +249,6 @@ final class ProperStatWindowCalculator implements Locatable {
      * </ul>
      *
      * @param read alignment to be added.
-     *
-     * @return {@code true} if the read was added or downstream reads (in coordinate order) should
-     * be added; {@code false} otherwise.
      */
     public void addRead(final GATKRead read) {
         // compute if the read is in the window or it is properly paired

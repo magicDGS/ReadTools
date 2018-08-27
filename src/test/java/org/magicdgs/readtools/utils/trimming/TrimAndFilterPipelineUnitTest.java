@@ -290,7 +290,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
 
                     // apply to the conditional completely trim is always filter out because of length
-                    Assert.assertEquals(pipeline.test(conditionalCompletelyTrim), false);
+                    Assert.assertFalse(pipeline.test(conditionalCompletelyTrim));
                     // the completely trim flag depends on the disabled ends
                     if (disable5p || disable3p) {
                         // if one of then is disabled, it is going to be not completely trimmed

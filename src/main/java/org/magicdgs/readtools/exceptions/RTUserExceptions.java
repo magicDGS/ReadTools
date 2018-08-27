@@ -76,7 +76,7 @@ public class RTUserExceptions extends UserException {
         public InvalidOutputFormat(final String outputSource,
                 final ReadToolsIOFormat... allowedFormats) {
             this(outputSource, "extension should match one of " + String.join(", ",
-                    Stream.of(allowedFormats).map(f -> f.getExtension())
+                    Stream.of(allowedFormats).map(ReadToolsIOFormat::getExtension)
                             .collect(Collectors.toList())));
         }
     }

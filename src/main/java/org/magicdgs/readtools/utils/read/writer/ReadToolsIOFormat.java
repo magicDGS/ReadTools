@@ -83,8 +83,7 @@ public interface ReadToolsIOFormat {
             // assume that the constants in FastqExtensions are lower case
             final String lowerCaseName = sourceName.toLowerCase();
             return Stream.of(extension, alternativeExtension)
-                    .filter(lowerCaseName::endsWith)
-                    .findAny().isPresent();
+                    .anyMatch(lowerCaseName::endsWith);
         }
     }
 
@@ -127,8 +126,7 @@ public interface ReadToolsIOFormat {
      */
     public static boolean isSamBamOrCram(final String sourceName) {
         return Stream.of(BamFormat.values())
-                .filter(f -> f.isAssignable(sourceName))
-                .findAny().isPresent();
+                .anyMatch(f -> f.isAssignable(sourceName));
     }
 
     /**
@@ -141,8 +139,7 @@ public interface ReadToolsIOFormat {
      */
     public static boolean isFastq(final String sourceName) {
         return Stream.of(FastqFormat.values())
-                .filter(f -> f.isAssignable(sourceName))
-                .findAny().isPresent();
+                .anyMatch(f -> f.isAssignable(sourceName));
     }
 
 }

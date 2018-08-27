@@ -218,8 +218,6 @@ public class ProperStatWindowCalculatorUnitTest extends RTBaseTest {
 
     @DataProvider
     public static Object[][] computeStats() {
-        final String[] cigars = new String[] {"100M", "10S100M"};
-        final int[] nm = new int[]{0, 1};
         return new Object[][] {
                 // both included
                 {"100M", "100M", 0, 0, true, true},

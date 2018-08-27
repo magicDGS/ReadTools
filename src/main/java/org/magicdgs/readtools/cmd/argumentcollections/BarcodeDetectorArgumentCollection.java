@@ -95,13 +95,13 @@ public final class BarcodeDetectorArgumentCollection implements Serializable {
                     "Maximum number of Ns should be a positive integer.");
         }
         if (maximumMismatches.isEmpty()
-                || maximumMismatches.stream().filter(i -> i < 0).findAny().isPresent()) {
+                || maximumMismatches.stream().anyMatch(i -> i < 0)) {
             throw new CommandLineException.BadArgumentValue("--maximumMismatches",
                     maximumMismatches.toString(),
                     "Maximum number of mismatches should be a positive integer.");
         }
         if (minimumDistance.isEmpty()
-                || minimumDistance.stream().filter(i -> i < 1).findAny().isPresent()) {
+                || minimumDistance.stream().anyMatch(i -> i < 1)) {
             throw new CommandLineException.BadArgumentValue("--minimumDistance",
                     minimumDistance.toString(),
                     "Minimum distance should be at least 1 to avoid ambiguous barcodes.");

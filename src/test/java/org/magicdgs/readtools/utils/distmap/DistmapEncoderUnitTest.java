@@ -107,7 +107,7 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
     public void testPairEndFlags(final String distmapString) {
         final Tuple2<GATKRead, GATKRead> pair = DistmapEncoder.decodePaired(distmapString);
 
-        Assert.assertTrue(pair._1.getName().equals(pair._2.getName()));
+        Assert.assertEquals(pair._1.getName(), pair._2.getName());
 
         Assert.assertTrue(pair._1.isPaired());
         Assert.assertTrue(pair._1.isFirstOfPair());
