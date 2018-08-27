@@ -74,7 +74,7 @@ import java.util.List;
  *
  * <li>Filter out completely trim reads.</li>
  *
- * <li>Apply the fiters in order. If any read is filtered, the FT tag reflects the ReadFilter
+ * <li>Apply the filters in order. If any read is filtered, the FT tag reflects the ReadFilter
  * involved.</li>
  *
  * </ol>
@@ -85,7 +85,7 @@ import java.util.List;
  * Kofler <i>et al.</i> (2011)</a>. Other features in their implementation could be applied with
  * some minor modifications in the command line.
  * @ReadTools.warning Default trimmers/filters are applied before any other user-specified
- * trimmers/filters. If you would like to apply them in a differen order, use
+ * trimmers/filters. If you would like to apply them in a different order, use
  * <code>--disableAllDefaultTrimmers</code>/<code>--disableAllDefaultFilters</code> in combination
  * with the new ordering.
  */
@@ -230,7 +230,7 @@ public final class TrimReads extends ReadToolsWalker {
         // TODO: maybe we should create a metric file per statistic
         final Path path = outputBamArgumentCollection.makeMetricsFile(null);
         try (final Writer metricsWriter = Files.newBufferedWriter(path)) {
-            // trimer metrics with the header
+            // trimmer metrics with the header
             final MetricsFile<TrimmerMetric, Integer> trimming = getMetricsFile();
             trimming.addAllMetrics(pipeline.getTrimmingStats());
             trimming.write(metricsWriter);

@@ -10,7 +10,7 @@ else
 	version=$1
 fi
 
-## cheks if the repository is clean
+## checks if the repository is clean
 if [[ ! -z "$(git status -s)" ]]; then
 	echo "Release requires a clean repository";
 	exit 2
@@ -19,7 +19,7 @@ fi
 # create temp directory
 mkdir -p tmp
 
-## start creating the relase
+## start creating the release
 echo "[$(date)] Create release for version $version (from master branch)"
 git checkout master
 git branch release_${version}

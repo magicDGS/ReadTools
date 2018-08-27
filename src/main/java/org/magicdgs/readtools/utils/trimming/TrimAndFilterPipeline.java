@@ -28,7 +28,7 @@ import org.magicdgs.readtools.metrics.FilterMetric;
 import org.magicdgs.readtools.metrics.TrimmerMetric;
 import org.magicdgs.readtools.utils.read.RTReadUtils;
 import org.magicdgs.readtools.utils.read.filter.CompletelyTrimReadFilter;
-import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultReadTransfomer;
+import org.magicdgs.readtools.utils.read.transformer.trimming.ApplyTrimResultReadTransformer;
 import org.magicdgs.readtools.utils.read.transformer.trimming.TrimmingFunction;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -53,7 +53,7 @@ import java.util.function.BiPredicate;
  * The pipeline is as following for {@link #test(GATKRead)}:
  *
  * - Each of the trimmers is applied in order.
- * - After all trimmers are applied, {@link ApplyTrimResultReadTransfomer} updates the read.
+ * - After all trimmers are applied, {@link ApplyTrimResultReadTransformer} updates the read.
  * - A first filter is applied to check if the read is completely trimmed.
  * - A composed AND filter with the provided ones is applied and returned the value.
  * - If a filter is applied to the read, the {@link SAMTag#FT} is updated to reflect it.
@@ -138,7 +138,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
             composed = composed.andThen(ctmt);
         }
 
-        return composed.andThen(new ApplyTrimResultReadTransfomer());
+        return composed.andThen(new ApplyTrimResultReadTransformer());
     }
 
     /**
@@ -281,7 +281,7 @@ public class TrimAndFilterPipeline extends ReadFilter {
         // throw if not pipeline is specified
         if (trimmers.isEmpty() && filters.isEmpty()) {
             throw new CommandLineException.BadArgumentValue(String
-                    .format("No trimmmer (--%s) nor filter (--%s) for pipeline was specified.",
+                    .format("No trimmer (--%s) nor filter (--%s) for pipeline was specified.",
                             trimmingPlugin.getDisplayName(), filterPlugin.getDisplayName()));
         }
 

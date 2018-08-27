@@ -118,7 +118,7 @@ public final class BarcodeMatch {
      */
     public boolean isAssignable(final int threshold) {
         // TODO: we should change the implementation:
-        // TODO: 1) does not allow thesholds of 0 -> this will break compatibility
+        // TODO: 1) does not allow thresholds of 0 -> this will break compatibility
         // TODO: 2) if it is unknown, we should return false directly
         return (numberOfNs == 0 && mismatches == 0)
                 || Math.abs(mismatchesToSecondBest - mismatches) >= threshold;

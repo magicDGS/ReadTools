@@ -54,7 +54,7 @@ public class BarcodeDictionary {
     private final SAMReadGroupRecord unknownBarcode;
 
     /**
-     * Array which contains the barcodes. The lenght is the number of barcodes used, and the
+     * Array which contains the barcodes. The length is the number of barcodes used, and the
      * internal array contain the
      * associated barcode for each sample
      */
@@ -75,7 +75,7 @@ public class BarcodeDictionary {
      *
      * @param samples        the sample names.
      * @param barcodes       the barcodes.
-     * @param unknownBarcode the unknown barcode to assign to unknonw samples.
+     * @param unknownBarcode the unknown barcode to assign to unknown samples.
      */
     protected BarcodeDictionary(final List<SAMReadGroupRecord> samples,
             final List<List<String>> barcodes, final SAMReadGroupRecord unknownBarcode) {

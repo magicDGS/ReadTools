@@ -77,7 +77,7 @@ public interface ReadToolsIOFormat {
             return extension;
         }
 
-        // overriden to take into account alternative extensions
+        // override to take into account alternative extensions
         @Override
         public boolean isAssignable(final String sourceName) {
             // assume that the constants in FastqExtensions are lower case

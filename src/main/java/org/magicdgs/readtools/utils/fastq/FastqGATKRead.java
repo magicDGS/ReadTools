@@ -34,7 +34,7 @@ import org.broadinstitute.hellbender.utils.read.SAMRecordToGATKReadAdapter;
 /**
  * Simple GATKRead implementation from a FastqRecord.
  *
- * Note: on creation, FasteGATKRead are considered unmapped.
+ * Note: on creation, FastqGATKRead are considered unmapped.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */

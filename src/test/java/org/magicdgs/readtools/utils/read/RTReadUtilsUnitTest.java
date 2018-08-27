@@ -204,8 +204,8 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
                 RTReadUtils.getBarcodesAndQualitiesFromTags(read, tags, qualTags).getValue()));
     }
 
-    @DataProvider(name = "badParamsAdddBarcodeWithQualitiesTagsToRead")
-    public Object[][] getBadParamsAdddBarcodeWithQualitiesTagsToRead() {
+    @DataProvider(name = "badParamsAddBarcodeWithQualitiesTagsToRead")
+    public Object[][] getBadParamsAddBarcodeWithQualitiesTagsToRead() {
         final GATKRead read = ArtificialReadUtils
                 .createArtificialUnmappedRead(header, new byte[] {'A', 'T'}, new byte[] {40, 40});
         return new Object[][] {
@@ -219,7 +219,7 @@ public class RTReadUtilsUnitTest extends RTBaseTest {
     }
 
 
-    @Test(dataProvider = "badParamsAdddBarcodeWithQualitiesTagsToRead", expectedExceptions = IllegalArgumentException.class)
+    @Test(dataProvider = "badParamsAddBarcodeWithQualitiesTagsToRead", expectedExceptions = IllegalArgumentException.class)
     public void testAddBarcodeWithQualitiesTagsToReadBadParams(final GATKRead read,
             final String[] barcodes, final String[] qualities) throws Exception {
         RTReadUtils.addBarcodeWithQualitiesTagsToRead(read, barcodes, qualities);

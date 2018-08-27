@@ -1,6 +1,6 @@
 <#macro argname arg>`${arg.name}`<#if arg.synonyms != "NA" && arg.synonyms != "-"><br/>`${arg.synonyms}`</#if></#macro>
 <#-- TODO: use something like the following line for include range in argtype
-TODO: it requires a new version of FreeMarker for accessing some mehtods
+TODO: it requires a new version of FreeMarker for accessing some methods
 <#if arg.minValue?is_number || arg.maxValue?is_number><#if arg.minValue != "-INF" && arg.maxValue != "INF"><br/>[${arg.minValue}, ${arg.maxValue}]</#if></#if>
 -->
 <#macro argtype arg>${arg.type}</#macro>

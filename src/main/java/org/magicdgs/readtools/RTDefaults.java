@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class RTDefaults {
 
-    // logger for the defauls
+    // logger for the defaults
     private static final Logger logger = LogManager.getLogger(RTDefaults.class);
 
     /** Delimiter between barcode when several indexes are used. Default='-'. */

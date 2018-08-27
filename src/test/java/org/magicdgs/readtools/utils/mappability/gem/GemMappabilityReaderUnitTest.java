@@ -208,7 +208,7 @@ public class GemMappabilityReaderUnitTest extends RTBaseTest {
         // test iteration until the last
         testEncodingIterationSingleContig(contig, reader);
 
-        // now it should throw because there is a problem wiht the encoding
+        // now it should throw because there is a problem with the encoding
         Assert.assertThrows(GemMappabilityException.class, reader::next);
     }
 

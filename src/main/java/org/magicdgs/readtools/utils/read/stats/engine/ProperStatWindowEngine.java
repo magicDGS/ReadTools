@@ -83,7 +83,7 @@ public class ProperStatWindowEngine implements Closeable {
     private final List<String> columnNames;
     // option to print all the windows
     private final boolean printAll;
-    // ouptut writer
+    // output writer
     // TODO: output improvement - see https://github.com/magicDGS/ReadTools/issues/459
     private final PrintStream writer;
 
@@ -159,7 +159,7 @@ public class ProperStatWindowEngine implements Closeable {
     /**
      * Adds the read to the computation engine.
      *
-     * <p>Note that the caller is responsible of assesing the following requirements:
+     * <p>Note that the caller is responsible of assessing the following requirements:
      *
      * <ul>
      *     <li>Reads are added in a coordinate sorted ordering.</li>

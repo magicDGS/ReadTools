@@ -49,7 +49,7 @@ import java.util.Arrays;
  * @author Daniel Gomez-Sanchez (magicDGS)
  * @see ReadClipper
  */
-public final class ApplyTrimResultReadTransfomer implements ReadTransformer {
+public final class ApplyTrimResultReadTransformer implements ReadTransformer {
     private static final long serialVersionUID = 1L;
 
     /**

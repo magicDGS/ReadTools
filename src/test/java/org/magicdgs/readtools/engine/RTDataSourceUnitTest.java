@@ -59,7 +59,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
         EMPTY_HEADER.setSortOrder(SAMFileHeader.SortOrder.unsorted);
     }
 
-    // minimal header for paired-data shoud be unsorted and grouped by query
+    // minimal header for paired-data should be unsorted and grouped by query
     // other possibilities are sorted by queryname
     private final static SAMFileHeader EMPTY_PAIRED_HEADER = new SAMFileHeader();
     static {
@@ -371,7 +371,7 @@ public class RTDataSourceUnitTest extends RTBaseTest {
             Assert.assertTrue(pair._1.isPaired());
             Assert.assertTrue(pair._1.isFirstOfPair());
             Assert.assertFalse(pair._1.isSecondOfPair());
-            // checks that the seconf pair have correct paired flags
+            // checks that the second pair have correct paired flags
             Assert.assertTrue(pair._2.isPaired());
             Assert.assertFalse(pair._2.isFirstOfPair());
             Assert.assertTrue(pair._2.isSecondOfPair());

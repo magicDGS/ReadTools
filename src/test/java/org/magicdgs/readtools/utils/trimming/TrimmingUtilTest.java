@@ -109,7 +109,7 @@ public class TrimmingUtilTest extends RTBaseTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testTrimPoitnTrailingNsNullBases() {
+    public void testTrimPointTrailingNsNullBases() {
         TrimmingUtil.trimPointsTrailingNs(null);
     }
 

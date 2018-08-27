@@ -29,10 +29,10 @@ package org.magicdgs.readtools.utils.fastq;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class RTFastqContstants {
+public class RTFastConstants {
 
     /** Cannot be instantiated. */
-    private RTFastqContstants() {}
+    private RTFastConstants() {}
 
     /** Barcode delimiter in read names for Illumina encoding (e.g. readName#barcode). */
     public static final String ILLUMINA_NAME_BARCODE_DELIMITER = "#";

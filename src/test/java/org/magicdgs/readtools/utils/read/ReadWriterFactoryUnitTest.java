@@ -67,7 +67,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
     private final File testDir = createTempDir(this.getClass().getSimpleName());
 
     @DataProvider(name = "namesAndClass")
-    public Object[][] outpueNamesProvider() {
+    public Object[][] outputNamesProvider() {
         return new Object[][] {
                 {new File(testDir, "example.bam"), SAMFileGATKReadWriter.class},
                 {new File(testDir, "example.sam"), SAMFileGATKReadWriter.class},
@@ -79,7 +79,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
         };
     }
 
-    @Test(dataProvider = "namesAndClass")
+    @Test(dataProvider = "outputNamesProvider")
     public void testCorrectGATKWriter(final File outputFile,
             final Class<? extends GATKReadWriter> writerClass) {
         Assert.assertFalse(outputFile.exists());
@@ -132,11 +132,11 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
     }
 
     @Test(expectedExceptions = RTUserExceptions.OutputFileExists.class)
-    public void testExistantFileBlowsUp() throws Exception {
-        final File existantFile = new File(testDir, "exists.sam");
-        Assert.assertTrue(existantFile.createNewFile(), "unable to create test file");
+    public void testExistentFileBlowsUp() throws Exception {
+        final File existentFile = new File(testDir, "exists.sam");
+        Assert.assertTrue(existentFile.createNewFile(), "unable to create test file");
         new ReadWriterFactory()
-                .createWriter(existantFile.getAbsolutePath(), new SAMFileHeader(), true);
+                .createWriter(existentFile.getAbsolutePath(), new SAMFileHeader(), true);
     }
 
     @Test
@@ -173,22 +173,22 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
     public void testMd5AndCompressionLevel(final File expectedFile)
             throws Exception {
         // creates a file to test
-        final File writedFile = new File(testDir, expectedFile.getName());
+        final File writenFile = new File(testDir, expectedFile.getName());
 
         // open the writer
         final GATKReadWriter writer = new ReadWriterFactory()
                 .setCreateMd5File(true)
-                .createFASTQWriter(writedFile.getAbsolutePath());
+                .createFASTQWriter(writenFile.getAbsolutePath());
 
         // write and close the writer
         writer.addRead(DEFAULT_READ_TO_TEST);
         writer.close();
 
         // now check the output files
-        IntegrationTestSpec.assertEqualTextFiles(writedFile, expectedFile);
+        IntegrationTestSpec.assertEqualTextFiles(writenFile, expectedFile);
         // and the MD5
         IntegrationTestSpec.assertEqualTextFiles(
-                new File(writedFile.getAbsolutePath() + ".md5"),
+                new File(writenFile.getAbsolutePath() + ".md5"),
                 new File(expectedFile.getAbsolutePath() + ".md5"));
     }
 
@@ -207,7 +207,7 @@ public class ReadWriterFactoryUnitTest extends RTBaseTest {
                     data.add(new Object[] {useAsyncIo, createMd5File, createIndex,
                             maxRecordsInRam, tempDir, true,
                             asyncOutputBufferSize, bufferSize});
-                    // only test FASTQ output for no asynchronious writing
+                    // only test FASTQ output for no asynchronous writing
                     // TODO: this limitation comes from a non-deterministic exception of AsyncFastqWriter
                     // TODO: it is very difficult to debug due to the uninformative error message
                     if (!useAsyncIo) {

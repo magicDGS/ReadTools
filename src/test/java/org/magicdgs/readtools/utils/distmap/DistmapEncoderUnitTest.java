@@ -38,7 +38,7 @@ import scala.Tuple2;
 public class DistmapEncoderUnitTest extends RTBaseTest {
 
     @DataProvider(name = "singleEnd")
-    public Object[][] getDistmapSinleReadStrings() {
+    public Object[][] getDistmapSingleReadStrings() {
         return new Object[][] {
                 // without barcode
                 {"@readName\tACT\t!!!!"},
@@ -47,12 +47,12 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
         };
     }
 
-    @Test(dataProvider = "singleEnd")
+    @Test(dataProvider = "getDistmapSingleReadStrings")
     public void testIsPairedFalse(final String singleEndDistmapString) {
         Assert.assertFalse(DistmapEncoder.isPaired(singleEndDistmapString));
     }
 
-    @Test(dataProvider = "singleEnd")
+    @Test(dataProvider = "getDistmapSingleReadStrings")
     public void testSingleReadRoundtrip(final String distmapString) {
         // decode the read, encode it again, and re-decoded
         final GATKRead decodedRead = DistmapEncoder.decodeSingle(distmapString);
@@ -65,7 +65,7 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
                 "Read roundtrip error: " + decodedRead + " vs. " + reDecodedRead);
     }
 
-    @Test(dataProvider = "singleEnd")
+    @Test(dataProvider = "getDistmapSingleReadStrings")
     public void testSingleEndFlags(final String distmapString) {
         final GATKRead decodedRead = DistmapEncoder.decodeSingle(distmapString);
         Assert.assertFalse(decodedRead.isPaired());
@@ -121,7 +121,7 @@ public class DistmapEncoderUnitTest extends RTBaseTest {
         DistmapEncoder.decodeSingle(pairedDistmapString);
     }
 
-    @Test(dataProvider = "singleEnd", expectedExceptions = DistmapException.class)
+    @Test(dataProvider = "getDistmapSingleReadStrings", expectedExceptions = DistmapException.class)
     public void testWrongPairedEnd(final String singleDistmapString) {
         DistmapEncoder.decodePaired(singleDistmapString);
     }

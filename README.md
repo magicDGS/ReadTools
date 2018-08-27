@@ -8,7 +8,7 @@
 
 # _ReadTools_: A universal toolkit for handling sequence data from different sequencing platforms
 
-_ReadTools_ is an open‐source toolkit designed to standardize and preprocess
+_ReadTools_ is an open‐source toolkit designed to standardize and pre-process
 sequencing read data from different platforms. It manages FASTQ‐ and
 SAM‐formatted inputs while dealing with platform‐specific peculiarities and
 provides a standard SAM compliant output.

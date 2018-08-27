@@ -124,7 +124,7 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
     }
 
     /**
-     * Uses the name for the unit with the Markdonw suffix (<i>.md</i>).
+     * Uses the name for the unit with the Markdown suffix (<i>.md</i>).
      *
      * <p>WARNING: does not honor the output extension (should be fixed in the future).
      */

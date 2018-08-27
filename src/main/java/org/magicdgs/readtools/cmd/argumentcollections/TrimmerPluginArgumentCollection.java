@@ -85,7 +85,7 @@ public abstract class TrimmerPluginArgumentCollection {
 
 
     /**
-     * Checks how default trimmers shouls be handled.
+     * Checks how default trimmers should be handled.
      *
      * @return {@code true} if default trimmers should be disabled; {@code false} otherwise.
      */

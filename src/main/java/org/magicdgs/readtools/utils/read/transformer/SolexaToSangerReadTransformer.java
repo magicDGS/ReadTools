@@ -44,7 +44,7 @@ public final class SolexaToSangerReadTransformer implements ReadTransformer {
 
     // this is the value of the minimum quality in Solexa possible before conversion (';')
     // this is necessary because the quality converter transform lower qualities to '!'
-    // and cannot be catched as an exception
+    // and cannot be catch as an exception
     private final static byte MIN_SOLEXA_BEFORE_CONVERSION = 26;
 
     @Override
@@ -55,7 +55,7 @@ public final class SolexaToSangerReadTransformer implements ReadTransformer {
             // transform them in place
             for (int i = 0; i < quals.length; ++i) {
                 if (quals[i] < MIN_SOLEXA_BEFORE_CONVERSION) {
-                    // throw an exception if they are missencoded
+                    // throw an exception if they are misencoded
                     throwException();
                 }
                 // convert to Solexa

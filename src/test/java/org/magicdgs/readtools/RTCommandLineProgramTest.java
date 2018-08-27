@@ -57,7 +57,7 @@ public abstract class RTCommandLineProgramTest extends RTBaseTest implements Com
     }
 
     /**
-     * If vthe --verbosity argument is not present, sets it to ERROR and sets the --QUIET to true;
+     * If the --verbosity argument is not present, sets it to ERROR and sets the --QUIET to true;
      * otherwise, it keeps the original arguments.
      */
     @Override

@@ -167,7 +167,7 @@ public final class AssignReadGroupByBarcode extends ReadToolsWalker {
      */
     @Override
     protected void apply(final Tuple2<GATKRead, GATKRead> pair) {
-        // only assing the one in the first read
+        // only assign the one in the first read
         logger.debug("First: {}", () -> pair._1);
         logger.debug("Second: {}", () -> pair._2);
         // this only works if it is modified in place

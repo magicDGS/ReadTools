@@ -74,7 +74,7 @@ final class InterleavedGATKReadPairedIterator extends GATKReadPairedIterator {
     }
 
     private void assignNext() {
-        // if it does not have a next one, assing null to mark the end
+        // if it does not have a next one, assign null to mark the end
         if (!interleavedIterator.hasNext()) {
             next = null;
         } else {

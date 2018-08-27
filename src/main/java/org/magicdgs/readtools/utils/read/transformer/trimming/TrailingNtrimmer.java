@@ -48,7 +48,7 @@ public final class TrailingNtrimmer extends TrimmingFunction {
      */
     @Override
     protected void fillTrimPoints(final GATKRead read, final int[] toFill) {
-        // this should be safe, because the bases are not modified in the mehtod
+        // this should be safe, because the bases are not modified in the method
         final int[] points = TrimmingUtil.trimPointsTrailingNs(read.getBasesNoCopy());
         toFill[0] = points[0];
         toFill[1] = points[1];

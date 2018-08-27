@@ -54,10 +54,10 @@ import java.util.Objects;
  * can be added, but they would be ignored as they are not included on the window.
  *
  * <p>By default, the calculator computes all the reads that are in the window ("total"), proper
- * pairs inclued ("proper", as defined in {@link #mappedPairSameContig(GATKRead)}) and pairs
+ * pairs included ("proper", as defined in {@link #mappedPairSameContig(GATKRead)}) and pairs
  * missing in the file ("missing").
  *
- * <p>Computation for both single and pair statisticsis only triggered for "proper pairs". In the
+ * <p>Computation for both single and pair statistics are only triggered for "proper pairs". In the
  * case of {@link PairEndReadStatFunction}, pairs with "missing" reads are not considered.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -262,7 +262,7 @@ final class ProperStatWindowCalculator implements Locatable {
             addSingleRead(read, isProper);
         }
 
-        // TODO: maybe check first if there is any pair-end stat to check (performance improvemen - https://github.com/magicDGS/ReadTools/issues/451)
+        // TODO: maybe check first if there is any pair-end stat to check (performance improvement - https://github.com/magicDGS/ReadTools/issues/451)
         // only if it is proper and in the window or if it is cached
         if (isProper && (isInWin || startOverlaps(read.getMateContig(), read.getMateStart()))) {
             // compute the readKey and check if there is a cached value

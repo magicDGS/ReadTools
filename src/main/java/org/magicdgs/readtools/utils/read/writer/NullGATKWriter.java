@@ -40,7 +40,7 @@ public final class NullGATKWriter implements GATKReadWriter {
 
     @Override
     public void addRead(final GATKRead read) {
-        logger.debug("Skipping writting read: {}", read::commonToString);
+        logger.debug("Skipping writing read: {}", read::commonToString);
     }
 
     @Override

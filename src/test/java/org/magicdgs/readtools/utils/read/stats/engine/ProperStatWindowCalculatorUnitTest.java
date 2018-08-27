@@ -66,15 +66,15 @@ public class ProperStatWindowCalculatorUnitTest extends RTBaseTest {
                 Collections.singletonList(NM_EQ_ZERO_COUNTER));
     }
 
-    private static GATKRead createSingleRead(final String cigar, final int nm, final Locatable positon) {
+    private static GATKRead createSingleRead(final String cigar, final int nm, final Locatable position) {
         final GATKRead read = ArtificialReadUtils.createArtificialRead(cigar);
         read.setAttribute("NM", nm);
-        read.setPosition(positon);
+        read.setPosition(position);
         return read;
     }
 
-    private static GATKRead createPair(final String cigar, final GATKRead read, final int nm, final Locatable positon) {
-        final GATKRead pair = createSingleRead(cigar, nm, positon);
+    private static GATKRead createPair(final String cigar, final GATKRead read, final int nm, final Locatable position) {
+        final GATKRead pair = createSingleRead(cigar, nm, position);
         read.setMatePosition(pair);
         pair.setMatePosition(read);
         return pair;
@@ -128,7 +128,7 @@ public class ProperStatWindowCalculatorUnitTest extends RTBaseTest {
 
     @DataProvider
     public Object[][] fragmentOverlapsData() throws Exception {
-        // create mate unmmaped
+        // create mate unmapped
         final GATKRead mateUnmapped = createPair("100M", createSingleRead("100M", 0, TEST_INTERVAL), 0, TEST_OTHER_CHROMOSOME);
         mateUnmapped.setMateIsUnmapped();
         return new Object[][] {
