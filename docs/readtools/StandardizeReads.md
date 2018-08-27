@@ -2,7 +2,7 @@
 title: StandardizeReads
 summary: Standardizes quality and format for all kind of sources for ReadTools.
 permalink: StandardizeReads.html
-last_updated: 27-06-2018 06:06:39
+last_updated: 27-49-2018 03:49:16
 ---
 
 

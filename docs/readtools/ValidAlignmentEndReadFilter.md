@@ -2,7 +2,7 @@
 title: ValidAlignmentEndReadFilter
 summary: Keep only reads where the read end is properly aligned
 permalink: ValidAlignmentEndReadFilter.html
-last_updated: 27-06-2018 06:06:39
+last_updated: 27-49-2018 03:49:16
 ---
 
 
