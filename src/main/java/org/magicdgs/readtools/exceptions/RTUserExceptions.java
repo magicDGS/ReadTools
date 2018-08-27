@@ -55,7 +55,7 @@ public class RTUserExceptions extends UserException {
             super("Couldn't write file " + outputSource
                     + " because file already exists. "
                     + "Please, use --" + RTStandardArguments.FORCE_OVERWRITE_NAME
-                    + " if you are sure that the file should be overriden");
+                    + " if you are sure that the file should be overridden");
         }
 
         public OutputFileExists(final Path outputPath) {
@@ -76,7 +76,7 @@ public class RTUserExceptions extends UserException {
         public InvalidOutputFormat(final String outputSource,
                 final ReadToolsIOFormat... allowedFormats) {
             this(outputSource, "extension should match one of " + String.join(", ",
-                    Stream.of(allowedFormats).map(f -> f.getExtension())
+                    Stream.of(allowedFormats).map(ReadToolsIOFormat::getExtension)
                             .collect(Collectors.toList())));
         }
     }

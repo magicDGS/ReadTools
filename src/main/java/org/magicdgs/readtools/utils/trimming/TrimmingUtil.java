@@ -118,8 +118,8 @@ public class TrimmingUtil {
         Utils.nonNull(bases, "null bases");
         final int[] positions = new int[] {0, bases.length};
         // first check if trimming is required for the
-        for (int i = 0; i < bases.length; i++) {
-            if (!BaseUtils.isNBase(bases[i])) {
+        for (byte base : bases) {
+            if (!BaseUtils.isNBase(base)) {
                 break;
             }
             positions[0]++;

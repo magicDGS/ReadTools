@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Checks for and errors out when it detects reads with base qualities that are not encoded with
- * phred-scaled quality scores, each {@link RTDefaults#SAMPLING_QUALITY_CHECKING_FREQUENCY}.
+ * PHRED-scaled quality scores, each {@link RTDefaults#SAMPLING_QUALITY_CHECKING_FREQUENCY}.
  *
  * Note: this is adapted from the GATK3 not back-ported behaviour of
  * {@link org.broadinstitute.hellbender.transformers.MisencodedBaseQualityReadTransformer}.

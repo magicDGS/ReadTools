@@ -263,12 +263,12 @@ final class DistmapPartDownloader {
         downloadProgress.start();
 
         // download in batches
-        batches.entrySet().forEach(entry -> {
-            final String batchName = entry.getKey().toUri().toString();
-            final SAMFileHeader batchHeader = entry.getValue().getHeader();
+        batches.forEach((path, source) -> {
+            final String batchName = path.toUri().toString();
+            final SAMFileHeader batchHeader = source.getHeader();
             final boolean preSorted = isPresorted(batchHeader);
             logger.debug("Downloading batch: {} (pre-sorted=).", () -> batchName, () -> preSorted);
-            writeReads(entry.getValue(), batchHeader,
+            writeReads(source, batchHeader,
                     // create based on the batch name, which is BAM and does not require the reference
                     outputArgumentCollection.getWriterFactory()
                             // do not create indexes for the files that are batches
@@ -277,7 +277,7 @@ final class DistmapPartDownloader {
                             .setForceOverwrite(true)
                             .createSAMWriter(batchName, setHeaderOptions(batchHeader), preSorted),
                     downloadProgress);
-            entry.getValue().close();
+            source.close();
         });
         downloadProgress.stop();
         logger.info("Finished download.");

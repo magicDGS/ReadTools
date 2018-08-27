@@ -40,4 +40,4 @@ sample9	lib4	CGGCTATG	ATAGAGGC
 sample1	lib5	TCCGCGAA	CCTATCCT
 ```
 
-{% include warning.html content="All the barcodes present in the multiplexed file should be included in the barcode columm" %}
+{% include warning.html content="All the barcodes present in the multiplexed file should be included in the barcode column" %}

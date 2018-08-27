@@ -24,17 +24,13 @@
 
 package org.magicdgs.readtools.utils.read;
 
-import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
-import htsjdk.samtools.cram.ref.CRAMReferenceSource;
-import htsjdk.samtools.cram.ref.ReferenceSource;
 import htsjdk.samtools.fastq.FastqReader;
 import htsjdk.samtools.util.IOUtil;
 import org.broadinstitute.hellbender.exceptions.UserException;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;

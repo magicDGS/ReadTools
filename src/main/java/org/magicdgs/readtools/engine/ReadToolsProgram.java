@@ -24,19 +24,11 @@
 
 package org.magicdgs.readtools.engine;
 
-import org.magicdgs.readtools.RTDefaults;
 import org.magicdgs.readtools.RTHelpConstants;
-import org.magicdgs.readtools.utils.read.RTReadUtils;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMProgramRecord;
 import org.broadinstitute.hellbender.cmdline.CommandLineProgram;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 /**
  * Abstract class for all the ReadTools programs.

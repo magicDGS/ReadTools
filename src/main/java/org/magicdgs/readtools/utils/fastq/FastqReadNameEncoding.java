@@ -63,7 +63,7 @@ public enum FastqReadNameEncoding {
     // third group  = nested group in previous -> the string between # and / or space (barcode)
     // fourth group = (/([012]){1})?           -> match '/0', '/1' or '/2' or nothing
     // fifth group  = nested group in previous -> match '0', '1' or '2'
-    ILLUMINA("([^#/]+)(" + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
+    ILLUMINA("([^#/]+)(" + RTFastqConstants.ILLUMINA_NAME_BARCODE_DELIMITER
             + "([^/\\s]+))?(/([012]){1})?.?", 5, 3, -1);
 
     private static Logger logger = LogManager.getLogger(FastqReadNameEncoding.class);

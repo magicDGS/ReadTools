@@ -22,7 +22,7 @@ public class RTDeprecatedToolsRegistryIntegrationTest extends RTBaseTest {
             "QualityChecker", "StandardizeQuality",
             "BamBarcodeDetector", "FastqBarcodeDetector",
             "TaggedBamToFastq", "TrimFastq");
-    private final String firstMajorVersion = "1.0.0";
+    private static final String firstMajorVersion = "1.0.0";
 
     @DataProvider
     public Iterator<Object[]> getLegacyToolNames() {

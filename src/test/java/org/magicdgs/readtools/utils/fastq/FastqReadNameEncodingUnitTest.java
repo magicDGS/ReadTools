@@ -170,7 +170,7 @@ public class FastqReadNameEncodingUnitTest extends RTBaseTest {
         final GATKRead read = ArtificialReadUtils.createArtificialUnmappedRead(null, null, null);
         FastqReadNameEncoding.updateReadFromReadName(read, readName);
         Assert.assertEquals(read.getName(), expectedPlainName, "incorrect name");
-        Assert.assertEquals(read.isPaired(), first || second, "incorrec paired flag");
+        Assert.assertEquals(read.isPaired(), first || second, "incorrect paired flag");
         Assert.assertEquals(read.isFirstOfPair(), first, "incorrect first of pair flag");
         Assert.assertEquals(read.isSecondOfPair(), second, "incorrect second of pair flag");
         Assert.assertEquals(read.failsVendorQualityCheck(), pf, "incorrect PF flag");

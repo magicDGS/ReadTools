@@ -26,19 +26,12 @@ package org.magicdgs.readtools.documentation;
 
 import org.magicdgs.readtools.RTHelpConstants;
 
-import org.broadinstitute.barclay.argparser.CommandLineArgumentParser;
-import org.broadinstitute.barclay.argparser.CommandLinePluginDescriptor;
-import org.broadinstitute.barclay.argparser.CommandLinePluginProvider;
 import org.broadinstitute.barclay.argparser.CommandLineProgramProperties;
 import org.broadinstitute.barclay.help.DefaultDocWorkUnitHandler;
 import org.broadinstitute.barclay.help.DocWorkUnit;
 import org.broadinstitute.barclay.help.HelpDoclet;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The ReadTools Documentation work unit handler class that is the companion to
@@ -124,7 +117,7 @@ public class RTHelpDocWorkUnitHandler extends DefaultDocWorkUnitHandler {
     }
 
     /**
-     * Uses the name for the unit with the Markdonw suffix (<i>.md</i>).
+     * Uses the name for the unit with the Markdown suffix (<i>.md</i>).
      *
      * <p>WARNING: does not honor the output extension (should be fixed in the future).
      */

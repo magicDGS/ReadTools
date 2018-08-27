@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  *
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-// TODO: this shoudl be a plugin (https://github.com/magicDGS/ReadTools/issues/448)
+// TODO: this should be a plugin (https://github.com/magicDGS/ReadTools/issues/448)
 class ComputeProperStatByWindowArgs {
 
     @Advanced
@@ -92,7 +92,7 @@ class ComputeProperStatByWindowArgs {
      * @param windows    windows to compute the statistics on.
      * @param dictionary sequence dictionary for the data.
      *
-     * @return engine construted from the arguments.
+     * @return engine constructed from the arguments.
      */
     public ProperStatWindowEngine getProperStatWindowEngine(
             final Path output,

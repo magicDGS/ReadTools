@@ -330,6 +330,7 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
      *
      * @throws IllegalArgumentException if {@link #isPaired()} is {@code false}.
      */
+    @SuppressWarnings("unchecked")
     public GATKReadPairedIterator pairedIterator() {
         Utils.validateArg(isPaired(), "no paired iterator");
         if (interleaved) {
@@ -345,6 +346,7 @@ public final class RTDataSource implements GATKDataSource<GATKRead>, AutoCloseab
     }
 
     // helper for generate a paired iterator from a split
+    @SuppressWarnings("unchecked")
     private GATKReadPairedIterator pairedIteratorForSplitInput() {
         return GATKReadPairedIterator.of(
                 transformedIterator(readHandler.toIterator()),

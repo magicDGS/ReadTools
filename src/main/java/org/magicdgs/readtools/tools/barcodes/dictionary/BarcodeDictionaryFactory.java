@@ -145,21 +145,21 @@ public class BarcodeDictionaryFactory {
 
 
             // get the column names and hte number of barcodes
-            final List<String> columNames = new ArrayList<>(2);
-            columNames.add(sequenceColumn);
+            final List<String> columnNames = new ArrayList<>(2);
+            columnNames.add(sequenceColumn);
             for (int numberOfBarcodes = 2; ; numberOfBarcodes++) {
                 final String name = BARCODE_SEQUENCE_COLUMN + "_" + numberOfBarcodes;
                 if (barcodesParser.hasColumn(name)) {
-                    columNames.add(name);
+                    columnNames.add(name);
                 } else {
                     break;
                 }
             }
 
             // log the result and get the dictionary from the parser
-            logger.info("Detected {} barcodes.", columNames::size);
+            logger.info("Detected {} barcodes.", columnNames::size);
             final BarcodeDictionary dictionary = getDictionary(barcodesParser,
-                    columNames, sampleNameColumn,
+                    columnNames, sampleNameColumn,
                     runId, rgInfo);
 
             // close the barcode parser
@@ -224,7 +224,7 @@ public class BarcodeDictionaryFactory {
         return new BarcodeDictionary(sampleReadGroups, barcodes, unknownReadGroup);
     }
 
-    // helper funciton to update the record
+    // helper function to update the record
     private static final BiConsumer<TabbedTextFileWithHeaderParser.Row, SAMReadGroupRecord> getRecordUpdater(
             final TabbedTextFileWithHeaderParser barcodesParser) {
         // TODO: update more stuff

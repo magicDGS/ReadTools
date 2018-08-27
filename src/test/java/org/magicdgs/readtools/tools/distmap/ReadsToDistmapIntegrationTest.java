@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
@@ -211,10 +210,8 @@ public class ReadsToDistmapIntegrationTest extends RTCommandLineProgramTest {
             IOException {
         try (final XReadLines resultReader = new XReadLines(Files.newBufferedReader(resultPath), true, null);
         final XReadLines expectedReader = new XReadLines(expectedFile)) {
-            final List<String> actualLines = resultReader.readLines().stream()
-                    .collect(Collectors.toList());
-            final List<String> expectedLines = expectedReader.readLines().stream()
-                    .collect(Collectors.toList());
+            final List<String> actualLines = resultReader.readLines();
+            final List<String> expectedLines = expectedReader.readLines();
             //For ease of debugging, we look at the lines first and only then check their counts
             final int minLen = Math.min(actualLines.size(), expectedLines.size());
             for (int i = 0; i < minLen; i++) {

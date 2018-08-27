@@ -10,7 +10,7 @@ else
 	version=$1
 fi
 
-## cheks if the repository is clean
+## checks if the repository is clean
 if [[ ! -z "$(git status -s)" ]]; then
 	echo "Release requires a clean repository";
 	exit 2
@@ -19,7 +19,7 @@ fi
 # create temp directory
 mkdir -p tmp
 
-## start creating the relase
+## start creating the release
 echo "[$(date)] Create release for version $version (from master branch)"
 git checkout master
 git branch release_${version}
@@ -27,7 +27,7 @@ git checkout release_${version}
 git push --set-upstream origin release_${version}
 
 # tagging as version
-git tag $version
+git tag ${version}
 
 ## generate jar for upload
 echo "[$(date)] Generate jar"
@@ -46,7 +46,7 @@ rm -fr docs/javadoc && mv build/docs/javadoc docs/
 mv build/docs/readtools/*.yml docs/_data/ && rm -fr docs/readtools/* && mv build/docs/readtools/*.md docs/readtools/
 
 echo "[$(date)] Update CHANGELOG version"
-awk -v var=$version '{print $0}; $0=="## [Unreleased]"{print "\n\n## ["var"]"}END{print "["var"]: https://github.com/magicDGS/ReadTools/releases/tag/"var}' CHANGELOG.md > CHANGELOG.md.new && mv CHANGELOG.md.new CHANGELOG.md
+awk -v var=${version} '{print $0}; $0=="## [Unreleased]"{print "\n\n## ["var"]"}END{print "["var"]: https://github.com/magicDGS/ReadTools/releases/tag/"var}' CHANGELOG.md > CHANGELOG.md.new && mv CHANGELOG.md.new CHANGELOG.md
 
 ## commit and push
 echo "[$(date)] Upload to GitHub"

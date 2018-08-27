@@ -220,7 +220,7 @@ public abstract class ReadToolsWalker extends ReadToolsProgram {
         return referencePath == null ? null : IOUtils.getPath(referencePath);
     }
 
-    /** Rerturns {@code true} if the input is paired. */
+    /** Returns {@code true} if the input is paired. */
     public final boolean isPaired() {
         return dataSource.isPaired();
     }

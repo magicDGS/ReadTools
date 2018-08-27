@@ -53,7 +53,7 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
     }
 
     /**
-     * Constructor froma a source.
+     * Constructor from a a source.
      *
      * @param source the source of reads (FASTQ).
      */
@@ -62,7 +62,7 @@ final public class FastqSourceHandler extends FileSourceHandler<FastqReader> {
     }
 
     /** Returns an empty header with unsorted order. */
-    // Overrided because this source does not have header
+    // Override because this source does not have header
     @Override
     public SAMFileHeader getHeader() {
         return FASTQ_HEADER.clone();

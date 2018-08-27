@@ -54,7 +54,7 @@ public class BarcodeDictionary {
     private final SAMReadGroupRecord unknownBarcode;
 
     /**
-     * Array which contains the barcodes. The lenght is the number of barcodes used, and the
+     * Array which contains the barcodes. The length is the number of barcodes used, and the
      * internal array contain the
      * associated barcode for each sample
      */
@@ -75,7 +75,7 @@ public class BarcodeDictionary {
      *
      * @param samples        the sample names.
      * @param barcodes       the barcodes.
-     * @param unknownBarcode the unknown barcode to assign to unknonw samples.
+     * @param unknownBarcode the unknown barcode to assign to unknown samples.
      */
     protected BarcodeDictionary(final List<SAMReadGroupRecord> samples,
             final List<List<String>> barcodes, final SAMReadGroupRecord unknownBarcode) {
@@ -132,16 +132,6 @@ public class BarcodeDictionary {
     }
 
     /**
-     * Get the number of unique samples in this dictionary
-     *
-     * @return the effective number of samples
-     */
-    public int numberOfUniqueSamples() {
-        // will it be better to cache this value??
-        return new HashSet<>(sampleRecord).size();
-    }
-
-    /**
      * Get the barcodes associated with certain sample
      *
      * @param sampleIndex the sample index
@@ -179,9 +169,7 @@ public class BarcodeDictionary {
         if (barcodeRGmap.isEmpty()) {
             initBarcodeRGmap();
         }
-        return (barcodeRGmap.containsKey(combinedBarcode)) ?
-                barcodeRGmap.get(combinedBarcode) :
-                unknownBarcode;
+        return barcodeRGmap.getOrDefault (combinedBarcode, unknownBarcode);
     }
 
     /**

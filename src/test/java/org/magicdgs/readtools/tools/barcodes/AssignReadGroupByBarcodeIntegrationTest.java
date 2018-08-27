@@ -177,7 +177,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
             final boolean testSplit) throws Exception {
         log("Testing " + testName + " for deprecated " + deprecatedTool);
 
-        final File expextedFilePrefix = getTestFile(testName);
+        final File expectedFilePrefix = getTestFile(testName);
 
         // add the outputs
         final File actualOutputPrefix = new File(createTempDir(deprecatedTool), testName);
@@ -187,7 +187,7 @@ public class AssignReadGroupByBarcodeIntegrationTest extends RTCommandLineProgra
         final List<String> outputToCheck = (testSplit)
                 ? EXPECTED_BY_SAMPLE_EXT : Collections.singletonList(".sam");
 
-        testAddReadGroupByBarcodeRun(builder, actualOutputPrefix, expextedFilePrefix, outputToCheck);
+        testAddReadGroupByBarcodeRun(builder, actualOutputPrefix, expectedFilePrefix, outputToCheck);
     }
 
     @Test

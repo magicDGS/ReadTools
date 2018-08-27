@@ -30,9 +30,6 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */

@@ -73,7 +73,7 @@ public final class TestResourcesUtils {
      * <li>
      * Functionality is broken and requires a workaround in the tests files until it is fixed. This
      * is completely discouraged and this kind of change in the test data may be accepted only in
-     * extremealy rare cases.
+     * extremely rare cases.
      * </li>
      * </ul>
      */

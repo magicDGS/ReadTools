@@ -73,9 +73,9 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
         Assert.assertTrue(pluginDescriptor.getUserEnabledTrimmers().isEmpty());
 
         // test that default instances are not
-        final List<TrimmingFunction> defaultInsances = pluginDescriptor.getDefaultInstances();
-        Assert.assertEquals(defaultInsances.size(), 1);
-        Assert.assertSame(defaultInsances.get(0), anonymous);
+        final List<TrimmingFunction> defaultInstances = pluginDescriptor.getDefaultInstances();
+        Assert.assertEquals(defaultInstances.size(), 1);
+        Assert.assertSame(defaultInstances.get(0), anonymous);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -207,7 +207,7 @@ public class TrimmerPluginDescriptorUnitTest extends RTBaseTest {
 
         // the 5/3 prime are set in the same call, so we require only one for testing
         // we can't provide the two of them because they are mutex
-        // in addition, the method for set disabling is alreay tested in the TrimmingFunction classes
+        // in addition, the method for set disabling is already tested in the TrimmingFunction classes
         args.addBooleanArgument("disable5pTrim", disable5prime);
 
         // run the instance main and get the descriptor after parsing

@@ -23,7 +23,7 @@ expected to uphold this code. Please report unacceptable behavior to
 
 ## How to contribute
 
-All contributions to _ReadTools_ are welcome, either from users or developpers.
+All contributions to _ReadTools_ are welcome, either from users or developers.
 Contributions can be made in the form of [Issue Reports][issue_tracker] (for 
 bug reports or feature requests) or [Pull Requests][pull_requests] (for code
 contributions).
@@ -51,7 +51,7 @@ to see the guidelines for developers.
 
 ## Recognition model
 
-If you contribute to _ReadTools_ significatly (e.g., with a Pull Request), we would add
+If you contribute to _ReadTools_ significantly (e.g., with a Pull Request), we would add
 your name to a `CONTRIBUTORS.md` file with details about your contribution(s).
 
 Currently we do not have any major contributor to the project. Be the first!

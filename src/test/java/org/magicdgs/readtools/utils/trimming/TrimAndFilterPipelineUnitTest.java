@@ -243,7 +243,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
                             ArtificialReadUtils.createArtificialRead("1M");
                     final GATKRead conditionalCompletelyTrim =
                             ArtificialReadUtils.createArtificialRead("2M");
-                    // trimed and not filtered -> compute the length for assertion
+                    // trimmed and not filtered -> compute the length for assertion
                     final GATKRead trimmedReadNotFiltered =
                             ArtificialReadUtils.createArtificialRead("10M");
                     final int lengthAfterTrimmingNotFiltered =
@@ -290,7 +290,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
 
 
                     // apply to the conditional completely trim is always filter out because of length
-                    Assert.assertEquals(pipeline.test(conditionalCompletelyTrim), false);
+                    Assert.assertFalse(pipeline.test(conditionalCompletelyTrim));
                     // the completely trim flag depends on the disabled ends
                     if (disable5p || disable3p) {
                         // if one of then is disabled, it is going to be not completely trimmed
@@ -317,7 +317,7 @@ public class TrimAndFilterPipelineUnitTest extends RTBaseTest {
             final int expected5p = (disable5p) ? 0 : 1;
             for (final boolean disable3p : trueFalse) {
                 final int expected3p = (disable3p) ? 0 : 1;
-                // dont test both disable
+                // don't test both disable
                 if (!(disable5p && disable3p)) {
                     final TrimmingFunction tf = new CutReadTrimmer(1, 1);
                     tf.setDisableEnds(disable5p, disable3p);

@@ -25,7 +25,7 @@
 package org.magicdgs.readtools.utils.read;
 
 import org.magicdgs.readtools.RTDefaults;
-import org.magicdgs.readtools.utils.fastq.RTFastqContstants;
+import org.magicdgs.readtools.utils.fastq.RTFastqConstants;
 
 import htsjdk.samtools.SAMTag;
 import org.apache.commons.lang3.ArrayUtils;
@@ -85,13 +85,13 @@ public class RTReadUtils {
         Utils.nonNull(read, "null read");
         final String originalName = read.getName();
         final int barcodeStartIndex = originalName
-                .indexOf(RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER);
+                .indexOf(RTFastqConstants.ILLUMINA_NAME_BARCODE_DELIMITER);
         // if not found, return an empty array
         if (barcodeStartIndex == -1) {
             return new String[0];
         }
         read.setName(originalName.substring(0, barcodeStartIndex));
-        return originalName.substring(barcodeStartIndex + 1, originalName.length())
+        return originalName.substring(barcodeStartIndex + 1)
                 .split(RTDefaults.BARCODE_INDEX_DELIMITER);
     }
 
@@ -143,7 +143,7 @@ public class RTReadUtils {
         Utils.nonNull(read, "null read");
         Utils.nonEmpty(barcodeTags, "empty barcodeTags");
         Utils.nonEmpty(qualityTags, "empty qualityTags");
-        Utils.validateArg(barcodeTags.size() == qualityTags.size(), "tags lenghts should be equal");
+        Utils.validateArg(barcodeTags.size() == qualityTags.size(), "tags lengths should be equal");
         String[] barcodes = new String[0];
         String[] qualities = new String[0];
         for (int i = 0; i < barcodeTags.size(); i++) {
@@ -159,14 +159,14 @@ public class RTReadUtils {
                         qualSplit[0] = StringUtils.repeat(ZERO_QUALITY_CHAR, bcSplit[0].length());
                     }
                 } else if (bcValue.length() != qualVal.length()) {
-                    throwExceptionForDifferentBarcodeQualityLenghts(barcodeTags.get(i), bcValue,
+                    throwExceptionForDifferentBarcodeQualityLengths(barcodeTags.get(i), bcValue,
                             qualityTags.get(i), qualVal);
                     // this break should be included because qualSplit is not initialized
                     break;
                 } else {
                     qualSplit = qualVal.split(RTDefaults.BARCODE_QUALITY_DELIMITER);
                     if (bcSplit.length != qualSplit.length) {
-                        throwExceptionForDifferentBarcodeQualityLenghts(barcodeTags.get(i), bcValue,
+                        throwExceptionForDifferentBarcodeQualityLengths(barcodeTags.get(i), bcValue,
                                 qualityTags.get(i), qualVal);
                     }
                 }
@@ -229,7 +229,7 @@ public class RTReadUtils {
             final String qualityString = String.join(RTDefaults.BARCODE_QUALITY_DELIMITER, qualities);
             // perform extra validation of lengths
             if (barcodeString.length() != qualityString.length()) {
-                throwExceptionForDifferentBarcodeQualityLenghts(RAW_BARCODE_TAG, barcodeString,
+                throwExceptionForDifferentBarcodeQualityLengths(RAW_BARCODE_TAG, barcodeString,
                         RAW_BARCODE_QUALITY_TAG, qualityString);
             }
             read.setAttribute(RAW_BARCODE_TAG, barcodeString);
@@ -237,7 +237,7 @@ public class RTReadUtils {
         }
     }
 
-    private static void throwExceptionForDifferentBarcodeQualityLenghts(final String barcodeTag,
+    private static void throwExceptionForDifferentBarcodeQualityLengths(final String barcodeTag,
             final String bcValue, final String qualityTag, final String qualVal) {
         throw new IllegalArgumentException(
                 "Barcodes and qualities have different lengths: "
@@ -433,7 +433,7 @@ public class RTReadUtils {
 
     /**
      * Gets the read name with the raw barcode included into it if they are present (separated with
-     * {@link RTFastqContstants#ILLUMINA_NAME_BARCODE_DELIMITER}) if present.
+     * {@link RTFastqConstants#ILLUMINA_NAME_BARCODE_DELIMITER}) if present.
      *
      * @param read the read to get the information from.
      */
@@ -446,7 +446,7 @@ public class RTReadUtils {
         }
         // if not, add them
         return read.getName()
-                + RTFastqContstants.ILLUMINA_NAME_BARCODE_DELIMITER
+                + RTFastqConstants.ILLUMINA_NAME_BARCODE_DELIMITER
                 + String.join(RTDefaults.BARCODE_INDEX_DELIMITER, barcodes);
     }
 }

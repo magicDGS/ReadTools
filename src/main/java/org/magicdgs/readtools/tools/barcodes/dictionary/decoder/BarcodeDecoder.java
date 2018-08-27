@@ -125,7 +125,7 @@ public class BarcodeDecoder {
         initStats();
     }
 
-    // initilialize the statistics on construction
+    // initialize the statistics on construction
     private void initStats() {
         // get the statistics for the decoding
         stats = new LinkedHashMap<>();
@@ -173,7 +173,7 @@ public class BarcodeDecoder {
      * assigned to the UNKNOWN one; otherwise, it is assigned by matching the barcodes using the
      * pipeline in {@link #getBestBarcodeString(String...)}.
      *
-     * @param read the read to asssing the read group.
+     * @param read the read to assign the read group.
      * @throws UserException.MalformedFile if the raw barcode length and dictionary number of
      * indexes differs.
      */
@@ -205,23 +205,6 @@ public class BarcodeDecoder {
     }
 
     /**
-     * Gets the best barcode from barcode strings.
-     *
-     * @param barcode the array of barcodes to match.
-     *
-     * @return the best real barcode in the dictionary (pasted in order if there are more than one).
-     *
-     * @throws IllegalArgumentException if the length of the arrays does not match the number of
-     *                                  barcodes in the dictionary.
-     */
-    public String getBestBarcode(final String... barcode) {
-        Utils.nonNull(barcode, "null barcodes");
-        Utils.validateArg(barcode.length == dictionary.getNumberOfBarcodes(),
-                "Asking for matching a number of barcodes that does not fit with the ones contained in the barcode dictionary");
-        return getBestBarcodeString(barcode);
-    }
-
-    /**
      * Gets the best barcode using the BarcodeMatch approach.
      *
      * WARNING: does not check the number of barcodes in the input array.
@@ -232,7 +215,7 @@ public class BarcodeDecoder {
      */
     private String getBestBarcodeString(final String... barcode) {
         // this assumes that the barcodes are not empty and/or null
-        final List<BarcodeMatch> allMatchs = IntStream.range(0, dictionary.getNumberOfBarcodes())
+        final List<BarcodeMatch> allMatches = IntStream.range(0, dictionary.getNumberOfBarcodes())
                 // get the BarcodeMatch for the set of indexes
                 .mapToObj(index -> BarcodeMatch.getBestBarcodeMatch(index, barcode[index],
                         dictionary.getSetBarcodesFromIndex(index), nAsMismatches))
@@ -240,8 +223,8 @@ public class BarcodeDecoder {
                 .filter(this::passFiltersAndUpdateMetrics)
                 .collect(Collectors.toList());
         // early termination
-        final String detectedBarcode = (allMatchs.isEmpty())
-                ? BarcodeMatch.UNKNOWN_STRING : getBestBarcodeBySampleMajority(allMatchs);
+        final String detectedBarcode = (allMatches.isEmpty())
+                ? BarcodeMatch.UNKNOWN_STRING : getBestBarcodeBySampleMajority(allMatches);
         // update statistics
         stats.get(detectedBarcode).RECORDS++;
         return detectedBarcode;

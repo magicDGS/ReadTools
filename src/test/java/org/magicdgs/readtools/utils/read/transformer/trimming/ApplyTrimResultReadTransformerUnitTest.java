@@ -45,10 +45,10 @@ import java.util.List;
 /**
  * @author Daniel Gomez-Sanchez (magicDGS)
  */
-public class ApplyTrimResultReadTransfomerUnitTest extends RTBaseTest {
+public class ApplyTrimResultReadTransformerUnitTest extends RTBaseTest {
 
     // transformer to test
-    private static final ReadTransformer transformer = new ApplyTrimResultReadTransfomer();
+    private static final ReadTransformer transformer = new ApplyTrimResultReadTransformer();
 
     private static final SAMFileHeader header = ArtificialReadUtils.createArtificialSamHeader();
 

@@ -39,7 +39,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
  * the read name, so it should be maintained and then fixed with this transformer.
  *
  * Note: although this transformer will do nothing if there is no barcode encoded in the read name,
- * its usage is discouraged except for mapped BAM files without the BC informationm, because while
+ * its usage is discouraged except for mapped BAM files without the BC information, because while
  * reading FASTQ files this processing is already applied.
  *
  * @author Daniel Gomez-Sanchez (magicDGS)

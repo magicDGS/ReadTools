@@ -170,7 +170,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
 
     @Override
     public void close() {
-        // set iteration values to unitialize
+        // set iteration values to uninitialized
         currentSequence = null;
         currentSequencePosition = -1;
         CloserUtil.close(reader);
@@ -183,7 +183,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
     /**
      * Gets the header with the metadata from the file.
      *
-     * @return gem-mappability heaader.
+     * @return gem-mappability header.
      */
     public GemMappabilityHeader readHeader() {
         logger.debug("Reading header");
@@ -198,7 +198,7 @@ public final class GemMappabilityReader implements CloseableIterator<GemMappabil
                 readEncoding());
     }
 
-    // reaad a meta-data line (integer value)
+    // read a meta-data line (integer value)
     private int readIntHeader(final String expected) {
         logger.debug("Readig meta-data line: {}", expected);
         skipMetadataLine(expected);
