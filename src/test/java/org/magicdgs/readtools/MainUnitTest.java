@@ -68,7 +68,7 @@ public class MainUnitTest extends RTBaseTest {
 
         // should contain the following strings
         Assert.assertTrue(exceptionOutput.contains("A USER ERROR has occurred: "));
-        Assert.assertTrue((exceptionOutput.contains(message)));
+        Assert.assertTrue(exceptionOutput.contains(message));
     }
 
     @Test
