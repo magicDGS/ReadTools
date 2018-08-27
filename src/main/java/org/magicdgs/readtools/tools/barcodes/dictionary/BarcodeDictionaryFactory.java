@@ -42,6 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /**
@@ -126,6 +127,12 @@ public class BarcodeDictionaryFactory {
             final TabbedTextFileWithHeaderParser barcodesParser =
                     new TabbedTextFileWithHeaderParser(
                             new TabbedInputParser(false, Files.newInputStream(barcodePath)));
+
+            // check if the column labels contain any null element (empty column name)
+            // we do not allow this kind of header
+            if (barcodesParser.columnLabels().stream().anyMatch(Objects::isNull)) {
+                throw new EmptyColumnBarcodeDictionaryException(barcodePath);
+            }
 
             // validate the required columns and get the required ones
             final Tuple3<String, String, List<String>> columns =
@@ -278,9 +285,15 @@ public class BarcodeDictionaryFactory {
 
         public MissingColumnsBarcodeDictionaryException(final Path path,
                 final List<String> missingColumns) {
-            // TODO: use the Path exception after https://github.com/broadinstitute/gatk/pull/2282
-            super(path.toFile(), "barcode file does not include the following required columns: "
+            super(path, "barcode file does not include the following required columns: "
                     + String.join(", ", missingColumns));
+        }
+    }
+
+    private static class EmptyColumnBarcodeDictionaryException extends UserException.MalformedFile {
+
+        public EmptyColumnBarcodeDictionaryException(final Path path) {
+            super(path, "contains an empty column. Please, check that columns are not separated by multiple tabs.");
         }
     }
 }
