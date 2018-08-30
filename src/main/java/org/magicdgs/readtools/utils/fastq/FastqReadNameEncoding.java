@@ -169,7 +169,7 @@ public enum FastqReadNameEncoding {
     }
 
     /**
-     * Returns the barcodes in the read name (splitted by {@link RTDefaults#BARCODE_INDEX_DELIMITER}).
+     * Returns the barcodes in the read name (splitted by {@link RTReadUtils#DEFAULT_BARCODE_INDEX_SPLIT}).
      *
      * @param readName the read name to extract the information.
      *
@@ -181,7 +181,7 @@ public enum FastqReadNameEncoding {
             if (matcher.find()) {
                 final String barcode = matcher.group(barcodeGroup);
                 if (barcode != null) {
-                    return barcode.split(RTDefaults.BARCODE_INDEX_DELIMITER);
+                    return RTReadUtils.DEFAULT_BARCODE_INDEX_SPLIT.split(barcode);
                 }
             }
         }
