@@ -4,7 +4,7 @@ summary: Keep only reads representing primary alignments (those that satisfy bot
  NotSupplementaryAlignment filters, or in terms of SAM flag values, must have neither of the 0x100 or
  0x800 flags set).
 permalink: PrimaryLineReadFilter.html
-last_updated: 27-49-2018 03:49:16
+last_updated: 30-57-2018 12:57:55
 ---
 
 

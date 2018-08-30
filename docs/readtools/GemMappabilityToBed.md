@@ -2,7 +2,7 @@
 title: GemMappabilityToBed (EXPERIMENTAL)
 summary: Converts a GEM-mappability file into a BED-graph format
 permalink: GemMappabilityToBed.html
-last_updated: 27-49-2018 03:49:16
+last_updated: 30-57-2018 12:57:55
 ---
 
 {% include warning.html content="This a EXPERIMENTAL tool and should not be used for production" %}
