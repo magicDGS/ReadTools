@@ -189,9 +189,13 @@ public final class RTHelpConstants {
         logger.info("Barcode sequence ({}) separator: '{}'",
                 () -> RTReadUtils.RAW_BARCODE_TAG,
                 () -> RTDefaults.BARCODE_INDEX_DELIMITER);
+        logger.debug("Barcode sequence split pattern: '{}'",
+                RTReadUtils.DEFAULT_BARCODE_INDEX_SPLIT);
         logger.info("Barcode quality ({}) separator: '{}'",
                 () -> RTReadUtils.RAW_BARCODE_QUALITY_TAG,
                 () -> RTDefaults.BARCODE_QUALITY_DELIMITER);
+        logger.debug("Barcode quality split pattern: '{}'",
+                RTReadUtils.DEFAULT_BARCODE_QUALITY_SPLIT);
         logger.info("Number of records to detect quality: {}",
                 () -> RTDefaults.MAX_RECORDS_FOR_QUALITY);
         // for debugging

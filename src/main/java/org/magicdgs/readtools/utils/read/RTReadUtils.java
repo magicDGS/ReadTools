@@ -37,6 +37,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.IntSupplier;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -69,8 +70,26 @@ public class RTReadUtils {
             Collections.singletonList(RAW_BARCODE_TAG);
 
     /**
+     * Default regular expression to split barcodes.
+     *
+     * <p>Uses a quoted {@link RTDefaults#BARCODE_INDEX_DELIMITER} to allow string representation
+     * in the java-property.
+     */
+    public static final Pattern DEFAULT_BARCODE_INDEX_SPLIT = Pattern.compile(
+            Pattern.quote(RTDefaults.BARCODE_INDEX_DELIMITER));
+
+    /**
+     * Default regular expression to split barcode qualities.
+     *
+     * <p>Uses a quoted {@link RTDefaults#BARCODE_QUALITY_DELIMITER} to allow string representation
+     * in the java-property.
+     */
+    public static final Pattern DEFAULT_BARCODE_QUALITY_SPLIT = Pattern.compile(
+            Pattern.quote(RTDefaults.BARCODE_QUALITY_DELIMITER));
+
+    /**
      * Extract and remove the barcode from the read name, splitting the barcodes in the read name
-     * using {@link RTDefaults#BARCODE_INDEX_DELIMITER}. The read will
+     * using {@link #DEFAULT_BARCODE_INDEX_SPLIT}. The read will
      *
      * The barcode should be encoded in the Illumina format (not pair-end information included),
      * for example (barcode delimiter in the example is the default):
@@ -91,13 +110,12 @@ public class RTReadUtils {
             return new String[0];
         }
         read.setName(originalName.substring(0, barcodeStartIndex));
-        return originalName.substring(barcodeStartIndex + 1)
-                .split(RTDefaults.BARCODE_INDEX_DELIMITER);
+        return DEFAULT_BARCODE_INDEX_SPLIT.split(originalName.substring(barcodeStartIndex + 1));
     }
 
     /**
      * Returns an array that contains the barcodes stored in the provided tags. The tags are
-     * splitted by {@link RTDefaults#BARCODE_INDEX_DELIMITER} to check if there are more than 1
+     * splitted by {@link #DEFAULT_BARCODE_INDEX_SPLIT} to check if there are more than 1
      * sequence. If the value for a tag is {@code null} (does not exists), this tag is skipped.
      *
      * Note: no validation is performed to check if the tags are real barcodes.
@@ -114,19 +132,19 @@ public class RTReadUtils {
         Utils.nonEmpty(tags, "empty tags");
         return tags.stream().map(read::getAttributeAsString)
                 .filter(value -> value != null)
-                .flatMap(value -> Stream.of(value.split(RTDefaults.BARCODE_INDEX_DELIMITER)))
+                .flatMap(DEFAULT_BARCODE_INDEX_SPLIT::splitAsStream)
                 .toArray(String[]::new);
     }
 
     /**
      * Returns an pair of arrays of the same length that contains the barcodes/qualities stored in
-     * the provided tags. The tags are splitted by {@link RTDefaults#BARCODE_INDEX_DELIMITER} to
+     * the provided tags. The tags are splitted by {@link #DEFAULT_BARCODE_INDEX_SPLIT} to
      * check if there are more than 1 sequence/quality. If the value for a tag is {@code null}
      * (does not exists), this tag is skipped (also the quality without checking). If the quality
      * is empty for the corresponding tag, the quality is filled with {@link #ZERO_QUALITY_CHAR} to
      * match the same length.
      *
-     * Note: no validation is performed to check if the tags are real barcodes/qualities.
+     * <p>Note: no validation is performed to check if the tags are real barcodes/qualities.
      *
      * @param read        the read to extract the barcodes from.
      * @param barcodeTags the tags containing the barcodes, in order.
@@ -149,7 +167,7 @@ public class RTReadUtils {
         for (int i = 0; i < barcodeTags.size(); i++) {
             final String bcValue = read.getAttributeAsString(barcodeTags.get(i));
             if (bcValue != null) {
-                final String[] bcSplit = bcValue.split(RTDefaults.BARCODE_INDEX_DELIMITER);
+                final String[] bcSplit = DEFAULT_BARCODE_INDEX_SPLIT.split(bcValue);
                 final String qualVal = read.getAttributeAsString(qualityTags.get(i));
                 final String[] qualSplit;
                 if (qualVal == null) {
@@ -164,7 +182,7 @@ public class RTReadUtils {
                     // this break should be included because qualSplit is not initialized
                     break;
                 } else {
-                    qualSplit = qualVal.split(RTDefaults.BARCODE_QUALITY_DELIMITER);
+                    qualSplit = DEFAULT_BARCODE_QUALITY_SPLIT.split(qualVal);
                     if (bcSplit.length != qualSplit.length) {
                         throwExceptionForDifferentBarcodeQualityLengths(barcodeTags.get(i), bcValue,
                                 qualityTags.get(i), qualVal);
