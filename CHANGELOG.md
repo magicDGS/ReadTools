@@ -8,6 +8,11 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+### Fixed
+- Allow special characters in advance java-property for barcode sequence/quality separators
+
+### Developer
+- Remove unused imports
 
 ## [1.5.1]
 
