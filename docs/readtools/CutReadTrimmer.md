@@ -2,7 +2,7 @@
 title: CutReadTrimmer
 summary: Crops a concrete number of bases at the end of the read.
 permalink: CutReadTrimmer.html
-last_updated: 27-49-2018 03:49:16
+last_updated: 30-57-2018 12:57:55
 ---
 
 

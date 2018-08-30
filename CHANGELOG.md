@@ -8,6 +8,9 @@ The meaning of each entry is user-based and can be found in our
 
 ## [Unreleased]
 
+
+## [1.5.2]
+
 ### Fixed
 - Allow special characters in advance java-property for barcode sequence/quality separators
 
@@ -305,3 +308,4 @@ First pre-release
 [1.4.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.4.1
 [1.5.0]: https://github.com/magicDGS/ReadTools/releases/tag/1.5.0
 [1.5.1]: https://github.com/magicDGS/ReadTools/releases/tag/1.5.1
+[1.5.2]: https://github.com/magicDGS/ReadTools/releases/tag/1.5.2
